@@ -1,8 +1,19 @@
-# Blockly
+# Blockly (Microsoft PXT fork)
 
-Google's Blockly is a web-based, visual programming editor.  Users can drag
-blocks together to build programs.  All code is free and open source.
+This is a fork of [Blockly](https://code.google.com/p/blockly/), an open source visual programming environment.
 
-**The project page is https://developers.google.com/blockly/**
+Major additions and changes in this fork:
 
-![](https://developers.google.com/blockly/images/sample.png)
+* 
+* 
+* 
+
+## Installation
+
+## Usage
+
+### Playground manual testing page
+
+There is a playground manual testing page at [tests/playground.html](./tests/playground.html), which requires no build step or server running.
+
+`open tests/playground.html`
