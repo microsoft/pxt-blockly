@@ -49,6 +49,23 @@ Blockly.defineBlocksWithJsonArray([{
   "extensions": ["math_number_tooltip"]
 }]);
 
+// Block for numeric value with min and max.
+Blockly.defineBlocksWithJsonArray([{
+  "type": "math_number_minmax",
+  "message0": "%1",
+  "args0": [{
+    "type": "field_number",
+    "name": "NUM",
+    "value": 0,
+    "min": 0, 
+    "max": 100
+  }],
+  "output": "Number",
+  "colour": "%{BKY_MATH_HUE}",
+  "helpUrl": "%{BKY_MATH_NUMBER_HELPURL}",
+  "extensions": ["math_number_tooltip"]
+}]);
+
 Blockly.Extensions.register('math_number_tooltip', function() {
   // Use the parent's tooltip when attached to an inline value input.
   this.setTooltip(function() {

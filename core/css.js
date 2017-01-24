@@ -766,6 +766,30 @@ Blockly.Css.CONTENT = [
     'width: 16px;',
   '}',
 
+  /* Slider. */
+  '.blocklyWidgetDiv .goog-slider-vertical,',
+  '.blocklyWidgetDiv .goog-slider-horizontal {',
+    'background-color: ThreeDFace;',
+    'position: relative;',
+    'overflow: hidden;',
+    'outline: none;',
+  '}',
+  '.blocklyWidgetDiv .goog-slider-thumb {',
+    'position: absolute;',
+    'background-color: ThreeDShadow;',
+    'overflow: hidden;',
+  '}',
+  '.blocklyWidgetDiv .goog-slider-vertical .goog-slider-thumb {',
+    'left: 0;',
+    'height: 20px;',
+    'width: 100%;',
+  '}',
+  '.blocklyWidgetDiv .goog-slider-horizontal .goog-slider-thumb {',
+    'top: 0;',
+    'width: 20px;',
+    'height: 100%;',
+  '}',
+
   /* BiDi override for the selected/checked state. */
   /* #noflip */
   '.blocklyWidgetDiv .goog-menuitem-rtl .goog-menuitem-checkbox,',
