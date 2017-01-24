@@ -834,5 +834,27 @@ Blockly.Css.CONTENT = [
     'padding: 0;',
   '}',
 
+
+  '.blocklyWidgetDiv .blocklyNote {',
+    'border: outset;',
+    'cursor: pointer;',
+    'display: inline-block;',
+    'position: absolute;',
+    'top: 0px;',
+  '}',
+
+  '.blocklyWidgetDiv .blocklyNoteLabel {',
+    'border: transparent;',
+    'display: inline-block;',
+    'height: 40px;',
+    'position: absolute;',
+    'text-align: center;', 
+    'width: 80px;',
+  '}',
+  
+  '.blocklyWidgetDiv .blocklyNote:hover {',
+    'background-color: yellow !important',
+  '}',
+
   ''
 ];
