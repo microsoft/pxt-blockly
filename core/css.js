@@ -834,6 +834,9 @@ Blockly.Css.CONTENT = [
     'padding: 0;',
   '}',
 
+  '.blocklyWidgetDiv .blocklyPianoDiv {',
+    'position:relative',
+  '}',
 
   '.blocklyWidgetDiv .blocklyNote {',
     'border: outset;',

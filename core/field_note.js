@@ -13,21 +13,47 @@ goog.require('goog.style');
 goog.require('goog.ui.ColorButton');
 goog.require('goog.dom');
 
+goog.require('Blockly.FieldNumber');
 
+/**
+ * Class for an editable note field.
+ * @param {(string|number)=} value The initial content of the field. The value
+ *     should cast to a number, and if it does not, '0' will be used.
+ * @param {(string|number)=} opt_min Minimum value.
+ * @param {(string|number)=} opt_max Maximum value.
+ * @param {(string|number)=} opt_precision Precision for value.
+ * @param {Function=} opt_validator An optional function that is called
+ *     to validate any constraints on what the user entered.  Takes the new
+ *     text as an argument and returns either the accepted text, a replacement
+ *     text, or null to abort the change.
+ * @extends {Blockly.FieldNumber}
+ * @constructor
+ */
+/*Blockly.FieldNote =
+    function(opt_value, opt_min, opt_max, opt_precision, opt_validator) {
+  opt_value = (opt_value && !isNaN(opt_value)) ? String(opt_value) : '0';
+  Blockly.FieldNote.superClass_.constructor.call(
+      this, opt_value, opt_validator);
+  this.setConstraints(opt_min, opt_max, opt_precision);
+};
+goog.inherits(Blockly.fieldNote, Blockly.FieldTextInput);
+*/
 /**
  * Class for a note input field.
  * @param {string} note The initial note in string format.
  * @param {Function=} opt_validator A function that is executed when a new
  *     note is selected.  Its sole argument is the new note value.  Its
  *     return value becomes the selected note
- * @extends {Blockly.Field}
+ * @extends {Blockly.FieldNumber}
  * @constructor
  */
 Blockly.FieldNote = function (note, opt_validator) {
     Blockly.FieldNote.superClass_.constructor.call(this, note, opt_validator);
-
+    /*Blockly.FieldNumber.superClass_.constructor.call(
+      this, note, opt_validator);*/
+    //this.setConstraints(opt_min, opt_max, opt_precision);
 };
-goog.inherits(Blockly.FieldNote, Blockly.Field);
+goog.inherits(Blockly.FieldNote, Blockly.FieldNumber);
 
 /**
  * default number of piano keys
@@ -236,10 +262,19 @@ Blockly.FieldNote.prototype.getPosition = function (idx) {
  * @private
  */
 Blockly.FieldNote.prototype.showEditor_ = function () {
-    Blockly.WidgetDiv.show(this, this.sourceBlock_.RTL,
-        Blockly.FieldNote.widgetDispose_);
+    Blockly.FieldNote.superClass_.showEditor_.call(this);
+    //Blockly.WidgetDiv.show(this, this.sourceBlock_.RTL,
+    //    Blockly.FieldNote.widgetDispose_());
+    //Blockly.WidgetDiv.show(this, this.sourceBlock_.RTL, this.widgetDispose_);
+    //this.updateEditable();
 
     // Create the piano using Closure (colorButton).
+
+    div = Blockly.WidgetDiv.DIV;
+    var pianoDiv = goog.dom.createDom('div', {});
+    pianoDiv.className = 'blocklyPianoDiv';
+    div.appendChild(pianoDiv);
+
     var piano = this.createNewPiano();
     this.whiteKeyCounter_ = 0;
 
@@ -256,10 +291,9 @@ Blockly.FieldNote.prototype.showEditor_ = function () {
         var height = this.getHeight(i);
         var position = this.getPosition(i);
         var style = this.getKeyStyle(bgColor, width, height, position, this.isWhite(i) ? 0 : 1);
-        div = Blockly.WidgetDiv.DIV;
         key.setContent(style);
         key.setId('pianoKey ' + i);
-        key.render(div);
+        key.render(pianoDiv);
         var thisField = this;
         goog.events.listen(key.getElement(),
             goog.events.EventType.MOUSEDOWN,
@@ -284,31 +318,7 @@ Blockly.FieldNote.prototype.showEditor_ = function () {
     var showNoteLabel = new goog.ui.ColorButton();
     var showNoteStyle = this.getShowNoteStyle();
     showNoteLabel.setContent(showNoteStyle);
-    showNoteLabel.render(div);
-
-    var pianoSize = goog.style.getSize(piano[0].getElement());
-    // Flip the palette vertically if off the bottom. 
-    if (xy.y + pianoSize.height + borderBBox.height >=
-        windowSize.height + scrollOffset.y) {
-        xy.y -= pianoSize.height - 1;
-    } else {
-        xy.y += borderBBox.height - 1;
-    }
-    if (this.sourceBlock_.RTL) {
-        xy.x += borderBBox.width;
-        xy.x -= pianoSize.width;
-        // Don't go offscreen left.
-        if (xy.x < scrollOffset.x) {
-            xy.x = scrollOffset.x;
-        }
-    } else {
-        // Don't go offscreen right.
-        if (xy.x > windowSize.width + scrollOffset.x - pianoSize.width) {
-            xy.x = windowSize.width + scrollOffset.x - pianoSize.width;
-        }
-    }
-    Blockly.WidgetDiv.position(xy.x, xy.y, windowSize, scrollOffset,
-        this.sourceBlock_.RTL);
+    showNoteLabel.render(pianoDiv);
 
 };
 
