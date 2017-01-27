@@ -1,7 +1,6 @@
 //TODO license
-
 /**
- * @fileoverview Colour input field.
+ * @fileoverview note-picker input field.
  */
 'use strict';
 
@@ -16,29 +15,6 @@ goog.require('goog.dom');
 goog.require('Blockly.FieldNumber');
 
 /**
- * Class for an editable note field.
- * @param {(string|number)=} value The initial content of the field. The value
- *     should cast to a number, and if it does not, '0' will be used.
- * @param {(string|number)=} opt_min Minimum value.
- * @param {(string|number)=} opt_max Maximum value.
- * @param {(string|number)=} opt_precision Precision for value.
- * @param {Function=} opt_validator An optional function that is called
- *     to validate any constraints on what the user entered.  Takes the new
- *     text as an argument and returns either the accepted text, a replacement
- *     text, or null to abort the change.
- * @extends {Blockly.FieldNumber}
- * @constructor
- */
-/*Blockly.FieldNote =
-    function(opt_value, opt_min, opt_max, opt_precision, opt_validator) {
-  opt_value = (opt_value && !isNaN(opt_value)) ? String(opt_value) : '0';
-  Blockly.FieldNote.superClass_.constructor.call(
-      this, opt_value, opt_validator);
-  this.setConstraints(opt_min, opt_max, opt_precision);
-};
-goog.inherits(Blockly.fieldNote, Blockly.FieldTextInput);
-*/
-/**
  * Class for a note input field.
  * @param {string} note The initial note in string format.
  * @param {Function=} opt_validator A function that is executed when a new
@@ -49,11 +25,33 @@ goog.inherits(Blockly.fieldNote, Blockly.FieldTextInput);
  */
 Blockly.FieldNote = function (note, opt_validator) {
     Blockly.FieldNote.superClass_.constructor.call(this, note, opt_validator);
-    /*Blockly.FieldNumber.superClass_.constructor.call(
-      this, note, opt_validator);*/
-    //this.setConstraints(opt_min, opt_max, opt_precision);
+    note = (note && !isNaN(note)) ? String(note) : '0';
 };
 goog.inherits(Blockly.FieldNote, Blockly.FieldNumber);
+
+/**
+ * Ensure that only a number in the correct range may be entered.
+ * @param {string} text The user's text.
+ * @return {?string} A string representing a valid positive number, or null if invalid.
+ */
+Blockly.FieldNote.prototype.classValidator = function (text) {
+    if (text === null) {
+        return null;
+    }
+    text = String(text);
+
+    var n = parseFloat(text || 0);
+    if (isNaN(n) || n < 0) {
+        // Invalid number.
+        return null;
+    }
+    // Round to nearest multiple of precision.
+    if (this.precision_ && isFinite(n)) {
+        n = Math.round(n / this.precision_) * this.precision_;
+    }
+    // Get the value in range.
+    return String(n);
+};
 
 /**
  * default number of piano keys
@@ -61,6 +59,27 @@ goog.inherits(Blockly.FieldNote, Blockly.FieldNumber);
  * @private
  */
 Blockly.FieldNote.prototype.nKeys_ = 36;
+
+/**
+ * Absolute error for note frequency identification
+ * @type {number}
+ * @private
+ */
+Blockly.FieldNote.prototype.EPS = 1;
+
+/**
+ * array of notes frequency
+ * @type {Array.<number>}
+ * @private
+ */
+Blockly.FieldNote.prototype.noteFreq_ = [];
+
+/**
+ * array of notes names
+ * @type {Array.<string>}
+ * @private
+ */
+Blockly.FieldNote.prototype.noteName_ = [];
 
 /**
  * default width piano key
@@ -83,15 +102,18 @@ Blockly.FieldNote.prototype.keyHeight_ = 80;
  */
 Blockly.FieldNote.prototype.whiteKeyCounter_ = 0;
 
-
-
 /**
  * Install this field on a block.
  */
 Blockly.FieldNote.prototype.init = function () {
     Blockly.FieldNote.superClass_.init.call(this);
     this.borderRect_.style['fillOpacity'] = 1;
+    //create array of name/frequency notes
+    this.noteFreq_.length = 0;
+    this.noteName_.length = 0;
     this.whiteKeyCounter_ = 0;
+    this.createNotesArray();
+    this.setValue(this.callValidator(this.getValue()));
 };
 
 /**
@@ -102,13 +124,14 @@ Blockly.FieldNote.prototype.CURSOR = 'default';
 /**
  * Close the note picker if this input is being deleted.
  */
+
 Blockly.FieldNote.prototype.dispose = function () {
     Blockly.WidgetDiv.hideIfOwner(this);
     Blockly.FieldNote.superClass_.dispose.call(this);
 };
 
 /**
- * Return the current note.
+ * Return the current note frequency.
  * @return {string} Current note in string format.
  */
 Blockly.FieldNote.prototype.getValue = function () {
@@ -120,13 +143,16 @@ Blockly.FieldNote.prototype.getValue = function () {
  * @param {string} note The new note in string format.
  */
 Blockly.FieldNote.prototype.setValue = function (note) {
+    note = String(parseFloat(note || 0));
+    if (isNaN(note) || note < 0)
+        return;
     if (this.sourceBlock_ && Blockly.Events.isEnabled() &&
         this.note_ != note) {
         Blockly.Events.fire(new Blockly.Events.Change(
             this.sourceBlock_, 'field', this.name, this.note_, note));
     }
     this.note_ = note;
-    this.setText(note);
+    this.setText(this.getNoteName());
 };
 
 /**
@@ -134,9 +160,48 @@ Blockly.FieldNote.prototype.setValue = function (note) {
  * @return {string} Current text.
  */
 Blockly.FieldNote.prototype.getText = function () {
-    return this.note_;
+    return parseFloat(this.note_).toFixed(2);
 };
 
+/**
+ * Set the text in this field and fire a change event.
+ * @param {*} newText New text.
+ */
+Blockly.FieldNote.prototype.setText = function (newText) {
+    if (newText === null) {
+        // No change if null.
+        return;
+    }
+    newText = String(newText);
+    if (!isNaN(newText))
+        newText = this.getNoteName();
+
+    if (newText === this.text_) {
+        // No change.
+        return;
+    }
+    /*if (this.sourceBlock_ && Blockly.Events.isEnabled()) {
+        Blockly.Events.fire(new Blockly.Events.Change(
+            this.sourceBlock_, 'field', this.name, this.text_, newText));
+    }
+    */
+    Blockly.Field.prototype.setText.call(this, newText);
+};
+
+/**
+ * get the note name to be displayed in the field
+ * @return {string} note name
+ */
+Blockly.FieldNote.prototype.getNoteName = function () {
+    var note = this.getValue();
+    for (var i = 0; i < this.nKeys_; i++) {
+        if (Math.abs(this.noteFreq_[i] - note) < this.EPS)
+            return this.noteName_[i];
+    }
+    if (!isNaN(note))
+        note += ' Hz';
+    return note;
+};
 
 /**
  * Set a custom number of keys for this field.
@@ -176,13 +241,18 @@ Blockly.FieldNote.prototype.createNewPiano = function () {
 Blockly.FieldNote.prototype.getKeyStyle = function (bgColor, width, height, position, z_index) {
     var div = goog.dom.createDom('div',
         {
-            'style': 'background-color: ' + bgColor + '; width: ' +
-            width + 'px; height: ' + height + 'px; left: ' + position + 'px; z-index: ' + z_index + ';'
+            'style': 'background-color: ' + bgColor
+            + '; width: ' + width
+            + 'px; height: ' + height
+            + 'px; left: ' + position
+            + 'px; z-index: ' + z_index
+            + ';'
         },
         this.title);
     div.className = 'blocklyNote';
     return div;
 };
+
 /**
  * create a DOM to assing a style to the note label
  * @return {goog.dom} DOM with the new css style.
@@ -190,7 +260,8 @@ Blockly.FieldNote.prototype.getKeyStyle = function (bgColor, width, height, posi
  */
 Blockly.FieldNote.prototype.getShowNoteStyle = function () {
     // get center of the piano
-    var position = (this.nKeys_ / 12) * (this.nKeys_ / 12) * this.keyWidth_;
+    var position = (this.nKeys_ - (5 * (this.nKeys_ / 12))) / 2 * (this.keyWidth_);
+    position -= this.keyWidth_;
     var div = goog.dom.createDom('div',
         { 'style': 'left: ' + position + 'px; top: ' + (this.keyHeight_ + 10) + 'px;' },
         this.title);
@@ -257,24 +328,87 @@ Blockly.FieldNote.prototype.getPosition = function (idx) {
         return pos;
     return pos - (this.keyWidth_ / 4);
 };
+
+
+/**
+ * return next note of a piano key
+ * @param {string} note current note
+ * @return {string} next note
+ */
+Blockly.FieldNote.prototype.nextNote = function (note) {
+    if (note == 'A#')
+        return 'B';
+
+    if (note == 'B')
+        return 'C';
+
+    if (note == 'C#')
+        return 'D';
+
+    if (note == 'D#')
+        return 'E';
+
+    if (note == 'E')
+        return 'F';
+
+    if (note == 'F#')
+        return 'G';
+
+    if (note == 'G#')
+        return 'A';
+
+    return note + '#';
+};
+
+/**
+ * return next note of a piano key
+ * @return {string} next note
+ */
+Blockly.FieldNote.prototype.createNotesArray = function () {
+    var prefix = 'Low';
+    var curNote = 'C';
+    //keyNumber of low C -> https://en.wikipedia.org/wiki/Piano_key_frequencies
+    var keyNumber = 28;
+    for (var i = 0; i < this.nKeys_; i++) {
+        // set name of the i note
+        this.noteName_.push(prefix + ' ' + curNote);
+        // get frequency using math formula -> https://en.wikipedia.org/wiki/Piano_key_frequencies
+        var curFreq = Math.pow(2, (keyNumber - 49) / 12) * 440;
+        // set frequency of the i note
+        this.noteFreq_.push(curFreq);
+        // get name of the next note
+        curNote = this.nextNote(curNote);
+        if (i == 11)
+            prefix = 'Middle ';
+        if (i == 23)
+            prefix = 'High ';
+        // increment keyNumber
+        keyNumber++;
+    }
+};
+
 /**
  * Create a piano under the note field.
  * @private
  */
 Blockly.FieldNote.prototype.showEditor_ = function () {
+    /*
+    if (this.sourceBlock_ && Blockly.Events.isEnabled()) {
+        Blockly.Events.fire(new Blockly.Events.Change(
+            this.sourceBlock_, 'field', this.name, this.text_, this.getText()));
+    }
+    */
+    //change Note name to number frequency
+    Blockly.FieldNumber.prototype.setText.call(this, this.getText());
     Blockly.FieldNote.superClass_.showEditor_.call(this);
-    //Blockly.WidgetDiv.show(this, this.sourceBlock_.RTL,
-    //    Blockly.FieldNote.widgetDispose_());
-    //Blockly.WidgetDiv.show(this, this.sourceBlock_.RTL, this.widgetDispose_);
-    //this.updateEditable();
 
-    // Create the piano using Closure (colorButton).
-
+    //create piano div
     div = Blockly.WidgetDiv.DIV;
     var pianoDiv = goog.dom.createDom('div', {});
     pianoDiv.className = 'blocklyPianoDiv';
     div.appendChild(pianoDiv);
 
+    // Create the piano using Closure (colorButton).
     var piano = this.createNewPiano();
     this.whiteKeyCounter_ = 0;
 
@@ -284,6 +418,8 @@ Blockly.FieldNote.prototype.showEditor_ = function () {
     var xy = this.getAbsoluteXY_();
     var borderBBox = this.getScaledBBox_();
     var div = Blockly.WidgetDiv.DIV;
+
+    // render piano keys
     for (var i = 0; i < this.nKeys_; i++) {
         var key = piano[i];
         var bgColor = this.getBgColor(i);
@@ -292,34 +428,38 @@ Blockly.FieldNote.prototype.showEditor_ = function () {
         var position = this.getPosition(i);
         var style = this.getKeyStyle(bgColor, width, height, position, this.isWhite(i) ? 0 : 1);
         key.setContent(style);
-        key.setId('pianoKey ' + i);
+        key.setId(this.noteName_[i]);
         key.render(pianoDiv);
+        // highlight current selected key
+        if (Math.abs(this.noteFreq_[i] - this.getValue()) < this.EPS)
+            key.getContent().style.backgroundColor = "greenyellow";
+
+        key.getContent().setAttribute("tag", this.noteFreq_[i]);
         var thisField = this;
+        //  Listener when a new key is selected
         goog.events.listen(key.getElement(),
             goog.events.EventType.MOUSEDOWN,
             function () {
                 Blockly.WidgetDiv.hide();
-                //thisField.callValidator(this.getId());
-                //thisField.setValue(thisField.callValidator(this.getId()));
-                thisField.setValue(this.getId());
+                var val = this.getContent().getAttribute("tag");
+                thisField.setValue(val);
             }, false, key
         );
+        //  Listener when the mouse is over a key
         goog.events.listen(key.getElement(),
             goog.events.EventType.MOUSEOVER,
             function () {
-                showNoteLabel.content_.innerText = this.title;
+                showNoteLabel.getContent().innerText = this.getId();
             }, false, key
         );
-
+        //  increment white key counter
         if (this.isWhite(i))
             this.whiteKeyCounter_++;
     }
-
     var showNoteLabel = new goog.ui.ColorButton();
     var showNoteStyle = this.getShowNoteStyle();
     showNoteLabel.setContent(showNoteStyle);
     showNoteLabel.render(pianoDiv);
-
 };
 
 /**

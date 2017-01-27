@@ -20,7 +20,7 @@ Blockly.Blocks['note_picker'] = {
         {
           "type": "field_note",
           "name": "NOTE",
-          "note": "Low C"
+          "note": "262"
         }
       ],
       "output": "Number",
