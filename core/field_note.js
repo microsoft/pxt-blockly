@@ -30,7 +30,7 @@ Blockly.FieldNote = function (note, opt_validator) {
 goog.inherits(Blockly.FieldNote, Blockly.FieldNumber);
 
 /**
- * Ensure that only a number in the correct range may be entered.
+ * Ensure that only a non negative number may be entered.
  * @param {string} text The user's text.
  * @return {?string} A string representing a valid positive number, or null if invalid.
  */
@@ -61,7 +61,7 @@ Blockly.FieldNote.prototype.classValidator = function (text) {
 Blockly.FieldNote.prototype.nKeys_ = 36;
 
 /**
- * Absolute error for note frequency identification
+ * Absolute error for note frequency identification (Hz)
  * @type {number}
  * @private
  */
@@ -108,7 +108,7 @@ Blockly.FieldNote.prototype.whiteKeyCounter_ = 0;
 Blockly.FieldNote.prototype.init = function () {
     Blockly.FieldNote.superClass_.init.call(this);
     this.borderRect_.style['fillOpacity'] = 1;
-    //create array of name/frequency notes
+    //  create array of name/frequency notes
     this.noteFreq_.length = 0;
     this.noteName_.length = 0;
     this.whiteKeyCounter_ = 0;
@@ -124,7 +124,6 @@ Blockly.FieldNote.prototype.CURSOR = 'default';
 /**
  * Close the note picker if this input is being deleted.
  */
-
 Blockly.FieldNote.prototype.dispose = function () {
     Blockly.WidgetDiv.hideIfOwner(this);
     Blockly.FieldNote.superClass_.dispose.call(this);
@@ -164,7 +163,7 @@ Blockly.FieldNote.prototype.getText = function () {
 };
 
 /**
- * Set the text in this field and fire a change event.
+ * Set the text in this field and NOT fire a change event.
  * @param {*} newText New text.
  */
 Blockly.FieldNote.prototype.setText = function (newText) {
@@ -180,11 +179,6 @@ Blockly.FieldNote.prototype.setText = function (newText) {
         // No change.
         return;
     }
-    /*if (this.sourceBlock_ && Blockly.Events.isEnabled()) {
-        Blockly.Events.fire(new Blockly.Events.Change(
-            this.sourceBlock_, 'field', this.name, this.text_, newText));
-    }
-    */
     Blockly.Field.prototype.setText.call(this, newText);
 };
 
@@ -206,7 +200,7 @@ Blockly.FieldNote.prototype.getNoteName = function () {
 /**
  * Set a custom number of keys for this field.
  * @param {number} nkeys Number of keys for this block,
- *     or 0 to use default (Blockly.FieldNote.COLUMNS).
+ *     or 26 to use default.
  * @return {!Blockly.FieldNote} Returns itself (for method chaining).
  */
 Blockly.FieldNote.prototype.setKeys = function (nkeys) {
@@ -260,31 +254,34 @@ Blockly.FieldNote.prototype.getKeyStyle = function (bgColor, width, height, posi
  */
 Blockly.FieldNote.prototype.getShowNoteStyle = function () {
     // get center of the piano
-    var position = (this.nKeys_ - (5 * (this.nKeys_ / 12))) / 2 * (this.keyWidth_);
+    var position = this.whiteKeyCounter_ / 2 * (this.keyWidth_);
     position -= this.keyWidth_;
     var div = goog.dom.createDom('div',
-        { 'style': 'left: ' + position + 'px; top: ' + (this.keyHeight_ + 10) + 'px;' },
+        {
+            'style': 'left: ' + position
+            + 'px; top: ' + (this.keyHeight_ + 10)
+            + 'px;'
+        },
         this.title);
     div.className = 'blocklyNoteLabel';
     return div;
 };
 
 /**
- * get background color of the piano key
+ * get background color of the current piano key
  * @param {number} idx index of the key
  * @return {string} key background color
  */
 Blockly.FieldNote.prototype.getBgColor = function (idx) {
-    // What note is idx
+    //  What color is idx key
     if (this.isWhite(idx))
         return 'white';
     return 'black';
 };
 
 /**
- * get background color of the piano key
  * @param {number} idx index of the key
- * @return {boolean} key background color
+ * @return {boolean} true if idx key is white
  */
 Blockly.FieldNote.prototype.isWhite = function (idx) {
     var octavePosition = idx % 12;
@@ -329,7 +326,6 @@ Blockly.FieldNote.prototype.getPosition = function (idx) {
     return pos - (this.keyWidth_ / 4);
 };
 
-
 /**
  * return next note of a piano key
  * @param {string} note current note
@@ -361,8 +357,7 @@ Blockly.FieldNote.prototype.nextNote = function (note) {
 };
 
 /**
- * return next note of a piano key
- * @return {string} next note
+ * create Array of notes name and frequencies
  */
 Blockly.FieldNote.prototype.createNotesArray = function () {
     var prefix = 'Low';
@@ -392,12 +387,7 @@ Blockly.FieldNote.prototype.createNotesArray = function () {
  * @private
  */
 Blockly.FieldNote.prototype.showEditor_ = function () {
-    /*
-    if (this.sourceBlock_ && Blockly.Events.isEnabled()) {
-        Blockly.Events.fire(new Blockly.Events.Change(
-            this.sourceBlock_, 'field', this.name, this.text_, this.getText()));
-    }
-    */
+
     //change Note name to number frequency
     Blockly.FieldNumber.prototype.setText.call(this, this.getText());
     Blockly.FieldNote.superClass_.showEditor_.call(this);
@@ -430,12 +420,14 @@ Blockly.FieldNote.prototype.showEditor_ = function () {
         key.setContent(style);
         key.setId(this.noteName_[i]);
         key.render(pianoDiv);
+
         // highlight current selected key
         if (Math.abs(this.noteFreq_[i] - this.getValue()) < this.EPS)
             key.getContent().style.backgroundColor = "greenyellow";
 
         key.getContent().setAttribute("tag", this.noteFreq_[i]);
         var thisField = this;
+
         //  Listener when a new key is selected
         goog.events.listen(key.getElement(),
             goog.events.EventType.MOUSEDOWN,
@@ -445,6 +437,7 @@ Blockly.FieldNote.prototype.showEditor_ = function () {
                 thisField.setValue(val);
             }, false, key
         );
+
         //  Listener when the mouse is over a key
         goog.events.listen(key.getElement(),
             goog.events.EventType.MOUSEOVER,
@@ -452,10 +445,12 @@ Blockly.FieldNote.prototype.showEditor_ = function () {
                 showNoteLabel.getContent().innerText = this.getId();
             }, false, key
         );
+
         //  increment white key counter
         if (this.isWhite(i))
             this.whiteKeyCounter_++;
     }
+    
     var showNoteLabel = new goog.ui.ColorButton();
     var showNoteStyle = this.getShowNoteStyle();
     showNoteLabel.setContent(showNoteStyle);
