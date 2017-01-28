@@ -65,7 +65,7 @@ Blockly.FieldNote.prototype.nKeys_ = 36;
  * @type {number}
  * @private
  */
-Blockly.FieldNote.prototype.EPS = 1;
+Blockly.FieldNote.prototype.EPS_ = 1;
 
 /**
  * array of notes frequency
@@ -112,14 +112,9 @@ Blockly.FieldNote.prototype.init = function () {
     this.noteFreq_.length = 0;
     this.noteName_.length = 0;
     this.whiteKeyCounter_ = 0;
-    this.createNotesArray();
+    this.createNotesArray_();
     this.setValue(this.callValidator(this.getValue()));
 };
-
-/**
- * Mouse cursor style when over the hotspot that initiates the editor.
- */
-Blockly.FieldNote.prototype.CURSOR = 'default';
 
 /**
  * Close the note picker if this input is being deleted.
@@ -189,7 +184,7 @@ Blockly.FieldNote.prototype.setText = function (newText) {
 Blockly.FieldNote.prototype.getNoteName = function () {
     var note = this.getValue();
     for (var i = 0; i < this.nKeys_; i++) {
-        if (Math.abs(this.noteFreq_[i] - note) < this.EPS)
+        if (Math.abs(this.noteFreq_[i] - note) < this.EPS_)
             return this.noteName_[i];
     }
     if (!isNaN(note))
@@ -211,8 +206,9 @@ Blockly.FieldNote.prototype.setKeys = function (nkeys) {
 /**
  * create an Array of goo.ui.ColorButton as a piano keys
  * @return {Array.<goog.ui.colorButton>} piano keys.
+ * @private
  */
-Blockly.FieldNote.prototype.createNewPiano = function () {
+Blockly.FieldNote.prototype.createNewPiano_ = function () {
     var N = this.nKeys_;
     var piano = [];
     for (var i = 0; i < N; i++) {
@@ -230,7 +226,6 @@ Blockly.FieldNote.prototype.createNewPiano = function () {
  * @param {number} position position of the key
  * @param {number} z_index z-index of the key
  * @return {goog.dom} DOM with the new css style.
- * @private
  */
 Blockly.FieldNote.prototype.getKeyStyle = function (bgColor, width, height, position, z_index) {
     var div = goog.dom.createDom('div',
@@ -250,7 +245,6 @@ Blockly.FieldNote.prototype.getKeyStyle = function (bgColor, width, height, posi
 /**
  * create a DOM to assing a style to the note label
  * @return {goog.dom} DOM with the new css style.
- * @private
  */
 Blockly.FieldNote.prototype.getShowNoteStyle = function () {
     // get center of the piano
@@ -332,34 +326,31 @@ Blockly.FieldNote.prototype.getPosition = function (idx) {
  * @return {string} next note
  */
 Blockly.FieldNote.prototype.nextNote = function (note) {
-    if (note == 'A#')
-        return 'B';
-
-    if (note == 'B')
-        return 'C';
-
-    if (note == 'C#')
-        return 'D';
-
-    if (note == 'D#')
-        return 'E';
-
-    if (note == 'E')
-        return 'F';
-
-    if (note == 'F#')
-        return 'G';
-
-    if (note == 'G#')
-        return 'A';
+    switch (note) {
+        case 'A#':
+            return 'B';
+        case 'B':
+            return 'C';
+        case 'C#':
+            return 'D';
+        case 'D#':
+            return 'E';
+        case 'E':
+            return 'F';
+        case 'F#':
+            return 'G';
+        case 'G#':
+            return 'A';
+    }
 
     return note + '#';
 };
 
 /**
  * create Array of notes name and frequencies
+ * @private
  */
-Blockly.FieldNote.prototype.createNotesArray = function () {
+Blockly.FieldNote.prototype.createNotesArray_ = function () {
     var prefix = 'Low';
     var curNote = 'C';
     //keyNumber of low C -> https://en.wikipedia.org/wiki/Piano_key_frequencies
@@ -399,7 +390,7 @@ Blockly.FieldNote.prototype.showEditor_ = function () {
     div.appendChild(pianoDiv);
 
     // Create the piano using Closure (colorButton).
-    var piano = this.createNewPiano();
+    var piano = this.createNewPiano_();
     this.whiteKeyCounter_ = 0;
 
     // Record windowSize and scrollOffset before adding the piano.
@@ -422,7 +413,7 @@ Blockly.FieldNote.prototype.showEditor_ = function () {
         key.render(pianoDiv);
 
         // highlight current selected key
-        if (Math.abs(this.noteFreq_[i] - this.getValue()) < this.EPS)
+        if (Math.abs(this.noteFreq_[i] - this.getValue()) < this.EPS_)
             key.getContent().style.backgroundColor = "greenyellow";
 
         key.getContent().setAttribute("tag", this.noteFreq_[i]);
@@ -450,7 +441,7 @@ Blockly.FieldNote.prototype.showEditor_ = function () {
         if (this.isWhite(i))
             this.whiteKeyCounter_++;
     }
-    
+
     var showNoteLabel = new goog.ui.ColorButton();
     var showNoteStyle = this.getShowNoteStyle();
     showNoteLabel.setContent(showNoteStyle);
