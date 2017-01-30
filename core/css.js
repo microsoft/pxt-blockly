@@ -833,19 +833,21 @@ Blockly.Css.CONTENT = [
     'margin: 4px 0;',
     'padding: 0;',
   '}',
-
+  /**
+   * css for the note field editor
+   */
   '.blocklyWidgetDiv .blocklyPianoDiv {',
     'position:relative',
   '}',
-
+  // css for the piano keys
   '.blocklyWidgetDiv .blocklyNote {',
-    'border: outset;',
+    'border: solid;',
     'cursor: pointer;',
     'display: inline-block;',
     'position: absolute;',
     'top: 0px;',
   '}',
-
+  // css for note label under the piano
   '.blocklyWidgetDiv .blocklyNoteLabel {',
     'border: transparent;',
     'display: inline-block;',

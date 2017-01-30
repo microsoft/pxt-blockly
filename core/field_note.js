@@ -6,12 +6,11 @@
 
 goog.provide('Blockly.FieldNote');
 
-goog.require('Blockly.Field');
 goog.require('goog.events');
 goog.require('goog.style');
 goog.require('goog.ui.ColorButton');
 goog.require('goog.dom');
-
+goog.require('Blockly.Field');
 goog.require('Blockly.FieldNumber');
 
 /**
@@ -112,6 +111,7 @@ Blockly.FieldNote.prototype.init = function () {
     this.noteFreq_.length = 0;
     this.noteName_.length = 0;
     this.whiteKeyCounter_ = 0;
+    //  Create arrays of name/frequency of the notes
     this.createNotesArray_();
     this.setValue(this.callValidator(this.getValue()));
 };
