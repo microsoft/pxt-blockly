@@ -5,7 +5,7 @@
  * @fileoverview note-picker input field.
  */
 'use strict';
-goog.provide('Blockly.FieldNoteTS');
+goog.provide('Blockly.FieldNote');
 
 goog.require('goog.events');
 goog.require('goog.style');
@@ -13,8 +13,14 @@ goog.require('goog.ui.ColorButton');
 goog.require('goog.dom');
 goog.require('Blockly.Field');
 goog.require('Blockly.FieldNumber');
+
+enum pianoSize {
+    small = 12,
+    medium = 36,
+    large = 60
+}
 namespace Blockly {
-    export class FieldNoteTS extends FieldNumber {
+    export class FieldNote extends FieldNumber {
 
         private note_: string;
         private text_: string;
@@ -25,7 +31,7 @@ namespace Blockly {
          * @type {number}
          * @private
          */
-        private nKeys_: number = 36;
+        private nKeys_: number = pianoSize.medium;
         /**
          * Absolute error for note frequency identification (Hz)
          * @type {number}
@@ -62,13 +68,12 @@ namespace Blockly {
          * @private
          */
         private whiteKeyCounter_: number = 0;
-         /**
-         * color for the current selected key
-         * @type {number}
-         * @private
-         */
+        /**
+        * color for the current selected key
+        * @type {number}
+        * @private
+        */
         private selectedKeyColor_: string = "aqua";
-
         /**
          * Class for a note input field.
          * @param {string} note The initial note in string format.
@@ -80,7 +85,7 @@ namespace Blockly {
          */
         constructor(note: string, colour: number, opt_validator?: any) {
             super(note);
-            FieldNoteTS.superClass_.constructor.call(this, note, opt_validator);
+            FieldNote.superClass_.constructor.call(this, note, opt_validator);
             this.note_ = note;
             this.colour_ = Blockly.hueToRgb(colour);
         }
@@ -107,7 +112,7 @@ namespace Blockly {
          * Install this field on a block.
          */
         init() {
-            FieldNoteTS.superClass_.init.call(this);
+            FieldNote.superClass_.init.call(this);
             this.borderRect_.style['fillOpacity'] = 1;
             this.noteFreq_.length = 0;
             this.noteName_.length = 0;
@@ -187,17 +192,19 @@ namespace Blockly {
             return text;
         }
 
-
         /**
          * Set a custom number of keys for this field.
          * @param {number} nkeys Number of keys for this block,
          *     or 26 to use default.
          * @return {!Blockly.FieldNote} Returns itself (for method chaining).
          */
-        setNumberOfKeys(nkeys): FieldNoteTS {
-            this.nKeys_ = nkeys;
+        setNumberOfKeys(size: number): FieldNote {
+            if (size != pianoSize.small && size != pianoSize.medium && size != pianoSize.large)
+                return this;
+            this.nKeys_ = size;
             return this;
         }
+
 
         /**
          * create an Array of goo.ui.ColorButton as a piano keys
@@ -277,7 +284,7 @@ namespace Blockly {
          * @return {string} key background color
          * @private
          */
-        private getBgColor_(idx) {
+        private getBgColor_(idx: number): string {
             //  What color is idx key
             if (this.isWhite_(idx))
                 return 'white';
@@ -348,29 +355,45 @@ namespace Blockly {
         }
 
         // octave_count. 
-
-        /*
-        Pianosize = Small / Medium / Large
-        Small: One octave
-        Medium: 3 octaves. Low, Middle, high
-        Large: 5 octaves: Low (1), Deep (2), Middle (3), Tenor, High
-        3 4 5 
-        4: Low / High 2nd Octave 
-        3: Low / Mid / High and value]
-        2: Low / High and value
-        1: print the value
-        */
-
-
+        private nextNotePrefix_(prefix: string): string {
+            switch (prefix) {
+                case 'Deep':
+                    return 'Low';
+                case 'Low':
+                    return 'Middle';
+                case 'Middle':
+                    if (this.nKeys_ == pianoSize.medium)
+                        return 'High';
+                    return 'Tenor';
+                case 'Tenor':
+                    return 'High';
+            }
+        }
         /**
          * create Array of notes name and frequencies
          * @private
          */
         private createNotesArray_() {
-            let prefix: string = 'Low';
+            let prefix: string;
             let curNote: string = 'C';
-            //keyNumber of low C -> https://en.wikipedia.org/wiki/Piano_key_frequencies
-            let keyNumber: number = 28;
+
+            let keyNumber: number;
+            // set piano start key number and key prefix (keyNumbers -> https://en.wikipedia.org/wiki/Piano_key_frequencies)
+            switch (this.nKeys_) {
+                case pianoSize.small:
+                    keyNumber = 40;
+                    //  no prefix for a single octave
+                    prefix = '';
+                    break;
+                case pianoSize.medium:
+                    keyNumber = 28;
+                    prefix = 'Low';
+                    break;
+                case pianoSize.large:
+                    keyNumber = 16;
+                    prefix = 'Deep';
+                    break;
+            }
             for (let i = 0; i < this.nKeys_; i++) {
                 // set name of the i note
                 this.noteName_.push(prefix + ' ' + curNote);
@@ -380,10 +403,8 @@ namespace Blockly {
                 this.noteFreq_.push(curFreq);
                 // get name of the next note
                 curNote = this.nextNote_(curNote);
-                if (i == 11)
-                    prefix = 'Middle ';
-                if (i == 23)
-                    prefix = 'High ';
+                if ((i + 1) % 12 == 0)
+                    prefix = this.nextNotePrefix_(prefix);
                 // increment keyNumber
                 keyNumber++;
             }
@@ -395,7 +416,7 @@ namespace Blockly {
         showEditor_(): void {
             //change Note name to number frequency
             Blockly.FieldNumber.prototype.setText.call(this, this.getText());
-            FieldNoteTS.superClass_.showEditor_.call(this);
+            FieldNote.superClass_.showEditor_.call(this);
 
             //create piano div
             let div = Blockly.WidgetDiv.DIV;
@@ -463,6 +484,8 @@ namespace Blockly {
             let showNoteStyle = this.getShowNoteStyle_();
             showNoteLabel.setContent(showNoteStyle);
             showNoteLabel.render(pianoDiv);
+            let script = showNoteLabel.getContent() as HTMLElement;
+            script.innerText = '-';
         }
 
     }
