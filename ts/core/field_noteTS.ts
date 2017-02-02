@@ -13,12 +13,13 @@ goog.require('goog.ui.ColorButton');
 goog.require('goog.dom');
 goog.require('Blockly.Field');
 goog.require('Blockly.FieldNumber');
-
 namespace Blockly {
     export class FieldNoteTS extends FieldNumber {
 
         private note_: string;
         private text_: string;
+        //  colour of the block
+        private colour_: string;
         /**
          * default number of piano keys
          * @type {number}
@@ -48,19 +49,25 @@ namespace Blockly {
          * @type {number}
          * @private
          */
-        private keyWidth_: number = 20;
+        private keyWidth_: number = 18;
         /**
          * default height piano key
          * @type {number}
          * @private
          */
-        private keyHeight_: number = 80;
+        private keyHeight_: number = 70;
         /**
          * count the number of white piano key that have been rendered
          * @type {number}
          * @private
          */
         private whiteKeyCounter_: number = 0;
+         /**
+         * color for the current selected key
+         * @type {number}
+         * @private
+         */
+        private selectedKeyColor_: string = "aqua";
 
         /**
          * Class for a note input field.
@@ -71,10 +78,11 @@ namespace Blockly {
          * @extends {Blockly.FieldNumber}
          * @constructor
          */
-        constructor(note: string, opt_validator?: any) {
+        constructor(note: string, colour: number, opt_validator?: any) {
             super(note);
             FieldNoteTS.superClass_.constructor.call(this, note, opt_validator);
             this.note_ = note;
+            this.colour_ = Blockly.hueToRgb(colour);
         }
         /**
          * Ensure that only a non negative number may be entered.
@@ -130,7 +138,7 @@ namespace Blockly {
                     this.sourceBlock_, 'field', this.name, String(this.note_), String(note)));
             }
             this.note_ = note;
-            this.setText(this.getNoteName());
+            this.setText(this.getNoteName_());
         }
 
         /**
@@ -153,7 +161,7 @@ namespace Blockly {
             }
             newText = String(newText);
             if (!isNaN(Number(newText)))
-                newText = this.getNoteName();
+                newText = this.getNoteName_();
 
             if (newText === this.text_) {
                 // No change.
@@ -165,8 +173,9 @@ namespace Blockly {
         /**
         * get the note name to be displayed in the field
         * @return {string} note name
+        * @private
         */
-        private getNoteName(): string {
+        private getNoteName_(): string {
             let note: string = this.getValue();
             let text: string = note.toString();
             for (let i: number = 0; i < this.nKeys_; i++) {
@@ -185,7 +194,7 @@ namespace Blockly {
          *     or 26 to use default.
          * @return {!Blockly.FieldNote} Returns itself (for method chaining).
          */
-        setKeys(nkeys): FieldNoteTS {
+        setNumberOfKeys(nkeys): FieldNoteTS {
             this.nKeys_ = nkeys;
             return this;
         }
@@ -195,7 +204,7 @@ namespace Blockly {
          * @return {Array.<goog.ui.colorButton>} piano keys.
          * @private
          */
-        createNewPiano_(): Array<goog.ui.ColorButton> {
+        private createNewPiano_(): Array<goog.ui.ColorButton> {
             let N: number = this.nKeys_;
             let piano: Array<goog.ui.ColorButton> = [];
             for (let i = 0; i < N; i++) {
@@ -211,9 +220,11 @@ namespace Blockly {
          * @param {number} heigth heigth of the key
          * @param {number} position position of the key
          * @param {number} z_index z-index of the key
+         * @param {string} keyBorderColour 
          * @return {goog.dom} DOM with the new css style.
+         * @private
          */
-        getKeyStyle(bgColor, width, height, position, z_index) {
+        private getKeyStyle_(bgColor: string, width: number, height: number, position: number, z_index: number, keyBorderColour: string) {
             let div = goog.dom.createDom('div',
                 {
                     'style': 'background-color: ' + bgColor
@@ -221,6 +232,7 @@ namespace Blockly {
                     + 'px; height: ' + height
                     + 'px; left: ' + position
                     + 'px; z-index: ' + z_index
+                    + ';   border-color: ' + keyBorderColour
                     + ';'
                 });
             div.className = 'blocklyNote';
@@ -230,16 +242,17 @@ namespace Blockly {
         /**
          * create a DOM to assing a style to the note label
          * @return {goog.dom} DOM with the new css style.
+         * @private 
          */
-        getShowNoteStyle() {
+        private getShowNoteStyle_() {
             // get center of the piano
-            let position = this.whiteKeyCounter_ / 2 * (this.keyWidth_);
-            position -= this.keyWidth_;
             let div = goog.dom.createDom('div',
                 {
-                    'style': 'left: ' + position
-                    + 'px; top: ' + (this.keyHeight_ + 10)
-                    + 'px;'
+                    'style': 'top: ' + (this.keyHeight_)
+                    + 'px; background-color: ' + this.colour_
+                    + '; width: ' + (this.keyWidth_ * this.whiteKeyCounter_)
+                    + 'px; border-color: ' + this.colour_
+                    + ';'
                 });
             div.className = 'blocklyNoteLabel';
             return div;
@@ -248,8 +261,9 @@ namespace Blockly {
         /**
          * @param {number} idx index of the key
          * @return {boolean} true if idx key is white
+         * @private
          */
-        isWhite(idx: number): boolean {
+        private isWhite_(idx: number): boolean {
             let octavePosition: number = idx % 12;
             if (octavePosition == 1 || octavePosition == 3 || octavePosition == 6 ||
                 octavePosition == 8 || octavePosition == 10)
@@ -261,10 +275,11 @@ namespace Blockly {
          * get background color of the current piano key
          * @param {number} idx index of the key
          * @return {string} key background color
+         * @private
          */
-        getBgColor(idx) {
+        private getBgColor_(idx) {
             //  What color is idx key
-            if (this.isWhite(idx))
+            if (this.isWhite_(idx))
                 return 'white';
             return 'black';
         }
@@ -273,9 +288,10 @@ namespace Blockly {
          * get width of the piano key
          * @param {number} idx index of the key
          * @return {number} width of the key
+         * @private
          */
-        getWidth(idx: number): number {
-            if (this.isWhite(idx))
+        private getWidth_(idx: number): number {
+            if (this.isWhite_(idx))
                 return this.keyWidth_;
             return this.keyWidth_ / 2;
         }
@@ -284,9 +300,10 @@ namespace Blockly {
          * get height of the piano key
          * @param {number} idx index of the key
          * @return {number} height of the key
+         * @private
          */
-        getHeight(idx: number): number {
-            if (this.isWhite(idx))
+        private getHeight_(idx: number): number {
+            if (this.isWhite_(idx))
                 return this.keyHeight_;
             return this.keyHeight_ / 2;
         }
@@ -296,9 +313,9 @@ namespace Blockly {
          * @param {number} idx index of the key
          * @return {number} position of the key
          */
-        getPosition(idx: number): number {
+        private getPosition_(idx: number): number {
             let pos: number = (this.whiteKeyCounter_ * this.keyWidth_);
-            if (this.isWhite(idx))
+            if (this.isWhite_(idx))
                 return pos;
             return pos - (this.keyWidth_ / 4);
         }
@@ -307,8 +324,9 @@ namespace Blockly {
          * return next note of a piano key
          * @param {string} note current note
          * @return {string} next note
+         * @private
          */
-        nextNote(note: string): string {
+        private nextNote_(note: string): string {
             switch (note) {
                 case 'A#':
                     return 'B';
@@ -329,11 +347,26 @@ namespace Blockly {
             return note + '#';
         }
 
+        // octave_count. 
+
+        /*
+        Pianosize = Small / Medium / Large
+        Small: One octave
+        Medium: 3 octaves. Low, Middle, high
+        Large: 5 octaves: Low (1), Deep (2), Middle (3), Tenor, High
+        3 4 5 
+        4: Low / High 2nd Octave 
+        3: Low / Mid / High and value]
+        2: Low / High and value
+        1: print the value
+        */
+
+
         /**
          * create Array of notes name and frequencies
          * @private
          */
-        createNotesArray_() {
+        private createNotesArray_() {
             let prefix: string = 'Low';
             let curNote: string = 'C';
             //keyNumber of low C -> https://en.wikipedia.org/wiki/Piano_key_frequencies
@@ -346,7 +379,7 @@ namespace Blockly {
                 // set frequency of the i note
                 this.noteFreq_.push(curFreq);
                 // get name of the next note
-                curNote = this.nextNote(curNote);
+                curNote = this.nextNote_(curNote);
                 if (i == 11)
                     prefix = 'Middle ';
                 if (i == 23)
@@ -358,7 +391,6 @@ namespace Blockly {
 
         /**
          * Create a piano under the note field.
-         * @private
          */
         showEditor_(): void {
             //change Note name to number frequency
@@ -385,11 +417,11 @@ namespace Blockly {
             // render piano keys
             for (let i = 0; i < this.nKeys_; i++) {
                 let key = piano[i];
-                let bgColor = this.getBgColor(i);
-                let width = this.getWidth(i);
-                let height = this.getHeight(i);
-                let position = this.getPosition(i);
-                let style = this.getKeyStyle(bgColor, width, height, position, this.isWhite(i) ? 0 : 1);
+                let bgColor = this.getBgColor_(i);
+                let width = this.getWidth_(i);
+                let height = this.getHeight_(i);
+                let position = this.getPosition_(i);
+                let style = this.getKeyStyle_(bgColor, width, height, position, this.isWhite_(i) ? 1 : 2, this.isWhite_(i) ? this.colour_ : "black");
                 key.setContent(style);
                 key.setId(this.noteName_[i]);
                 key.render(pianoDiv);
@@ -399,7 +431,7 @@ namespace Blockly {
 
                 // highlight current selected key
                 if (Math.abs(this.noteFreq_[i] - Number(this.getValue())) < this.eps_)
-                    script.style.backgroundColor = "red";
+                    script.style.backgroundColor = this.selectedKeyColor_;
 
                 let thisField = this;
 
@@ -423,12 +455,12 @@ namespace Blockly {
                 );
 
                 //  increment white key counter
-                if (this.isWhite(i))
+                if (this.isWhite_(i))
                     this.whiteKeyCounter_++;
             }
 
             let showNoteLabel = new goog.ui.ColorButton();
-            let showNoteStyle = this.getShowNoteStyle();
+            let showNoteStyle = this.getShowNoteStyle_();
             showNoteLabel.setContent(showNoteStyle);
             showNoteLabel.render(pianoDiv);
         }

@@ -833,28 +833,34 @@ Blockly.Css.CONTENT = [
     'margin: 4px 0;',
     'padding: 0;',
   '}',
+
+  /*
+   * TODO: Add Microsoft License
+   *
+   * Use of this source code is governed by the MIT License.
+   */
+
   /**
-   * css for the note field editor
+   * Styling for the note field editor
    */
   '.blocklyWidgetDiv .blocklyPianoDiv {',
     'position:relative',
   '}',
-  // css for the piano keys
+
   '.blocklyWidgetDiv .blocklyNote {',
-    'border: solid;',
+    'border: solid 0.5px;',
     'cursor: pointer;',
     'display: inline-block;',
     'position: absolute;',
     'top: 0px;',
   '}',
-  // css for note label under the piano
+
   '.blocklyWidgetDiv .blocklyNoteLabel {',
-    'border: transparent;',
+    'border: solid 0.5px;',
+    'color: white;',
     'display: inline-block;',
-    'height: 40px;',
     'position: absolute;',
     'text-align: center;', 
-    'width: 80px;',
   '}',
   
   '.blocklyWidgetDiv .blocklyNote:hover {',
