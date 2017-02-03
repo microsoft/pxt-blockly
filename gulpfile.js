@@ -6,22 +6,26 @@
 var gulp = require('gulp');
 var tsb = require('gulp-tsb');
 var merge = require('merge-stream');
+var path = require('path');
+var rimraf = require('rimraf');
 
-var compilation = tsb.create(assign({ verbose: true }, require('./tsconfig.json').compilerOptions));
+var tsconfig = require(path.join(__dirname, 'ts', 'tsconfig.json'));
 
-var tsSources = require('./tsconfig.json').include.concat(require('./tsconfig.json').files);
+var compilation = tsb.create(Object.assign({ verbose: true }, tsconfig.compilerOptions));
 
 function compileTask() {
 	return merge(
 		gulp.src('lib/*.js', { base: '.' }),
-		gulp.src(tsSources).pipe(compilation())
+		gulp.src("ts/**/*.ts").pipe(compilation())
 	)
-	.pipe(gulp.dest('out'));
+	.pipe(gulp.dest('./core/'));
 }
+// Default task
+gulp.task("default", ["compile"]);
 
 gulp.task('clean-out', function(cb) { rimraf('out', { maxBusyTries: 1 }, cb); });
 gulp.task('compile', ['clean-out'], compileTask);
 gulp.task('compile-without-clean', compileTask);
 gulp.task('watch', ['compile'], function() {
-	gulp.watch(tsSources, ['compile-without-clean']);
+	gulp.watch('ts/**/*.ts', ['compile-without-clean']);
 });
