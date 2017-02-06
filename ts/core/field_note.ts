@@ -20,6 +20,75 @@ enum pianoSize {
     large = 60
 }
 namespace Blockly {
+
+    export namespace AudioContextManager {
+        let _frequency = 0;
+        let _context: any; // AudioContext
+        let _vco: any; // OscillatorNode;
+        let _vca: any; // GainNode;
+
+        let _mute = false; //mute audio
+
+        function context(): any {
+            if (!_context) _context = freshContext();
+            return _context;
+        }
+
+        function freshContext(): any {
+            (<any>window).AudioContext = (<any>window).AudioContext || (<any>window).webkitAudioContext;
+            if ((<any>window).AudioContext) {
+                try {
+                    // this call my crash.
+                    // SyntaxError: audio resources unavailable for AudioContext construction
+                    return new (<any>window).AudioContext();
+                } catch (e) { }
+            }
+            return undefined;
+        }
+
+        export function mute(mute: boolean) {
+            _mute = mute;
+            stop();
+        }
+
+        export function stop() {
+            if (_vca) _vca.gain.value = 0;
+            _frequency = 0;
+        }
+
+        export function frequency(): number {
+            return _frequency;
+        }
+
+        export function tone(frequency: number, gain: number) {
+            if (_mute) return;
+            if (frequency <= 0) return;
+            _frequency = frequency;
+
+            let ctx = context();
+            if (!ctx) return;
+
+            gain = Math.max(0, Math.min(1, gain));
+            if (!_vco) {
+                try {
+                    _vco = ctx.createOscillator();
+                    _vca = ctx.createGain();
+                    _vco.connect(_vca);
+                    _vca.connect(ctx.destination);
+                    _vca.gain.value = gain;
+                    _vco.start(0);
+                } catch (e) {
+                    _vco = undefined;
+                    _vca = undefined;
+                    return;
+                }
+            }
+
+            _vco.frequency.value = frequency;
+            _vca.gain.value = gain;
+        }
+    }
+
     export class FieldNote extends FieldNumber {
 
         private note_: string;
@@ -74,6 +143,12 @@ namespace Blockly {
         * @private
         */
         private selectedKeyColor_: string = "aqua";
+        /**
+        * count the number of keys that have sounded in the piano editor
+        * @type {number}
+        * @private
+        */
+        private soundingKeys_: number = 0;
         /**
          * Class for a note input field.
          * @param {string} note The initial note in string format.
@@ -420,6 +495,8 @@ namespace Blockly {
             //change Note name to number frequency
             Blockly.FieldNumber.prototype.setText.call(this, this.getText());
             FieldNote.superClass_.showEditor_.call(this, true);
+            // initializate the number of keys that have sounded when the editor is open
+            this.soundingKeys_ = 0;
 
             // Check if Mobile.. 
 
@@ -489,6 +566,7 @@ namespace Blockly {
                     goog.events.EventType.MOUSEDOWN,
                     function () {
                         Blockly.WidgetDiv.hide();
+                        AudioContextManager.stop();
                         let val = this.getContent().getAttribute("tag");
                         thisField.setValue(val);
                     }, false, key
@@ -500,6 +578,23 @@ namespace Blockly {
                     function () {
                         let script = showNoteLabel.getContent() as HTMLElement;
                         script.innerText = this.getId();
+                        // current sound counter
+                        let cnt = ++thisField.soundingKeys_;
+                        let freq = this.getContent().getAttribute('tag');
+                        AudioContextManager.tone(freq, 1);
+                        setTimeout(function () {
+                            // compare current sound counter with listener sound counter (avoid async problems)
+                            if (thisField.soundingKeys_ == cnt)
+                                AudioContextManager.stop();
+                        }, 500);
+                    }, false, key
+                );
+
+                //  Listener when the mouse leave a key
+                goog.events.listen(key.getElement(),
+                    goog.events.EventType.MOUSELEAVE,
+                    function () {
+                        AudioContextManager.stop();
                     }, false, key
                 );
 
@@ -516,3 +611,5 @@ namespace Blockly {
         }
     }
 }
+
+
