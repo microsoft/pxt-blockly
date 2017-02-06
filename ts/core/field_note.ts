@@ -70,7 +70,7 @@ namespace Blockly {
         private whiteKeyCounter_: number = 0;
         /**
         * color for the current selected key
-        * @type {number}
+        * @type {string}
         * @private
         */
         private selectedKeyColor_: string = "aqua";
@@ -225,19 +225,21 @@ namespace Blockly {
          * @param {string} bgColor color of the key background
          * @param {number} width width of the key
          * @param {number} heigth heigth of the key
-         * @param {number} position position of the key
+         * @param {number} leftPosition position of the key
+         * @param {number} topPosition position of the key
          * @param {number} z_index z-index of the key
          * @param {string} keyBorderColour 
          * @return {goog.dom} DOM with the new css style.
          * @private
          */
-        private getKeyStyle_(bgColor: string, width: number, height: number, position: number, z_index: number, keyBorderColour: string) {
+        private getKeyStyle_(bgColor: string, width: number, height: number, leftPosition: number, topPosition: number, z_index: number, keyBorderColour: string) {
             let div = goog.dom.createDom('div',
                 {
                     'style': 'background-color: ' + bgColor
                     + '; width: ' + width
                     + 'px; height: ' + height
-                    + 'px; left: ' + position
+                    + 'px; left: ' + leftPosition
+                    + 'px; top: ' + topPosition
                     + 'px; z-index: ' + z_index
                     + ';   border-color: ' + keyBorderColour
                     + ';'
@@ -251,13 +253,14 @@ namespace Blockly {
          * @return {goog.dom} DOM with the new css style.
          * @private 
          */
-        private getShowNoteStyle_() {
+        private getShowNoteStyle_(topPosition: number, leftPosition: number) {
             // get center of the piano
             let div = goog.dom.createDom('div',
                 {
-                    'style': 'top: ' + (this.keyHeight_)
+                    'style': 'top: ' + ((this.keyHeight_) + topPosition)
+                    + 'px; left: ' + leftPosition
                     + 'px; background-color: ' + this.colour_
-                    + '; width: ' + (this.keyWidth_ * this.whiteKeyCounter_)
+                    + '; width: ' + (this.keyWidth_ * (this.nKeys_ - (this.nKeys_ / 12 * 5)))
                     + 'px; border-color: ' + this.colour_
                     + ';'
                 });
@@ -416,7 +419,10 @@ namespace Blockly {
         showEditor_(): void {
             //change Note name to number frequency
             Blockly.FieldNumber.prototype.setText.call(this, this.getText());
-            FieldNote.superClass_.showEditor_.call(this);
+            FieldNote.superClass_.showEditor_.call(this, true);
+
+            // Check if Mobile.. 
+
 
             //create piano div
             let div = Blockly.WidgetDiv.DIV;
@@ -433,7 +439,30 @@ namespace Blockly {
             let scrollOffset = goog.style.getViewportPageOffset(document);
             let xy = this.getAbsoluteXY_();
             let borderBBox = this.getScaledBBox_();
-            div = Blockly.WidgetDiv.DIV;
+            let pianoHeight = this.keyHeight_ + div.scrollHeight + 5;
+            let pianoWidth = this.keyWidth_ * (this.nKeys_ - (this.nKeys_ / 12 * 5));
+            let topPosition: number = 0, leftPosition: number = 0;
+
+            // Flip the piano vertically if off the bottom.
+            if (xy.y + pianoHeight + borderBBox.height >=
+                windowSize.height + scrollOffset.y) {
+                topPosition = -(pianoHeight + borderBBox.height);
+            }
+            if (this.sourceBlock_.RTL) {
+                xy.x += borderBBox.width;
+                xy.x -= pianoWidth;
+                leftPosition += borderBBox.width;
+                leftPosition -= pianoWidth;
+                // Don't go offscreen left.
+                if (xy.x < scrollOffset.x) {
+                    leftPosition = scrollOffset.x - xy.x;
+                }
+            } else {
+                // Don't go offscreen right.
+                if (xy.x > windowSize.width + scrollOffset.x - pianoWidth) {
+                    leftPosition -= xy.x - (windowSize.width + scrollOffset.x - pianoWidth) + 5;
+                }
+            }
 
             // render piano keys
             for (let i = 0; i < this.nKeys_; i++) {
@@ -442,11 +471,10 @@ namespace Blockly {
                 let width = this.getWidth_(i);
                 let height = this.getHeight_(i);
                 let position = this.getPosition_(i);
-                let style = this.getKeyStyle_(bgColor, width, height, position, this.isWhite_(i) ? 1 : 2, this.isWhite_(i) ? this.colour_ : "black");
+                let style = this.getKeyStyle_(bgColor, width, height, position + leftPosition, topPosition, this.isWhite_(i) ? 1 : 2, this.isWhite_(i) ? this.colour_ : "black");
                 key.setContent(style);
                 key.setId(this.noteName_[i]);
                 key.render(pianoDiv);
-
                 let script = key.getContent() as HTMLElement;
                 script.setAttribute("tag", this.noteFreq_[i].toString());
 
@@ -479,14 +507,12 @@ namespace Blockly {
                 if (this.isWhite_(i))
                     this.whiteKeyCounter_++;
             }
-
             let showNoteLabel = new goog.ui.ColorButton();
-            let showNoteStyle = this.getShowNoteStyle_();
+            let showNoteStyle = this.getShowNoteStyle_(topPosition, leftPosition);
             showNoteLabel.setContent(showNoteStyle);
             showNoteLabel.render(pianoDiv);
-            let script = showNoteLabel.getContent() as HTMLElement;
-            script.innerText = '-';
+            let scriptLabel = showNoteLabel.getContent() as HTMLElement;
+            scriptLabel.innerText = '-';
         }
-
     }
 }

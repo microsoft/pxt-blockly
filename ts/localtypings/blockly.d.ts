@@ -30,7 +30,9 @@ declare namespace goog {
             static magnitude(a: Coordinate): number;
         }
         class Size {
-
+            width: number;
+            height: number
+            constructor(width: number, height: number);
         }
     }
 
@@ -232,7 +234,7 @@ declare namespace Blockly {
         updateEditable(): void;
         dispose(): void;
         showEditor_(): void;
-        getAbsoluteXY_(): Element;
+        getAbsoluteXY_(): goog.math.Coordinate;
         getScaledBBox_(): goog.math.Size;
     }
 
@@ -269,7 +271,7 @@ declare namespace Blockly {
         outputConnection: Connection;
         previousConnection: Connection;
         workspace: Workspace;
-
+        RTL: boolean;
         // private
         xy_: goog.math.Coordinate;
 
@@ -615,6 +617,8 @@ declare namespace Blockly {
         let DIV: Element;
         function hideIfOwner(oldOwner: any): void;
         function hide(): void;
+        function position(anchorX: number, anchorY: number, windowSize: goog.math.Size,
+            scrollOffset: goog.math.Coordinate, rtl: boolean): void;
     }
 
     var Tooltip: any;
