@@ -41,6 +41,7 @@ declare namespace goog {
             setContent(content: string | Node | Array<Node> | null): void;
             getContent(): string | Node | Array<Node> | null;
             getContentElement(): Element;
+            setVisible(visible: boolean, opt_force?: boolean | undefined): boolean;
         }
         class Component {
             getElement(): Element | null;

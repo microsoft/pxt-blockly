@@ -120,6 +120,18 @@ namespace Blockly {
          */
         private noteName_: Array<string> = [];
         /**
+         * width of piano
+         * @type {number}
+         * @private
+         */
+        private pianoWidth_: number;
+        /**
+         * height of piano
+         * @type {number}
+         * @private
+         */
+        private pianoHeight_: number;
+        /**
          * default width piano key
          * @type {number}
          * @private
@@ -325,23 +337,48 @@ namespace Blockly {
 
         /**
          * create a DOM to assing a style to the note label
+         * @param {number} topPosition top position of the label
+         * @param {number} leftPosition
+         * @param {pagination} pagination
          * @return {goog.dom} DOM with the new css style.
          * @private 
          */
-        private getShowNoteStyle_(topPosition: number, leftPosition: number) {
-            // get center of the piano
+        private getShowNoteStyle_(topPosition: number, leftPosition: number, pagination: boolean) {
             let div = goog.dom.createDom('div',
                 {
                     'style': 'top: ' + ((this.keyHeight_) + topPosition)
                     + 'px; left: ' + leftPosition
                     + 'px; background-color: ' + this.colour_
-                    + '; width: ' + (this.keyWidth_ * (this.nKeys_ - (this.nKeys_ / 12 * 5)))
+                    + '; width: ' + this.pianoWidth_
                     + 'px; border-color: ' + this.colour_
                     + ';'
                 });
             div.className = 'blocklyNoteLabel';
             return div;
         };
+
+        /**
+         * create a DOM to assing a style to the previous and next buttons
+         * @param {number} topPosition top position of the label
+         * @param {number} leftPosition
+         * @param {boolean} isPrev true if is previous button false otherwise
+         * @return {goog.dom} DOM with the new css style.
+         * @private 
+         */
+        private getNextPrevStyle_(topPosition: number, leftPosition: number, isPrev: boolean) {
+            //  x position of the button
+            let position = (isPrev ? -20 : this.pianoWidth_ + 0.5);
+            let div = goog.dom.createDom('div',
+                {
+                    'style': 'top: ' + ((this.pianoHeight_ / 2) + topPosition)
+                    + 'px; left: ' + (position + leftPosition)
+                    + 'px; color: ' + this.colour_
+                    + ';'
+                });
+            div.className = 'blocklyNotePrevNext';
+            return div;
+        };
+
 
         /**
          * @param {number} idx index of the key
@@ -375,7 +412,7 @@ namespace Blockly {
          * @return {number} width of the key
          * @private
          */
-        private getWidth_(idx: number): number {
+        private getKeyWidth_(idx: number): number {
             if (this.isWhite_(idx))
                 return this.keyWidth_;
             return this.keyWidth_ / 2;
@@ -387,7 +424,7 @@ namespace Blockly {
          * @return {number} height of the key
          * @private
          */
-        private getHeight_(idx: number): number {
+        private getKeyHeight_(idx: number): number {
             if (this.isWhite_(idx))
                 return this.keyHeight_;
             return this.keyHeight_ / 2;
@@ -432,7 +469,12 @@ namespace Blockly {
             return note + '#';
         }
 
-        // octave_count. 
+        /**
+         * return next note prefix
+         * @param {string} note current note prefix
+         * @return {string} next note prefix
+         * @private
+         */
         private nextNotePrefix_(prefix: string): string {
             switch (prefix) {
                 case 'Deep':
@@ -488,6 +530,15 @@ namespace Blockly {
             }
         }
 
+        /** get width of blockly editor space
+        * @return { number } width of the blockly editor workspace
+        * @private
+        */
+        getEditorWidth_(): number {
+            let editorWidth = document.getElementById('blocklyDiv').offsetWidth;
+            let toolBoxWidth = (<HTMLElement>document.getElementsByClassName('blocklyToolboxDiv')[0]).offsetWidth;
+            return editorWidth - toolBoxWidth;
+        }
         /**
          * Create a piano under the note field.
          */
@@ -497,8 +548,19 @@ namespace Blockly {
             FieldNote.superClass_.showEditor_.call(this, true);
             // initializate the number of keys that have sounded when the editor is open
             this.soundingKeys_ = 0;
+            this.pianoWidth_ = this.keyWidth_ * (this.nKeys_ - (this.nKeys_ / 12 * 5));
+            this.pianoHeight_ = this.keyHeight_;
+            let pagination: boolean = false;
+            let editorWidth = this.getEditorWidth_();
+            let thisField = this;
 
             // Check if Mobile.. 
+            // if(mobile) pagination -> true
+
+            if (editorWidth < this.pianoWidth_) {
+                pagination = true;
+                this.pianoWidth_ = 7 * this.keyWidth_;
+            }
 
 
             //create piano div
@@ -514,10 +576,10 @@ namespace Blockly {
             // Record windowSize and scrollOffset before adding the piano.
             let windowSize = goog.dom.getViewportSize();
             let scrollOffset = goog.style.getViewportPageOffset(document);
+            let pianoHeight = this.keyHeight_ + div.scrollHeight + 5;
             let xy = this.getAbsoluteXY_();
             let borderBBox = this.getScaledBBox_();
-            let pianoHeight = this.keyHeight_ + div.scrollHeight + 5;
-            let pianoWidth = this.keyWidth_ * (this.nKeys_ - (this.nKeys_ / 12 * 5));
+
             let topPosition: number = 0, leftPosition: number = 0;
 
             // Flip the piano vertically if off the bottom.
@@ -527,27 +589,33 @@ namespace Blockly {
             }
             if (this.sourceBlock_.RTL) {
                 xy.x += borderBBox.width;
-                xy.x -= pianoWidth;
+                xy.x -= this.pianoWidth_;
                 leftPosition += borderBBox.width;
-                leftPosition -= pianoWidth;
+                leftPosition -= this.pianoWidth_;
                 // Don't go offscreen left.
                 if (xy.x < scrollOffset.x) {
                     leftPosition = scrollOffset.x - xy.x;
                 }
             } else {
                 // Don't go offscreen right.
-                if (xy.x > windowSize.width + scrollOffset.x - pianoWidth) {
-                    leftPosition -= xy.x - (windowSize.width + scrollOffset.x - pianoWidth) + 5;
+                if (xy.x > windowSize.width + scrollOffset.x - this.pianoWidth_) {
+                    leftPosition -= xy.x - (windowSize.width + scrollOffset.x - this.pianoWidth_) + 30;
                 }
             }
 
+            let octaveCounter = 0;
             // render piano keys
             for (let i = 0; i < this.nKeys_; i++) {
+                if (i > 0 && i % 12 == 0)
+                    octaveCounter++;
                 let key = piano[i];
                 let bgColor = this.getBgColor_(i);
-                let width = this.getWidth_(i);
-                let height = this.getHeight_(i);
+                let width = this.getKeyWidth_(i);
+                let height = this.getKeyHeight_(i);
                 let position = this.getPosition_(i);
+                if (pagination && i >= 12) // modify original position
+                    position -= 7 * octaveCounter * this.keyWidth_;
+
                 let style = this.getKeyStyle_(bgColor, width, height, position + leftPosition, topPosition, this.isWhite_(i) ? 1 : 2, this.isWhite_(i) ? this.colour_ : "black");
                 key.setContent(style);
                 key.setId(this.noteName_[i]);
@@ -559,16 +627,20 @@ namespace Blockly {
                 if (Math.abs(this.noteFreq_[i] - Number(this.getValue())) < this.eps_)
                     script.style.backgroundColor = this.selectedKeyColor_;
 
-                let thisField = this;
-
                 //  Listener when a new key is selected
                 goog.events.listen(key.getElement(),
                     goog.events.EventType.MOUSEDOWN,
                     function () {
                         Blockly.WidgetDiv.hide();
-                        AudioContextManager.stop();
-                        let val = this.getContent().getAttribute("tag");
-                        thisField.setValue(val);
+                        let cnt = ++thisField.soundingKeys_;
+                        let freq = this.getContent().getAttribute("tag");
+                        thisField.setValue(freq);
+                        AudioContextManager.tone(freq, 1);
+                        setTimeout(function () {
+                            // compare current sound counter with listener sound counter (avoid async problems)
+                            if (thisField.soundingKeys_ == cnt)
+                                AudioContextManager.stop();
+                        }, 500);
                     }, false, key
                 );
 
@@ -601,13 +673,81 @@ namespace Blockly {
                 //  increment white key counter
                 if (this.isWhite_(i))
                     this.whiteKeyCounter_++;
+
+                if (pagination && i > 11) // set octaves invisible
+                    key.setVisible(false);
             }
+            //  render note label
             let showNoteLabel = new goog.ui.ColorButton();
-            let showNoteStyle = this.getShowNoteStyle_(topPosition, leftPosition);
+            let showNoteStyle = this.getShowNoteStyle_(topPosition, leftPosition, true);
             showNoteLabel.setContent(showNoteStyle);
             showNoteLabel.render(pianoDiv);
             let scriptLabel = showNoteLabel.getContent() as HTMLElement;
             scriptLabel.innerText = '-';
+
+            // create next and previous buttons
+            let prevButton = new goog.ui.ColorButton();
+            let nextButton = new goog.ui.ColorButton();
+            let prevButtonStyle = this.getNextPrevStyle_(topPosition, leftPosition, true);
+            let nextButtonStyle = this.getNextPrevStyle_(topPosition, leftPosition, false);
+
+            if (pagination) {
+                //  render previous and next buttons
+                let script: HTMLElement;
+                prevButton.setContent(prevButtonStyle);
+                prevButton.render(pianoDiv);
+                script = prevButton.getContent() as HTMLElement;
+                script.innerText = '<';
+                prevButton.setVisible(false);
+                nextButton.setContent(nextButtonStyle);
+                nextButton.render(pianoDiv);
+                script = nextButton.getContent() as HTMLElement;
+                script.innerText = '>';
+                scriptLabel.innerText = 'Octave # 1';
+
+                let Npages = this.nKeys_ / 12;
+                let currentPage = 0;
+
+                goog.events.listen(prevButton.getElement(),
+                    goog.events.EventType.MOUSEDOWN,
+                    function () {
+                        let curFirstKey = currentPage * 12;
+                        let newFirstKey = currentPage * 12 - 12;
+                        //  hide current octave
+                        for (let i = 0; i < 12; i++)
+                            piano[i + curFirstKey].setVisible(false);
+                        //  show new octave
+                        for (let i = 0; i < 12; i++)
+                            piano[i + newFirstKey].setVisible(true);
+
+                        currentPage--;
+                        if (currentPage == 0)
+                            this.setVisible(false);
+                        nextButton.setVisible(true);
+                        scriptLabel.innerText = 'Octave # ' + (currentPage + 1);
+                    }, false, prevButton
+                );
+
+                goog.events.listen(nextButton.getElement(),
+                    goog.events.EventType.MOUSEDOWN,
+                    function () {
+                        let curFirstKey = currentPage * 12;
+                        let newFirstKey = currentPage * 12 + 12;
+                        //  hide current octave
+                        for (let i = 0; i < 12; i++)
+                            piano[i + curFirstKey].setVisible(false);
+                        for (let i = 0; i < 12; i++)
+                            piano[i + newFirstKey].setVisible(true);
+                        currentPage++;
+
+                        //  show new octave
+                        if (currentPage == Npages - 1)
+                            this.setVisible(false);
+                        prevButton.setVisible(true);
+                        scriptLabel.innerText = 'Octave # ' + (currentPage + 1);
+                    }, false, nextButton
+                );
+            }
         }
     }
 }

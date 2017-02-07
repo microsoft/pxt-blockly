@@ -855,6 +855,10 @@ Blockly.Css.CONTENT = [
     'top: 0px;',
   '}',
 
+  '.blocklyWidgetDiv .blocklyNote:hover {',
+    'background-color: yellow !important',
+  '}',
+
   '.blocklyWidgetDiv .blocklyNoteLabel {',
     'border: solid 0.5px;',
     'color: white;',
@@ -862,10 +866,19 @@ Blockly.Css.CONTENT = [
     'position: absolute;',
     'text-align: center;', 
   '}',
-  
-  '.blocklyWidgetDiv .blocklyNote:hover {',
-    'background-color: yellow !important',
+
+  '.blocklyWidgetDiv .blocklyNotePrevNext {',
+    'border: transparent;',
+    'cursor: pointer;',
+    'display: inline-block;',
+    'font-weight: bold;',
+    'font-size: 18px;',
+    'position: absolute;',
+    'text-align: center;',
+    'width: 20px;', 
   '}',
+  
+  
 
   ''
 ];
