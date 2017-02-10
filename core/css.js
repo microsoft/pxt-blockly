@@ -844,7 +844,7 @@ Blockly.Css.CONTENT = [
    * Styling for the note field editor
    */
   '.blocklyWidgetDiv .blocklyPianoDiv {',
-    'position:relative',
+    'position: relative',
   '}',
 
   '.blocklyWidgetDiv .blocklyNote {',
@@ -868,17 +868,14 @@ Blockly.Css.CONTENT = [
   '}',
 
   '.blocklyWidgetDiv .blocklyNotePrevNext {',
-    'border: transparent;',
+    'border: solid 0.5px;',
     'cursor: pointer;',
+    'color: white;',
     'display: inline-block;',
     'font-weight: bold;',
-    'font-size: 18px;',
     'position: absolute;',
     'text-align: center;',
-    'width: 20px;', 
   '}',
-  
-  
-
+   
   ''
 ];
