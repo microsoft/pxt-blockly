@@ -112,7 +112,7 @@ var Blockly;
              * @type {number}
              * @private
              */
-            _this.nKeys_ = pianoSize.large;
+            _this.nKeys_ = pianoSize.medium;
             /**
              * Absolute error for note frequency identification (Hz)
              * @type {number}
@@ -136,13 +136,13 @@ var Blockly;
              * @type {number}
              * @private
              */
-            _this.keyWidth_ = 18;
+            _this.keyWidth_ = 22;
             /**
              * default height piano key
              * @type {number}
              * @private
              */
-            _this.keyHeight_ = 70;
+            _this.keyHeight_ = 90;
             /**
              * count the number of white piano key that have been rendered
              * @type {number}
@@ -294,10 +294,11 @@ var Blockly;
          * @param {number} topPosition position of the key
          * @param {number} z_index z-index of the key
          * @param {string} keyBorderColour
+         * @param {boolean} isMobile
          * @return {goog.dom} DOM with the new css style.
          * @private
          */
-        FieldNote.prototype.getKeyStyle_ = function (bgColor, width, height, leftPosition, topPosition, z_index, keyBorderColour) {
+        FieldNote.prototype.getKeyStyle_ = function (bgColor, width, height, leftPosition, topPosition, z_index, keyBorderColour, isMobile) {
             var div = goog.dom.createDom('div', {
                 'style': 'background-color: ' + bgColor
                     + '; width: ' + width
@@ -320,13 +321,16 @@ var Blockly;
          * @private
          */
         FieldNote.prototype.getShowNoteStyle_ = function (topPosition, leftPosition, isMobile) {
+            topPosition += this.keyHeight_;
+            if (isMobile)
+                topPosition += this.prevNextHeight_;
             var div = goog.dom.createDom('div', {
-                'style': 'top: ' + ((this.keyHeight_) + topPosition)
+                'style': 'top: ' + topPosition
                     + 'px; left: ' + leftPosition
                     + 'px; background-color: ' + this.colour_
                     + '; width: ' + this.pianoWidth_
                     + 'px; border-color: ' + this.colour_
-                    + ';' + (isMobile ? ' font-size: 70px;' : '')
+                    + ';' + (isMobile ? ' font-size: 70px; height: 90px;' : '')
             });
             div.className = 'blocklyNoteLabel';
             return div;
@@ -342,14 +346,17 @@ var Blockly;
          * @private
          */
         FieldNote.prototype.getNextPrevStyle_ = function (topPosition, leftPosition, isPrev, isMobile) {
-            //  x position of the button
+            //  x position of the prev/next button
             var xPosition = (isPrev ? 0 : (this.pianoWidth_ / 2)) + leftPosition;
+            //  y position of the prev/next button
             var yPosition = (this.keyHeight_ + this.labelHeight_ + topPosition);
+            if (isMobile)
+                yPosition = this.keyHeight_ + topPosition;
             var div = goog.dom.createDom('div', {
                 'style': 'top: ' + yPosition
                     + 'px; left: ' + xPosition
                     + 'px; '
-                    + ';' + (isMobile ? ' height: 70px; font-size: 50px;' : '')
+                    + ';' + (isMobile ? ' height: 90px; font-size: 50px;' : '')
                     + 'width: ' + Math.ceil(this.pianoWidth_ / 2) + 'px;'
                     + 'background-color: ' + this.colour_
                     + ';'
@@ -544,8 +551,7 @@ var Blockly;
             // Check if Mobile.. 
             // if(mobile) pagination -> true
             var quietInput = opt_quietInput || false;
-            if (!quietInput && (goog.userAgent.MOBILE || goog.userAgent.ANDROID ||
-                goog.userAgent.IPAD)) {
+            if (!quietInput && (goog.userAgent.MOBILE || goog.userAgent.ANDROID)) {
                 pagination = true;
                 mobile = true;
                 var r = this.keyWidth_ / this.keyHeight_;
@@ -553,6 +559,8 @@ var Blockly;
                 this.keyHeight_ = Math.ceil(this.keyWidth_ / r);
                 this.pianoWidth_ = 7 * this.keyWidth_;
                 this.pianoHeight_ = this.keyHeight_;
+                this.labelHeight_ = 90;
+                this.prevNextHeight_ = 90;
             }
             //create piano div
             var div = Blockly.WidgetDiv.DIV;
@@ -589,9 +597,13 @@ var Blockly;
             }
             else {
                 leftPosition = -document.getElementsByClassName('blocklyWidgetDiv')[0].offsetLeft; //+ ((windowSize.width - this.pianoWidth_) / 2);
-                topPosition = windowSize.height - (this.keyHeight_ + 150) - document.getElementsByClassName('blocklyWidgetDiv')[0].offsetTop - borderBBox.height;
+                topPosition = windowSize.height - (this.keyHeight_ + this.labelHeight_ + this.prevNextHeight_) - document.getElementsByClassName('blocklyWidgetDiv')[0].offsetTop - borderBBox.height;
             }
             var octaveCounter = 0;
+            var currentSelectedKey = null;
+            var previousColor;
+            //  save all changes in the same group of events
+            Blockly.Events.setGroup(true);
             // render piano keys
             for (var i = 0; i < this.nKeys_; i++) {
                 if (i > 0 && i % 12 == 0)
@@ -603,23 +615,38 @@ var Blockly;
                 var position = this.getPosition_(i);
                 if (pagination && i >= 12)
                     position -= 7 * octaveCounter * this.keyWidth_;
-                var style = this.getKeyStyle_(bgColor, width, height, position + leftPosition, topPosition, this.isWhite_(i) ? 1000 : 1001, this.isWhite_(i) ? this.colour_ : "black");
+                var style = this.getKeyStyle_(bgColor, width, height, position + leftPosition, topPosition, this.isWhite_(i) ? 1000 : 1001, this.isWhite_(i) ? this.colour_ : "black", mobile);
                 key.setContent(style);
                 key.setId(this.noteName_[i]);
                 key.render(pianoDiv);
                 var script = key.getContent();
                 script.setAttribute("tag", this.noteFreq_[i].toString());
                 // highlight current selected key
-                if (Math.abs(this.noteFreq_[i] - Number(this.getValue())) < this.eps_)
+                if (Math.abs(this.noteFreq_[i] - Number(this.getValue())) < this.eps_) {
+                    previousColor = script.style.backgroundColor;
                     script.style.backgroundColor = this.selectedKeyColor_;
+                    currentSelectedKey = key;
+                }
                 //  Listener when a new key is selected
                 goog.events.listen(key.getElement(), goog.events.EventType.MOUSEDOWN, function () {
-                    Blockly.FieldNote.superClass_.dispose.call(this);
-                    Blockly.WidgetDiv.hide();
+                    AudioContextManager.stop();
                     var cnt = ++thisField.soundingKeys_;
                     var freq = this.getContent().getAttribute("tag");
+                    var script;
+                    if (currentSelectedKey != null) {
+                        script = currentSelectedKey.getContent();
+                        script.style.backgroundColor = previousColor;
+                    }
+                    script = this.getContent();
+                    if (currentSelectedKey !== this)
+                        previousColor = script.style.backgroundColor;
+                    currentSelectedKey = this;
+                    script.style.backgroundColor = thisField.selectedKeyColor_;
                     thisField.setValue(freq);
+                    thisField.setText(freq);
+                    Blockly.FieldTextInput.htmlInput_.value = thisField.getText();
                     AudioContextManager.tone(freq, 1);
+                    Blockly.FieldNote.superClass_.dispose.call(this);
                     setTimeout(function () {
                         // compare current sound counter with listener sound counter (avoid async problems)
                         if (thisField.soundingKeys_ == cnt)
@@ -631,15 +658,6 @@ var Blockly;
                     var script = showNoteLabel.getContent();
                     script.innerText = this.getId();
                     this.labelHeight_ = document.getElementsByClassName('blocklyNoteLabel')[0].offsetHeight;
-                    // current sound counter
-                    var cnt = ++thisField.soundingKeys_;
-                    var freq = this.getContent().getAttribute('tag');
-                    AudioContextManager.tone(freq, 1);
-                    setTimeout(function () {
-                        // compare current sound counter with listener sound counter (avoid async problems)
-                        if (thisField.soundingKeys_ == cnt)
-                            AudioContextManager.stop();
-                    }, 500);
                 }, false, key);
                 //  Listener when the mouse leave a key
                 goog.events.listen(key.getElement(), goog.events.EventType.MOUSELEAVE, function () {
@@ -680,8 +698,10 @@ var Blockly;
                 var Npages_1 = this.nKeys_ / 12;
                 var currentPage_1 = 0;
                 goog.events.listen(prevButton.getElement(), goog.events.EventType.MOUSEDOWN, function () {
-                    if (currentPage_1 == 0)
+                    if (currentPage_1 == 0) {
+                        scriptLabel.innerText = 'Octave #' + (currentPage_1 + 1);
                         return;
+                    }
                     var curFirstKey = currentPage_1 * 12;
                     var newFirstKey = currentPage_1 * 12 - 12;
                     //  hide current octave
@@ -695,8 +715,10 @@ var Blockly;
                     this.labelHeight_ = document.getElementsByClassName('blocklyNoteLabel')[0].offsetHeight;
                 }, false, prevButton);
                 goog.events.listen(nextButton.getElement(), goog.events.EventType.MOUSEDOWN, function () {
-                    if (currentPage_1 == Npages_1 - 1)
+                    if (currentPage_1 == Npages_1 - 1) {
+                        scriptLabel.innerText = 'Octave #' + (currentPage_1 + 1);
                         return;
+                    }
                     var curFirstKey = currentPage_1 * 12;
                     var newFirstKey = currentPage_1 * 12 + 12;
                     //  hide current octave
@@ -710,6 +732,13 @@ var Blockly;
                     this.labelHeight_ = document.getElementsByClassName('blocklyNoteLabel')[0].offsetHeight;
                 }, false, nextButton);
             }
+        };
+        /**
+         * Close the note picker if this input is being deleted.
+         */
+        FieldNote.prototype.dispose = function () {
+            Blockly.WidgetDiv.hideIfOwner(this);
+            Blockly.FieldTextInput.superClass_.dispose.call(this);
         };
         return FieldNote;
     }(Blockly.FieldNumber));
