@@ -8,7 +8,15 @@ Major additions and changes in this fork:
 * 
 * 
 
-## Installation
+## Dependencies
+
+Download the [Google closure](https://developers.google.com/blockly/guides/modify/web/closure) library.
+
+## Building
+
+```
+python build.py
+```
 
 ## Usage
 

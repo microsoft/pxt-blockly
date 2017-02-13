@@ -834,5 +834,48 @@ Blockly.Css.CONTENT = [
     'padding: 0;',
   '}',
 
+  /*
+   * TODO: Add Microsoft License
+   *
+   * Use of this source code is governed by the MIT License.
+   */
+
+  /**
+   * Styling for the note field editor
+   */
+  '.blocklyWidgetDiv .blocklyPianoDiv {',
+    'position: relative',
+  '}',
+
+  '.blocklyWidgetDiv .blocklyNote {',
+    'border: solid 0.5px;',
+    'cursor: pointer;',
+    'display: inline-block;',
+    'position: absolute;',
+    'top: 0px;',
+  '}',
+
+  '.blocklyWidgetDiv .blocklyNote:hover {',
+    'background-color: yellow !important',
+  '}',
+
+  '.blocklyWidgetDiv .blocklyNoteLabel {',
+    'border: solid 0.5px;',
+    'color: white;',
+    'display: inline-block;',
+    'position: absolute;',
+    'text-align: center;', 
+  '}',
+
+  '.blocklyWidgetDiv .blocklyNotePrevNext {',
+    'border: solid 0.5px;',
+    'cursor: pointer;',
+    'color: white;',
+    'display: inline-block;',
+    'font-weight: bold;',
+    'position: absolute;',
+    'text-align: center;',
+  '}',
+   
   ''
 ];
