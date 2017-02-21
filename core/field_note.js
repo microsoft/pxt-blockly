@@ -23,8 +23,8 @@ var pianoSize;
     pianoSize[pianoSize["medium"] = 36] = "medium";
     pianoSize[pianoSize["large"] = 60] = "large";
 })(pianoSize || (pianoSize = {}));
-var Blockly;
-(function (Blockly) {
+var Music;
+(function (Music) {
     var AudioContextManager;
     (function (AudioContextManager) {
         var _frequency = 0;
@@ -93,7 +93,7 @@ var Blockly;
             _vca.gain.value = gain;
         }
         AudioContextManager.tone = tone;
-    })(AudioContextManager = Blockly.AudioContextManager || (Blockly.AudioContextManager = {}));
+    })(AudioContextManager = Music.AudioContextManager || (Music.AudioContextManager = {}));
     //  Class for a note input field.
     var FieldNote = (function (_super) {
         __extends(FieldNote, _super);
@@ -116,9 +116,8 @@ var Blockly;
             /**
              * Absolute error for note frequency identification (Hz)
              * @type {number}
-             * @private
              */
-            _this.eps_ = 1;
+            _this.eps = 2;
             /**
              * array of notes frequency
              * @type {Array.<number>}
@@ -163,7 +162,11 @@ var Blockly;
             _this.soundingKeys_ = 0;
             FieldNote.superClass_.constructor.call(_this, note, opt_validator);
             _this.note_ = note;
-            _this.colour_ = Blockly.hueToRgb(colour);
+            var hue = Number(colour);
+            if (!isNaN(hue))
+                _this.colour_ = Blockly.hueToRgb(hue);
+            else
+                _this.colour_ = colour.toString();
             return _this;
         }
         /**
@@ -195,7 +198,7 @@ var Blockly;
             this.whiteKeyCounter_ = 0;
             //  Create arrays of name/frequency of the notes
             this.createNotesArray_();
-            this.setValue(this.getValue());
+            this.setValue(this.callValidator(this.getValue()));
         };
         /**
          * Return the current note frequency.
@@ -216,7 +219,7 @@ var Blockly;
                 this.note_ != note) {
                 Blockly.Events.fire(new Blockly.Events.Change(this.sourceBlock_, 'field', this.name, String(this.note_), String(note)));
             }
-            this.note_ = note;
+            this.note_ = this.callValidator(note);
             this.setText(this.getNoteName_());
         };
         /**
@@ -224,6 +227,8 @@ var Blockly;
          * @return {string} Current text.
          */
         FieldNote.prototype.getText = function () {
+            if (Math.floor(Number(this.note_)) == Number(this.note_))
+                return Number(this.note_).toFixed(0);
             return Number(this.note_).toFixed(2);
         };
         /**
@@ -253,7 +258,7 @@ var Blockly;
             var note = this.getValue();
             var text = note.toString();
             for (var i = 0; i < this.nKeys_; i++) {
-                if (Math.abs(this.noteFreq_[i] - Number(note)) < this.eps_)
+                if (Math.abs(this.noteFreq_[i] - Number(note)) < this.eps)
                     return this.noteName_[i];
             }
             if (!isNaN(Number(note)))
@@ -330,7 +335,7 @@ var Blockly;
                     + 'px; background-color: ' + this.colour_
                     + '; width: ' + this.pianoWidth_
                     + 'px; border-color: ' + this.colour_
-                    + ';' + (isMobile ? ' font-size: 70px; height: 90px;' : '')
+                    + ';' + (isMobile ? ' font-size: ' + (this.labelHeight_ - 10) + 'px; height: ' + this.labelHeight_ + 'px;' : '')
             });
             div.className = 'blocklyNoteLabel';
             return div;
@@ -356,7 +361,7 @@ var Blockly;
                 'style': 'top: ' + yPosition
                     + 'px; left: ' + xPosition
                     + 'px; '
-                    + ';' + (isMobile ? ' height: 90px; font-size: 50px;' : '')
+                    + ';' + (isMobile ? 'height: ' + this.prevNextHeight_ + 'px; font-size:' + (this.prevNextHeight_ - 10) + 'px;' : '')
                     + 'width: ' + Math.ceil(this.pianoWidth_ / 2) + 'px;'
                     + 'background-color: ' + this.colour_
                     + ';' + (isPrev ? 'border-left-color: ' : 'border-right-color: ') + this.colour_
@@ -514,9 +519,8 @@ var Blockly;
         * @private
         */
         FieldNote.prototype.getEditorWidth_ = function () {
-            var editorWidth = document.getElementById('blocklyDiv').offsetWidth;
-            var toolBoxWidth = document.getElementsByClassName('blocklyToolboxDiv')[0].offsetWidth; //  Blockly.Toolbox.getWidth();
-            return editorWidth - toolBoxWidth;
+            var windowSize = goog.dom.getViewportSize();
+            return windowSize.width;
         };
         /** get height of blockly editor space
         * @return {number} Height of the blockly editor workspace
@@ -541,7 +545,7 @@ var Blockly;
             this.pianoHeight_ = this.keyHeight_;
             var pagination = false;
             var mobile = false;
-            var editorWidth = this.getEditorWidth_();
+            var editorWidth = windowSize.width;
             var thisField = this;
             this.whiteKeyCounter_ = 0;
             //  Create the piano using Closure (colorButton).
@@ -560,8 +564,8 @@ var Blockly;
                 this.keyHeight_ = Math.ceil(this.keyWidth_ / r);
                 this.pianoWidth_ = 7 * this.keyWidth_;
                 this.pianoHeight_ = this.keyHeight_;
-                this.labelHeight_ = 90;
-                this.prevNextHeight_ = 90;
+                this.labelHeight_ = this.keyWidth_ / 1.5;
+                this.prevNextHeight_ = this.keyWidth_ / 1.5;
             }
             //  create piano div
             var div = Blockly.WidgetDiv.DIV;
@@ -592,7 +596,7 @@ var Blockly;
                 else {
                     // Don't go offscreen right.
                     if (xy.x > windowSize.width + scrollOffset.x - this.pianoWidth_) {
-                        leftPosition -= xy.x - (windowSize.width + scrollOffset.x - this.pianoWidth_) + 30;
+                        leftPosition -= xy.x - (windowSize.width + scrollOffset.x - this.pianoWidth_);
                     }
                 }
             }
@@ -624,7 +628,7 @@ var Blockly;
                 var script = key.getContent();
                 script.setAttribute("tag", this.noteFreq_[i].toString());
                 //  highlight current selected key
-                if (Math.abs(this.noteFreq_[i] - Number(this.getValue())) < this.eps_) {
+                if (Math.abs(this.noteFreq_[i] - Number(this.getValue())) < this.eps) {
                     previousColor = script.style.backgroundColor;
                     script.style.backgroundColor = this.selectedKeyColor_;
                     currentSelectedKey = key;
@@ -640,15 +644,16 @@ var Blockly;
                         script.style.backgroundColor = previousColor;
                     }
                     script = this.getContent();
-                    if (currentSelectedKey !== this)
+                    if (currentSelectedKey !== this) {
                         previousColor = script.style.backgroundColor;
+                        thisField.setValue(thisField.callValidator(freq));
+                        thisField.setText(thisField.callValidator(freq));
+                    }
                     currentSelectedKey = this;
                     script.style.backgroundColor = thisField.selectedKeyColor_;
-                    thisField.setValue(freq);
-                    thisField.setText(freq);
                     Blockly.FieldTextInput.htmlInput_.value = thisField.getText();
                     AudioContextManager.tone(freq, 1);
-                    Blockly.FieldNote.superClass_.dispose.call(this);
+                    Music.FieldNote.superClass_.dispose.call(this);
                     setTimeout(function () {
                         // compare current sound counter with listener sound counter (avoid async problems)
                         if (thisField.soundingKeys_ == cnt)
@@ -744,5 +749,6 @@ var Blockly;
         };
         return FieldNote;
     }(Blockly.FieldNumber));
-    Blockly.FieldNote = FieldNote;
-})(Blockly || (Blockly = {}));
+    Music.FieldNote = FieldNote;
+})(Music || (Music = {}));
+Blockly.FieldNote = Music.FieldNote;

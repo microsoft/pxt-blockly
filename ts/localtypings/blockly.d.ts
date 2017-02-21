@@ -258,6 +258,7 @@ declare namespace Blockly {
         sourceBlock_: Block;
         init(block: Block): void;
         static superClass_: Field;
+        callValidator(text: string): string;
         getText(): string;
         setText(newText: any): void;
         updateEditable(): void;

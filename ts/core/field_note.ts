@@ -20,7 +20,9 @@ enum pianoSize {
     medium = 36,
     large = 60
 }
-namespace Blockly {
+
+
+namespace Music {
     export namespace AudioContextManager {
         let _frequency = 0;
         let _context: any; // AudioContext
@@ -89,7 +91,7 @@ namespace Blockly {
         }
     }
     //  Class for a note input field.
-    export class FieldNote extends FieldNumber {
+    export class FieldNote extends Blockly.FieldNumber {
         //  value of the field
         private note_: string;
         //  text to display in the field 
@@ -105,9 +107,8 @@ namespace Blockly {
         /**
          * Absolute error for note frequency identification (Hz)
          * @type {number}
-         * @private
          */
-        private eps_: number = 1;
+        eps: number = 2;
         /**
          * array of notes frequency
          * @type {Array.<number>}
@@ -182,11 +183,15 @@ namespace Blockly {
          * @extends {Blockly.FieldNumber}
          * @constructor
          */
-        constructor(note: string, colour: number, opt_validator?: any) {
+        constructor(note: string, colour: string | number, opt_validator?: any) {
             super(note);
             FieldNote.superClass_.constructor.call(this, note, opt_validator);
             this.note_ = note;
-            this.colour_ = Blockly.hueToRgb(colour);
+            let hue = Number(colour);
+            if (!isNaN(hue))
+                this.colour_ = Blockly.hueToRgb(hue);
+            else
+                this.colour_ = colour.toString();
         }
         /**
          * Ensure that only a non negative number may be entered.
@@ -218,7 +223,7 @@ namespace Blockly {
             this.whiteKeyCounter_ = 0;
             //  Create arrays of name/frequency of the notes
             this.createNotesArray_();
-            this.setValue(this.getValue());
+            this.setValue(this.callValidator(this.getValue()));
         }
         /**
          * Return the current note frequency.
@@ -241,7 +246,7 @@ namespace Blockly {
                 Blockly.Events.fire(new Blockly.Events.Change(
                     this.sourceBlock_, 'field', this.name, String(this.note_), String(note)));
             }
-            this.note_ = note;
+            this.note_ = this.callValidator(note);
             this.setText(this.getNoteName_());
         }
 
@@ -250,6 +255,8 @@ namespace Blockly {
          * @return {string} Current text.
          */
         getText(): string {
+            if (Math.floor(Number(this.note_)) == Number(this.note_))
+                return Number(this.note_).toFixed(0);
             return Number(this.note_).toFixed(2);
         }
 
@@ -283,7 +290,7 @@ namespace Blockly {
             let note: string = this.getValue();
             let text: string = note.toString();
             for (let i: number = 0; i < this.nKeys_; i++) {
-                if (Math.abs(this.noteFreq_[i] - Number(note)) < this.eps_)
+                if (Math.abs(this.noteFreq_[i] - Number(note)) < this.eps)
                     return this.noteName_[i];
             }
             if (!isNaN(Number(note)))
@@ -367,7 +374,7 @@ namespace Blockly {
                     + 'px; background-color: ' + this.colour_
                     + '; width: ' + this.pianoWidth_
                     + 'px; border-color: ' + this.colour_
-                    + ';' + (isMobile ? ' font-size: 70px; height: 90px;' : '')
+                    + ';' + (isMobile ? ' font-size: ' + (this.labelHeight_ - 10) + 'px; height: ' + this.labelHeight_ + 'px;' : '')
                 });
             div.className = 'blocklyNoteLabel';
             return div;
@@ -394,7 +401,7 @@ namespace Blockly {
                     'style': 'top: ' + yPosition
                     + 'px; left: ' + xPosition
                     + 'px; '
-                    + ';' + (isMobile ? ' height: 90px; font-size: 50px;' : '')
+                    + ';' + (isMobile ? 'height: ' + this.prevNextHeight_ + 'px; font-size:' + (this.prevNextHeight_ - 10) + 'px;' : '')
                     + 'width: ' + Math.ceil(this.pianoWidth_ / 2) + 'px;'
                     + 'background-color: ' + this.colour_
                     + ';' + (isPrev ? 'border-left-color: ' : 'border-right-color: ') + this.colour_
@@ -561,9 +568,8 @@ namespace Blockly {
         * @private
         */
         getEditorWidth_(): number {
-            let editorWidth = document.getElementById('blocklyDiv').offsetWidth;
-            let toolBoxWidth = (<HTMLElement>document.getElementsByClassName('blocklyToolboxDiv')[0]).offsetWidth; //  Blockly.Toolbox.getWidth();
-            return editorWidth - toolBoxWidth;
+            let windowSize = goog.dom.getViewportSize();
+            return windowSize.width;
         }
         /** get height of blockly editor space
         * @return {number} Height of the blockly editor workspace
@@ -580,7 +586,7 @@ namespace Blockly {
             //  change Note name to number frequency
             Blockly.FieldNumber.prototype.setText.call(this, this.getText());
             FieldNote.superClass_.showEditor_.call(this, true);
-            
+
             //  Record windowSize and scrollOffset before adding the piano.
             let windowSize = goog.dom.getViewportSize();
 
@@ -590,7 +596,7 @@ namespace Blockly {
             this.pianoHeight_ = this.keyHeight_;
             let pagination: boolean = false;
             let mobile: boolean = false;
-            let editorWidth = this.getEditorWidth_();
+            let editorWidth = windowSize.width;
             let thisField = this;
             this.whiteKeyCounter_ = 0;
             //  Create the piano using Closure (colorButton).
@@ -610,8 +616,8 @@ namespace Blockly {
                 this.keyHeight_ = Math.ceil(this.keyWidth_ / r);
                 this.pianoWidth_ = 7 * this.keyWidth_;
                 this.pianoHeight_ = this.keyHeight_;
-                this.labelHeight_ = 90;
-                this.prevNextHeight_ = 90;
+                this.labelHeight_ = this.keyWidth_ / 1.5;
+                this.prevNextHeight_ = this.keyWidth_ / 1.5;
             }
 
             //  create piano div
@@ -619,7 +625,7 @@ namespace Blockly {
             let pianoDiv = goog.dom.createDom('div', {});
             pianoDiv.className = 'blocklyPianoDiv';
             div.appendChild(pianoDiv);
-            
+
             let scrollOffset = goog.style.getViewportPageOffset(document);
             let pianoHeight = this.keyHeight_ + div.scrollHeight + 5;
             let xy = this.getAbsoluteXY_();
@@ -643,7 +649,7 @@ namespace Blockly {
                 } else {
                     // Don't go offscreen right.
                     if (xy.x > windowSize.width + scrollOffset.x - this.pianoWidth_) {
-                        leftPosition -= xy.x - (windowSize.width + scrollOffset.x - this.pianoWidth_) + 30;
+                        leftPosition -= xy.x - (windowSize.width + scrollOffset.x - this.pianoWidth_);
                     }
                 }
             } else {
@@ -673,14 +679,14 @@ namespace Blockly {
                 key.render(pianoDiv);
                 let script = key.getContent() as HTMLElement;
                 script.setAttribute("tag", this.noteFreq_[i].toString());
-                
+
                 //  highlight current selected key
-                if (Math.abs(this.noteFreq_[i] - Number(this.getValue())) < this.eps_) {
+                if (Math.abs(this.noteFreq_[i] - Number(this.getValue())) < this.eps) {
                     previousColor = script.style.backgroundColor;
                     script.style.backgroundColor = this.selectedKeyColor_;
                     currentSelectedKey = key;
                 }
-                
+
                 //  Listener when a new key is selected
                 goog.events.listen(key.getElement(),
                     goog.events.EventType.MOUSEDOWN,
@@ -694,15 +700,16 @@ namespace Blockly {
                             script.style.backgroundColor = previousColor;
                         }
                         script = this.getContent() as HTMLElement;
-                        if (currentSelectedKey !== this) // save color only if is clicking different key
+                        if (currentSelectedKey !== this){ // save color and change values only if is clicking different key
                             previousColor = script.style.backgroundColor;
+                            thisField.setValue(thisField.callValidator(freq));
+                            thisField.setText(thisField.callValidator(freq));
+                        }
                         currentSelectedKey = this;
                         script.style.backgroundColor = thisField.selectedKeyColor_;
-                        thisField.setValue(freq);
-                        thisField.setText(freq);
                         Blockly.FieldTextInput.htmlInput_.value = thisField.getText();
                         AudioContextManager.tone(freq, 1);
-                        Blockly.FieldNote.superClass_.dispose.call(this);
+                        Music.FieldNote.superClass_.dispose.call(this);
                         setTimeout(function () {
                             // compare current sound counter with listener sound counter (avoid async problems)
                             if (thisField.soundingKeys_ == cnt)
@@ -720,12 +727,12 @@ namespace Blockly {
                         this.labelHeight_ = (<HTMLElement>document.getElementsByClassName('blocklyNoteLabel')[0]).offsetHeight;
                     }, false, key
                 );
-                
+
                 //  increment white key counter
                 if (this.isWhite_(i))
                     this.whiteKeyCounter_++;
                 // set octaves different from first octave invisible
-                if (pagination && i > 11) 
+                if (pagination && i > 11)
                     key.setVisible(false);
             }
 
@@ -759,7 +766,7 @@ namespace Blockly {
                 script = nextButton.getContent() as HTMLElement;
                 //  right arrow - next button
                 script.innerText = '>';
-                
+
                 let Npages = this.nKeys_ / 12;
                 let currentPage = 0;
                 goog.events.listen(prevButton.getElement(),
@@ -815,3 +822,4 @@ namespace Blockly {
 }
 
 
+(Blockly as any).FieldNote = Music.FieldNote;
