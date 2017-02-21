@@ -8,7 +8,7 @@ goog.provide('Blockly.Blocks.music');
 
 goog.require('Blockly.Blocks');
 
-Blockly.Blocks.music.HUE = 240;
+Blockly.Blocks.music.HUE = 150;
 // TODO: This should be the same as Blockly.Msg.COLOUR_HUE.
 Blockly.Blocks['note_picker'] = {
   /**
