@@ -827,5 +827,44 @@ Blockly.Css.CONTENT = [
     'padding: 0;',
   '}',
 
+  /*
+   * Copyright (c) Microsoft Corporation. All rights reserved.
+   * https://github.com/Microsoft/pxt-blockly/
+   *
+   * Use of this source code is governed by the MIT license.
+   * See the COPYING file for details.
+   */
+  /* Slider for field_number. */
+  '.blocklyWidgetDiv .goog-slider-vertical,',
+  '.blocklyWidgetDiv .goog-slider-horizontal {',
+    'background-color: ThreeDFace;',
+    'position: relative;',
+    'overflow: hidden;',
+    'outline: none;',
+  '}',
+  '.blocklyWidgetDiv .goog-slider-vertical {',
+    'height: 150px;',
+    'width: 20px;',
+  '}',
+  '.blocklyWidgetDiv .goog-slider-horizontal {',
+    'height: 20px;',
+    'width: 150px;',
+  '}',
+  '.blocklyWidgetDiv .goog-slider-thumb {',
+    'position: absolute;',
+    'background-color: ThreeDShadow;',
+    'overflow: hidden;',
+  '}',
+  '.blocklyWidgetDiv .goog-slider-vertical .goog-slider-thumb {',
+    'left: 0;',
+    'height: 15px;',
+    'width: 100%;',
+  '}',
+  '.blocklyWidgetDiv .goog-slider-horizontal .goog-slider-thumb {',
+    'top: 0;',
+    'width: 15px;',
+    'height: 100%;',
+  '}',
+
   ''
 ];

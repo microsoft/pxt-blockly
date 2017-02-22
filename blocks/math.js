@@ -56,6 +56,28 @@ Blockly.Blocks['math_number'] = {
   }
 };
 
+Blockly.Blocks['math_number_minmax'] = {
+  /**
+   * Block for numeric value with a min and max.
+   * @this Blockly.Block
+   */
+  init: function() {
+    this.setHelpUrl(Blockly.Msg.MATH_NUMBER_HELPURL);
+    this.setColour(Blockly.Blocks.math.HUE);
+    this.appendDummyInput()
+        .appendField(new Blockly.FieldNumber('0', '0', '100'), 'NUM');
+    this.setOutput(true, 'Number');
+    // Assign 'this' to a variable for use in the tooltip closure below.
+    var thisBlock = this;
+    // Number block is trivial.  Use tooltip of parent block if it exists.
+    this.setTooltip(function() {
+      var parent = thisBlock.getParent();
+      return (parent && parent.getInputsInline() && parent.tooltip) ||
+          Blockly.Msg.MATH_NUMBER_TOOLTIP;
+    });
+  }
+};
+
 Blockly.Blocks['math_arithmetic'] = {
   /**
    * Block for basic arithmetic operator.
