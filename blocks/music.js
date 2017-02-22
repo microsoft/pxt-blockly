@@ -1,4 +1,10 @@
-//TODO: lincense
+/**
+ * @license
+ * Copyright (c) Microsoft Corporation
+ * Use of this source code is governed by the MIT License.
+ * see the license.txt file for details
+ */
+
 /**
  * @fileoverview Music blocks for Blockly.
  */
@@ -28,12 +34,11 @@ Blockly.Blocks['note_picker'] = {
       ],
       "output": "Number",
       "colour": Blockly.Blocks.music.HUE,
-      // TODO "helpUrl": Blockly.Msg.NOTE_PICKER_HELPURL
-      // TODO "tooltip:"
+      "helpUrl": Blockly.Msg.NOTE_PICKER_HELPURL
     });
     // Assign 'this' to a variable for use in the tooltip closure below.
     var thisBlock = this;
-    // NOTE block is trivial.  Use tooltip of parent block if it exists.
+    // Note block is trivial.  Use tooltip of parent block if it exists.
     this.setTooltip(function() {
       var parent = thisBlock.getParent();
       return (parent && parent.getInputsInline() && parent.tooltip) ||

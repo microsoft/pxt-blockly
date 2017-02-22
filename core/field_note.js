@@ -1,8 +1,13 @@
-/// <reference path="../localtypings/blockly.d.ts" />
-//TODO license
+/**
+ * @license
+ * Copyright (c) Microsoft Corporation
+ * Use of this source code is governed by the MIT License.
+ * see the license.txt file for details
+ */
 /**
  * @fileoverview note-picker input field.
  */
+/// <reference path="../localtypings/blockly.d.ts" />
 'use strict';
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -25,75 +30,6 @@ var pianoSize;
 })(pianoSize || (pianoSize = {}));
 var Music;
 (function (Music) {
-    var AudioContextManager;
-    (function (AudioContextManager) {
-        var _frequency = 0;
-        var _context; // AudioContext
-        var _vco; // OscillatorNode;
-        var _vca; // GainNode;
-        var _mute = false; //mute audio
-        function context() {
-            if (!_context)
-                _context = freshContext();
-            return _context;
-        }
-        function freshContext() {
-            window.AudioContext = window.AudioContext || window.webkitAudioContext;
-            if (window.AudioContext) {
-                try {
-                    // this call my crash.
-                    // SyntaxError: audio resources unavailable for AudioContext construction
-                    return new window.AudioContext();
-                }
-                catch (e) { }
-            }
-            return undefined;
-        }
-        function mute(mute) {
-            _mute = mute;
-            stop();
-        }
-        AudioContextManager.mute = mute;
-        function stop() {
-            if (_vca)
-                _vca.gain.value = 0;
-            _frequency = 0;
-        }
-        AudioContextManager.stop = stop;
-        function frequency() {
-            return _frequency;
-        }
-        AudioContextManager.frequency = frequency;
-        function tone(frequency, gain) {
-            if (_mute)
-                return;
-            if (frequency <= 0)
-                return;
-            _frequency = frequency;
-            var ctx = context();
-            if (!ctx)
-                return;
-            gain = Math.max(0, Math.min(1, gain));
-            if (!_vco) {
-                try {
-                    _vco = ctx.createOscillator();
-                    _vca = ctx.createGain();
-                    _vco.connect(_vca);
-                    _vca.connect(ctx.destination);
-                    _vca.gain.value = gain;
-                    _vco.start(0);
-                }
-                catch (e) {
-                    _vco = undefined;
-                    _vca = undefined;
-                    return;
-                }
-            }
-            _vco.frequency.value = frequency;
-            _vca.gain.value = gain;
-        }
-        AudioContextManager.tone = tone;
-    })(AudioContextManager = Music.AudioContextManager || (Music.AudioContextManager = {}));
     //  Class for a note input field.
     var FieldNote = (function (_super) {
         __extends(FieldNote, _super);
@@ -162,7 +98,6 @@ var Music;
          */
         FieldNote.prototype.init = function () {
             FieldNote.superClass_.init.call(this);
-            this.borderRect_.style["fillOpacity"] = 1;
             this.noteFreq_.length = 0;
             this.noteName_.length = 0;
             var thisField = this;
@@ -447,7 +382,7 @@ var Music;
                 }
                 //  Listener when a new key is selected
                 goog.events.listen(key.getElement(), goog.events.EventType.MOUSEDOWN, function () {
-                    AudioContextManager.stop();
+                    Music.AudioContextManager.stop();
                     var cnt = ++soundingKeys;
                     var freq = this.getContent().getAttribute("tag");
                     var script;
@@ -464,12 +399,12 @@ var Music;
                     currentSelectedKey = this;
                     script.style.backgroundColor = selectedKeyColor;
                     Blockly.FieldTextInput.htmlInput_.value = thisField.getText();
-                    AudioContextManager.tone(freq, 1);
+                    Music.AudioContextManager.tone(freq, 1);
                     Music.FieldNote.superClass_.dispose.call(this);
                     setTimeout(function () {
                         // compare current sound counter with listener sound counter (avoid async problems)
                         if (soundingKeys == cnt)
-                            AudioContextManager.stop();
+                            Music.AudioContextManager.stop();
                     }, 500);
                 }, false, key);
                 //  Listener when the mouse is over a key
