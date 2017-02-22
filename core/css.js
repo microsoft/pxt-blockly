@@ -1,4 +1,7 @@
 /**
+ * This file has been modified by Microsoft on Feb/2018.
+ */
+/**
  * @license
  * Visual Blocks Editor
  *
@@ -830,9 +833,6 @@ Blockly.Css.CONTENT = [
   /*
    * Copyright (c) Microsoft Corporation. All rights reserved.
    * https://github.com/Microsoft/pxt-blockly/
-   *
-   * Use of this source code is governed by the MIT license.
-   * See the COPYING file for details.
    */
   /* Slider for field_number. */
   '.blocklyWidgetDiv .goog-slider-vertical,',
