@@ -1,4 +1,7 @@
 /**
+ * This file has been modified by Microsoft on Feb/2017.
+ */
+/**
  * @license
  * Visual Blocks Editor
  *
@@ -825,6 +828,42 @@ Blockly.Css.CONTENT = [
     'border-top: 1px solid #ccc;',
     'margin: 4px 0;',
     'padding: 0;',
+  '}',
+
+  /*
+   * Copyright (c) Microsoft Corporation. All rights reserved.
+   * https://github.com/Microsoft/pxt-blockly/
+   */
+  /* Slider for field_number. */
+  '.blocklyWidgetDiv .goog-slider-vertical,',
+  '.blocklyWidgetDiv .goog-slider-horizontal {',
+    'background-color: ThreeDFace;',
+    'position: relative;',
+    'overflow: hidden;',
+    'outline: none;',
+  '}',
+  '.blocklyWidgetDiv .goog-slider-vertical {',
+    'height: 150px;',
+    'width: 20px;',
+  '}',
+  '.blocklyWidgetDiv .goog-slider-horizontal {',
+    'height: 20px;',
+    'width: 150px;',
+  '}',
+  '.blocklyWidgetDiv .goog-slider-thumb {',
+    'position: absolute;',
+    'background-color: ThreeDShadow;',
+    'overflow: hidden;',
+  '}',
+  '.blocklyWidgetDiv .goog-slider-vertical .goog-slider-thumb {',
+    'left: 0;',
+    'height: 15px;',
+    'width: 100%;',
+  '}',
+  '.blocklyWidgetDiv .goog-slider-horizontal .goog-slider-thumb {',
+    'top: 0;',
+    'width: 15px;',
+    'height: 100%;',
   '}',
 
   ''
