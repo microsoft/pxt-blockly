@@ -1,3 +1,23 @@
+/*!----------------- PXT Blockly ThirdPartyNotices -------------------------------------------------------
+
+The Microsoft Blockly fork uses third party material from the projects listed below.
+The original copyright notice and the license under which Microsoft
+received such third party material are set forth below. Microsoft
+reserves all other rights not expressly granted, whether by
+implication, estoppel or otherwise.
+
+In the event that we accidentally failed to list a required notice, please
+bring it to our attention. Post an issue or email us:
+
+           yelmteam@microsoft.com
+
+---------------------------------------------
+Third Party Code Components
+---------------------------------------------
+
+----------------- google/blockly -------------------
+
+Copyright 2013 Google Inc
 
                                  Apache License
                            Version 2.0, January 2011
@@ -175,3 +195,5 @@
       of your accepting any such warranty or additional liability.
 
    END OF TERMS AND CONDITIONS
+
+---------------------------------------------

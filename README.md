@@ -1,6 +1,6 @@
 # Blockly (Microsoft PXT fork)
 
-This is a fork of [Blockly](https://code.google.com/p/blockly/), an open source visual programming environment.
+This is a fork of [Blockly](https://github.com/google/blockly/), an open source visual programming environment.
 
 Major additions and changes in this fork:
 
@@ -18,5 +18,4 @@ There is a playground manual testing page at [tests/playground.html](./tests/pla
 
 ## License
 
-Apache 2.0 and MIT
-
+MIT
