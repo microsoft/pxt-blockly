@@ -24,7 +24,6 @@
 /**
  * @fileoverview Number input field
  * @author fenichel@google.com (Rachel Fenichel)
- * @author samelh@microsoft.com (Sam El-Husseini)
  */
 'use strict';
 
