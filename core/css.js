@@ -1,4 +1,7 @@
 /**
+ * This file has been modified by Microsoft on Feb/2017.
+ */
+/**
  * @license
  * Visual Blocks Editor
  *
@@ -827,15 +830,39 @@ Blockly.Css.CONTENT = [
     'padding: 0;',
   '}',
 
-  /*
-   * TODO: Add Microsoft License
-   *
-   * Use of this source code is governed by the MIT License.
-   */
-
-  /**
-   * Styling for the note field editor
-   */
+  /* Slider for field_number. */
+  '.blocklyWidgetDiv .goog-slider-vertical,',
+  '.blocklyWidgetDiv .goog-slider-horizontal {',
+    'background-color: ThreeDFace;',
+    'position: relative;',
+    'overflow: hidden;',
+    'outline: none;',
+  '}',
+  '.blocklyWidgetDiv .goog-slider-vertical {',
+    'height: 150px;',
+    'width: 20px;',
+  '}',
+  '.blocklyWidgetDiv .goog-slider-horizontal {',
+    'height: 20px;',
+    'width: 150px;',
+  '}',
+  '.blocklyWidgetDiv .goog-slider-thumb {',
+    'position: absolute;',
+    'background-color: ThreeDShadow;',
+    'overflow: hidden;',
+  '}',
+  '.blocklyWidgetDiv .goog-slider-vertical .goog-slider-thumb {',
+    'left: 0;',
+    'height: 15px;',
+    'width: 100%;',
+  '}',
+  '.blocklyWidgetDiv .goog-slider-horizontal .goog-slider-thumb {',
+    'top: 0;',
+    'width: 15px;',
+    'height: 100%;',
+  '}',
+  
+  /* Styling for the note field editor. */
   '.blocklyWidgetDiv .blocklyPianoDiv {',
     'position: relative',
   '}',
