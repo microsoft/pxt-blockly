@@ -1,4 +1,7 @@
 /**
+ * This file has been modified by Microsoft on Feb/2017.
+ */
+/**
  * @license
  * Visual Blocks Editor
  *
@@ -1088,6 +1091,9 @@ Blockly.Block.prototype.interpolate_ = function(message, args, lastDummyAlign) {
               break;
             case 'field_colour':
               field = new Blockly.FieldColour(element['colour']);
+              break;
+            case 'field_note':
+              field = new Blockly.FieldNote(element['note'], element['colour']);
               break;
             case 'field_variable':
               field = new Blockly.FieldVariable(element['variable']);

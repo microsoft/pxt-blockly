@@ -830,10 +830,6 @@ Blockly.Css.CONTENT = [
     'padding: 0;',
   '}',
 
-  /*
-   * Copyright (c) Microsoft Corporation. All rights reserved.
-   * https://github.com/Microsoft/pxt-blockly/
-   */
   /* Slider for field_number. */
   '.blocklyWidgetDiv .goog-slider-vertical,',
   '.blocklyWidgetDiv .goog-slider-horizontal {',
@@ -864,6 +860,43 @@ Blockly.Css.CONTENT = [
     'top: 0;',
     'width: 15px;',
     'height: 100%;',
+  '}',
+  
+  /* Styling for the note field editor. */
+  '.blocklyWidgetDiv .blocklyPianoDiv {',
+    'position: relative',
+  '}',
+
+  '.blocklyWidgetDiv .blocklyNote {',
+    'border: solid 0.5px;',
+    'cursor: pointer;',
+    'display: inline-block;',
+    'position: absolute;',
+    'top: 0px;',
+  '}',
+
+  '.blocklyWidgetDiv .blocklyNote:hover {',
+    'background-color: yellow !important',
+  '}',
+
+  '.blocklyWidgetDiv .blocklyNoteLabel {',
+    'border: solid 0.5px;',
+    'color: white;',
+    'display: inline-block;',
+    'line-height: normal;',
+    'position: absolute;',
+    'text-align: center;', 
+  '}',
+
+  '.blocklyWidgetDiv .blocklyNotePrevNext {',
+    'border: solid 0.5px;',
+    'cursor: pointer;',
+    'color: white;',
+    'display: inline-block;',
+    'font-weight: bold;',
+    'line-height: normal;',
+    'position: absolute;',
+    'text-align: center;',
   '}',
 
   ''
