@@ -1,8 +1,11 @@
 /**
  * @license
- * Copyright (c) Microsoft Corporation
- * Use of this source code is governed by the MIT License.
- * see the license.txt file for details
+ * PXT Blockly
+ *
+ * Copyright (c) Microsoft Corporation. All rights reserved.
+ * https://github.com/Microsoft/pxt-blockly
+ *
+ * See LICENSE file for details.
  */
 /**
  * @fileoverview note-picker input field.
