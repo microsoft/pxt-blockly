@@ -1,3 +1,10 @@
+/**
+ * @license
+ * Copyright (c) Microsoft Corporation
+ * Use of this source code is governed by the MIT License.
+ * see the license.txt file for details
+ */
+
 declare namespace goog {
     function require(name: string): void;
     function provide(name: string): void;
