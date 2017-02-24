@@ -1092,9 +1092,6 @@ Blockly.Block.prototype.interpolate_ = function(message, args, lastDummyAlign) {
             case 'field_colour':
               field = new Blockly.FieldColour(element['colour']);
               break;
-            case 'field_note':
-              field = new Blockly.FieldNote(element['note'], element['colour']);
-              break;
             case 'field_variable':
               field = new Blockly.FieldVariable(element['variable']);
               break;
@@ -1115,6 +1112,13 @@ Blockly.Block.prototype.interpolate_ = function(message, args, lastDummyAlign) {
                 break;
               }
               // Fall through if FieldDate is not compiled in.
+            case 'field_note':
+              field = new Blockly.FieldNote(element['note'], element['colour']);
+              break;
+            case 'field_slider':
+              field = new Blockly.FieldSlider(element['value'],
+                  element['min'], element['max'], element['precision']);
+              break;
             default:
               // Unknown field.
               if (element['alt']) {

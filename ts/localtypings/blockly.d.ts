@@ -44,6 +44,7 @@ declare namespace goog {
             height: number
             constructor(width: number, height: number);
         }
+        function clamp(n: number, min: number, max: number);
     }
 
     namespace ui {
@@ -56,12 +57,42 @@ declare namespace goog {
         class Component {
             getElement(): Element | null;
             render(opt_parentElement?: Element | null | undefined): void;
-            setId(id: string): void
+            setId(id: string): void;
+            static EventType: {
+                BEFORE_SHOW: string;
+                SHOW: string;
+                HIDE: string;
+                DISABLE: string;
+                ENABLE: string;
+                HIGHLIGHT: string;
+                UNHIGHLIGHT: string;
+                ACTIVATE: string;
+                DEACTIVATE: string;
+                SELECT: string;
+                UNSELECT: string;
+                CHECK: string;
+                UNCHECK: string;
+                FOCUS: string;
+                BLUR: string;
+                OPEN: string;
+                CLOSE: string;
+                ENTER: string;
+                LEAVE: string;
+                ACTION: string;
+                CHANGE: string;
+            };
         }
         class ColorButton extends Control {
             title: string;
             setId(id: string): void;
             render(opt_parentElement?: Element | null | undefined): void;
+        }
+        class Slider extends Component {
+            setMoveToPointEnabled(val: boolean);
+            setMinimum(min: number);
+            setMaximum(max: number);
+            setRightToLeft(rightToLeft: boolean);
+            setValue(value: number);
         }
     }
 
@@ -72,6 +103,7 @@ declare namespace goog {
 
     namespace events {
         function listen(eventSource: Element, eventType: EventType, listener: any, capturePhase?: boolean, handler?: Object);
+        function unlistenByKey(key: any);
         type EventType = string;
         let EventType: {
             CLICK: EventType;
@@ -291,10 +323,16 @@ declare namespace Blockly {
         constructor(text: string, validator: any);
         static numberValidator: any;
         static htmlInput_: HTMLInputElement;
+
+        setValue(newValue: string): void;
+        getValue(): string;
+
+        onHtmlInputChange_(e: any);
     }
 
     class FieldNumber extends FieldTextInput {
         constructor(value: string | number, opt_min?: any, opt_max?: any, opt_precision?: any, opt_validator?: any);
+        setConstraints(min: any, max: any, precision: any);
     }
 
     class FieldDropdown extends Field {
