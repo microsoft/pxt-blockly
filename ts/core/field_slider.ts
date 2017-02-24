@@ -25,7 +25,7 @@ goog.require('goog.style');
 
 goog.require('goog.ui.Slider');
 
-namespace Music {
+namespace pxtblocky {
     //  Class for a slider number input field.
     export class FieldSlider extends Blockly.FieldNumber {
 
@@ -137,4 +137,4 @@ namespace Music {
     }
 }
 
-(Blockly as any).FieldSlider = Music.FieldSlider;
+(Blockly as any).FieldSlider = pxtblocky.FieldSlider;
