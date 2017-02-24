@@ -24,8 +24,8 @@ goog.require('goog.dom');
 goog.require('goog.events');
 goog.require('goog.style');
 goog.require('goog.ui.Slider');
-var Music;
-(function (Music) {
+var pxtblocky;
+(function (pxtblocky) {
     //  Class for a slider number input field.
     var FieldSlider = (function (_super) {
         __extends(FieldSlider, _super);
@@ -116,6 +116,6 @@ var Music;
         };
         return FieldSlider;
     }(Blockly.FieldNumber));
-    Music.FieldSlider = FieldSlider;
-})(Music || (Music = {}));
-Blockly.FieldSlider = Music.FieldSlider;
+    pxtblocky.FieldSlider = FieldSlider;
+})(pxtblocky || (pxtblocky = {}));
+Blockly.FieldSlider = pxtblocky.FieldSlider;
