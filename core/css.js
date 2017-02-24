@@ -149,6 +149,21 @@ Blockly.Css.CONTENT = [
     'z-index: 99999;', /* big value for bootstrap3 compatibility */
   '}',
 
+  '.blocklyDropdownGridMenuItemTooltip {',
+    'z-index: 100000;', /* big value for bootstrap3 compatibility */
+  '}',
+
+  '.blocklyDropdownGridMenu .goog-menuitem {',
+    'display: inline-block;',
+    'float: left;',
+  '}',
+
+  '.blocklyWidgetDiv .blocklyDropdownGridMenu .goog-menuitem .goog-menuitem-checkbox {',
+    'left: 0px;',
+    'position: relative;',
+    'display: inline-block;',
+  '}',
+
   '.injectionDiv {',
     'height: 100%;',
     'position: relative;',
