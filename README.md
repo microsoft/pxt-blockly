@@ -8,6 +8,10 @@ Major additions and changes in this fork:
 * Slider for the number field editor
 * Edge / IE fixes
 
+Minor changes:
+
+* Blockly zoom with Ctrl / Cmd + mousewheel scroll, and scroll workspace with just mousewheel scroll
+
 ## Installation
 
 ## Playground

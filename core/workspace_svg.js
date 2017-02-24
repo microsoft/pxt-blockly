@@ -1,4 +1,7 @@
 /**
+ * This file has been modified by Microsoft on Feb/2017.
+ */
+/**
  * @license
  * Visual Blocks Editor
  *
@@ -1012,7 +1015,15 @@ Blockly.WorkspaceSvg.prototype.onMouseWheel_ = function(e) {
   var delta = -e.deltaY / PIXELS_PER_ZOOM_STEP;
   var position = Blockly.utils.mouseToSvg(e, this.getParentSvg(),
       this.getInverseScreenCTM());
-  this.zoom(position.x, position.y, delta);
+  // samelh: Blockly zoom with Ctrl / Cmd + mousewheel scroll, and scroll workspace with just mousewheel scroll
+  if (e.ctrlKey || e.metaKey)
+      this.zoom(position.x, position.y, delta);
+  else if (this.scrollbar) {
+      var y = parseFloat(this.scrollbar.vScroll.svgHandle_.getAttribute("y") || "0");
+      y /= this.scrollbar.vScroll.ratio_;
+      this.scrollbar.vScroll.set(y + e.deltaY);
+      this.scrollbar.resize();
+  }
   e.preventDefault();
 };
 
