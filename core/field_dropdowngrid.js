@@ -30,12 +30,14 @@ var PxtFields;
 (function (PxtFields) {
     var FieldDropdownGrid = (function (_super) {
         __extends(FieldDropdownGrid, _super);
-        function FieldDropdownGrid(optionsValues, columns, useTooltips) {
-            if (columns === void 0) { columns = 1; }
+        function FieldDropdownGrid(optionsValues, col, width, useTooltips) {
+            if (col === void 0) { col = 2; }
+            if (width === void 0) { width = 800; }
             if (useTooltips === void 0) { useTooltips = true; }
             var _this = _super.call(this, optionsValues) || this;
             _this.tooltips_ = [];
-            _this.columns_ = columns;
+            _this.columns_ = col;
+            _this.menuWidth_ = width;
             _this.useTooltips_ = useTooltips;
             return _this;
         }
@@ -70,7 +72,9 @@ var PxtFields;
                 menuItem.setRightToLeft(this.sourceBlock_.RTL);
                 menuItem.setValue(value);
                 menuItem.setCheckable(true);
-                menu.addChild(menuItem, true);
+                var columnItem = new goog.ui.Control();
+                columnItem.addChild(menuItem, true);
+                menu.addChild(columnItem, true);
                 menuItem.setChecked(value == this.value_);
             }
             // Listen for mouse/keyboard events.
@@ -96,21 +100,14 @@ var PxtFields;
             var div = Blockly.WidgetDiv.DIV;
             menu.render(div);
             var menuDom = menu.getElement();
+            menuDom.style.width = this.menuWidth_ + 'px';
             Blockly.utils.addClass(menuDom, 'blocklyDropdownGridMenu');
             // Record menuSize after adding menu.
             var menuSize = goog.style.getSize(menuDom);
-            var menuItemsDom = menuDom.children;
-            var maxWidth = -1;
-            for (var i = 0; i < menuItemsDom.length; ++i) {
-                var currentSize = goog.style.getSize(menuItemsDom[i]);
-                if (currentSize.width > maxWidth) {
-                    maxWidth = currentSize.width;
-                }
-            }
-            menuSize.width = maxWidth * this.columns_;
-            goog.style.setWidth(menuDom, menuSize.width);
+            var menuItemsDom = menuDom.getElementsByClassName('goog-menuitem');
             // Recalculate height for the total content, not only box height.
             menuSize.height = menuDom.scrollHeight;
+            menuSize.width = this.menuWidth_;
             // Position the menu.
             // Flip menu vertically if off the bottom.
             if (xy.y + menuSize.height + borderBBox.height >=
@@ -136,23 +133,28 @@ var PxtFields;
                 }
             }
             Blockly.WidgetDiv.position(xy.x, xy.y, windowSize, scrollOffset, this.sourceBlock_.RTL);
+            var columns = this.columns_;
             if (this.useTooltips_) {
                 var _loop_1 = function (i) {
                     var elem = menuItemsDom[i];
-                    var tooltip = new goog.ui.Tooltip(elem, options[i][0].alt || options[i][0]);
-                    var onShowOld = tooltip.onShow;
-                    tooltip.onShow = function () {
-                        onShowOld.call(tooltip);
-                        var newPos = new goog.positioning.ClientPosition(tooltip.cursorPosition.x + FieldDropdownGrid.TOOLTIP_X_OFFSET, tooltip.cursorPosition.y + FieldDropdownGrid.TOOLTIP_Y_OFFSET);
-                        tooltip.setPosition(newPos);
-                    };
-                    tooltip.setShowDelayMs(0);
-                    tooltip.className = 'goog-tooltip blocklyDropdownGridMenuItemTooltip';
-                    elem.addEventListener('mousemove', function (e) {
-                        var newPos = new goog.positioning.ClientPosition(e.clientX + FieldDropdownGrid.TOOLTIP_X_OFFSET, e.clientY + FieldDropdownGrid.TOOLTIP_Y_OFFSET);
-                        tooltip.setPosition(newPos);
-                    });
-                    this_1.tooltips_.push(tooltip);
+                    Blockly.utils.addClass(elem.parentElement, 'blocklyGridColumn');
+                    Blockly.utils.addClass(elem.parentElement, 'col-' + columns);
+                    if (this_1.useTooltips_) {
+                        var tooltip_1 = new goog.ui.Tooltip(elem, options[i][0].alt || options[i][0]);
+                        var onShowOld_1 = tooltip_1.onShow;
+                        tooltip_1.onShow = function () {
+                            onShowOld_1.call(tooltip_1);
+                            var newPos = new goog.positioning.ClientPosition(tooltip_1.cursorPosition.x + FieldDropdownGrid.TOOLTIP_X_OFFSET, tooltip_1.cursorPosition.y + FieldDropdownGrid.TOOLTIP_Y_OFFSET);
+                            tooltip_1.setPosition(newPos);
+                        };
+                        tooltip_1.setShowDelayMs(0);
+                        tooltip_1.className = 'goog-tooltip blocklyDropdownGridMenuItemTooltip';
+                        elem.addEventListener('mousemove', function (e) {
+                            var newPos = new goog.positioning.ClientPosition(e.clientX + FieldDropdownGrid.TOOLTIP_X_OFFSET, e.clientY + FieldDropdownGrid.TOOLTIP_Y_OFFSET);
+                            tooltip_1.setPosition(newPos);
+                        });
+                        this_1.tooltips_.push(tooltip_1);
+                    }
                 };
                 var this_1 = this;
                 for (var i = 0; i < menuItemsDom.length; ++i) {
@@ -166,6 +168,21 @@ var PxtFields;
             if (this.tooltips_ && this.tooltips_.length) {
                 this.tooltips_.forEach(function (t) { return t.dispose(); });
                 this.tooltips_ = [];
+            }
+        };
+        /**
+         * Handle the selection of an item in the dropdown menu.
+         * @param {!goog.ui.Menu} menu The Menu component clicked.
+         * @param {!goog.ui.MenuItem} menuItem The MenuItem selected within menu.
+         */
+        FieldDropdownGrid.prototype.onItemSelected = function (menu, menuItem) {
+            var value = menuItem.getChildAt(0).getValue();
+            if (this.sourceBlock_) {
+                // Call any validation function, and allow it to override.
+                value = this.callValidator(value);
+            }
+            if (value !== null) {
+                this.setValue(value);
             }
         };
         return FieldDropdownGrid;

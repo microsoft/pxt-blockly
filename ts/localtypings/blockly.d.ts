@@ -88,12 +88,13 @@ declare namespace goog {
             render(opt_parentElement?: Element | null | undefined): void;
             setId(id: string): void;
             setRightToLeft(rightToLeft: boolean): void;
+            addChild(child: Component, opt_render?: boolean): void;
+            getChildAt(index: number): Component | null;
         }
         class ColorButton extends Control {
             title: string;
         }
         class Container extends Component {
-            addChild(child: Component, opt_render?: boolean): void;
         }
         class Menu extends Container implements events.Listenable {
             listen: () => events.ListenableKey;
@@ -103,6 +104,8 @@ declare namespace goog {
             constructor(content: (string | Node));
             setCheckable(checkable: boolean): void;
             setValue(value: any): void;
+            getValue(): any;
+            addClassName(className: string): void;
         }
         class Popup extends PopupBase {
             setPosition(position: positioning.ClientPosition): void;
@@ -356,6 +359,8 @@ declare namespace Blockly {
         showEditor_(): void;
         getAbsoluteXY_(): goog.math.Coordinate;
         getScaledBBox_(): goog.math.Size;
+        setValue(newValue: string): void;
+        getValue(): string;
     }
 
     class FieldVariable extends Field {
@@ -371,9 +376,6 @@ declare namespace Blockly {
         constructor(text: string, validator: any);
         static numberValidator: any;
         static htmlInput_: HTMLInputElement;
-
-        setValue(newValue: string): void;
-        getValue(): string;
 
         onHtmlInputChange_(e: any);
     }
