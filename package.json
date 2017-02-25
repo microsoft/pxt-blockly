@@ -4,7 +4,8 @@
   "description": "Blockly is a library for building visual programming editors.",
   "keywords": ["blockly"],
   "scripts": {
-    "lint": "jshint ."
+    "lint": "jshint .",
+    "watch": "node_modules/.bin/gulp watch"
   },
   "repository": {
     "type": "git",
