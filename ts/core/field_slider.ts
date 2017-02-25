@@ -17,7 +17,7 @@
 'use strict';
 goog.provide('Blockly.FieldSlider');
 
-goog.require('Blockly.FieldTextInput');
+goog.require('Blockly.FieldNumber');
 goog.require('goog.math');
 goog.require('goog.dom');
 goog.require('goog.events');
@@ -50,7 +50,7 @@ namespace pxtblocky {
          *     to validate any constraints on what the user entered.  Takes the new
          *     text as an argument and returns either the accepted text, a replacement
          *     text, or null to abort the change.
-         * @extends {Blockly.FieldTextInput}
+         * @extends {Blockly.FieldNumber}
          * @constructor
          */
         constructor(value_: any, opt_min?: string, opt_max?: string, opt_precision?: string, opt_validator?: () => void) {
@@ -64,7 +64,7 @@ namespace pxtblocky {
          * @private
          */
         showEditor_() {
-            Blockly.FieldNumber.superClass_.showEditor_.call(this);
+            super.showEditor_();
             if (this.max_ == Infinity || this.min_ == -Infinity) {
                 return;
             }
@@ -76,7 +76,7 @@ namespace pxtblocky {
             slider.setMinimum(this.min_);
             slider.setMaximum(this.max_);
             slider.setRightToLeft(this.sourceBlock_.RTL);
-            
+
             // Position the palette to line up with the field.
             // Record windowSize and scrollOffset before adding the palette.
             var windowSize = goog.dom.getViewportSize();
@@ -84,33 +84,33 @@ namespace pxtblocky {
             var xy = this.getAbsoluteXY_();
             var borderBBox = this.getScaledBBox_();
             var div = Blockly.WidgetDiv.DIV;
-            
+
             slider.render(div);
-            
+
             var value = parseFloat(this.getValue());
             value = isNaN(value) ? 0 : value;
             slider.setValue(value);
 
             // Configure event handler.
             var thisField = this;
-            this.changeEventKey_ = goog.events.listen(slider.getElement(),
+            this.changeEventKey_ = goog.events.listen(slider as any,
                 goog.ui.Component.EventType.CHANGE,
-                function(event) {
+                function (event) {
                     var val = event.target.getValue() || 0;
                     if (thisField.sourceBlock_) {
-                    // Call any validation function, and allow it to override.
-                    val = thisField.callValidator(val);
+                        // Call any validation function, and allow it to override.
+                        val = thisField.callValidator(val);
                     }
                     if (val !== null) {
-                    thisField.setValue(val);
-                    var htmlInput = Blockly.FieldTextInput.htmlInput_;
-                    htmlInput.value = val;
+                        thisField.setValue(val);
+                        var htmlInput = Blockly.FieldTextInput.htmlInput_;
+                        htmlInput.value = val;
                     }
                 });
         }
 
         onHtmlInputChange_(e: any) {
-            super.onHtmlInputChange_(e);
+            super.onHtmlInputChange_.call(this);
             if (this.slider_) {
                 this.slider_.setValue(parseFloat(this.getValue()))
             }
@@ -121,18 +121,7 @@ namespace pxtblocky {
          */
         public dispose() {
             Blockly.WidgetDiv.hideIfOwner(this);
-            Blockly.FieldNumber.superClass_.dispose.call(this);
-        }
-
-        /**
-         * Hide the slider.
-         * @private
-         */
-        private widgetDispose_() {
-            if (this.changeEventKey_) {
-                goog.events.unlistenByKey(this.changeEventKey_);
-            }
-            Blockly.Events.setGroup(false);
+            super.dispose();
         }
     }
 }
