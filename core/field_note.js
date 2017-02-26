@@ -31,8 +31,8 @@ var pianoSize;
     pianoSize[pianoSize["medium"] = 36] = "medium";
     pianoSize[pianoSize["large"] = 60] = "large";
 })(pianoSize || (pianoSize = {}));
-var Music;
-(function (Music) {
+var pxtblocky;
+(function (pxtblocky) {
     //  Class for a note input field.
     var FieldNote = (function (_super) {
         __extends(FieldNote, _super);
@@ -385,7 +385,6 @@ var Music;
                 }
                 //  Listener when a new key is selected
                 goog.events.listen(key.getElement(), goog.events.EventType.MOUSEDOWN, function () {
-                    Music.AudioContextManager.stop();
                     var cnt = ++soundingKeys;
                     var freq = this.getContent().getAttribute("tag");
                     var script;
@@ -402,13 +401,11 @@ var Music;
                     currentSelectedKey = this;
                     script.style.backgroundColor = selectedKeyColor;
                     Blockly.FieldTextInput.htmlInput_.value = thisField.getText();
-                    Music.AudioContextManager.tone(freq, 1);
-                    Music.FieldNote.superClass_.dispose.call(this);
-                    setTimeout(function () {
-                        // compare current sound counter with listener sound counter (avoid async problems)
-                        if (soundingKeys == cnt)
-                            Music.AudioContextManager.stop();
-                    }, 500);
+                    pxtblocky.AudioContextManager.tone(freq);
+                    pxtblocky.FieldNote.superClass_.dispose.call(this);
+                }, false, key);
+                goog.events.listen(key.getElement(), goog.events.EventType.MOUSEUP, function () {
+                    pxtblocky.AudioContextManager.stop();
                 }, false, key);
                 //  Listener when the mouse is over a key
                 goog.events.listen(key.getElement(), goog.events.EventType.MOUSEOVER, function () {
@@ -640,6 +637,6 @@ var Music;
         };
         return FieldNote;
     }(Blockly.FieldNumber));
-    Music.FieldNote = FieldNote;
-})(Music || (Music = {}));
-Blockly.FieldNote = Music.FieldNote;
+    pxtblocky.FieldNote = FieldNote;
+})(pxtblocky || (pxtblocky = {}));
+Blockly.FieldNote = pxtblocky.FieldNote;

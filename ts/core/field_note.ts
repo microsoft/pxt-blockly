@@ -31,7 +31,7 @@ enum pianoSize {
     large = 60
 }
 
-namespace Music {
+namespace pxtblocky {
     //  Class for a note input field.
     export class FieldNote extends Blockly.FieldNumber {
         //  value of the field
@@ -418,7 +418,6 @@ namespace Music {
                 goog.events.listen(key.getElement(),
                     goog.events.EventType.MOUSEDOWN,
                     function () {
-                        AudioContextManager.stop();
                         let cnt = ++soundingKeys;
                         let freq = this.getContent().getAttribute("tag");
                         let script: HTMLElement;
@@ -435,15 +434,16 @@ namespace Music {
                         currentSelectedKey = this;
                         script.style.backgroundColor = selectedKeyColor;
                         Blockly.FieldTextInput.htmlInput_.value = thisField.getText();
-                        AudioContextManager.tone(freq, 1);
-                        Music.FieldNote.superClass_.dispose.call(this);
-                        setTimeout(function () {
-                            // compare current sound counter with listener sound counter (avoid async problems)
-                            if (soundingKeys == cnt)
-                                AudioContextManager.stop();
-                        }, 500);
+                        AudioContextManager.tone(freq);
+                        pxtblocky.FieldNote.superClass_.dispose.call(this);
                     }, false, key
                 );
+
+                goog.events.listen(key.getElement(),
+                    goog.events.EventType.MOUSEUP,
+                    () => {
+                        AudioContextManager.stop();
+                }, false, key);
 
                 //  Listener when the mouse is over a key
                 goog.events.listen(key.getElement(),
@@ -700,4 +700,4 @@ namespace Music {
 }
 
 
-(Blockly as any).FieldNote = Music.FieldNote;
+(Blockly as any).FieldNote = pxtblocky.FieldNote;

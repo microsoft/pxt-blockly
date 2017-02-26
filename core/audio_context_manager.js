@@ -12,14 +12,13 @@
  */
 'use strict';
 goog.provide('Blockly.AudioContextManager');
-var Music;
-(function (Music) {
+var pxtblocky;
+(function (pxtblocky) {
     var AudioContextManager;
     (function (AudioContextManager) {
         var _frequency = 0;
         var _context; // AudioContext
         var _vco; // OscillatorNode;
-        var _vca; // GainNode;
         var _mute = false; //mute audio
         function context() {
             if (!_context)
@@ -44,8 +43,7 @@ var Music;
         }
         AudioContextManager.mute = mute;
         function stop() {
-            if (_vca)
-                _vca.gain.value = 0;
+            _vco.disconnect();
             _frequency = 0;
         }
         AudioContextManager.stop = stop;
@@ -53,7 +51,7 @@ var Music;
             return _frequency;
         }
         AudioContextManager.frequency = frequency;
-        function tone(frequency, gain) {
+        function tone(frequency) {
             if (_mute)
                 return;
             if (frequency <= 0)
@@ -62,26 +60,19 @@ var Music;
             var ctx = context();
             if (!ctx)
                 return;
-            gain = Math.max(0, Math.min(1, gain));
-            if (!_vco) {
-                try {
-                    _vco = ctx.createOscillator();
-                    _vca = ctx.createGain();
-                    _vco.connect(_vca);
-                    _vca.connect(ctx.destination);
-                    _vca.gain.value = gain;
-                    _vco.start(0);
-                }
-                catch (e) {
-                    _vco = undefined;
-                    _vca = undefined;
-                    return;
-                }
+            try {
+                _vco = ctx.createOscillator();
+                _vco.frequency.value = frequency;
+                _vco.type = 'triangle';
+                _vco.connect(ctx.destination);
+                _vco.start(0);
             }
-            _vco.frequency.value = frequency;
-            _vca.gain.value = gain;
+            catch (e) {
+                _vco = undefined;
+                return;
+            }
         }
         AudioContextManager.tone = tone;
-    })(AudioContextManager = Music.AudioContextManager || (Music.AudioContextManager = {}));
-})(Music || (Music = {}));
-Blockly.AudioContextManager = Music.AudioContextManager;
+    })(AudioContextManager = pxtblocky.AudioContextManager || (pxtblocky.AudioContextManager = {}));
+})(pxtblocky || (pxtblocky = {}));
+Blockly.AudioContextManager = pxtblocky.AudioContextManager;
