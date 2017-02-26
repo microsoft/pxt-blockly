@@ -1,4 +1,7 @@
 /**
+ * This file has been modified by Microsoft on Feb/2017.
+ */
+/**
  * @license
  * Visual Blocks Editor
  *
@@ -328,6 +331,15 @@ Blockly.Toolbox.prototype.syncTrees_ = function(treeIn, treeOut, pathToMedia) {
           this.hasColours_ = true;
         } else {
           childOut.hexColour = '';
+        }
+        // pxtblockly: support custom icons in toolbox
+        var iconClass = childIn.getAttribute('iconclass');
+        if (goog.isString(iconClass)) {
+            childOut.setIconClass(this.config_['cssTreeIcon'] + ' ' + iconClass);
+        }
+        var expandedClass = childIn.getAttribute('expandedclass');
+        if (goog.isString(expandedClass)) {
+            childOut.setExpandedIconClass(this.config_['cssTreeIcon'] + ' ' + expandedClass);
         }
         if (childIn.getAttribute('expanded') == 'true') {
           if (childOut.blocks.length) {

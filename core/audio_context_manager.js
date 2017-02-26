@@ -61,6 +61,10 @@ var pxtblocky;
             if (!ctx)
                 return;
             try {
+                if (_vco) {
+                    _vco.disconnect();
+                    _vco = undefined;
+                }
                 _vco = ctx.createOscillator();
                 _vco.frequency.value = frequency;
                 _vco.type = 'triangle';

@@ -11,6 +11,7 @@ Major additions and changes in this fork:
 Minor changes:
 
 * Blockly zoom with Ctrl / Cmd + mousewheel scroll, and scroll workspace with just mousewheel scroll
+* Support icons in toolbox
 
 
 ### Prerequisites
