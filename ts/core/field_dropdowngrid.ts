@@ -38,16 +38,34 @@ namespace PxtFields {
         private columns_: number;
 
         private useTooltips_: boolean;
-        
+
         private tooltips_: goog.ui.Tooltip[] = [];
 
-        constructor(optionsValues: string[][], col: number = 2, width: number = 800, useTooltips: boolean = true) {
-            super(optionsValues);
+        /**
+         * Class for an editable dropdown field that arranges elements in a grid.
+         * @param {(!Array.<!Array>|!Function)} menuGenerator An array of options
+         *     for a dropdown list, or a function which generates these options.
+         * @param {number} col A number corresponding to the col-* CSS class for 
+         *     a 16-based column system. For example, for 2 columns, set this
+         *     value to 8 (16 / 8 = 2). For 4 columns, set this value to 4
+         *     (16 / 4 = 4;).
+         * @param {number} width The width of the dropdown menu, in pixels
+         * @param {boolean} useTooltips Whether to add tooltips over the elements
+         *     in the dropdown menu.
+         * @extends {Blockly.FieldDropdown}
+         * @constructor
+         */
+        constructor(menuGenerator: string[][], col: number = 8, width: number = 400, useTooltips: boolean = false) {
+            super(menuGenerator);
             this.columns_ = col;
             this.menuWidth_ = width;
             this.useTooltips_ = useTooltips;
         }
 
+        /**
+         * Create a dropdown menu under the text.
+         * @private
+         */
         public showEditor_() {
             Blockly.WidgetDiv.show(this, this.sourceBlock_.RTL, null);
             const thisField = this;
@@ -162,29 +180,27 @@ namespace PxtFields {
                 this.sourceBlock_.RTL);
 
             const columns = this.columns_;
-            if (this.useTooltips_) {
-                for (let i = 0; i < menuItemsDom.length; ++i) {
-                    const elem = menuItemsDom[i];
-                    Blockly.utils.addClass(elem.parentElement, 'blocklyGridColumn');
-                    Blockly.utils.addClass(elem.parentElement, 'col-' + columns);
-                    if (this.useTooltips_) {
-                        const tooltip = new goog.ui.Tooltip(elem, options[i][0].alt || options[i][0]);
-                        const onShowOld = tooltip.onShow;
-                        tooltip.onShow = () => {
-                            onShowOld.call(tooltip);
-                            const newPos = new goog.positioning.ClientPosition(tooltip.cursorPosition.x + FieldDropdownGrid.TOOLTIP_X_OFFSET,
-                                tooltip.cursorPosition.y + FieldDropdownGrid.TOOLTIP_Y_OFFSET);
-                            tooltip.setPosition(newPos);
-                        };
-                        tooltip.setShowDelayMs(0);
-                        tooltip.className = 'goog-tooltip blocklyDropdownGridMenuItemTooltip';
-                        elem.addEventListener('mousemove', (e: MouseEvent) => {
-                            const newPos = new goog.positioning.ClientPosition(e.clientX + FieldDropdownGrid.TOOLTIP_X_OFFSET,
-                                e.clientY + FieldDropdownGrid.TOOLTIP_Y_OFFSET);
-                            tooltip.setPosition(newPos);
-                        });
-                        this.tooltips_.push(tooltip);
-                    }
+            for (let i = 0; i < menuItemsDom.length; ++i) {
+                const elem = menuItemsDom[i];
+                Blockly.utils.addClass(elem.parentElement, 'blocklyGridColumn');
+                Blockly.utils.addClass(elem.parentElement, 'col-' + columns);
+                if (this.useTooltips_) {
+                    const tooltip = new goog.ui.Tooltip(elem, options[i][0].alt || options[i][0]);
+                    const onShowOld = tooltip.onShow;
+                    tooltip.onShow = () => {
+                        onShowOld.call(tooltip);
+                        const newPos = new goog.positioning.ClientPosition(tooltip.cursorPosition.x + FieldDropdownGrid.TOOLTIP_X_OFFSET,
+                            tooltip.cursorPosition.y + FieldDropdownGrid.TOOLTIP_Y_OFFSET);
+                        tooltip.setPosition(newPos);
+                    };
+                    tooltip.setShowDelayMs(0);
+                    tooltip.className = 'goog-tooltip blocklyDropdownGridMenuItemTooltip';
+                    elem.addEventListener('mousemove', (e: MouseEvent) => {
+                        const newPos = new goog.positioning.ClientPosition(e.clientX + FieldDropdownGrid.TOOLTIP_X_OFFSET,
+                            e.clientY + FieldDropdownGrid.TOOLTIP_Y_OFFSET);
+                        tooltip.setPosition(newPos);
+                    });
+                    this.tooltips_.push(tooltip);
                 }
             }
 
@@ -192,6 +208,10 @@ namespace PxtFields {
             (<any>menuDom).focus();
         }
 
+        /**
+         * Disposes the tooltip DOM elements.
+         * @private
+         */
         private disposeTooltips() {
             if (this.tooltips_ && this.tooltips_.length) {
                 this.tooltips_.forEach((t) => t.dispose());
