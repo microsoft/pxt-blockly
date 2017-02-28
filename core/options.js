@@ -1,4 +1,7 @@
 /**
+ * This file has been modified by Microsoft on Feb/2017.
+ */
+/**
  * @license
  * Visual Blocks Editor
  *

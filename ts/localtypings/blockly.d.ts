@@ -578,6 +578,8 @@ declare namespace Blockly {
         svgGroup_: any;
         scrollbar: ScrollbarPair;
         svgBlockCanvas_: SVGGElement;
+        options: Blockly.Options;
+        RTL: boolean;
 
         newBlock(prototypeName: string, opt_id?: string): Block;
         render(): void;
@@ -658,6 +660,10 @@ declare namespace Blockly {
         rtl?: boolean;
     }
 
+    class Options {
+        constructor(options: Blockly.Options);
+    }
+
     // tslint:disable-next-line
     interface callbackHandler { }
 
@@ -722,6 +728,16 @@ declare namespace Blockly {
         }
     }
 
+    class Toolbox {
+        workspace_: Blockly.Workspace;
+        RTL: boolean;
+        horizontalLayout_: boolean;
+        toolboxPosition: number;
+        hasColours_: boolean;
+        tree_: Blockly.Toolbox.TreeNode;
+
+    }
+
     namespace Toolbox {
         class TreeNode {
             isUserCollapsible_: boolean;
@@ -730,6 +746,7 @@ declare namespace Blockly {
             getParent(): TreeNode;
             getTree(): TreeControl;
             hasChildren(): boolean;
+            getChildren(): Array<TreeNode>;
             isSelected(): boolean;
             onMouseDown(e: Event): void;
             select(): void;

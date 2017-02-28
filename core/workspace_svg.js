@@ -1,4 +1,7 @@
 /**
+ * This file has been modified by Microsoft on Feb/2017.
+ */
+/**
  * @license
  * Visual Blocks Editor
  *
@@ -31,6 +34,7 @@ goog.provide('Blockly.WorkspaceSvg');
 goog.require('Blockly.ConnectionDB');
 goog.require('Blockly.constants');
 goog.require('Blockly.Options');
+goog.require('Blockly.PXTOptions')
 goog.require('Blockly.ScrollbarPair');
 goog.require('Blockly.Touch');
 goog.require('Blockly.Trashcan');
@@ -1012,7 +1016,15 @@ Blockly.WorkspaceSvg.prototype.onMouseWheel_ = function(e) {
   var delta = -e.deltaY / PIXELS_PER_ZOOM_STEP;
   var position = Blockly.utils.mouseToSvg(e, this.getParentSvg(),
       this.getInverseScreenCTM());
-  this.zoom(position.x, position.y, delta);
+  // pxtblockly: Blockly zoom with Ctrl / Cmd + mousewheel scroll, and scroll workspace with just mousewheel scroll
+  if (e.ctrlKey || e.metaKey)
+      this.zoom(position.x, position.y, delta);
+  else if (this.scrollbar) {
+      var y = parseFloat(this.scrollbar.vScroll.svgHandle_.getAttribute("y") || "0");
+      y /= this.scrollbar.vScroll.ratio_;
+      this.scrollbar.vScroll.set(y + e.deltaY);
+      this.scrollbar.resize();
+  }
   e.preventDefault();
 };
 
@@ -1320,6 +1332,12 @@ Blockly.WorkspaceSvg.prototype.updateToolbox = function(tree) {
       throw 'Existing toolbox has no categories.  Can\'t change mode.';
     }
     this.options.languageTree = tree;
+    // pxtblockly: open expanded node when updating toolbox
+    var openNode = this.toolbox_.populate_(tree);
+    if (openNode)
+        this.toolbox_.tree_.setSelectedItem(openNode);
+    else
+        this.toolbox_.flyout_.hide();
     this.toolbox_.populate_(tree);
     this.toolbox_.addColour_();
   } else {

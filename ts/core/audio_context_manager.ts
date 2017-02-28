@@ -16,12 +16,11 @@
 
 goog.provide('Blockly.AudioContextManager');
 
-namespace Music { 
+namespace pxtblocky { 
     export namespace AudioContextManager {
         let _frequency = 0;
         let _context: any; // AudioContext
         let _vco: any; // OscillatorNode;
-        let _vca: any; // GainNode;
 
         let _mute = false; //mute audio
 
@@ -48,7 +47,7 @@ namespace Music {
         }
 
         export function stop() {
-            if (_vca) _vca.gain.value = 0;
+            _vco.disconnect();
             _frequency = 0;
         }
 
@@ -56,7 +55,7 @@ namespace Music {
             return _frequency;
         }
 
-        export function tone(frequency: number, gain: number) {
+        export function tone(frequency: number) {
             if (_mute) return;
             if (frequency <= 0) return;
             _frequency = frequency;
@@ -64,27 +63,25 @@ namespace Music {
             let ctx = context();
             if (!ctx) return;
 
-            gain = Math.max(0, Math.min(1, gain));
-            if (!_vco) {
-                try {
-                    _vco = ctx.createOscillator();
-                    _vca = ctx.createGain();
-                    _vco.connect(_vca);
-                    _vca.connect(ctx.destination);
-                    _vca.gain.value = gain;
-                    _vco.start(0);
-                } catch (e) {
+            try {
+                if (_vco) {
+                    _vco.disconnect();
                     _vco = undefined;
-                    _vca = undefined;
-                    return;
                 }
+                _vco = ctx.createOscillator();
+                _vco.frequency.value = frequency;
+                _vco.type = 'triangle';
+                _vco.connect(ctx.destination);
+
+                _vco.start(0);
+            } catch (e) {
+                _vco = undefined;
+                return;
             }
 
-            _vco.frequency.value = frequency;
-            _vca.gain.value = gain;
         }
     }
 
 }
 
-(Blockly as any).AudioContextManager = Music.AudioContextManager;
+(Blockly as any).AudioContextManager = pxtblocky.AudioContextManager;

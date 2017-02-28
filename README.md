@@ -8,7 +8,27 @@ Major additions and changes in this fork:
 * Slider for the number field editor
 * Edge / IE fixes
 
-## Installation
+Minor changes:
+
+* Blockly zoom with Ctrl / Cmd + mousewheel scroll, and scroll workspace with just mousewheel scroll
+* Support icons in toolbox
+
+
+### Prerequisites
+
+* node, npm
+* python
+
+## Development
+
+* `git clone https://github.com/Microsoft/pxt-blockly`
+* `cd pxt-blockly`
+* `npm install .`
+* `npm run watch` to compile Typescript files
+
+## Building
+
+* `python build.py` to build blockly
 
 ## Playground
 

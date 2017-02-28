@@ -1,4 +1,7 @@
 /**
+ * This file has been modified by Microsoft on Feb/2017.
+ */
+/**
  * @license
  * Visual Blocks Editor
  *
@@ -39,6 +42,7 @@ goog.require('goog.style');
 goog.require('goog.ui.tree.TreeControl');
 goog.require('goog.ui.tree.TreeNode');
 
+goog.require('Blockly.PXTUtils');
 
 /**
  * Class for a Toolbox.
@@ -329,6 +333,15 @@ Blockly.Toolbox.prototype.syncTrees_ = function(treeIn, treeOut, pathToMedia) {
         } else {
           childOut.hexColour = '';
         }
+        // pxtblockly: support custom icons in toolbox
+        var iconClass = childIn.getAttribute('iconclass');
+        if (goog.isString(iconClass)) {
+            childOut.setIconClass(this.config_['cssTreeIcon'] + ' ' + iconClass);
+        }
+        var expandedClass = childIn.getAttribute('expandedclass');
+        if (goog.isString(expandedClass)) {
+            childOut.setExpandedIconClass(this.config_['cssTreeIcon'] + ' ' + expandedClass);
+        }
         if (childIn.getAttribute('expanded') == 'true') {
           if (childOut.blocks.length) {
             // This is a category that directly contains blocks.
@@ -524,7 +537,8 @@ Blockly.Toolbox.TreeControl.prototype.setSelectedItem = function(node) {
   if (node == this.selectedItem_ || node == toolbox.tree_) {
     return;
   }
-  if (toolbox.lastCategory_) {
+  // pxtblockly: don't reset the toolbox category background color for inverted toolboxes
+  if (toolbox.lastCategory_ && !workspace.options.invertedToolbox) {
     toolbox.lastCategory_.getRowElement().style.backgroundColor = '';
   }
   if (node) {
