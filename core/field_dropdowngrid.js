@@ -30,17 +30,35 @@ var PxtFields;
 (function (PxtFields) {
     var FieldDropdownGrid = (function (_super) {
         __extends(FieldDropdownGrid, _super);
-        function FieldDropdownGrid(optionsValues, col, width, useTooltips) {
-            if (col === void 0) { col = 2; }
-            if (width === void 0) { width = 800; }
-            if (useTooltips === void 0) { useTooltips = true; }
-            var _this = _super.call(this, optionsValues) || this;
+        /**
+         * Class for an editable dropdown field that arranges elements in a grid.
+         * @param {(!Array.<!Array>|!Function)} menuGenerator An array of options
+         *     for a dropdown list, or a function which generates these options.
+         * @param {number} col A number corresponding to the col-* CSS class for
+         *     a 16-based column system. For example, for 2 columns, set this
+         *     value to 8 (16 / 8 = 2). For 4 columns, set this value to 4
+         *     (16 / 4 = 4;).
+         * @param {number} width The width of the dropdown menu, in pixels
+         * @param {boolean} useTooltips Whether to add tooltips over the elements
+         *     in the dropdown menu.
+         * @extends {Blockly.FieldDropdown}
+         * @constructor
+         */
+        function FieldDropdownGrid(menuGenerator, col, width, useTooltips) {
+            if (col === void 0) { col = 8; }
+            if (width === void 0) { width = 400; }
+            if (useTooltips === void 0) { useTooltips = false; }
+            var _this = _super.call(this, menuGenerator) || this;
             _this.tooltips_ = [];
             _this.columns_ = col;
             _this.menuWidth_ = width;
             _this.useTooltips_ = useTooltips;
             return _this;
         }
+        /**
+         * Create a dropdown menu under the text.
+         * @private
+         */
         FieldDropdownGrid.prototype.showEditor_ = function () {
             Blockly.WidgetDiv.show(this, this.sourceBlock_.RTL, null);
             var thisField = this;
@@ -134,36 +152,38 @@ var PxtFields;
             }
             Blockly.WidgetDiv.position(xy.x, xy.y, windowSize, scrollOffset, this.sourceBlock_.RTL);
             var columns = this.columns_;
-            if (this.useTooltips_) {
-                var _loop_1 = function (i) {
-                    var elem = menuItemsDom[i];
-                    Blockly.utils.addClass(elem.parentElement, 'blocklyGridColumn');
-                    Blockly.utils.addClass(elem.parentElement, 'col-' + columns);
-                    if (this_1.useTooltips_) {
-                        var tooltip_1 = new goog.ui.Tooltip(elem, options[i][0].alt || options[i][0]);
-                        var onShowOld_1 = tooltip_1.onShow;
-                        tooltip_1.onShow = function () {
-                            onShowOld_1.call(tooltip_1);
-                            var newPos = new goog.positioning.ClientPosition(tooltip_1.cursorPosition.x + FieldDropdownGrid.TOOLTIP_X_OFFSET, tooltip_1.cursorPosition.y + FieldDropdownGrid.TOOLTIP_Y_OFFSET);
-                            tooltip_1.setPosition(newPos);
-                        };
-                        tooltip_1.setShowDelayMs(0);
-                        tooltip_1.className = 'goog-tooltip blocklyDropdownGridMenuItemTooltip';
-                        elem.addEventListener('mousemove', function (e) {
-                            var newPos = new goog.positioning.ClientPosition(e.clientX + FieldDropdownGrid.TOOLTIP_X_OFFSET, e.clientY + FieldDropdownGrid.TOOLTIP_Y_OFFSET);
-                            tooltip_1.setPosition(newPos);
-                        });
-                        this_1.tooltips_.push(tooltip_1);
-                    }
-                };
-                var this_1 = this;
-                for (var i = 0; i < menuItemsDom.length; ++i) {
-                    _loop_1(i);
+            var _loop_1 = function (i) {
+                var elem = menuItemsDom[i];
+                Blockly.utils.addClass(elem.parentElement, 'blocklyGridColumn');
+                Blockly.utils.addClass(elem.parentElement, 'col-' + columns);
+                if (this_1.useTooltips_) {
+                    var tooltip_1 = new goog.ui.Tooltip(elem, options[i][0].alt || options[i][0]);
+                    var onShowOld_1 = tooltip_1.onShow;
+                    tooltip_1.onShow = function () {
+                        onShowOld_1.call(tooltip_1);
+                        var newPos = new goog.positioning.ClientPosition(tooltip_1.cursorPosition.x + FieldDropdownGrid.TOOLTIP_X_OFFSET, tooltip_1.cursorPosition.y + FieldDropdownGrid.TOOLTIP_Y_OFFSET);
+                        tooltip_1.setPosition(newPos);
+                    };
+                    tooltip_1.setShowDelayMs(0);
+                    tooltip_1.className = 'goog-tooltip blocklyDropdownGridMenuItemTooltip';
+                    elem.addEventListener('mousemove', function (e) {
+                        var newPos = new goog.positioning.ClientPosition(e.clientX + FieldDropdownGrid.TOOLTIP_X_OFFSET, e.clientY + FieldDropdownGrid.TOOLTIP_Y_OFFSET);
+                        tooltip_1.setPosition(newPos);
+                    });
+                    this_1.tooltips_.push(tooltip_1);
                 }
+            };
+            var this_1 = this;
+            for (var i = 0; i < menuItemsDom.length; ++i) {
+                _loop_1(i);
             }
             menu.setAllowAutoFocus(true);
             menuDom.focus();
         };
+        /**
+         * Disposes the tooltip DOM elements.
+         * @private
+         */
         FieldDropdownGrid.prototype.disposeTooltips = function () {
             if (this.tooltips_ && this.tooltips_.length) {
                 this.tooltips_.forEach(function (t) { return t.dispose(); });
