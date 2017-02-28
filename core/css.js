@@ -873,6 +873,8 @@ Blockly.Css.CONTENT = [
     'display: inline-block;',
     'position: absolute;',
     'top: 0px;',
+    'border-bottom-left-radius: 3px;',
+    'border-bottom-right-radius: 3px;',
   '}',
 
   '.blocklyWidgetDiv .blocklyNote:hover {',
