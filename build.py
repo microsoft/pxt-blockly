@@ -465,4 +465,4 @@ developers.google.com/blockly/guides/modify/web/closure""")
   Gen_compressed(search_paths).start()
 
   # This is run locally in a separate thread.
-  Gen_langfiles().start()
+  #Gen_langfiles().start()
