@@ -202,6 +202,56 @@ Blockly.Blocks['math_single'] = {
   }
 };
 
+Blockly.Blocks['math_single_grid'] = {
+  /**
+   * Block for advanced math operators with single operand.
+   * @this Blockly.Block
+   */
+  init: function() {
+    this.jsonInit({
+      "message0": "%1 %2",
+      "args0": [
+        {
+          "type": "field_dropdowngrid",
+          "name": "OP",
+          "options": [
+            [Blockly.Msg.MATH_SINGLE_OP_ROOT, 'ROOT'],
+            [Blockly.Msg.MATH_SINGLE_OP_ABSOLUTE, 'ABS'],
+            ['-', 'NEG'],
+            ['ln', 'LN'],
+            ['log10', 'LOG10'],
+            ['e^', 'EXP'],
+            ['10^', 'POW10']
+          ]
+        },
+        {
+          "type": "input_value",
+          "name": "NUM",
+          "check": "Number"
+        }
+      ],
+      "output": "Number",
+      "colour": Blockly.Blocks.math.HUE,
+      "helpUrl": Blockly.Msg.MATH_SINGLE_HELPURL
+    });
+    // Assign 'this' to a variable for use in the tooltip closure below.
+    var thisBlock = this;
+    this.setTooltip(function() {
+      var mode = thisBlock.getFieldValue('OP');
+      var TOOLTIPS = {
+        'ROOT': Blockly.Msg.MATH_SINGLE_TOOLTIP_ROOT,
+        'ABS': Blockly.Msg.MATH_SINGLE_TOOLTIP_ABS,
+        'NEG': Blockly.Msg.MATH_SINGLE_TOOLTIP_NEG,
+        'LN': Blockly.Msg.MATH_SINGLE_TOOLTIP_LN,
+        'LOG10': Blockly.Msg.MATH_SINGLE_TOOLTIP_LOG10,
+        'EXP': Blockly.Msg.MATH_SINGLE_TOOLTIP_EXP,
+        'POW10': Blockly.Msg.MATH_SINGLE_TOOLTIP_POW10
+      };
+      return TOOLTIPS[mode];
+    });
+  }
+};
+
 Blockly.Blocks['math_trig'] = {
   /**
    * Block for trigonometry operators.
