@@ -27,7 +27,7 @@ goog.require('goog.ui.Menu');
 goog.require('goog.ui.MenuItem');
 goog.require('goog.ui.Tooltip');
 
-namespace PxtFields {
+namespace pxtblocky {
     export class FieldDropdownGrid extends Blockly.FieldDropdown {
         static TOOLTIP_X_OFFSET = 15;
         static TOOLTIP_Y_OFFSET = -10;
@@ -237,4 +237,4 @@ namespace PxtFields {
     }
 }
 
-(Blockly as any).FieldDropdownGrid = PxtFields.FieldDropdownGrid;
+(Blockly as any).FieldDropdownGrid = pxtblocky.FieldDropdownGrid;

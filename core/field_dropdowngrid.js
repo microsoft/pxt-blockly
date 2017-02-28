@@ -26,8 +26,8 @@ goog.require('goog.style');
 goog.require('goog.ui.Menu');
 goog.require('goog.ui.MenuItem');
 goog.require('goog.ui.Tooltip');
-var PxtFields;
-(function (PxtFields) {
+var pxtblocky;
+(function (pxtblocky) {
     var FieldDropdownGrid = (function (_super) {
         __extends(FieldDropdownGrid, _super);
         /**
@@ -209,6 +209,6 @@ var PxtFields;
     }(Blockly.FieldDropdown));
     FieldDropdownGrid.TOOLTIP_X_OFFSET = 15;
     FieldDropdownGrid.TOOLTIP_Y_OFFSET = -10;
-    PxtFields.FieldDropdownGrid = FieldDropdownGrid;
-})(PxtFields || (PxtFields = {}));
-Blockly.FieldDropdownGrid = PxtFields.FieldDropdownGrid;
+    pxtblocky.FieldDropdownGrid = FieldDropdownGrid;
+})(pxtblocky || (pxtblocky = {}));
+Blockly.FieldDropdownGrid = pxtblocky.FieldDropdownGrid;
