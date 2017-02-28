@@ -252,7 +252,7 @@ Blockly.Blocks['math_single_grid'] = {
   }
 };
 
-Blockly.Blocks['math_single_grid_images'] = {
+Blockly.Blocks['math_single_grid_img'] = {
   /**
    * Block for advanced math operators with single operand.
    * @this Blockly.Block
@@ -265,14 +265,17 @@ Blockly.Blocks['math_single_grid_images'] = {
           "type": "field_dropdowngrid",
           "name": "OP",
           "options": [
-            [{ alt: Blockly.Msg.MATH_SINGLE_OP_ROOT, src: '../media/sprites.png' }, 'ROOT'],
-            [{ alt: Blockly.Msg.MATH_SINGLE_OP_ABSOLUTE, src: '../media/sprites.png' }, 'ABS'],
-            [{ alt: '-', src: '../media/sprites.png' }, 'NEG'],
-            [{ alt: 'ln', src: '../media/sprites.png' }, 'LN'],
-            [{ alt: 'log10', src: '../media/sprites.png' }, 'LOG10'],
-            [{ alt: 'e^', src: '../media/sprites.png' }, 'EXP'],
-            [{ alt: '10^', src: '../media/sprites.png' }, 'POW10']
-          ]
+            [{ alt: Blockly.Msg.MATH_SINGLE_OP_ROOT, width: 32, height: 32, src: '../media/sprites.png' }, 'ROOT'],
+            [{ alt: Blockly.Msg.MATH_SINGLE_OP_ABSOLUTE, width: 32, height: 32, src: '../media/sprites.png' }, 'ABS'],
+            [{ alt: '-', width: 32, height: 32, src: '../media/sprites.png' }, 'NEG'],
+            [{ alt: 'ln', width: 32, height: 32, src: '../media/sprites.png' }, 'LN'],
+            [{ alt: 'log10', width: 32, height: 32, src: '../media/sprites.png' }, 'LOG10'],
+            [{ alt: 'e^', width: 32, height: 32, src: '../media/sprites.png' }, 'EXP'],
+            [{ alt: '10^', width: 32, height: 32, src: '../media/sprites.png' }, 'POW10']
+          ],
+          "col": 8,
+          "width": 300,
+          "useTooltips": true
         },
         {
           "type": "input_value",

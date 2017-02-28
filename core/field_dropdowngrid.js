@@ -123,6 +123,32 @@ var pxtblocky;
             // Record menuSize after adding menu.
             var menuSize = goog.style.getSize(menuDom);
             var menuItemsDom = menuDom.getElementsByClassName('goog-menuitem');
+            var columns = this.columns_;
+            var _loop_1 = function (i) {
+                var elem = menuItemsDom[i];
+                Blockly.utils.addClass(elem.parentElement, 'blocklyGridColumn');
+                Blockly.utils.addClass(elem.parentElement, 'col-' + columns);
+                if (this_1.useTooltips_) {
+                    var tooltip_1 = new goog.ui.Tooltip(elem, options[i][0].alt || options[i][0]);
+                    var onShowOld_1 = tooltip_1.onShow;
+                    tooltip_1.onShow = function () {
+                        onShowOld_1.call(tooltip_1);
+                        var newPos = new goog.positioning.ClientPosition(tooltip_1.cursorPosition.x + FieldDropdownGrid.TOOLTIP_X_OFFSET, tooltip_1.cursorPosition.y + FieldDropdownGrid.TOOLTIP_Y_OFFSET);
+                        tooltip_1.setPosition(newPos);
+                    };
+                    tooltip_1.setShowDelayMs(0);
+                    tooltip_1.className = 'goog-tooltip blocklyDropdownGridMenuItemTooltip';
+                    elem.addEventListener('mousemove', function (e) {
+                        var newPos = new goog.positioning.ClientPosition(e.clientX + FieldDropdownGrid.TOOLTIP_X_OFFSET, e.clientY + FieldDropdownGrid.TOOLTIP_Y_OFFSET);
+                        tooltip_1.setPosition(newPos);
+                    });
+                    this_1.tooltips_.push(tooltip_1);
+                }
+            };
+            var this_1 = this;
+            for (var i = 0; i < menuItemsDom.length; ++i) {
+                _loop_1(i);
+            }
             // Recalculate height for the total content, not only box height.
             menuSize.height = menuDom.scrollHeight;
             menuSize.width = this.menuWidth_;
@@ -151,32 +177,6 @@ var pxtblocky;
                 }
             }
             Blockly.WidgetDiv.position(xy.x, xy.y, windowSize, scrollOffset, this.sourceBlock_.RTL);
-            var columns = this.columns_;
-            var _loop_1 = function (i) {
-                var elem = menuItemsDom[i];
-                Blockly.utils.addClass(elem.parentElement, 'blocklyGridColumn');
-                Blockly.utils.addClass(elem.parentElement, 'col-' + columns);
-                if (this_1.useTooltips_) {
-                    var tooltip_1 = new goog.ui.Tooltip(elem, options[i][0].alt || options[i][0]);
-                    var onShowOld_1 = tooltip_1.onShow;
-                    tooltip_1.onShow = function () {
-                        onShowOld_1.call(tooltip_1);
-                        var newPos = new goog.positioning.ClientPosition(tooltip_1.cursorPosition.x + FieldDropdownGrid.TOOLTIP_X_OFFSET, tooltip_1.cursorPosition.y + FieldDropdownGrid.TOOLTIP_Y_OFFSET);
-                        tooltip_1.setPosition(newPos);
-                    };
-                    tooltip_1.setShowDelayMs(0);
-                    tooltip_1.className = 'goog-tooltip blocklyDropdownGridMenuItemTooltip';
-                    elem.addEventListener('mousemove', function (e) {
-                        var newPos = new goog.positioning.ClientPosition(e.clientX + FieldDropdownGrid.TOOLTIP_X_OFFSET, e.clientY + FieldDropdownGrid.TOOLTIP_Y_OFFSET);
-                        tooltip_1.setPosition(newPos);
-                    });
-                    this_1.tooltips_.push(tooltip_1);
-                }
-            };
-            var this_1 = this;
-            for (var i = 0; i < menuItemsDom.length; ++i) {
-                _loop_1(i);
-            }
             menu.setAllowAutoFocus(true);
             menuDom.focus();
         };

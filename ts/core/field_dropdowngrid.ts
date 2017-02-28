@@ -147,6 +147,31 @@ namespace pxtblocky {
             const menuSize = goog.style.getSize(menuDom);
             const menuItemsDom = menuDom.getElementsByClassName('goog-menuitem');
 
+            const columns = this.columns_;
+            for (let i = 0; i < menuItemsDom.length; ++i) {
+                const elem = menuItemsDom[i];
+                Blockly.utils.addClass(elem.parentElement, 'blocklyGridColumn');
+                Blockly.utils.addClass(elem.parentElement, 'col-' + columns);
+                if (this.useTooltips_) {
+                    const tooltip = new goog.ui.Tooltip(elem, options[i][0].alt || options[i][0]);
+                    const onShowOld = tooltip.onShow;
+                    tooltip.onShow = () => {
+                        onShowOld.call(tooltip);
+                        const newPos = new goog.positioning.ClientPosition(tooltip.cursorPosition.x + FieldDropdownGrid.TOOLTIP_X_OFFSET,
+                            tooltip.cursorPosition.y + FieldDropdownGrid.TOOLTIP_Y_OFFSET);
+                        tooltip.setPosition(newPos);
+                    };
+                    tooltip.setShowDelayMs(0);
+                    tooltip.className = 'goog-tooltip blocklyDropdownGridMenuItemTooltip';
+                    elem.addEventListener('mousemove', (e: MouseEvent) => {
+                        const newPos = new goog.positioning.ClientPosition(e.clientX + FieldDropdownGrid.TOOLTIP_X_OFFSET,
+                            e.clientY + FieldDropdownGrid.TOOLTIP_Y_OFFSET);
+                        tooltip.setPosition(newPos);
+                    });
+                    this.tooltips_.push(tooltip);
+                }
+            }
+
             // Recalculate height for the total content, not only box height.
             menuSize.height = menuDom.scrollHeight;
             menuSize.width = this.menuWidth_;
@@ -176,33 +201,9 @@ namespace pxtblocky {
                     xy.x = windowSize.width + scrollOffset.x - menuSize.width;
                 }
             }
+            
             Blockly.WidgetDiv.position(xy.x, xy.y, windowSize, scrollOffset,
                 this.sourceBlock_.RTL);
-
-            const columns = this.columns_;
-            for (let i = 0; i < menuItemsDom.length; ++i) {
-                const elem = menuItemsDom[i];
-                Blockly.utils.addClass(elem.parentElement, 'blocklyGridColumn');
-                Blockly.utils.addClass(elem.parentElement, 'col-' + columns);
-                if (this.useTooltips_) {
-                    const tooltip = new goog.ui.Tooltip(elem, options[i][0].alt || options[i][0]);
-                    const onShowOld = tooltip.onShow;
-                    tooltip.onShow = () => {
-                        onShowOld.call(tooltip);
-                        const newPos = new goog.positioning.ClientPosition(tooltip.cursorPosition.x + FieldDropdownGrid.TOOLTIP_X_OFFSET,
-                            tooltip.cursorPosition.y + FieldDropdownGrid.TOOLTIP_Y_OFFSET);
-                        tooltip.setPosition(newPos);
-                    };
-                    tooltip.setShowDelayMs(0);
-                    tooltip.className = 'goog-tooltip blocklyDropdownGridMenuItemTooltip';
-                    elem.addEventListener('mousemove', (e: MouseEvent) => {
-                        const newPos = new goog.positioning.ClientPosition(e.clientX + FieldDropdownGrid.TOOLTIP_X_OFFSET,
-                            e.clientY + FieldDropdownGrid.TOOLTIP_Y_OFFSET);
-                        tooltip.setPosition(newPos);
-                    });
-                    this.tooltips_.push(tooltip);
-                }
-            }
 
             menu.setAllowAutoFocus(true);
             (<any>menuDom).focus();
