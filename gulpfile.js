@@ -8,6 +8,8 @@ var tsb = require('gulp-tsb');
 var merge = require('merge-stream');
 var path = require('path');
 var rimraf = require('rimraf');
+var fs = require('fs');
+var spawn = require('child_process').spawn;
 
 var tsconfig = require(path.join(__dirname, 'ts', 'tsconfig.json'));
 
@@ -29,3 +31,21 @@ gulp.task('compile-without-clean', compileTask);
 gulp.task('watch', ['compile'], function() {
 	gulp.watch('ts/**/*.ts', ['compile-without-clean']);
 });
+
+gulp.task("python-build", function(cb){
+	console.info('Starting python build');
+	var python = spawn('python', ['build.py'], {stdio: 'inherit'});
+	python.on('close', function (code) {
+		console.log('python exited with code ' + code);
+		cb(code);
+	});
+});
+
+function publishTask() {
+	if (fs.existsSync('../pxt')) {
+		gulp.src('./blocks_compressed.js').pipe(gulp.dest('../pxt/webapp/public/blockly/'));
+		gulp.src('./blockly_compressed.js').pipe(gulp.dest('../pxt/webapp/public/blockly/'));
+	}
+}
+
+gulp.task('publish', ['compile', 'python-build'], publishTask);

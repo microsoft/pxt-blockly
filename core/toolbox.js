@@ -538,7 +538,7 @@ Blockly.Toolbox.TreeControl.prototype.setSelectedItem = function(node) {
     return;
   }
   // pxtblockly: don't reset the toolbox category background color for inverted toolboxes
-  if (toolbox.lastCategory_ && !workspace.options.invertedToolbox) {
+  if (toolbox.lastCategory_ && !toolbox.invertedToolbox) {
     toolbox.lastCategory_.getRowElement().style.backgroundColor = '';
   }
   if (node) {

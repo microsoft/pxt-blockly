@@ -18,6 +18,13 @@ namespace pxtblocky {
 
     export class PXTToolbox extends Blockly.Toolbox {
 
+        invertedToolbox: boolean;
+
+        constructor(workspace: Blockly.Workspace) {
+            super(workspace);
+
+            this.invertedToolbox = (workspace.options as PXTOptions).invertedToolbox;
+        }
 
         /**
          * Recursively add colours to this toolbox.

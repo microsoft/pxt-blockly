@@ -19,8 +19,10 @@ var pxtblocky;
 (function (pxtblocky) {
     var PXTToolbox = (function (_super) {
         __extends(PXTToolbox, _super);
-        function PXTToolbox() {
-            return _super !== null && _super.apply(this, arguments) || this;
+        function PXTToolbox(workspace) {
+            var _this = _super.call(this, workspace) || this;
+            _this.invertedToolbox = workspace.options.invertedToolbox;
+            return _this;
         }
         /**
          * Recursively add colours to this toolbox.

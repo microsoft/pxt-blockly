@@ -736,6 +736,7 @@ declare namespace Blockly {
         hasColours_: boolean;
         tree_: Blockly.Toolbox.TreeNode;
 
+        constructor(workspace: Blockly.Workspace);
     }
 
     namespace Toolbox {
