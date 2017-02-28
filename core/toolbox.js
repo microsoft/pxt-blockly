@@ -398,41 +398,15 @@ Blockly.Toolbox.prototype.addColour_ = function(opt_tree) {
   for (var i = 0, child; child = children[i]; i++) {
     var element = child.getRowElement();
     if (element) {
-      // pxtblockly: support for coloured and inverted toolboxes
-      if (this.workspace_.options.invertedToolbox) {
-        if (this.hasColours_) {
-          element.style.color = '#fff';
-          element.style.background = (child.hexColour || '#ddd');
-          var invertedMultiplier = this.workspace_.options.invertedMultiplier;
-          // pxtblockly: Hovering over toolbox category fades.
-          Blockly.bindEvent_(child.getRowElement(), 'mouseenter', child,
-              function(e) {
-                if (!this.isSelected()) {
-                  this.getRowElement().style.background = Blockly.PXTUtils.fadeColour(this.hexColour || '#ddd', invertedMultiplier, false);
-                }
-              });
-          Blockly.bindEvent_(child.getRowElement(), 'mouseleave', child,
-              function(e) {
-                if (!this.isSelected()) {
-                  this.getRowElement().style.background = (this.hexColour || '#ddd');
-                }
-              });
-        }
+      if (this.hasColours_) {
+        var border = '8px solid ' + (child.hexColour || '#ddd');
       } else {
-        if (this.hasColours_) {
-          var border = '8px solid ' + (child.hexColour || '#ddd');
-        } else {
-          var border = 'none';
-        }
-        if (this.workspace_.RTL) {
-          element.style.borderRight = border;
-        } else {
-          element.style.borderLeft = border;
-        }
-        // pxtblockly: support for a coloured toolbox
-        if (this.workspace_.options.colouredToolbox && this.hasColours_) {
-          element.style.color = (child.hexColour || '#000');
-        }
+        var border = 'none';
+      }
+      if (this.workspace_.RTL) {
+        element.style.borderRight = border;
+      } else {
+        element.style.borderLeft = border;
       }
     }
     this.addColour_(child);
