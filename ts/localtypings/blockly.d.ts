@@ -604,6 +604,10 @@ declare namespace Blockly {
         rtl?: boolean;
     }
 
+    class Options {
+        constructor(options: Blockly.Options);
+    }
+
     // tslint:disable-next-line
     interface callbackHandler { }
 
