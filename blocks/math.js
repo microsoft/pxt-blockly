@@ -275,7 +275,11 @@ Blockly.Blocks['math_single_grid_img'] = {
           ],
           "col": 8,
           "width": 300,
-          "useTooltips": true
+          "tooltipConfig": {
+            "enabled": true,
+            "xOffset": 15,
+            "yOffset": -10
+          }
         },
         {
           "type": "input_value",
