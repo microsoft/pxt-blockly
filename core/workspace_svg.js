@@ -33,7 +33,8 @@ goog.provide('Blockly.WorkspaceSvg');
 //goog.require('Blockly.BlockSvg');
 goog.require('Blockly.ConnectionDB');
 goog.require('Blockly.constants');
-goog.require('Blockly.PXTOptions');
+goog.require('Blockly.Options');
+goog.require('Blockly.PXTOptions')
 goog.require('Blockly.ScrollbarPair');
 goog.require('Blockly.Touch');
 goog.require('Blockly.Trashcan');

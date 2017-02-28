@@ -52,4 +52,4 @@ namespace pxtblocky {
     }
 }
 
-(Blockly as any).PXTOptions = pxtblocky.PXTOptions;
+(Blockly as any).Options = pxtblocky.PXTOptions;

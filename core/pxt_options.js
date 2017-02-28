@@ -45,4 +45,4 @@ var pxtblocky;
     }(Blockly.Options));
     pxtblocky.PXTOptions = PXTOptions;
 })(pxtblocky || (pxtblocky = {}));
-Blockly.PXTOptions = pxtblocky.PXTOptions;
+Blockly.Options = pxtblocky.PXTOptions;

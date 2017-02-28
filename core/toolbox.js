@@ -404,7 +404,7 @@ Blockly.Toolbox.prototype.addColour_ = function(opt_tree) {
           element.style.color = '#fff';
           element.style.background = (child.hexColour || '#ddd');
           var invertedMultiplier = this.workspace_.options.invertedMultiplier;
-          // Hovering over toolbox category fades.
+          // pxtblockly: Hovering over toolbox category fades.
           Blockly.bindEvent_(child.getRowElement(), 'mouseenter', child,
               function(e) {
                 if (!this.isSelected()) {
