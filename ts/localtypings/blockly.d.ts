@@ -13,6 +13,10 @@ declare namespace goog {
     function provide(name: string): void;
     function isFunction(f: any): boolean;
 
+    class Disposable {
+        dispose(): void;
+    }
+
     namespace string {
         let caseInsensitiveCompare: (a: string, b: string) => number;
     }
@@ -49,15 +53,13 @@ declare namespace goog {
 
     namespace ui {
         class Control extends Component {
-            setContent(content: string | Node | Array<Node> | null): void;
             getContent(): string | Node | Array<Node> | null;
             getContentElement(): Element;
+            setChecked(checked: boolean): void;
+            setContent(content: string | Node | Array<Node> | null): void;
             setVisible(visible: boolean, opt_force?: boolean | undefined): boolean;
         }
         class Component {
-            getElement(): Element | null;
-            render(opt_parentElement?: Element | null | undefined): void;
-            setId(id: string): void;
             static EventType: {
                 BEFORE_SHOW: string;
                 SHOW: string;
@@ -81,11 +83,41 @@ declare namespace goog {
                 ACTION: string;
                 CHANGE: string;
             };
+            getHandler<T>(): events.EventHandler<T>;
+            getElement(): Element | null;
+            render(opt_parentElement?: Element | null | undefined): void;
+            setId(id: string): void;
+            setRightToLeft(rightToLeft: boolean): void;
+            addChild(child: Component, opt_render?: boolean): void;
+            getChildAt(index: number): Component | null;
         }
         class ColorButton extends Control {
             title: string;
-            setId(id: string): void;
-            render(opt_parentElement?: Element | null | undefined): void;
+        }
+        class Container extends Component {
+        }
+        class Menu extends Container implements events.Listenable {
+            listen: () => events.ListenableKey;
+            setAllowAutoFocus(allow: boolean): void;
+        }
+        class MenuItem extends Control {
+            constructor(content: (string | Node));
+            setCheckable(checkable: boolean): void;
+            setValue(value: any): void;
+            getValue(): any;
+            addClassName(className: string): void;
+        }
+        class Popup extends PopupBase {
+            setPosition(position: positioning.ClientPosition): void;
+        }
+        class PopupBase extends events.EventTarget {
+        }
+        class Tooltip extends Popup {
+            className: string;
+            cursorPosition: math.Coordinate;
+            constructor(opt_el?: Node | string, opt_str?: string);
+            onShow(): void;
+            setShowDelayMs(ms: number): void;
         }
         class Slider extends Component {
             setMoveToPointEnabled(val: boolean);
@@ -99,11 +131,19 @@ declare namespace goog {
     namespace style {
         let backgroundColor: number;
         function getViewportPageOffset(doc: Document): math.Coordinate;
+        function getSize(element: Element): math.Size;
+        function setWidth(element: Element, width: number | string): void;
     }
 
     namespace events {
-        function listen(eventSource: Element, eventType: EventType, listener: any, capturePhase?: boolean, handler?: Object);
+        function listen(eventSource: Element | Listenable, eventType: EventType, listener: any, capturePhase?: boolean, handler?: Object);
         function unlistenByKey(key: any);
+        interface ListenableKey {
+            key: number;
+        }
+        interface Listenable {
+            listen: () => ListenableKey;
+        }
         type EventType = string;
         let EventType: {
             CLICK: EventType;
@@ -224,6 +264,12 @@ declare namespace goog {
             DOMATTRMODIFIED: EventType;
             DOMCHARACTERDATAMODIFIED: EventType;
         };
+        class EventTarget extends Disposable {
+        }
+        class EventHandler<T> {
+            handleEvent(e: any): void;
+            listen(src: Element | Listenable, type: string, opt_fn?: (this: any, e: any) => any): EventHandler<T>;
+        }
     }
     namespace userAgent {
         /**
@@ -254,7 +300,11 @@ declare namespace goog {
          */
         var IPAD: boolean;
     }
-
+    namespace positioning {
+        class ClientPosition {
+            constructor(x: number, y: number);
+        }
+    }
 }
 declare namespace Blockly {
     let selected: any;
@@ -274,6 +324,7 @@ declare namespace Blockly {
     let ALIGN_RIGHT: number;
 
     namespace utils {
+        function addClass(element: Element, className: string): boolean;
         function wrap(tip: string, limit: number): string;
     }
 
@@ -308,6 +359,8 @@ declare namespace Blockly {
         showEditor_(): void;
         getAbsoluteXY_(): goog.math.Coordinate;
         getScaledBBox_(): goog.math.Size;
+        setValue(newValue: string): void;
+        getValue(): string;
     }
 
     class FieldVariable extends Field {
@@ -324,9 +377,6 @@ declare namespace Blockly {
         static numberValidator: any;
         static htmlInput_: HTMLInputElement;
 
-        setValue(newValue: string): void;
-        getValue(): string;
-
         onHtmlInputChange_(e: any);
     }
 
@@ -336,7 +386,11 @@ declare namespace Blockly {
     }
 
     class FieldDropdown extends Field {
-        constructor(val: string[][]);
+        static CHECKMARK_OVERHANG: number;
+        protected value_: any;
+        constructor(val: (string[] | Object)[]);
+        protected getOptions_(): (string[] | Object)[];
+        onItemSelected(menu: goog.ui.Menu, menuItem: goog.ui.MenuItem);
     }
 
     class Block {
@@ -711,6 +765,7 @@ declare namespace Blockly {
 
     namespace WidgetDiv {
         let DIV: Element;
+        function show(newOwner: any, rtl: boolean, dispose?: () => void): void;
         function hideIfOwner(oldOwner: any): void;
         function hide(): void;
         function position(anchorX: number, anchorY: number, windowSize: goog.math.Size,
