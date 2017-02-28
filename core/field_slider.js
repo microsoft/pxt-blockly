@@ -18,7 +18,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 goog.provide('Blockly.FieldSlider');
-goog.require('Blockly.FieldTextInput');
+goog.require('Blockly.FieldNumber');
 goog.require('goog.math');
 goog.require('goog.dom');
 goog.require('goog.events');
@@ -39,7 +39,7 @@ var pxtblocky;
          *     to validate any constraints on what the user entered.  Takes the new
          *     text as an argument and returns either the accepted text, a replacement
          *     text, or null to abort the change.
-         * @extends {Blockly.FieldTextInput}
+         * @extends {Blockly.FieldNumber}
          * @constructor
          */
         function FieldSlider(value_, opt_min, opt_max, opt_precision, opt_validator) {
@@ -54,7 +54,7 @@ var pxtblocky;
          * @private
          */
         FieldSlider.prototype.showEditor_ = function () {
-            Blockly.FieldNumber.superClass_.showEditor_.call(this);
+            _super.prototype.showEditor_.call(this);
             if (this.max_ == Infinity || this.min_ == -Infinity) {
                 return;
             }
@@ -78,7 +78,7 @@ var pxtblocky;
             slider.setValue(value);
             // Configure event handler.
             var thisField = this;
-            this.changeEventKey_ = goog.events.listen(slider.getElement(), goog.ui.Component.EventType.CHANGE, function (event) {
+            this.changeEventKey_ = goog.events.listen(slider, goog.ui.Component.EventType.CHANGE, function (event) {
                 var val = event.target.getValue() || 0;
                 if (thisField.sourceBlock_) {
                     // Call any validation function, and allow it to override.
@@ -92,7 +92,7 @@ var pxtblocky;
             });
         };
         FieldSlider.prototype.onHtmlInputChange_ = function (e) {
-            _super.prototype.onHtmlInputChange_.call(this, e);
+            _super.prototype.onHtmlInputChange_.call(this);
             if (this.slider_) {
                 this.slider_.setValue(parseFloat(this.getValue()));
             }
@@ -102,17 +102,7 @@ var pxtblocky;
          */
         FieldSlider.prototype.dispose = function () {
             Blockly.WidgetDiv.hideIfOwner(this);
-            Blockly.FieldNumber.superClass_.dispose.call(this);
-        };
-        /**
-         * Hide the slider.
-         * @private
-         */
-        FieldSlider.prototype.widgetDispose_ = function () {
-            if (this.changeEventKey_) {
-                goog.events.unlistenByKey(this.changeEventKey_);
-            }
-            Blockly.Events.setGroup(false);
+            _super.prototype.dispose.call(this);
         };
         return FieldSlider;
     }(Blockly.FieldNumber));

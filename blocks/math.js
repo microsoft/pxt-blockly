@@ -67,7 +67,7 @@ Blockly.Blocks['math_number_minmax'] = {
   init: function() {
     this.setHelpUrl(Blockly.Msg.MATH_NUMBER_HELPURL);
     this.setColour(Blockly.Blocks.math.HUE);
-    this.appendDummyInput()
+    this.appendDummyInput('slider')
         .appendField(new Blockly.FieldSlider('0', '0', '100'), 'NUM');
     this.setOutput(true, 'Number');
     // Assign 'this' to a variable for use in the tooltip closure below.
@@ -78,6 +78,26 @@ Blockly.Blocks['math_number_minmax'] = {
       return (parent && parent.getInputsInline() && parent.tooltip) ||
           Blockly.Msg.MATH_NUMBER_TOOLTIP;
     });
+  }, /**
+   * Create XML to represent whether the 'divisorInput' should be present.
+   * @return {Element} XML storage element.
+   * @this Blockly.Block
+   */
+  mutationToDom: function() {
+    var container = document.createElement('mutation');
+    var min = container.setAttribute('min', this.getInput("slider").fieldRow[0].min_);
+    var max = container.setAttribute('max', this.getInput("slider").fieldRow[0].max_);
+    return container;
+  },
+  /**
+   * Parse XML to restore the 'divisorInput'.
+   * @param {!Element} xmlElement XML storage element.
+   * @this Blockly.Block
+   */
+  domToMutation: function(xmlElement) {
+    var min = (xmlElement.getAttribute('min'));
+    var max = (xmlElement.getAttribute('max'));
+    this.getInput("slider").fieldRow[0].setConstraints(min, max);
   }
 };
 
