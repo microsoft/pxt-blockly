@@ -28,7 +28,7 @@ goog.require('goog.ui.MenuItem');
 goog.require('goog.ui.Tooltip');
 
 namespace pxtblocky {
-    export interface ToolTipConfig {
+    export interface FieldDropdownGridToolTipConfig {
         enabled: boolean;
         yOffset?: number;
         xOffset?: number;
@@ -40,7 +40,7 @@ namespace pxtblocky {
 
         private columns_: number;
 
-        private tooltipConfig_: ToolTipConfig;
+        private tooltipConfig_: FieldDropdownGridToolTipConfig;
 
         private tooltips_: goog.ui.Tooltip[] = [];
 
@@ -58,7 +58,7 @@ namespace pxtblocky {
          * @extends {Blockly.FieldDropdown}
          * @constructor
          */
-        constructor(menuGenerator: string[][], col: number = 8, width: number = 400, tooltipCfg: ToolTipConfig = { enabled: false }) {
+        constructor(menuGenerator: string[][], col: number = 8, width: number = 400, tooltipCfg: FieldDropdownGridToolTipConfig = { enabled: false }) {
             super(menuGenerator);
             this.columns_ = col;
             this.menuWidth_ = width;
