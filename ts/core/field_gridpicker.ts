@@ -61,16 +61,17 @@ namespace pxtblocky {
          * @extends {Blockly.FieldDropdown}
          * @constructor
          */
-        constructor(menuGenerator: string[][], backgroundColour: string = '#000', col: number = 4, width: number = 400, itemColour: string = '#fff', tooltipCfg: FieldGridPickerToolTipConfig = { enabled: false }) {
+        constructor(menuGenerator: string[][], backgroundColour: string = '#000', params: {[key: string]: string}) {
             super(menuGenerator);
-            this.columns_ = col;
-            this.width_ = width;
+            
+            this.columns_ = parseInt(params['columns']) || 4;
+            this.width_ = parseInt(params['width']) || 400;
             this.backgroundColour_ = backgroundColour;
-            this.itemColour_ = itemColour;
-
-            if (tooltipCfg.enabled) {
-                tooltipCfg.xOffset = tooltipCfg.xOffset || 15;
-                tooltipCfg.yOffset = tooltipCfg.yOffset || -10;
+            this.itemColour_ = params['itemColour'] || '#fff';
+            let tooltipCfg: FieldGridPickerToolTipConfig = {
+                enabled: params['tooltips'] == 'true' || false,
+                xOffset: parseInt(params['tooltipsXOffset']) || 15,
+                yOffset: parseInt(params['tooltipsYOffset']) || -10
             }
 
             this.tooltipConfig_ = tooltipCfg;

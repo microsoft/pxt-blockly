@@ -43,22 +43,19 @@ var pxtblocky;
          * @extends {Blockly.FieldDropdown}
          * @constructor
          */
-        function FieldGridPicker(menuGenerator, backgroundColour, col, width, itemColour, tooltipCfg) {
+        function FieldGridPicker(menuGenerator, backgroundColour, params) {
             if (backgroundColour === void 0) { backgroundColour = '#000'; }
-            if (col === void 0) { col = 4; }
-            if (width === void 0) { width = 400; }
-            if (itemColour === void 0) { itemColour = '#fff'; }
-            if (tooltipCfg === void 0) { tooltipCfg = { enabled: false }; }
             var _this = _super.call(this, menuGenerator) || this;
             _this.tooltips_ = [];
-            _this.columns_ = col;
-            _this.width_ = width;
+            _this.columns_ = parseInt(params['columns']) || 4;
+            _this.width_ = parseInt(params['width']) || 400;
             _this.backgroundColour_ = backgroundColour;
-            _this.itemColour_ = itemColour;
-            if (tooltipCfg.enabled) {
-                tooltipCfg.xOffset = tooltipCfg.xOffset || 15;
-                tooltipCfg.yOffset = tooltipCfg.yOffset || -10;
-            }
+            _this.itemColour_ = params['itemColour'] || '#fff';
+            var tooltipCfg = {
+                enabled: params['tooltips'] == 'true' || false,
+                xOffset: parseInt(params['tooltipsXOffset']) || 15,
+                yOffset: parseInt(params['tooltipsYOffset']) || -10
+            };
             _this.tooltipConfig_ = tooltipCfg;
             return _this;
         }
