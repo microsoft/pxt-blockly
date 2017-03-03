@@ -16,15 +16,15 @@ goog.require('Blockly.Options');
 
 namespace pxtblocky {
 
-    interface ExtendedOptions extends Blockly.Options {
+    export interface ExtendedOptions extends Blockly.Options {
         toolboxType: string;
     }
 
     export class PXTOptions extends Blockly.Options {
 
-        colouredToolbox: boolean;
-        invertedToolbox: boolean;
-        invertedMultiplier: number;
+        public colouredToolbox: boolean;
+        public invertedToolbox: boolean;
+        public invertedMultiplier: number;
 
         /**
          * Parse the user-specified options, using reasonable defaults where behaviour

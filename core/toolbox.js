@@ -42,8 +42,6 @@ goog.require('goog.style');
 goog.require('goog.ui.tree.TreeControl');
 goog.require('goog.ui.tree.TreeNode');
 
-goog.require('Blockly.PXTUtils');
-
 /**
  * Class for a Toolbox.
  * Creates the toolbox's DOM.

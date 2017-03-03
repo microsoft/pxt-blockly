@@ -901,40 +901,48 @@ Blockly.Css.CONTENT = [
     'text-align: center;',
   '}',
 
-  // Styling for the grid dropdown field
-  '.blocklyDropdownGridMenuItemTooltip {',
+  // Styling for the grid picker field
+  '.blocklyWidgetDiv .blocklyGridPickerMenu {',
+      'position: absolute;',
+      'padding: 4px;',
+      'display: table;',
+      'border-radius: 10px;',
+      'outline: none;',
+  '}',
+
+  '.blocklyWidgetDiv .blocklyGridPickerRow {',
+      'display: table-row;',
+  '}',
+
+  '.blocklyWidgetDiv .blocklyGridPickerMenu .goog-menuitem {',
+    'background: white;',
+  '}',
+
+  '.blocklyWidgetDiv .blocklyGridPickerMenu .goog-menuitem-highlight, .blocklyWidgetDiv .blocklyGridPickerMenu .goog-menuitem-hover {',
+    'background: #d6e9f8;',
+  '}',
+
+  '.blocklyWidgetDiv .blocklyGridPickerMenu .goog-option {',
+    'border: solid 4px black;',
+    'border-radius: 10px;',
+    'display: table-cell;',
+    'padding: 4px;',
+    'text-align: center;',
+    'vertical-align: top;',
+  '}',
+
+  '.blocklyWidgetDiv .blocklyGridPickerMenu .goog-option.goog-option-selected {',
+    'outline: solid 3px #fc3;',
+  '}',
+
+  '.blocklyWidgetDiv .blocklyGridPickerMenu .goog-menuitem .goog-menuitem-checkbox {',
+    'display: none;',
+  '}',
+
+  '.blocklyGridPickerTooltip {',
     'z-index: 100000;', /* big value for bootstrap3 compatibility */
   '}',
 
-  '.blocklyWidgetDiv .blocklyDropdownGridMenu {',
-      'position: absolute;',
-      'padding: 0;',
-  '}',
-  
-
-  '.blocklyWidgetDiv .blocklyDropdownGridMenu .goog-menuitem {',
-    'outline: solid 1px #e2e2e2;',
-  '}',
-
-  '.blocklyWidgetDiv .blocklyDropdownGridMenu .goog-menuitem .goog-menuitem-checkbox {',
-    'left: 0px;',
-    'position: relative;',
-    'display: inline-block;',
-  '}',
-
-  `.col-2 {width: 12.50%;}`,
-  `.col-4 {width: 25%;}`,
-  `.col-6 {width: 37.5%;}`,
-  `.col-8 {width: 50.00%;}`,
-  `.col-10 {width: 62.5%;}`,
-  `.col-12 {width: 75%;}`,
-  `.col-14 {width: 87.5%;}`,
-  `.col-16 {width: 100%;}`,
-
-  `[class*="col-"] {`,
-      `float: left;`,
-      `padding: 0 !important;`,
-   `}`,
   
   ''
 ];
