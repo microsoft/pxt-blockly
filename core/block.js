@@ -1099,7 +1099,7 @@ Blockly.Block.prototype.interpolate_ = function(message, args, lastDummyAlign) {
               field = new Blockly.FieldDropdown(element['options']);
               break;
             case 'field_dropdowngrid':
-              field = new Blockly.FieldDropdownGrid(element['options'], element['col'], element['width'], element['tooltipConfig']);
+              field = new Blockly.FieldGridPicker(element['options'], element['colour'], element['col'], element['width'], element['itemColour'], element['tooltipConfig']);
             break;
             case 'field_image':
               field = new Blockly.FieldImage(element['src'],

@@ -12,9 +12,11 @@
 
 goog.provide('Blockly.PXTUtils');
 
+goog.require('Blockly.utils');
+
 namespace pxtblocky {
 
-    export class PXTUtils {
+    export class PXTUtils extends Blockly.utils {
 
         public static fadeColour(hex: string, luminosity: number, lighten: boolean): string {
             // #ABC => ABC

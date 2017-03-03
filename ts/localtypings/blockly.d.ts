@@ -323,9 +323,9 @@ declare namespace Blockly {
 
     let ALIGN_RIGHT: number;
 
-    namespace utils {
-        function addClass(element: Element, className: string): boolean;
-        function wrap(tip: string, limit: number): string;
+    class utils {
+        static addClass(element: Element, className: string): boolean;
+        static wrap(tip: string, limit: number): string;
     }
 
     class FieldImage {

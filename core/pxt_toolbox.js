@@ -14,6 +14,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 goog.provide('Blockly.PXTToolbox');
+goog.require('Blockly.PXTUtils');
 goog.require('Blockly.Toolbox');
 var pxtblocky;
 (function (pxtblocky) {
@@ -45,7 +46,7 @@ var pxtblocky;
                             // Hovering over toolbox category fades.
                             Blockly.bindEvent_(child.getRowElement(), 'mouseenter', child, function (e) {
                                 if (!this.isSelected()) {
-                                    this.getRowElement().style.background = pxtblocky.PXTUtils.fadeColour(this.hexColour || '#ddd', invertedMultiplier, false);
+                                    this.getRowElement().style.background = Blockly.PXTUtils.fadeColour(this.hexColour || '#ddd', invertedMultiplier, false);
                                 }
                             });
                             Blockly.bindEvent_(child.getRowElement(), 'mouseleave', child, function (e) {

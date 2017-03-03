@@ -8,11 +8,19 @@
  * See LICENSE file for details.
  */
 'use strict';
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
 goog.provide('Blockly.PXTUtils');
+goog.require('Blockly.utils');
 var pxtblocky;
 (function (pxtblocky) {
-    var PXTUtils = (function () {
+    var PXTUtils = (function (_super) {
+        __extends(PXTUtils, _super);
         function PXTUtils() {
+            return _super !== null && _super.apply(this, arguments) || this;
         }
         PXTUtils.fadeColour = function (hex, luminosity, lighten) {
             // #ABC => ABC
@@ -31,7 +39,7 @@ var pxtblocky;
             return rgb;
         };
         return PXTUtils;
-    }());
+    }(Blockly.utils));
     pxtblocky.PXTUtils = PXTUtils;
 })(pxtblocky || (pxtblocky = {}));
 Blockly.PXTUtils = pxtblocky.PXTUtils;

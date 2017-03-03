@@ -12,6 +12,7 @@
 
 goog.provide('Blockly.PXTToolbox');
 
+goog.require('Blockly.PXTUtils');
 goog.require('Blockly.Toolbox');
 
 namespace pxtblocky {
@@ -48,7 +49,7 @@ namespace pxtblocky {
                             Blockly.bindEvent_(child.getRowElement(), 'mouseenter', child,
                                 function(e) {
                                 if (!this.isSelected()) {
-                                    this.getRowElement().style.background = PXTUtils.fadeColour(this.hexColour || '#ddd', invertedMultiplier, false);
+                                    this.getRowElement().style.background = (Blockly as any).PXTUtils.fadeColour(this.hexColour || '#ddd', invertedMultiplier, false);
                                 }
                                 });
                             Blockly.bindEvent_(child.getRowElement(), 'mouseleave', child,

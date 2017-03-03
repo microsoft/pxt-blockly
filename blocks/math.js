@@ -273,8 +273,10 @@ Blockly.Blocks['math_single_grid_img'] = {
             [{ alt: 'e^', width: 32, height: 32, src: '../media/sprites.png' }, 'EXP'],
             [{ alt: '10^', width: 32, height: 32, src: '../media/sprites.png' }, 'POW10']
           ],
-          "col": 8,
+          "colour": Blockly.Blocks.math.HUE,
+          "col": 4,
           "width": 300,
+          "itemColour": 'white',
           "tooltipConfig": {
             "enabled": true,
             "xOffset": 15,
