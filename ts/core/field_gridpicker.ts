@@ -34,6 +34,15 @@ namespace pxtblocky {
         xOffset?: number;
     }
 
+    export interface FieldGridPickerParams {
+        columns?: string;
+        width?: string;
+        itemColour?: string;
+        tooltips?: string;
+        tooltipsXOffset?: string;
+        tooltipsYOffset?: string;
+    }
+
     export class FieldGridPicker extends Blockly.FieldDropdown {
         // Width in pixels
         private width_: number;
@@ -61,17 +70,17 @@ namespace pxtblocky {
          * @extends {Blockly.FieldDropdown}
          * @constructor
          */
-        constructor(menuGenerator: string[][], backgroundColour: string = '#000', params: {[key: string]: string}) {
+        constructor(menuGenerator: string[][], backgroundColour: string = '#000', params: FieldGridPickerParams) {
             super(menuGenerator);
             
-            this.columns_ = parseInt(params['columns']) || 4;
-            this.width_ = parseInt(params['width']) || 400;
+            this.columns_ = parseInt(params.columns) || 4;
+            this.width_ = parseInt(params.width) || 400;
             this.backgroundColour_ = backgroundColour;
-            this.itemColour_ = params['itemColour'] || '#fff';
+            this.itemColour_ = params.itemColour || '#fff';
             let tooltipCfg: FieldGridPickerToolTipConfig = {
-                enabled: params['tooltips'] == 'true' || false,
-                xOffset: parseInt(params['tooltipsXOffset']) || 15,
-                yOffset: parseInt(params['tooltipsYOffset']) || -10
+                enabled: params.tooltips == 'true' || false,
+                xOffset: parseInt(params.tooltipsXOffset) || 15,
+                yOffset: parseInt(params.tooltipsYOffset) || -10
             }
 
             this.tooltipConfig_ = tooltipCfg;

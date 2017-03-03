@@ -47,14 +47,14 @@ var pxtblocky;
             if (backgroundColour === void 0) { backgroundColour = '#000'; }
             var _this = _super.call(this, menuGenerator) || this;
             _this.tooltips_ = [];
-            _this.columns_ = parseInt(params['columns']) || 4;
-            _this.width_ = parseInt(params['width']) || 400;
+            _this.columns_ = parseInt(params.columns) || 4;
+            _this.width_ = parseInt(params.width) || 400;
             _this.backgroundColour_ = backgroundColour;
-            _this.itemColour_ = params['itemColour'] || '#fff';
+            _this.itemColour_ = params.itemColour || '#fff';
             var tooltipCfg = {
-                enabled: params['tooltips'] == 'true' || false,
-                xOffset: parseInt(params['tooltipsXOffset']) || 15,
-                yOffset: parseInt(params['tooltipsYOffset']) || -10
+                enabled: params.tooltips == 'true' || false,
+                xOffset: parseInt(params.tooltipsXOffset) || 15,
+                yOffset: parseInt(params.tooltipsYOffset) || -10
             };
             _this.tooltipConfig_ = tooltipCfg;
             return _this;
