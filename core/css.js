@@ -943,6 +943,11 @@ Blockly.Css.CONTENT = [
     'z-index: 100000;', /* big value for bootstrap3 compatibility */
   '}',
 
+  /* Apply a faded colour to disabled blocks, so a user is still able to associate the category with the block */
+  '.blocklyDisabled>.blocklyPathDark {',
+    'display: block !important;',
+    'fill-opacity: 0.5;',
+  '}',
   
   ''
 ];

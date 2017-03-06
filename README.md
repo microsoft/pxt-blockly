@@ -13,6 +13,7 @@ Minor changes:
 * Blockly zoom with Ctrl / Cmd + mousewheel scroll, and scroll workspace with just mousewheel scroll
 * Support icons in toolbox
 * Inverted and coloured toolbox mode
+* Disabled blocks keep a faded colour of their category, inorder to distinguish between them.
 
 
 ### Prerequisites
