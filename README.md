@@ -39,4 +39,6 @@ There is a playground manual testing page at [tests/playground.html](./tests/pla
 
 ## License
 
-MIT
+The original Google/Blockly is licensed under Apache License (Version 2.0).
+
+The new code is licensed under MIT.
