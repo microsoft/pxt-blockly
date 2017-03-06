@@ -52,7 +52,7 @@ var pxtblocky;
             _this.backgroundColour_ = backgroundColour;
             _this.itemColour_ = params.itemColour || '#fff';
             var tooltipCfg = {
-                enabled: params.tooltips == 'true' || false,
+                enabled: params.tooltips == 'true' || true,
                 xOffset: parseInt(params.tooltipsXOffset) || 15,
                 yOffset: parseInt(params.tooltipsYOffset) || -10
             };
@@ -81,6 +81,10 @@ var pxtblocky;
             var div = Blockly.WidgetDiv.DIV;
             container.render(div);
             var containerDom = container.getElement();
+            // Resize the grid picker if width > screen width
+            if (this.width_ > windowSize.width) {
+                this.width_ = windowSize.width;
+            }
             containerDom.style.width = this.width_ + 'px';
             containerDom.style.backgroundColor = this.backgroundColour_;
             containerDom.className = 'blocklyGridPickerMenu';

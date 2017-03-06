@@ -78,7 +78,7 @@ namespace pxtblocky {
             this.backgroundColour_ = backgroundColour;
             this.itemColour_ = params.itemColour || '#fff';
             let tooltipCfg: FieldGridPickerToolTipConfig = {
-                enabled: params.tooltips == 'true' || false,
+                enabled: params.tooltips == 'true' || true,
                 xOffset: parseInt(params.tooltipsXOffset) || 15,
                 yOffset: parseInt(params.tooltipsYOffset) || -10
             }
@@ -115,6 +115,12 @@ namespace pxtblocky {
             container.render(div);
 
             const containerDom = container.getElement() as HTMLElement;
+
+            // Resize the grid picker if width > screen width
+            if (this.width_ > windowSize.width) {
+                this.width_ = windowSize.width;
+            }
+
             containerDom.style.width = this.width_ + 'px';
             containerDom.style.backgroundColor = this.backgroundColour_;
             containerDom.className = 'blocklyGridPickerMenu';

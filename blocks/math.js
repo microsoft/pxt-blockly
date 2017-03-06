@@ -274,14 +274,12 @@ Blockly.Blocks['math_single_grid_img'] = {
             [{ alt: '10^', width: 32, height: 32, src: '../media/sprites.png' }, 'POW10']
           ],
           "colour": Blockly.Blocks.math.HUE,
-          "params": {
-            "columns": 4,
-            "width": 300,
-            "itemColour": 'white',
-            "tooltips": true,
-            "tooltipsXOffset": 15, 
-            "tooltipsYOffset": -10
-          }
+          "columns": 5,
+          "width": 600,
+          "itemColour": 'white',
+          "tooltips": true,
+          "tooltipsXOffset": 15, 
+          "tooltipsYOffset": -10
         },
         {
           "type": "input_value",
