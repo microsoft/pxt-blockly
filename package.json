@@ -5,7 +5,9 @@
   "keywords": ["blockly"],
   "scripts": {
     "lint": "jshint .",
-    "watch": "node_modules/.bin/gulp watch"
+    "watch": "node_modules/.bin/gulp watch",
+    "build": "node_modules/.bin/gulp build",
+    "publish": "node_modules/.bin/gulp publish"
   },
   "repository": {
     "type": "git",

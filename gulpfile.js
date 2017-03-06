@@ -48,4 +48,8 @@ function publishTask() {
 	}
 }
 
+
+gulp.task('build', ['compile', 'python-build'], function (cb) {
+	cb(0);	
+});
 gulp.task('publish', ['compile', 'python-build'], publishTask);
