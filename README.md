@@ -12,6 +12,7 @@ Minor changes:
 
 * Blockly zoom with Ctrl / Cmd + mousewheel scroll, and scroll workspace with just mousewheel scroll
 * Support icons in toolbox
+* Inverted and coloured toolbox mode
 
 
 ### Prerequisites
