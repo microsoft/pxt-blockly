@@ -415,36 +415,18 @@ namespace pxtblocky {
                 }
 
                 //  Listener when a new key is selected
-                goog.events.listen(key.getElement(),
-                    goog.events.EventType.MOUSEDOWN,
-                    function () {
-                        let cnt = ++soundingKeys;
-                        let freq = this.getContent().getAttribute("tag");
-                        let script: HTMLElement;
-                        if (currentSelectedKey != null) {
-                            script = currentSelectedKey.getContent() as HTMLElement;
-                            script.style.backgroundColor = previousColor;
-                        }
-                        script = this.getContent() as HTMLElement;
-                        if (currentSelectedKey !== this) { // save color and change values only if is clicking different key
-                            previousColor = script.style.backgroundColor;
-                            thisField.setValue(thisField.callValidator(freq));
-                            thisField.setText(thisField.callValidator(freq));
-                        }
-                        currentSelectedKey = this;
-                        script.style.backgroundColor = selectedKeyColor;
-                        Blockly.FieldTextInput.htmlInput_.value = thisField.getText();
-                        AudioContextManager.tone(freq);
-                        pxtblocky.FieldNote.superClass_.dispose.call(this);
-                    }, false, key
-                );
-
-                goog.events.listen(key.getElement(),
-                    goog.events.EventType.MOUSEUP,
-                    () => {
-                        AudioContextManager.stop();
-                }, false, key);
-
+                if (!mobile) {
+                    goog.events.listen(key.getElement(),
+                        goog.events.EventType.MOUSEDOWN, soundKey
+                        , false, key
+                    );
+                } else {
+                    //  Listener when a new key is selected in MOBILE
+                    goog.events.listen(key.getElement(),
+                        goog.events.EventType.TOUCHSTART, soundKey
+                        , false, key
+                    );
+                }
                 //  Listener when the mouse is over a key
                 goog.events.listen(key.getElement(),
                     goog.events.EventType.MOUSEOVER,
@@ -461,6 +443,18 @@ namespace pxtblocky {
                 // set octaves different from first octave invisible
                 if (pagination && i > 11)
                     key.setVisible(false);
+            }
+
+            // event listener to stop sound
+            if (!mobile) {
+                document.addEventListener(goog.events.EventType.MOUSEUP, function () {
+                    AudioContextManager.stop();
+                });
+            } else {
+                // event listener to stop sound on MOBILE
+                document.addEventListener(goog.events.EventType.TOUCHEND, function () {
+                    AudioContextManager.stop();
+                }, false);
             }
 
             //  render note label
@@ -537,7 +531,29 @@ namespace pxtblocky {
                     }, false, nextButton
                 );
             }
-
+            /** create the key sound
+             * 
+             */
+            function soundKey() {
+                let cnt = ++soundingKeys;
+                let freq = this.getContent().getAttribute("tag");
+                let script: HTMLElement;
+                if (currentSelectedKey != null) {
+                    script = currentSelectedKey.getContent() as HTMLElement;
+                    script.style.backgroundColor = previousColor;
+                }
+                script = this.getContent() as HTMLElement;
+                if (currentSelectedKey !== this) { // save color and change values only if is clicking different key
+                    previousColor = script.style.backgroundColor;
+                    thisField.setValue(thisField.callValidator(freq));
+                    thisField.setText(thisField.callValidator(freq));
+                }
+                currentSelectedKey = this;
+                script.style.backgroundColor = selectedKeyColor;
+                Blockly.FieldTextInput.htmlInput_.value = thisField.getText();
+                AudioContextManager.tone(freq);
+                pxtblocky.FieldNote.superClass_.dispose.call(this);
+            }
             /** get width of blockly editor space
              * @return {number} width of the blockly editor workspace
              * @private

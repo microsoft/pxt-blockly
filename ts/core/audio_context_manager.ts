@@ -42,11 +42,15 @@ namespace pxtblocky {
         }
 
         export function mute(mute: boolean) {
+            if (!_context)
+                return;
             _mute = mute;
             stop();
         }
 
         export function stop() {
+            if (!_context)
+                return;
             _vco.disconnect();
             _frequency = 0;
         }
