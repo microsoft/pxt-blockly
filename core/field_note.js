@@ -388,7 +388,10 @@ var pxtblocky;
                     goog.events.listen(key.getElement(), goog.events.EventType.MOUSEDOWN, soundKey, false, key);
                 }
                 else {
-                    //  Listener when a new key is selected in MOBILE
+                    /**  Listener when a new key is selected in MOBILE
+                     *   It is necessary to use TOUCHSTART event to allow passive event listeners
+                     *   to avoid preventDefault() call that blocks listener
+                     */
                     goog.events.listen(key.getElement(), goog.events.EventType.TOUCHSTART, soundKey, false, key);
                 }
                 //  Listener when the mouse is over a key
@@ -411,7 +414,10 @@ var pxtblocky;
                 });
             }
             else {
-                // event listener to stop sound on MOBILE
+                /** event listener to stop sound on MOBILE when the touch end
+                 *   It is necessary to use TOUCHEND event to allow passive event listeners
+                 *   to avoid preventDefault() call that blocks listener
+                 */
                 document.addEventListener(goog.events.EventType.TOUCHEND, function () {
                     pxtblocky.AudioContextManager.stop();
                 }, false);
@@ -482,9 +488,7 @@ var pxtblocky;
                     this.labelHeight_ = document.getElementsByClassName("blocklyNoteLabel")[0].offsetHeight;
                 }, false, nextButton);
             }
-            /** create the key sound
-             *
-             */
+            // create the key sound
             function soundKey() {
                 var cnt = ++soundingKeys;
                 var freq = this.getContent().getAttribute("tag");
