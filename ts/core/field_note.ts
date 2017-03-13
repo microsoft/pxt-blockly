@@ -447,22 +447,6 @@ namespace pxtblocky {
                 if (pagination && i > 11)
                     key.setVisible(false);
             }
-
-            // event listener to stop sound
-            if (!mobile) {
-                document.addEventListener(goog.events.EventType.MOUSEUP, function () {
-                    AudioContextManager.stop();
-                });
-            } else {
-                /** event listener to stop sound on MOBILE when the touch end
-                 *   It is necessary to use TOUCHEND event to allow passive event listeners
-                 *   to avoid preventDefault() call that blocks listener
-                 */
-                document.addEventListener(goog.events.EventType.TOUCHEND, function () {
-                    AudioContextManager.stop();
-                }, false);
-            }
-
             //  render note label
             let showNoteLabel = new goog.ui.ColorButton();
             let showNoteStyle = getShowNoteStyle(topPosition, leftPosition, mobile);
@@ -556,6 +540,11 @@ namespace pxtblocky {
                 script.style.backgroundColor = selectedKeyColor;
                 Blockly.FieldTextInput.htmlInput_.value = thisField.getText();
                 AudioContextManager.tone(freq);
+                setTimeout(function () {
+                    // compare current sound counter with listener sound counter (avoid async problems)
+                    if (soundingKeys == cnt)
+                        AudioContextManager.stop();
+                }, 300);
                 pxtblocky.FieldNote.superClass_.dispose.call(this);
             }
             /** get width of blockly editor space
