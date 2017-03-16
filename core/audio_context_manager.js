@@ -38,11 +38,15 @@ var pxtblocky;
             return undefined;
         }
         function mute(mute) {
+            if (!_context)
+                return;
             _mute = mute;
             stop();
         }
         AudioContextManager.mute = mute;
         function stop() {
+            if (!_context)
+                return;
             _vco.disconnect();
             _frequency = 0;
         }

@@ -384,29 +384,16 @@ var pxtblocky;
                     currentSelectedKey = key;
                 }
                 //  Listener when a new key is selected
-                goog.events.listen(key.getElement(), goog.events.EventType.MOUSEDOWN, function () {
-                    var cnt = ++soundingKeys;
-                    var freq = this.getContent().getAttribute("tag");
-                    var script;
-                    if (currentSelectedKey != null) {
-                        script = currentSelectedKey.getContent();
-                        script.style.backgroundColor = previousColor;
-                    }
-                    script = this.getContent();
-                    if (currentSelectedKey !== this) {
-                        previousColor = script.style.backgroundColor;
-                        thisField.setValue(thisField.callValidator(freq));
-                        thisField.setText(thisField.callValidator(freq));
-                    }
-                    currentSelectedKey = this;
-                    script.style.backgroundColor = selectedKeyColor;
-                    Blockly.FieldTextInput.htmlInput_.value = thisField.getText();
-                    pxtblocky.AudioContextManager.tone(freq);
-                    pxtblocky.FieldNote.superClass_.dispose.call(this);
-                }, false, key);
-                goog.events.listen(key.getElement(), goog.events.EventType.MOUSEUP, function () {
-                    pxtblocky.AudioContextManager.stop();
-                }, false, key);
+                if (!mobile) {
+                    goog.events.listen(key.getElement(), goog.events.EventType.MOUSEDOWN, soundKey, false, key);
+                }
+                else {
+                    /**  Listener when a new key is selected in MOBILE
+                     *   It is necessary to use TOUCHSTART event to allow passive event listeners
+                     *   to avoid preventDefault() call that blocks listener
+                     */
+                    goog.events.listen(key.getElement(), goog.events.EventType.TOUCHSTART, soundKey, false, key);
+                }
                 //  Listener when the mouse is over a key
                 goog.events.listen(key.getElement(), goog.events.EventType.MOUSEOVER, function () {
                     var script = showNoteLabel.getContent();
@@ -485,6 +472,32 @@ var pxtblocky;
                     scriptLabel.innerText = "Octave #" + (currentPage_1 + 1);
                     this.labelHeight_ = document.getElementsByClassName("blocklyNoteLabel")[0].offsetHeight;
                 }, false, nextButton);
+            }
+            // create the key sound
+            function soundKey() {
+                var cnt = ++soundingKeys;
+                var freq = this.getContent().getAttribute("tag");
+                var script;
+                if (currentSelectedKey != null) {
+                    script = currentSelectedKey.getContent();
+                    script.style.backgroundColor = previousColor;
+                }
+                script = this.getContent();
+                if (currentSelectedKey !== this) {
+                    previousColor = script.style.backgroundColor;
+                    thisField.setValue(thisField.callValidator(freq));
+                    thisField.setText(thisField.callValidator(freq));
+                }
+                currentSelectedKey = this;
+                script.style.backgroundColor = selectedKeyColor;
+                Blockly.FieldTextInput.htmlInput_.value = thisField.getText();
+                pxtblocky.AudioContextManager.tone(freq);
+                setTimeout(function () {
+                    // compare current sound counter with listener sound counter (avoid async problems)
+                    if (soundingKeys == cnt)
+                        pxtblocky.AudioContextManager.stop();
+                }, 300);
+                pxtblocky.FieldNote.superClass_.dispose.call(this);
             }
             /** get width of blockly editor space
              * @return {number} width of the blockly editor workspace
