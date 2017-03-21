@@ -19,7 +19,7 @@ goog.provide('Blockly.FieldNote');
 
 goog.require('goog.events');
 goog.require('goog.style');
-goog.require('goog.ui.ColorButton');
+goog.require('goog.ui.CustomButton');
 goog.require('goog.dom');
 goog.require('Blockly.Field');
 goog.require('Blockly.Toolbox')
@@ -316,16 +316,16 @@ namespace pxtblocky {
             let pagination: boolean = false;
             let mobile: boolean = false;
             let editorWidth = windowSize.width;
-            let piano: Array<goog.ui.ColorButton> = [];
+            let piano: Array<goog.ui.CustomButton> = [];
             //  initializate
             pianoWidth = keyWidth * (this.nKeys_ - (this.nKeys_ / 12 * 5));
             pianoHeight = keyHeight;
 
-            //  Create the piano using Closure (colorButton).
+            //  Create the piano using Closure (CustomButton).
             for (let i = 0; i < this.nKeys_; i++) {
-                piano.push(new goog.ui.ColorButton());
+                piano.push(new goog.ui.CustomButton());
             }
-
+            
             if (editorWidth < pianoWidth) {
                 pagination = true;
                 pianoWidth = 7 * keyWidth;
@@ -385,7 +385,7 @@ namespace pxtblocky {
 
             //  render piano keys
             let octaveCounter = 0;
-            let currentSelectedKey: goog.ui.ColorButton = null;
+            let currentSelectedKey: goog.ui.CustomButton = null;
             let previousColor: string;
             for (let i = 0; i < this.nKeys_; i++) {
                 if (i > 0 && i % 12 == 0)
@@ -448,7 +448,7 @@ namespace pxtblocky {
                     key.setVisible(false);
             }
             //  render note label
-            let showNoteLabel = new goog.ui.ColorButton();
+            let showNoteLabel = new goog.ui.CustomButton();
             let showNoteStyle = getShowNoteStyle(topPosition, leftPosition, mobile);
             showNoteLabel.setContent(showNoteStyle);
             showNoteLabel.render(pianoDiv);
@@ -456,9 +456,9 @@ namespace pxtblocky {
             scriptLabel.innerText = "-";
             labelHeight = (<HTMLElement>document.getElementsByClassName("blocklyNoteLabel")[0]).offsetHeight;
 
-            // create next and previous buttons for pagination
-            let prevButton = new goog.ui.ColorButton();
-            let nextButton = new goog.ui.ColorButton();
+            // create next and previous CustomButtons for pagination
+            let prevButton = new goog.ui.CustomButton();
+            let nextButton = new goog.ui.CustomButton();
             let prevButtonStyle = getNextPrevStyle(topPosition, leftPosition, true, mobile);
             let nextButtonStyle = getNextPrevStyle(topPosition, leftPosition, false, mobile);
             if (pagination) {
