@@ -20,7 +20,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 goog.provide('Blockly.FieldNote');
 goog.require('goog.events');
 goog.require('goog.style');
-goog.require('goog.ui.ColorButton');
+goog.require('goog.ui.CustomButton');
 goog.require('goog.dom');
 goog.require('Blockly.Field');
 goog.require('Blockly.Toolbox');
@@ -295,9 +295,9 @@ var pxtblocky;
             //  initializate
             pianoWidth = keyWidth * (this.nKeys_ - (this.nKeys_ / 12 * 5));
             pianoHeight = keyHeight;
-            //  Create the piano using Closure (colorButton).
+            //  Create the piano using Closure (CustomButton).
             for (var i = 0; i < this.nKeys_; i++) {
-                piano.push(new goog.ui.ColorButton());
+                piano.push(new goog.ui.CustomButton());
             }
             if (editorWidth < pianoWidth) {
                 pagination = true;
@@ -408,16 +408,16 @@ var pxtblocky;
                     key.setVisible(false);
             }
             //  render note label
-            var showNoteLabel = new goog.ui.ColorButton();
+            var showNoteLabel = new goog.ui.CustomButton();
             var showNoteStyle = getShowNoteStyle(topPosition, leftPosition, mobile);
             showNoteLabel.setContent(showNoteStyle);
             showNoteLabel.render(pianoDiv);
             var scriptLabel = showNoteLabel.getContent();
             scriptLabel.innerText = "-";
             labelHeight = document.getElementsByClassName("blocklyNoteLabel")[0].offsetHeight;
-            // create next and previous buttons for pagination
-            var prevButton = new goog.ui.ColorButton();
-            var nextButton = new goog.ui.ColorButton();
+            // create next and previous CustomButtons for pagination
+            var prevButton = new goog.ui.CustomButton();
+            var nextButton = new goog.ui.CustomButton();
             var prevButtonStyle = getNextPrevStyle(topPosition, leftPosition, true, mobile);
             var nextButtonStyle = getNextPrevStyle(topPosition, leftPosition, false, mobile);
             if (pagination) {
