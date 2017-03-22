@@ -520,6 +520,19 @@ Blockly.Toolbox.TreeControl.prototype.handleTouchEvent_ = function(e) {
  * @override
  */
 Blockly.Toolbox.TreeControl.prototype.createNode = function(opt_html) {
+    if (this.toolbox_ && !this.eventHandlerRegistered_) {
+    var resize = function() {
+      // Even though the div hasn't changed size, the visible workspace
+      // surface of the workspace has, so we may need to reposition everything.
+      Blockly.svgResize(this.toolbox_.workspace_);
+    };
+    // Fire a resize event since the toolbox may have changed width.
+    goog.events.listen(this.toolbox_.tree_,
+        goog.ui.tree.BaseNode.EventType.EXPAND, resize);
+    goog.events.listen(this.toolbox_.tree_,
+        goog.ui.tree.BaseNode.EventType.COLLAPSE, resize);
+      this.eventHandlerRegistered_ = true;
+  }
   return new Blockly.Toolbox.TreeNode(this.toolbox_, opt_html ?
       goog.html.SafeHtml.htmlEscape(opt_html) : goog.html.SafeHtml.EMPTY,
       this.getConfig(), this.getDomHelper());
@@ -582,18 +595,6 @@ Blockly.Toolbox.TreeControl.prototype.setSelectedItem = function(node) {
  */
 Blockly.Toolbox.TreeNode = function(toolbox, html, opt_config, opt_domHelper) {
   goog.ui.tree.TreeNode.call(this, html, opt_config, opt_domHelper);
-  if (toolbox) {
-    var resize = function() {
-      // Even though the div hasn't changed size, the visible workspace
-      // surface of the workspace has, so we may need to reposition everything.
-      Blockly.svgResize(toolbox.workspace_);
-    };
-    // Fire a resize event since the toolbox may have changed width.
-    goog.events.listen(toolbox.tree_,
-        goog.ui.tree.BaseNode.EventType.EXPAND, resize);
-    goog.events.listen(toolbox.tree_,
-        goog.ui.tree.BaseNode.EventType.COLLAPSE, resize);
-  }
 };
 goog.inherits(Blockly.Toolbox.TreeNode, goog.ui.tree.TreeNode);
 
