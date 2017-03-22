@@ -1,13 +1,13 @@
 {
   "name": "blockly",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Blockly is a library for building visual programming editors.",
   "keywords": ["blockly"],
   "scripts": {
     "lint": "jshint .",
     "watch": "node_modules/.bin/gulp watch",
-    "build": "node_modules/.bin/gulp build",
-    "publish": "node_modules/.bin/gulp publish"
+    "prepublish": "node_modules/.bin/gulp build",
+    "publish": "node_modules/.bin/gulp release"
   },
   "repository": {
     "type": "git",
@@ -22,10 +22,18 @@
   },
   "license": "Apache-2.0",
   "private": true,
+  "files": [
+    "README.md",
+    "blockly_compressed.js",
+    "blocks_compressed.js",
+    "media/**",
+    "msg/**"
+  ],
   "devDependencies": {
     "jshint": "latest",
     "gulp": "^3.9.1",
     "gulp-tsb": "^2.0.0",
+    "gulp-bump": "^2.7.0",
     "merge-stream": "^1.0.0",
     "rimraf": "^2.5.4",
     "typescript": "2.1.5"
