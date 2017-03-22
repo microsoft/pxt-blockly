@@ -520,6 +520,8 @@ Blockly.Toolbox.TreeControl.prototype.handleTouchEvent_ = function(e) {
  * @override
  */
 Blockly.Toolbox.TreeControl.prototype.createNode = function(opt_html) {
+    // This is a change from mainline blockly to remove redundant event listeners.
+    // Previously this event handler was registered in the TreeNode constructor.
     if (this.toolbox_ && !this.eventHandlerRegistered_) {
     var resize = function() {
       // Even though the div hasn't changed size, the visible workspace
