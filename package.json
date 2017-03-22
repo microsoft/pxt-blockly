@@ -1,8 +1,8 @@
 {
-  "name": "blockly",
+  "name": "pxt-blockly",
   "version": "1.0.1",
-  "description": "Blockly is a library for building visual programming editors.",
-  "keywords": ["blockly"],
+  "description": "Blockly fork for Microsoft's Programming Experience Toolkit",
+  "keywords": ["blockly", "pxt"],
   "scripts": {
     "lint": "jshint .",
     "watch": "node_modules/.bin/gulp watch",
@@ -11,14 +11,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/google/blockly.git"
+    "url": "https://github.com/Microsoft/pxt-blockly.git"
   },
   "bugs": {
-    "url": "https://github.com/google/blockly/issues"
+    "url": "https://github.com/Microsoft/pxt-blockly/issues"
   },
-  "homepage": "https://developers.google.com/blockly/",
+  "homepage": "https://github.com/Microsoft/pxt-blockly/",
   "author": {
-    "name": "Neil Fraser"
+    "name": "Microsoft"
   },
   "license": "Apache-2.0",
   "private": true,
