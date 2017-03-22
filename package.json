@@ -20,8 +20,7 @@
   "author": {
     "name": "Microsoft"
   },
-  "license": "Apache-2.0",
-  "private": true,
+  "license": "MIT",
   "files": [
     "README.md",
     "blockly_compressed.js",
