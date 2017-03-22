@@ -64,7 +64,7 @@ namespace pxtblocky {
          * @private
          */
         showEditor_() {
-            super.showEditor_();
+            FieldSlider.superClass_.showEditor_.call(this, true);
             if (this.max_ == Infinity || this.min_ == -Infinity) {
                 return;
             }

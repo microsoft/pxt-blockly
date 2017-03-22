@@ -54,7 +54,7 @@ var pxtblocky;
          * @private
          */
         FieldSlider.prototype.showEditor_ = function () {
-            _super.prototype.showEditor_.call(this);
+            FieldSlider.superClass_.showEditor_.call(this, true);
             if (this.max_ == Infinity || this.min_ == -Infinity) {
                 return;
             }
