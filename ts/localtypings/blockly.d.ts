@@ -91,7 +91,7 @@ declare namespace goog {
             addChild(child: Component, opt_render?: boolean): void;
             getChildAt(index: number): Component | null;
         }
-        class ColorButton extends Control {
+        class CustomButton extends Control {
             title: string;
         }
         class Container extends Component {

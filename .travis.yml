@@ -1,0 +1,18 @@
+language: node_js
+node_js:
+  - "5.7.0"
+python:
+  - "3.4"
+before_script:
+  - "npm install"
+script:
+  - "npm publish"
+sudo: false
+notifications:
+  email:
+    - yelm-eng@microsoft.com
+cache:
+  directories:
+    - node_modules
+env:
+  - CXX=g++-4.8

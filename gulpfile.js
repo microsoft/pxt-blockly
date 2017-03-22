@@ -5,6 +5,7 @@
 
 var gulp = require('gulp');
 var tsb = require('gulp-tsb');
+var bump = require('gulp-bump');
 var merge = require('merge-stream');
 var path = require('path');
 var rimraf = require('rimraf');
@@ -22,6 +23,7 @@ function compileTask() {
 	)
 	.pipe(gulp.dest('./core/'));
 }
+
 // Default task
 gulp.task("default", ["compile"]);
 
@@ -41,15 +43,25 @@ gulp.task("python-build", function(cb){
 	});
 });
 
-function publishTask() {
+function pxtPublishTask() {
 	if (fs.existsSync('../pxt')) {
 		gulp.src('./blocks_compressed.js').pipe(gulp.dest('../pxt/webapp/public/blockly/'));
 		gulp.src('./blockly_compressed.js').pipe(gulp.dest('../pxt/webapp/public/blockly/'));
 	}
 }
 
-
 gulp.task('build', ['compile', 'python-build'], function (cb) {
 	cb(0);	
 });
-gulp.task('publish', ['compile', 'python-build'], publishTask);
+
+gulp.task('publish', ['compile', 'python-build'], pxtPublishTask);
+
+gulp.task('release', ['compile', 'python-build'], function (done) {
+	spawn('npm', ['publish'], { stdio: 'inherit' }).on('close', done);
+});
+
+gulp.task('bump', function(){
+  gulp.src('./package.json')
+  .pipe(bump({key: "version"}))
+  .pipe(gulp.dest('./'));
+});

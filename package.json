@@ -1,31 +1,38 @@
 {
-  "name": "blockly",
-  "version": "1.0.0",
-  "description": "Blockly is a library for building visual programming editors.",
-  "keywords": ["blockly"],
+  "name": "pxt-blockly",
+  "version": "1.0.1",
+  "description": "Blockly fork for Microsoft's Programming Experience Toolkit",
+  "keywords": ["blockly", "pxt"],
   "scripts": {
     "lint": "jshint .",
     "watch": "node_modules/.bin/gulp watch",
-    "build": "node_modules/.bin/gulp build",
-    "publish": "node_modules/.bin/gulp publish"
+    "prepublish": "node_modules/.bin/gulp build",
+    "publish": "node_modules/.bin/gulp release"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/google/blockly.git"
+    "url": "https://github.com/Microsoft/pxt-blockly.git"
   },
   "bugs": {
-    "url": "https://github.com/google/blockly/issues"
+    "url": "https://github.com/Microsoft/pxt-blockly/issues"
   },
-  "homepage": "https://developers.google.com/blockly/",
+  "homepage": "https://github.com/Microsoft/pxt-blockly/",
   "author": {
-    "name": "Neil Fraser"
+    "name": "Microsoft"
   },
-  "license": "Apache-2.0",
-  "private": true,
+  "license": "MIT",
+  "files": [
+    "README.md",
+    "blockly_compressed.js",
+    "blocks_compressed.js",
+    "media/**",
+    "msg/**"
+  ],
   "devDependencies": {
     "jshint": "latest",
     "gulp": "^3.9.1",
     "gulp-tsb": "^2.0.0",
+    "gulp-bump": "^2.7.0",
     "merge-stream": "^1.0.0",
     "rimraf": "^2.5.4",
     "typescript": "2.1.5"
