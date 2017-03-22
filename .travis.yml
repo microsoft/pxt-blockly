@@ -6,7 +6,7 @@ python:
 before_script:
   - "npm install"
 script:
-  - "npm release"
+  - "npm publish"
 sudo: false
 notifications:
   email:
