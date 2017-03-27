@@ -903,11 +903,15 @@ Blockly.Css.CONTENT = [
 
   // Styling for the grid picker field
   '.blocklyWidgetDiv .blocklyGridPickerMenu {',
-      'position: absolute;',
       'padding: 4px;',
       'display: table;',
       'border-radius: 10px;',
       'outline: none;',
+  '}',
+
+  '.blocklyGridPickerScroller {',
+    'outline: none;',
+    'overflow-y: auto',
   '}',
 
   '.blocklyWidgetDiv .blocklyGridPickerRow {',

@@ -12,6 +12,7 @@ declare namespace goog {
     function require(name: string): void;
     function provide(name: string): void;
     function isFunction(f: any): boolean;
+    function isString(s: any): boolean;
 
     class Disposable {
         dispose(): void;
@@ -33,6 +34,13 @@ declare namespace goog {
     }
 
     namespace math {
+        class Box {
+            top: number;
+            right: number;
+            bottom: number;
+            left: number;
+            constructor(top: number, right: number, bottom: number, left: number);
+        }
         class Coordinate {
             x: number;
             y: number;
@@ -45,7 +53,7 @@ declare namespace goog {
         }
         class Size {
             width: number;
-            height: number
+            height: number;
             constructor(width: number, height: number);
         }
         function clamp(n: number, min: number, max: number);
@@ -53,6 +61,7 @@ declare namespace goog {
 
     namespace ui {
         class Control extends Component {
+            getChildCount(): number;
             getContent(): string | Node | Array<Node> | null;
             getContentElement(): Element;
             setChecked(checked: boolean): void;
@@ -130,8 +139,11 @@ declare namespace goog {
 
     namespace style {
         let backgroundColor: number;
-        function getViewportPageOffset(doc: Document): math.Coordinate;
+        function getBorderBox(element: Element): math.Box;
         function getSize(element: Element): math.Size;
+        function getViewportPageOffset(doc: Document): math.Coordinate;
+        function scrollIntoContainerView(element: Element, opt_container?: Element, opt_center?: boolean): void;
+        function setHeight(element: Element, height: number | string): void;
         function setWidth(element: Element, width: number | string): void;
     }
 

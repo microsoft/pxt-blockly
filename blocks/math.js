@@ -274,8 +274,9 @@ Blockly.Blocks['math_single_grid_img'] = {
             [{ alt: '10^', width: 32, height: 32, src: '../media/sprites.png' }, 'POW10']
           ],
           "colour": Blockly.Blocks.math.HUE,
-          "columns": 5,
-          "width": 600,
+          "columns": 2,
+          "maxVisibleRows": 2,
+          "width": 200,
           "itemColour": 'white',
           "tooltips": true,
           "tooltipsXOffset": 15, 
