@@ -39,6 +39,11 @@ var pxtblocky;
                     invertedMultiplier = 0.3;
                 _this.invertedMultiplier = invertedMultiplier;
             }
+            var disabledOpacity = options['disabledOpacityModifier'];
+            if (disabledOpacity == undefined) {
+                disabledOpacity = 0.4;
+            }
+            _this.disabledOpacity = disabledOpacity;
             return _this;
         }
         return PXTOptions;
