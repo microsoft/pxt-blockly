@@ -140,6 +140,8 @@ declare namespace goog {
     namespace style {
         let backgroundColor: number;
         function getBorderBox(element: Element): math.Box;
+        function getMarginBox(element: Element): math.Box;
+        function getPaddingBox(element: Element): math.Box;
         function getSize(element: Element): math.Size;
         function getViewportPageOffset(doc: Document): math.Coordinate;
         function scrollIntoContainerView(element: Element, opt_container?: Element, opt_center?: boolean): void;

@@ -48,7 +48,7 @@ var pxtblocky;
             var _this = _super.call(this, menuGenerator) || this;
             _this.tooltips_ = [];
             _this.columns_ = parseInt(params.columns) || 4;
-            _this.maxVisibleRows_ = parseInt(params.maxVisibleRows) || 0;
+            _this.maxRows_ = parseInt(params.maxRows) || 0;
             _this.width_ = parseInt(params.width) || 400;
             var hue = Number(backgroundColour);
             if (!isNaN(hue)) {
@@ -86,11 +86,18 @@ var pxtblocky;
             Blockly.WidgetDiv.show(this, this.sourceBlock_.RTL, null);
             this.disposeTooltips();
             var options = this.getOptions_();
-            var container = new goog.ui.Control();
+            // Container for the menu rows
+            var tableContainer = new goog.ui.Control();
+            // Container used to limit the height of the tableContainer, because the tableContainer uses
+            // display: table, which ignores height and maxHeight
             var scrollContainer = new goog.ui.Control();
+            // Needed to correctly style borders and padding around the scrollContainer, because the padding around the
+            // scrollContainer is part of the scrollable area and will not be correctly shown at the top and bottom
+            // when scrolling
+            var paddingContainer = new goog.ui.Control();
             for (var i = 0; i < options.length / this.columns_; i++) {
                 var row = this.createRow(i, options);
-                container.addChild(row, true);
+                tableContainer.addChild(row, true);
             }
             // Record windowSize and scrollOffset before adding menu.
             var windowSize = goog.dom.getViewportSize();
@@ -98,20 +105,26 @@ var pxtblocky;
             var xy = this.getAbsoluteXY_();
             var borderBBox = this.getScaledBBox_();
             var div = Blockly.WidgetDiv.DIV;
-            scrollContainer.addChild(container, true);
-            scrollContainer.render(div);
+            scrollContainer.addChild(tableContainer, true);
+            paddingContainer.addChild(scrollContainer, true);
+            paddingContainer.render(div);
+            var paddingContainerDom = paddingContainer.getElement();
             var scrollContainerDom = scrollContainer.getElement();
-            var containerDom = container.getElement();
+            var tableContainerDom = tableContainer.getElement();
             // Resize the grid picker if width > screen width
             if (this.width_ > windowSize.width) {
                 this.width_ = windowSize.width;
             }
-            containerDom.style.width = this.width_ + 'px';
-            containerDom.style.backgroundColor = this.backgroundColour_;
-            containerDom.className = 'blocklyGridPickerMenu';
+            tableContainerDom.style.width = this.width_ + 'px';
+            tableContainerDom.style.backgroundColor = this.backgroundColour_;
+            scrollContainerDom.style.backgroundColor = this.backgroundColour_;
+            paddingContainerDom.style.backgroundColor = this.backgroundColour_;
+            tableContainerDom.className = 'blocklyGridPickerMenu';
             scrollContainerDom.className = 'blocklyGridPickerScroller';
+            paddingContainerDom.className = 'blocklyGridPickerPadder';
+            goog.style.setWidth(scrollContainerDom, tableContainerDom.scrollWidth);
             // Add the tooltips
-            var menuItemsDom = containerDom.getElementsByClassName('goog-menuitem');
+            var menuItemsDom = tableContainerDom.getElementsByClassName('goog-menuitem');
             var _loop_1 = function (i) {
                 var elem = menuItemsDom[i];
                 elem.style.borderColor = this_1.backgroundColour_;
@@ -138,35 +151,47 @@ var pxtblocky;
             for (var i = 0; i < menuItemsDom.length; ++i) {
                 _loop_1(i);
             }
-            // Record current container size after adding menu.
+            // Record current container sizes after adding menu.
+            var paddingContainerSize = goog.style.getSize(paddingContainerDom);
             var scrollContainerSize = goog.style.getSize(scrollContainerDom);
-            // Recalculate dimensions for the total content (including scrollbars), not only box.
+            // Recalculate dimensions for the total content, not only box.
             scrollContainerSize.height = scrollContainerDom.scrollHeight;
             scrollContainerSize.width = scrollContainerDom.scrollWidth;
+            paddingContainerSize.height = paddingContainerDom.scrollHeight;
+            paddingContainerSize.width = paddingContainerDom.scrollWidth;
             // Limit scroll container's height if a row limit was specified
-            if (this.maxVisibleRows_ > 0) {
-                var borderWidths = goog.style.getBorderBox(scrollContainerDom);
-                var borderHeight = borderWidths.top + borderWidths.bottom;
-                var firstRowDom = containerDom.children[0];
+            if (this.maxRows_ > 0) {
+                var firstRowDom = tableContainerDom.children[0];
                 var rowSize = goog.style.getSize(firstRowDom);
-                var maxHeight = rowSize.height * (this.maxVisibleRows_ + 0.5) + borderHeight; // Partially show next row to indicate scrolling is available
-                // If the current height is greater than the computed max height, limit the height of the scroll container and increase the width to accomodate the scrollbar
+                // Compute maxHeight using maxRows + 0.3 to partially show next row, to hint at scrolling
+                var maxHeight = rowSize.height * (this.maxRows_ + 0.3);
+                // If the current height is greater than the computed max height, limit the height of the scroll
+                // container and increase its width to accomodate the scrollbar
                 if (scrollContainerSize.height > maxHeight) {
+                    scrollContainerDom.style.overflowY = "auto";
                     goog.style.setHeight(scrollContainerDom, maxHeight);
-                    var totalBorderWidth = borderWidths.left + borderWidths.right;
-                    var scrollbarWidth = scrollContainerDom.offsetWidth - scrollContainerDom.clientWidth - totalBorderWidth;
+                    // Calculate total border, margin and padding width
+                    var scrollPaddings = goog.style.getPaddingBox(scrollContainerDom);
+                    var scrollPaddingWidth = scrollPaddings.left + scrollPaddings.right;
+                    var scrollMargins = goog.style.getMarginBox(scrollContainerDom);
+                    var scrollMarginWidth = scrollMargins.left + scrollMargins.right;
+                    var scrollBorders = goog.style.getBorderBox(scrollContainerDom);
+                    var scrollBorderWidth = scrollBorders.left + scrollBorders.right;
+                    var totalExtraWidth = scrollPaddingWidth + scrollMarginWidth + scrollBorderWidth;
+                    // Increase scroll container's width by the width of the scrollbar, so that we don't have horizontal scrolling
+                    var scrollbarWidth = scrollContainerDom.offsetWidth - scrollContainerDom.clientWidth - totalExtraWidth;
                     goog.style.setWidth(scrollContainerDom, scrollContainerSize.width + scrollbarWidth);
-                    // Refresh the scroll container's dimensions
-                    scrollContainerSize.height = scrollContainerDom.scrollHeight;
-                    scrollContainerSize.width = scrollContainerDom.scrollWidth;
+                    // Refresh the padding container's dimensions
+                    paddingContainerSize.height = paddingContainerDom.scrollHeight;
+                    paddingContainerSize.width = paddingContainerDom.scrollWidth;
                     // Scroll the currently selected item into view
-                    var rowCount = container.getChildCount();
+                    var rowCount = tableContainer.getChildCount();
+                    var selectedItemDom = void 0;
                     for (var row = 0; row < rowCount; ++row) {
-                        var selectedItemDom = void 0;
                         for (var col = 0; col < this.columns_; ++col) {
-                            var val = container.getChildAt(row).getChildAt(col).getValue();
+                            var val = tableContainer.getChildAt(row).getChildAt(col).getValue();
                             if (this.value_ === val) {
-                                selectedItemDom = containerDom.children[row].children[col];
+                                selectedItemDom = tableContainerDom.children[row].children[col];
                                 break;
                             }
                         }
@@ -179,9 +204,9 @@ var pxtblocky;
             }
             // Position the menu.
             // Flip menu vertically if off the bottom.
-            if (xy.y + scrollContainerSize.height + borderBBox.height >=
+            if (xy.y + paddingContainerSize.height + borderBBox.height >=
                 windowSize.height + scrollOffset.y) {
-                xy.y -= scrollContainerSize.height + 2;
+                xy.y -= paddingContainerSize.height + 2;
             }
             else {
                 xy.y += borderBBox.height;
@@ -190,19 +215,19 @@ var pxtblocky;
                 xy.x += borderBBox.width;
                 xy.x += Blockly.FieldDropdown.CHECKMARK_OVERHANG;
                 // Don't go offscreen left.
-                if (xy.x < scrollOffset.x + scrollContainerSize.width) {
-                    xy.x = scrollOffset.x + scrollContainerSize.width;
+                if (xy.x < scrollOffset.x + paddingContainerSize.width) {
+                    xy.x = scrollOffset.x + paddingContainerSize.width;
                 }
             }
             else {
                 xy.x -= Blockly.FieldDropdown.CHECKMARK_OVERHANG;
                 // Don't go offscreen right.
-                if (xy.x > windowSize.width + scrollOffset.x - scrollContainerSize.width) {
-                    xy.x = windowSize.width + scrollOffset.x - scrollContainerSize.width;
+                if (xy.x > windowSize.width + scrollOffset.x - paddingContainerSize.width) {
+                    xy.x = windowSize.width + scrollOffset.x - paddingContainerSize.width;
                 }
             }
             Blockly.WidgetDiv.position(xy.x, xy.y, windowSize, scrollOffset, this.sourceBlock_.RTL);
-            containerDom.focus();
+            tableContainerDom.focus();
         };
         FieldGridPicker.prototype.createRow = function (row, options) {
             var columns = this.columns_;
