@@ -34,30 +34,33 @@ namespace pxtblocky {
          * @private
          */
         addColour_(opt_tree: Blockly.Toolbox.TreeNode): void {
+            let pxtOptions = (this.workspace_.options as PXTOptions);
             let tree = opt_tree || this.tree_;
             var children = tree.getChildren();
             for (var i = 0, child; child = children[i]; i++) {
                 var element = child.getRowElement();
                 if (element) {
                     // Support for inverted and coloured toolboxes
-                    if ((this.workspace_.options as PXTOptions).invertedToolbox) {
+                    if (pxtOptions.invertedToolbox) {
                         if (this.hasColours_) {
                             element.style.color = '#fff';
                             element.style.background = (child.hexColour || '#ddd');
-                            var invertedMultiplier = (this.workspace_.options as PXTOptions).invertedMultiplier;
-                            // Hovering over toolbox category fades.
-                            Blockly.bindEvent_(child.getRowElement(), 'mouseenter', child,
-                                function(e) {
-                                if (!this.isSelected()) {
-                                    this.getRowElement().style.background = (Blockly as any).PXTUtils.fadeColour(this.hexColour || '#ddd', invertedMultiplier, false);
-                                }
-                                });
-                            Blockly.bindEvent_(child.getRowElement(), 'mouseleave', child,
-                                function(e) {
-                                if (!this.isSelected()) {
-                                    this.getRowElement().style.background = (this.hexColour || '#ddd');
-                                }
-                                });
+                            var invertedMultiplier = pxtOptions.invertedMultiplier;
+                            if (!child.disabled) {
+                                // Hovering over toolbox category fades.
+                                Blockly.bindEvent_(child.getRowElement(), 'mouseenter', child,
+                                    function(e) {
+                                    if (!this.isSelected()) {
+                                        this.getRowElement().style.background = (Blockly as any).PXTUtils.fadeColour(this.hexColour || '#ddd', invertedMultiplier, false);
+                                    }
+                                    });
+                                Blockly.bindEvent_(child.getRowElement(), 'mouseleave', child,
+                                    function(e) {
+                                    if (!this.isSelected()) {
+                                        this.getRowElement().style.background = (this.hexColour || '#ddd');
+                                    }
+                                    });
+                            }
                         }
                     } else {
                         if (this.hasColours_) {
@@ -71,9 +74,13 @@ namespace pxtblocky {
                             element.style.borderLeft = border;
                         }
                         // support for a coloured toolbox
-                        if ((this.workspace_.options as PXTOptions).colouredToolbox && this.hasColours_) {
+                        if (pxtOptions.colouredToolbox && this.hasColours_) {
                             element.style.color = (child.hexColour || '#000');
                         }
+                    }
+                    // if disabled, show disabled opacity
+                    if (child.disabled) {
+                        element.style.opacity = pxtOptions.disabledOpacity;
                     }
                 }
                 this.addColour_(child);

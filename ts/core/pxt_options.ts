@@ -26,6 +26,8 @@ namespace pxtblocky {
         public invertedToolbox: boolean;
         public invertedMultiplier: number;
 
+        public disabledOpacity: number;
+
         /**
          * Parse the user-specified options, using reasonable defaults where behaviour
          * is unspecified.
@@ -47,6 +49,11 @@ namespace pxtblocky {
                     invertedMultiplier = 0.3;
                 this.invertedMultiplier = invertedMultiplier;
             }
+            let disabledOpacity = options['disabledOpacityModifier'];
+            if (disabledOpacity == undefined) {
+                disabledOpacity = 0.4;
+            }
+            this.disabledOpacity = disabledOpacity
         }
 
     }
