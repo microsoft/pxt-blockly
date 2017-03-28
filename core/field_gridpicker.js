@@ -122,7 +122,6 @@ var pxtblocky;
             tableContainerDom.className = 'blocklyGridPickerMenu';
             scrollContainerDom.className = 'blocklyGridPickerScroller';
             paddingContainerDom.className = 'blocklyGridPickerPadder';
-            goog.style.setWidth(scrollContainerDom, tableContainerDom.scrollWidth);
             // Add the tooltips
             var menuItemsDom = tableContainerDom.getElementsByClassName('goog-menuitem');
             var _loop_1 = function (i) {
