@@ -67,7 +67,7 @@ var pxtblocky;
             var _this = this;
             Blockly.WidgetDiv.show(this, this.sourceBlock_.RTL, null);
             this.disposeTooltips();
-            var options = this.getOptions_();
+            var options = this.getOptions();
             var container = new goog.ui.Control();
             for (var i = 0; i < options.length / this.columns_; i++) {
                 var row = this.createRow(i, options);

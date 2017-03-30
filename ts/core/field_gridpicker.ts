@@ -95,7 +95,7 @@ namespace pxtblocky {
 
             this.disposeTooltips();
 
-            const options = this.getOptions_();
+            const options = this.getOptions();
             const container = new goog.ui.Control();
 
 
