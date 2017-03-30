@@ -1024,6 +1024,8 @@ Blockly.WorkspaceSvg.prototype.onMouseWheel_ = function(e) {
       y /= this.scrollbar.vScroll.ratio_;
       this.scrollbar.vScroll.set(y + e.deltaY);
       this.scrollbar.resize();
+      // pxtblockly: hide the BlocklyWidgetDiv when scrolling the workspace with the mouse wheel (it already hides when zooming)
+      Blockly.hideChaff(false);
   }
   e.preventDefault();
 };
