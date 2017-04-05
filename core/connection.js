@@ -1,4 +1,7 @@
 /**
+ * This file has been modified by Microsoft on Apr/2017.
+ */
+/**
  * @license
  * Visual Blocks Editor
  *
@@ -303,9 +306,11 @@ Blockly.Connection.prototype.canConnectWithReason_ = function(target) {
     return Blockly.Connection.REASON_DIFFERENT_WORKSPACES;
   } else if (!this.checkType_(target)) {
     return Blockly.Connection.REASON_CHECKS_FAILED;
-  } else if (blockA.isShadow() && !blockB.isShadow()) {
-    return Blockly.Connection.REASON_SHADOW_PARENT;
   }
+  // pxtblockly: disabled to support nested shadow blocks
+  // else if (blockA.isShadow() && !blockB.isShadow()) {
+  //   return Blockly.Connection.REASON_SHADOW_PARENT;
+  // }
   return Blockly.Connection.CAN_CONNECT;
 };
 
