@@ -36,6 +36,7 @@ namespace pxtblocky {
 
     export interface FieldGridPickerParams {
         columns?: string;
+        maxRows?: string;
         width?: string;
         itemColour?: string;
         tooltips?: string;
@@ -49,6 +50,9 @@ namespace pxtblocky {
 
         // Columns in grid
         private columns_: number;
+
+        // Number of rows to display (if there are extra rows, the picker will be scrollable)
+        private maxRows_: number;
 
         private backgroundColour_: string;
         private itemColour_: string;
@@ -72,10 +76,20 @@ namespace pxtblocky {
          */
         constructor(menuGenerator: string[][], backgroundColour: string = '#000', params: FieldGridPickerParams) {
             super(menuGenerator);
-            
+
             this.columns_ = parseInt(params.columns) || 4;
+            this.maxRows_ = parseInt(params.maxRows) || 0;
             this.width_ = parseInt(params.width) || 400;
-            this.backgroundColour_ = backgroundColour;
+
+            const hue = Number(backgroundColour);
+            if (!isNaN(hue)) {
+                this.backgroundColour_ = Blockly.hueToRgb(hue);
+            } else if (goog.isString(backgroundColour) && backgroundColour.match(/^#[0-9a-fA-F]{6}$/)) {
+                this.backgroundColour_ = backgroundColour;
+            } else {
+                this.backgroundColour_ = '#000';
+            }
+
             this.itemColour_ = params.itemColour || '#fff';
             let tooltipCfg: FieldGridPickerToolTipConfig = {
                 enabled: params.tooltips == 'true' || true,
@@ -84,6 +98,15 @@ namespace pxtblocky {
             }
 
             this.tooltipConfig_ = tooltipCfg;
+        }
+
+        /**
+         * When disposing the grid picker, make sure the tooltips are disposed too.
+         * @public
+         */
+        public dispose() {
+            super.dispose();
+            this.disposeTooltips();
         }
 
         /**
@@ -96,14 +119,23 @@ namespace pxtblocky {
             this.disposeTooltips();
 
             const options = this.getOptions_();
-            const container = new goog.ui.Control();
 
+            // Container for the menu rows
+            const tableContainer = new goog.ui.Control();
+
+            // Container used to limit the height of the tableContainer, because the tableContainer uses
+            // display: table, which ignores height and maxHeight
+            const scrollContainer = new goog.ui.Control();
+
+            // Needed to correctly style borders and padding around the scrollContainer, because the padding around the
+            // scrollContainer is part of the scrollable area and will not be correctly shown at the top and bottom
+            // when scrolling
+            const paddingContainer = new goog.ui.Control();
 
             for (let i = 0; i < options.length / this.columns_; i++) {
                 let row = this.createRow(i, options);
-                container.addChild(row, true);
+                tableContainer.addChild(row, true);
             }
-
 
             // Record windowSize and scrollOffset before adding menu.
             const windowSize = goog.dom.getViewportSize();
@@ -112,22 +144,29 @@ namespace pxtblocky {
             const borderBBox = this.getScaledBBox_();
             const div = Blockly.WidgetDiv.DIV;
 
-            container.render(div);
+            scrollContainer.addChild(tableContainer, true);
+            paddingContainer.addChild(scrollContainer, true);
+            paddingContainer.render(div);
 
-            const containerDom = container.getElement() as HTMLElement;
+            const paddingContainerDom = paddingContainer.getElement() as HTMLElement;
+            const scrollContainerDom = scrollContainer.getElement() as HTMLElement;
+            const tableContainerDom = tableContainer.getElement() as HTMLElement;
 
             // Resize the grid picker if width > screen width
             if (this.width_ > windowSize.width) {
                 this.width_ = windowSize.width;
             }
 
-            containerDom.style.width = this.width_ + 'px';
-            containerDom.style.backgroundColor = this.backgroundColour_;
-            containerDom.className = 'blocklyGridPickerMenu';
-
+            tableContainerDom.style.width = this.width_ + 'px';
+            tableContainerDom.style.backgroundColor = this.backgroundColour_;
+            scrollContainerDom.style.backgroundColor = this.backgroundColour_;
+            paddingContainerDom.style.backgroundColor = this.backgroundColour_;
+            tableContainerDom.className = 'blocklyGridPickerMenu';
+            scrollContainerDom.className = 'blocklyGridPickerScroller';
+            paddingContainerDom.className = 'blocklyGridPickerPadder';
 
             // Add the tooltips
-            const menuItemsDom = containerDom.getElementsByClassName('goog-menuitem');
+            const menuItemsDom = tableContainerDom.getElementsByClassName('goog-menuitem');
 
             for (let i = 0; i < menuItemsDom.length; ++i) {
                 const elem = menuItemsDom[i] as HTMLElement;
@@ -135,7 +174,7 @@ namespace pxtblocky {
                 elem.style.backgroundColor = this.itemColour_;
 
                 elem.parentElement.className = 'blocklyGridPickerRow';
-                
+
                 if (this.tooltipConfig_.enabled) {
                     const tooltip = new goog.ui.Tooltip(elem, options[i][0].alt || options[i][0]);
                     const onShowOld = tooltip.onShow;
@@ -155,20 +194,73 @@ namespace pxtblocky {
                     this.tooltips_.push(tooltip);
                 }
             }
-            
 
-            // Record menuSize after adding menu.
-            const containerSize = goog.style.getSize(containerDom);
+            // Record current container sizes after adding menu.
+            const paddingContainerSize = goog.style.getSize(paddingContainerDom);
+            const scrollContainerSize = goog.style.getSize(scrollContainerDom);
 
-            // Recalculate height for the total content, not only box height.
-            containerSize.height = containerDom.scrollHeight;
-            containerSize.width = this.width_;
+            // Recalculate dimensions for the total content, not only box.
+            scrollContainerSize.height = scrollContainerDom.scrollHeight;
+            scrollContainerSize.width = scrollContainerDom.scrollWidth;
+            paddingContainerSize.height = paddingContainerDom.scrollHeight;
+            paddingContainerSize.width = paddingContainerDom.scrollWidth;
+
+            // Limit scroll container's height if a row limit was specified
+            if (this.maxRows_ > 0) {
+                const firstRowDom = tableContainerDom.children[0];
+                const rowSize = goog.style.getSize(firstRowDom);
+
+                // Compute maxHeight using maxRows + 0.3 to partially show next row, to hint at scrolling
+                const maxHeight = rowSize.height * (this.maxRows_ + 0.3);
+
+                // If the current height is greater than the computed max height, limit the height of the scroll
+                // container and increase its width to accomodate the scrollbar
+                if (scrollContainerSize.height > maxHeight) {
+                    scrollContainerDom.style.overflowY = "auto";
+                    goog.style.setHeight(scrollContainerDom, maxHeight);
+
+                    // Calculate total border, margin and padding width
+                    const scrollPaddings = goog.style.getPaddingBox(scrollContainerDom);
+                    const scrollPaddingWidth = scrollPaddings.left + scrollPaddings.right;
+                    const scrollMargins = goog.style.getMarginBox(scrollContainerDom);
+                    const scrollMarginWidth = scrollMargins.left + scrollMargins.right;
+                    const scrollBorders = goog.style.getBorderBox(scrollContainerDom);
+                    const scrollBorderWidth = scrollBorders.left + scrollBorders.right;
+                    const totalExtraWidth = scrollPaddingWidth + scrollMarginWidth + scrollBorderWidth;
+
+                    // Increase scroll container's width by the width of the scrollbar, so that we don't have horizontal scrolling
+                    const scrollbarWidth = scrollContainerDom.offsetWidth - scrollContainerDom.clientWidth - totalExtraWidth;
+                    goog.style.setWidth(scrollContainerDom, scrollContainerSize.width + scrollbarWidth);
+
+                    // Refresh the padding container's dimensions
+                    paddingContainerSize.height = paddingContainerDom.scrollHeight;
+                    paddingContainerSize.width = paddingContainerDom.scrollWidth;
+
+                    // Scroll the currently selected item into view
+                    const rowCount = tableContainer.getChildCount();
+                    let selectedItemDom: any;
+                    for (let row = 0; row < rowCount; ++row) {
+                        for (let col = 0; col < this.columns_; ++col) {
+                            const val = (tableContainer.getChildAt(row).getChildAt(col) as goog.ui.MenuItem).getValue();
+                            if (this.value_ === val) {
+                                selectedItemDom = tableContainerDom.children[row].children[col];
+                                break;
+                            }
+                        }
+
+                        if (selectedItemDom) {
+                            goog.style.scrollIntoContainerView(selectedItemDom, scrollContainerDom, true);
+                            break;
+                        }
+                    }
+                }
+            }
 
             // Position the menu.
             // Flip menu vertically if off the bottom.
-            if (xy.y + containerSize.height + borderBBox.height >=
+            if (xy.y + paddingContainerSize.height + borderBBox.height >=
                 windowSize.height + scrollOffset.y) {
-                xy.y -= containerSize.height + 2;
+                xy.y -= paddingContainerSize.height + 2;
             } else {
                 xy.y += borderBBox.height;
             }
@@ -178,22 +270,22 @@ namespace pxtblocky {
                 xy.x += Blockly.FieldDropdown.CHECKMARK_OVERHANG;
 
                 // Don't go offscreen left.
-                if (xy.x < scrollOffset.x + containerSize.width) {
-                    xy.x = scrollOffset.x + containerSize.width;
+                if (xy.x < scrollOffset.x + paddingContainerSize.width) {
+                    xy.x = scrollOffset.x + paddingContainerSize.width;
                 }
             } else {
                 xy.x -= Blockly.FieldDropdown.CHECKMARK_OVERHANG;
 
                 // Don't go offscreen right.
-                if (xy.x > windowSize.width + scrollOffset.x - containerSize.width) {
-                    xy.x = windowSize.width + scrollOffset.x - containerSize.width;
+                if (xy.x > windowSize.width + scrollOffset.x - paddingContainerSize.width) {
+                    xy.x = windowSize.width + scrollOffset.x - paddingContainerSize.width;
                 }
             }
 
             Blockly.WidgetDiv.position(xy.x, xy.y, windowSize, scrollOffset,
                 this.sourceBlock_.RTL);
 
-            (<any>containerDom).focus();
+            (<any>tableContainerDom).focus();
         }
 
         private createRow(row: number, options: (Object | string[])[]): goog.ui.Menu {
@@ -216,7 +308,7 @@ namespace pxtblocky {
             const menu = new goog.ui.Menu();
             menu.setRightToLeft(this.sourceBlock_.RTL);
 
-            for (let i = (columns * row); i < Math.min((columns * row)+columns, options.length); i++) {
+            for (let i = (columns * row); i < Math.min((columns * row) + columns, options.length); i++) {
                 let content = options[i][0]; // Human-readable text or image.
                 const value = options[i][1]; // Language-neutral value.
 

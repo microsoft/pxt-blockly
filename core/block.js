@@ -1101,6 +1101,7 @@ Blockly.Block.prototype.interpolate_ = function(message, args, lastDummyAlign) {
             case 'field_dropdowngrid':
               var params = {
                 columns: element['columns'],
+                maxRows: element['maxRows'],
                 width: element['width'],
                 itemColour: element['itemColour'],
                 tooltips: element['tooltips'],

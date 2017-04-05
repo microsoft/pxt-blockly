@@ -334,11 +334,16 @@ Blockly.Toolbox.prototype.syncTrees_ = function(treeIn, treeOut, pathToMedia) {
         // pxtblockly: support custom icons in toolbox
         var iconClass = childIn.getAttribute('iconclass');
         if (goog.isString(iconClass)) {
-            childOut.setIconClass(this.config_['cssTreeIcon'] + ' ' + iconClass);
+          childOut.setIconClass(this.config_['cssTreeIcon'] + ' ' + iconClass);
         }
         var expandedClass = childIn.getAttribute('expandedclass');
         if (goog.isString(expandedClass)) {
-            childOut.setExpandedIconClass(this.config_['cssTreeIcon'] + ' ' + expandedClass);
+          childOut.setExpandedIconClass(this.config_['cssTreeIcon'] + ' ' + expandedClass);
+        }
+        // pxtblockly: support for disabling categories
+        var disabled = childIn.getAttribute('disabled');
+        if (goog.isString(disabled)) {
+          childOut.disabled = true;
         }
         if (childIn.getAttribute('expanded') == 'true') {
           if (childOut.blocks.length) {
