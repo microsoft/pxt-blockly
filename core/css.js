@@ -1,5 +1,5 @@
 /**
- * This file has been modified by Microsoft on Feb/2017.
+ * This file has been modified by Microsoft on Apr/2017.
  */
 /**
  * @license
@@ -228,6 +228,16 @@ Blockly.Css.CONTENT = [
   '}',
 
   '.blocklySelected>.blocklyPathLight {',
+    'display: none;',
+  '}',
+
+  // pxtblockly: Adding blocklyHighlighted CSS classes for outlining blocks
+  '.blocklyHighlighted>.blocklyPath {',
+    'stroke: #ff8b27;',
+    'stroke-width: 5px;',
+  '}',
+
+  '.blocklyHighlighted>.blocklyPathLight {',
     'display: none;',
   '}',
 
@@ -861,7 +871,7 @@ Blockly.Css.CONTENT = [
     'width: 15px;',
     'height: 100%;',
   '}',
-  
+
   /* Styling for the note field editor. */
   '.blocklyWidgetDiv .blocklyPianoDiv {',
     'position: relative',
@@ -887,7 +897,7 @@ Blockly.Css.CONTENT = [
     'display: inline-block;',
     'line-height: normal;',
     'position: absolute;',
-    'text-align: center;', 
+    'text-align: center;',
   '}',
 
   '.blocklyWidgetDiv .blocklyNotePrevNext {',
@@ -956,6 +966,6 @@ Blockly.Css.CONTENT = [
     'display: block !important;',
     'fill-opacity: 0.5;',
   '}',
-  
+
   ''
 ];
