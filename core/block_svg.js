@@ -1,4 +1,7 @@
 /**
+ * This file has been modified by Microsoft on Apr/2017.
+ */
+/**
  * @license
  * Visual Blocks Editor
  *
@@ -1519,12 +1522,13 @@ Blockly.BlockSvg.prototype.setHighlighted = function(highlighted) {
     return;
   }
   if (highlighted) {
-    this.svgPath_.setAttribute('filter',
-        'url(#' + this.workspace.options.embossFilterId + ')');
-    this.svgPathLight_.style.display = 'none';
+      // pxtblockly: outline the block instead of fading it
+      Blockly.utils.addClass(/** @type {!Element} */ (this.svgGroup_),
+                    'blocklyHighlighted');
   } else {
-    this.svgPath_.removeAttribute('filter');
-    delete this.svgPathLight_.style.display;
+      // pxtblockly: outline the block instead of fading it
+      Blockly.utils.removeClass(/** @type {!Element} */ (this.svgGroup_),
+                       'blocklyHighlighted');
   }
 };
 
