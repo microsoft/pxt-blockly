@@ -35,7 +35,6 @@ goog.provide('Blockly');
 
 goog.require('Blockly.BlockSvg.render');
 goog.require('Blockly.Events');
-goog.require('Blockly.AudioContextManager');
 goog.require('Blockly.FieldAngle');
 goog.require('Blockly.FieldCheckbox');
 goog.require('Blockly.FieldColour');
@@ -43,12 +42,10 @@ goog.require('Blockly.FieldColour');
 // Add it only if you need it.
 //goog.require('Blockly.FieldDate');
 goog.require('Blockly.FieldDropdown');
-goog.require('Blockly.FieldGridPicker');
 goog.require('Blockly.FieldImage');
 goog.require('Blockly.FieldTextInput');
 goog.require('Blockly.FieldNumber');
 goog.require('Blockly.FieldVariable');
-goog.require('Blockly.FieldNote');
 goog.require('Blockly.FieldSlider');
 goog.require('Blockly.Generator');
 goog.require('Blockly.Msg');

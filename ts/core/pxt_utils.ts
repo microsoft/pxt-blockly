@@ -14,6 +14,14 @@ goog.provide('Blockly.PXTUtils');
 
 goog.require('Blockly.utils');
 
+// goog ui components used by PXT field editors:
+goog.require('goog.ui.Menu');
+goog.require('goog.ui.MenuItem');
+goog.require('goog.positioning.ClientPosition');
+goog.require('goog.ui.Tooltip');
+goog.require('goog.ui.CustomButton');
+
+
 namespace pxtblocky {
 
     export class PXTUtils extends Blockly.utils {

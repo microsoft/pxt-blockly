@@ -43,9 +43,7 @@ var pxtblocky;
          * @constructor
          */
         function FieldSlider(value_, opt_min, opt_max, opt_precision, opt_validator) {
-            var _this = this;
-            var value = String(value_);
-            _this = _super.call(this, value, opt_validator) || this;
+            var _this = _super.call(this, String(value_), opt_validator) || this;
             _this.setConstraints(opt_min, opt_max, opt_precision);
             return _this;
         }

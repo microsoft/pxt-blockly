@@ -1098,18 +1098,6 @@ Blockly.Block.prototype.interpolate_ = function(message, args, lastDummyAlign) {
             case 'field_dropdown':
               field = new Blockly.FieldDropdown(element['options']);
               break;
-            case 'field_dropdowngrid':
-              var params = {
-                columns: element['columns'],
-                maxRows: element['maxRows'],
-                width: element['width'],
-                itemColour: element['itemColour'],
-                tooltips: element['tooltips'],
-                tooltipsXOffset: element['tooltipsXOffset'],
-                tooltipsYOffset: element['tooltipsYOffset']
-              }
-              field = new Blockly.FieldGridPicker(element['options'], element['colour'], params);
-            break;
             case 'field_image':
               field = new Blockly.FieldImage(element['src'],
                   element['width'], element['height'], element['alt']);
@@ -1118,19 +1106,16 @@ Blockly.Block.prototype.interpolate_ = function(message, args, lastDummyAlign) {
               field = new Blockly.FieldNumber(element['value'],
                   element['min'], element['max'], element['precision']);
               break;
+            case 'field_slider':
+              field = new Blockly.FieldSlider(element['value'],
+                  element['min'], element['max'], element['precision']);
+              break;
             case 'field_date':
               if (Blockly.FieldDate) {
                 field = new Blockly.FieldDate(element['date']);
                 break;
               }
               // Fall through if FieldDate is not compiled in.
-            case 'field_note':
-              field = new Blockly.FieldNote(element['note'], element['colour']);
-              break;
-            case 'field_slider':
-              field = new Blockly.FieldSlider(element['value'],
-                  element['min'], element['max'], element['precision']);
-              break;
             default:
               // Unknown field.
               if (element['alt']) {

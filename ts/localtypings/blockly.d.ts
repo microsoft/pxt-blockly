@@ -365,6 +365,7 @@ declare namespace Blockly {
         sourceBlock_: Block;
         init(block: Block): void;
         static superClass_: Field;
+        constructor(text: string, opt_validator?: Function);
         callValidator(text: string): string;
         getText(): string;
         setText(newText: any): void;
@@ -387,6 +388,7 @@ declare namespace Blockly {
     }
 
     class FieldTextInput extends Field {
+        text_: string;
         constructor(text: string, validator: any);
         static numberValidator: any;
         static htmlInput_: HTMLInputElement;
