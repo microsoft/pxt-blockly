@@ -29,6 +29,7 @@
 goog.provide('Blockly.FieldDropdown');
 
 goog.require('Blockly.Field');
+goog.require('Blockly.DropDownDiv');
 goog.require('goog.dom');
 goog.require('goog.events');
 goog.require('goog.style');
@@ -57,6 +58,7 @@ Blockly.FieldDropdown = function(menuGenerator, opt_validator) {
   // Call parent's constructor.
   Blockly.FieldDropdown.superClass_.constructor.call(this, firstTuple[1],
       opt_validator);
+  this.addArgType('dropdown');
 };
 goog.inherits(Blockly.FieldDropdown, Blockly.Field);
 
@@ -66,14 +68,15 @@ goog.inherits(Blockly.FieldDropdown, Blockly.Field);
 Blockly.FieldDropdown.CHECKMARK_OVERHANG = 25;
 
 /**
- * Android can't (in 2014) display "▾", so use "▼" instead.
- */
-Blockly.FieldDropdown.ARROW_CHAR = goog.userAgent.ANDROID ? '\u25BC' : '\u25BE';
-
-/**
  * Mouse cursor style when over the hotspot that initiates the editor.
  */
 Blockly.FieldDropdown.prototype.CURSOR = 'default';
+
+/**
+ * Closure menu item currently selected.
+ * @type {?goog.ui.MenuItem}
+ */
+Blockly.FieldDropdown.prototype.selectedItem = null;
 
 /**
  * Language-neutral currently selected string or image object.
@@ -106,12 +109,37 @@ Blockly.FieldDropdown.prototype.init = function() {
     return;
   }
   // Add dropdown arrow: "option ▾" (LTR) or "▾ אופציה" (RTL)
-  this.arrow_ = Blockly.utils.createSvgElement('tspan', {}, null);
-  this.arrow_.appendChild(document.createTextNode(this.sourceBlock_.RTL ?
-      Blockly.FieldDropdown.ARROW_CHAR + ' ' :
-      ' ' + Blockly.FieldDropdown.ARROW_CHAR));
+  // Positioned on render, after text size is calculated.
+  /** @type {Number} */
+  this.arrowSize_ = 12;
+  /** @type {Number} */
+  this.arrowX_ = 0;
+  /** @type {Number} */
+  this.arrowY_ = 11;
+  this.arrow_ = Blockly.utils.createSvgElement('image', {
+    'height': this.arrowSize_ + 'px',
+    'width': this.arrowSize_ + 'px'
+  });
+  this.arrow_.setAttributeNS('http://www.w3.org/1999/xlink',
+      'xlink:href', Blockly.mainWorkspace.options.pathToMedia + 'dropdown-arrow.svg');
 
   Blockly.FieldDropdown.superClass_.init.call(this);
+  // If not in a shadow block, draw a box.
+  if (!this.sourceBlock_.isShadow()) {
+    this.box_ = Blockly.utils.createSvgElement('rect', {
+      'rx': Blockly.BlockSvg.CORNER_RADIUS,
+      'ry': Blockly.BlockSvg.CORNER_RADIUS,
+      'x': 0,
+      'y': 0,
+      'width': this.size_.width,
+      'height': this.size_.height,
+      'stroke': this.sourceBlock_.getColourTertiary(),
+      'fill': this.sourceBlock_.getColour(),
+      'class': 'blocklyBlockBackground',
+      'fill-opacity': 1
+    }, null);
+    this.fieldGroup_.insertBefore(this.box_, this.textElement_);
+  }
   // Force a reset of the text to add the arrow.
   var text = this.text_;
   this.text_ = null;
@@ -123,7 +151,13 @@ Blockly.FieldDropdown.prototype.init = function() {
  * @private
  */
 Blockly.FieldDropdown.prototype.showEditor_ = function() {
-  Blockly.WidgetDiv.show(this, this.sourceBlock_.RTL, null);
+  this.dropDownOpen_ = true;
+  // If there is an existing drop-down someone else owns, hide it immediately and clear it.
+  Blockly.DropDownDiv.hideWithoutAnimation();
+  Blockly.DropDownDiv.clearContent();
+
+  var contentDiv = Blockly.DropDownDiv.getContentDiv();
+
   var thisField = this;
 
   function callback(e) {
@@ -132,7 +166,7 @@ Blockly.FieldDropdown.prototype.showEditor_ = function() {
     if (menuItem) {
       thisField.onItemSelected(menu, menuItem);
     }
-    Blockly.WidgetDiv.hideIfOwner(thisField);
+    Blockly.DropDownDiv.hide();
     Blockly.Events.setGroup(false);
   }
 
@@ -154,7 +188,11 @@ Blockly.FieldDropdown.prototype.showEditor_ = function() {
     menuItem.setValue(value);
     menuItem.setCheckable(true);
     menu.addChild(menuItem, true);
-    menuItem.setChecked(value == this.value_);
+    var checked = (value == this.value_);
+    menuItem.setChecked(checked);
+    if (checked) {
+      this.selectedItem = menuItem;
+    }
   }
   // Listen for mouse/keyboard events.
   goog.events.listen(menu, goog.ui.Component.EventType.ACTION, callback);
@@ -175,12 +213,7 @@ Blockly.FieldDropdown.prototype.showEditor_ = function() {
                            callbackTouchEnd);
 
   // Record windowSize and scrollOffset before adding menu.
-  var windowSize = goog.dom.getViewportSize();
-  var scrollOffset = goog.style.getViewportPageOffset(document);
-  var xy = this.getAbsoluteXY_();
-  var borderBBox = this.getScaledBBox_();
-  var div = Blockly.WidgetDiv.DIV;
-  menu.render(div);
+  menu.render(contentDiv);
   var menuDom = menu.getElement();
   Blockly.utils.addClass(menuDom, 'blocklyDropdownMenu');
   // Record menuSize after adding menu.
@@ -188,32 +221,59 @@ Blockly.FieldDropdown.prototype.showEditor_ = function() {
   // Recalculate height for the total content, not only box height.
   menuSize.height = menuDom.scrollHeight;
 
-  // Position the menu.
-  // Flip menu vertically if off the bottom.
-  if (xy.y + menuSize.height + borderBBox.height >=
-      windowSize.height + scrollOffset.y) {
-    xy.y -= menuSize.height + 2;
-  } else {
-    xy.y += borderBBox.height;
-  }
-  if (this.sourceBlock_.RTL) {
-    xy.x += borderBBox.width;
-    xy.x += Blockly.FieldDropdown.CHECKMARK_OVERHANG;
-    // Don't go offscreen left.
-    if (xy.x < scrollOffset.x + menuSize.width) {
-      xy.x = scrollOffset.x + menuSize.width;
-    }
-  } else {
-    xy.x -= Blockly.FieldDropdown.CHECKMARK_OVERHANG;
-    // Don't go offscreen right.
-    if (xy.x > windowSize.width + scrollOffset.x - menuSize.width) {
-      xy.x = windowSize.width + scrollOffset.x - menuSize.width;
-    }
-  }
-  Blockly.WidgetDiv.position(xy.x, xy.y, windowSize, scrollOffset,
-                             this.sourceBlock_.RTL);
+  var primaryColour = (this.sourceBlock_.isShadow()) ?
+    this.sourceBlock_.parentBlock_.getColour() : this.sourceBlock_.getColour();
+
+  Blockly.DropDownDiv.setColour(primaryColour, this.sourceBlock_.getColourTertiary());
+
+  var category = (this.sourceBlock_.isShadow()) ?
+    this.sourceBlock_.parentBlock_.getCategory() : this.sourceBlock_.getCategory();
+  Blockly.DropDownDiv.setCategory(category);
+
+  // Calculate positioning based on the field position.
+  var scale = this.sourceBlock_.workspace.scale;
+  var bBox = {width: this.size_.width, height: this.size_.height};
+  bBox.width *= scale;
+  bBox.height *= scale;
+  var position = this.fieldGroup_.getBoundingClientRect();
+  var primaryX = position.left + bBox.width / 2;
+  var primaryY = position.top + bBox.height;
+  var secondaryX = primaryX;
+  var secondaryY = position.top;
+  // Set bounds to workspace; show the drop-down.
+  Blockly.DropDownDiv.setBoundsElement(this.sourceBlock_.workspace.getParentSvg().parentNode);
+  Blockly.DropDownDiv.show(this, primaryX, primaryY, secondaryX, secondaryY,
+    this.onHide.bind(this));
+
   menu.setAllowAutoFocus(true);
   menuDom.focus();
+
+  // Update colour to look selected.
+  if (!this.disableColourChange_) {
+    if (this.sourceBlock_.isShadow()) {
+      this.savedPrimary_ = this.sourceBlock_.getColour();
+      this.sourceBlock_.setColour(this.sourceBlock_.getColourTertiary(),
+        this.sourceBlock_.getColourSecondary(), this.sourceBlock_.getColourTertiary());
+    } else if (this.box_) {
+      this.box_.setAttribute('fill', this.sourceBlock_.getColourTertiary());
+    }
+  }
+};
+
+/**
+ * Callback for when the drop-down is hidden.
+ */
+Blockly.FieldDropdown.prototype.onHide = function() {
+  this.dropDownOpen_ = false;
+  // Update colour to look selected.
+  if (!this.disableColourChange_ && this.sourceBlock_) {
+    if (this.sourceBlock_.isShadow()) {
+      this.sourceBlock_.setColour(this.savedPrimary_,
+        this.sourceBlock_.getColourSecondary(), this.sourceBlock_.getColourTertiary());
+    } else if (this.box_) {
+      this.box_.setAttribute('fill', this.sourceBlock_.getColour());
+    }
+  }
 };
 
 /**
@@ -331,6 +391,11 @@ Blockly.FieldDropdown.prototype.setValue = function(newValue) {
     Blockly.Events.fire(new Blockly.Events.Change(
         this.sourceBlock_, 'field', this.name, this.value_, newValue));
   }
+  // Clear menu item for old value.
+  if (this.selectedItem) {
+    this.selectedItem.setChecked(false);
+    this.selectedItem = null;
+  }
   this.value_ = newValue;
   // Look up and display the human-readable text.
   var options = this.getOptions();
@@ -354,69 +419,64 @@ Blockly.FieldDropdown.prototype.setValue = function(newValue) {
 };
 
 /**
- * Draws the border with the correct width.
- * @private
+ * Sets the text in this field.  Trigger a rerender of the source block.
+ * @param {?string} text New text.
  */
-Blockly.FieldDropdown.prototype.render_ = function() {
-  if (!this.visible_) {
-    this.size_.width = 0;
+Blockly.FieldDropdown.prototype.setText = function(text) {
+  if (text === null || text === this.text_) {
+    // No change if null.
     return;
   }
-  if (this.sourceBlock_ && this.arrow_) {
-    // Update arrow's colour.
-    this.arrow_.style.fill = this.sourceBlock_.getColour();
+  this.text_ = text;
+  this.updateTextNode_();
+
+  if (this.textElement_) {
+    // Update class for dropdown text.
+    // This class is reset every time updateTextNode_ is called.
+    this.textElement_.setAttribute('class',
+        this.textElement_.getAttribute('class') + ' blocklyDropdownText'
+    );
+    this.textElement_.parentNode.appendChild(this.arrow_);
   }
-  goog.dom.removeChildren(/** @type {!Element} */ (this.textElement_));
-  goog.dom.removeNode(this.imageElement_);
-  this.imageElement_ = null;
+  if (this.sourceBlock_ && this.sourceBlock_.rendered) {
+    this.sourceBlock_.render();
+    this.sourceBlock_.bumpNeighbours_();
+  }
+};
 
-  if (this.imageJson_) {
-    // Image option is selected.
-    this.imageElement_ = Blockly.utils.createSvgElement('image',
-        {'y': 5,
-         'height': this.imageJson_.height + 'px',
-         'width': this.imageJson_.width + 'px'}, this.fieldGroup_);
-    this.imageElement_.setAttributeNS('http://www.w3.org/1999/xlink',
-                                      'xlink:href', this.imageJson_.src);
-    // Insert dropdown arrow.
-    this.textElement_.appendChild(this.arrow_);
-    var arrowWidth = Blockly.Field.getCachedWidth(this.arrow_);
-    this.size_.height = Number(this.imageJson_.height) + 19;
-    this.size_.width = Number(this.imageJson_.width) + arrowWidth;
-    if (this.sourceBlock_.RTL) {
-      this.imageElement_.setAttribute('x', arrowWidth);
-      this.textElement_.setAttribute('x', -1);
-    } else {
-      this.textElement_.setAttribute('text-anchor', 'end');
-      this.textElement_.setAttribute('x', this.size_.width + 1);
-    }
+/**
+ * Position a drop-down arrow at the appropriate location at render-time.
+ * @param {number} x X position the arrow is being rendered at, in px.
+ * @return {number} Amount of space the arrow is taking up, in px.
+ */
+Blockly.FieldDropdown.prototype.positionArrow = function(x) {
+  if (!this.arrow_) {
+    return 0;
+  }
 
+  var addedWidth = 0;
+  if (this.sourceBlock_.RTL) {
+    this.arrowX_ = this.arrowSize_ - Blockly.BlockSvg.DROPDOWN_ARROW_PADDING;
+    addedWidth = this.arrowSize_ + Blockly.BlockSvg.DROPDOWN_ARROW_PADDING;
   } else {
-    // Text option is selected.
-    // Replace the text.
-    var textNode = document.createTextNode(this.getDisplayText_());
-    this.textElement_.appendChild(textNode);
-    // Insert dropdown arrow.
-    if (this.sourceBlock_.RTL) {
-      this.textElement_.insertBefore(this.arrow_, this.textElement_.firstChild);
-    } else {
-      this.textElement_.appendChild(this.arrow_);
-    }
-    this.textElement_.setAttribute('text-anchor', 'start');
-    this.textElement_.setAttribute('x', 0);
-
-    this.size_.height = Blockly.BlockSvg.MIN_BLOCK_Y;
-    this.size_.width = Blockly.Field.getCachedWidth(this.textElement_);
+    this.arrowX_ = x + Blockly.BlockSvg.DROPDOWN_ARROW_PADDING / 2;
+    addedWidth = this.arrowSize_ + Blockly.BlockSvg.DROPDOWN_ARROW_PADDING;
   }
-  this.borderRect_.setAttribute('height', this.size_.height - 9);
-  this.borderRect_.setAttribute('width',
-      this.size_.width + Blockly.BlockSvg.SEP_SPACE_X);
+  if (this.box_) {
+    // Bump positioning to the right for a box-type drop-down.
+    this.arrowX_ += Blockly.BlockSvg.BOX_FIELD_PADDING;
+  }
+  this.arrow_.setAttribute('transform',
+    'translate(' + this.arrowX_ + ',' + this.arrowY_ + ')'
+  );
+  return addedWidth;
 };
 
 /**
  * Close the dropdown menu if this input is being deleted.
  */
 Blockly.FieldDropdown.prototype.dispose = function() {
+  this.selectedItem = null;
   Blockly.WidgetDiv.hideIfOwner(this);
   Blockly.FieldDropdown.superClass_.dispose.call(this);
 };

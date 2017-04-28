@@ -28,6 +28,7 @@
 'use strict';
 
 goog.provide('Blockly.Options');
+goog.require('Blockly.Colours');
 
 
 /**

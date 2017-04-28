@@ -28,17 +28,32 @@ var pxtblocky;
          */
         function PXTOptions(options) {
             var _this = _super.call(this, options) || this;
-            var toolboxType = options['toolboxType'];
-            if (toolboxType == 'coloured') {
-                _this.colouredToolbox = true;
+            _this.toolboxOptions = {};
+            var toolboxOptions = options['toolboxOptions'];
+            if (toolboxOptions["border"] == undefined) {
+                toolboxOptions["border"] = true;
             }
-            if (toolboxType == 'inverted') {
-                _this.invertedToolbox = true;
-                var invertedMultiplier = options['toolboxInvertedMultipler'];
-                if (invertedMultiplier == undefined)
-                    invertedMultiplier = 0.3;
-                _this.invertedMultiplier = invertedMultiplier;
+            if (toolboxOptions["colour"] == undefined) {
+                toolboxOptions["colour"] = false;
             }
+            if (toolboxOptions["colourIcons"] == undefined) {
+                toolboxOptions["colourIcons"] = false;
+            }
+            if (toolboxOptions["invertedIcons"] == undefined) {
+                toolboxOptions["invertedIcons"] = false;
+            }
+            if (toolboxOptions["inverted"] == undefined) {
+                toolboxOptions["inverted"] = false;
+            }
+            if (toolboxOptions["invertedMultiplier"] == undefined) {
+                toolboxOptions["invertedMultiplier"] = 0.3;
+            }
+            _this.toolboxOptions.border = toolboxOptions["border"];
+            _this.toolboxOptions.colour = toolboxOptions["colour"];
+            _this.toolboxOptions.colourIcons = toolboxOptions["colourIcons"];
+            _this.toolboxOptions.invertedIcons = toolboxOptions["invertedIcons"];
+            _this.toolboxOptions.inverted = toolboxOptions["inverted"];
+            _this.toolboxOptions.invertedMultiplier = toolboxOptions["invertedMultiplier"];
             var disabledOpacity = options['disabledOpacityModifier'];
             if (disabledOpacity == undefined) {
                 disabledOpacity = 0.4;

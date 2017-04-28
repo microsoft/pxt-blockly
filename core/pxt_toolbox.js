@@ -21,9 +21,7 @@ var pxtblocky;
     var PXTToolbox = (function (_super) {
         __extends(PXTToolbox, _super);
         function PXTToolbox(workspace) {
-            var _this = _super.call(this, workspace) || this;
-            _this.invertedToolbox = workspace.options.invertedToolbox;
-            return _this;
+            return _super.call(this, workspace) || this;
         }
         /**
          * Recursively add colours to this toolbox.
@@ -39,11 +37,12 @@ var pxtblocky;
                 var element = child.getRowElement();
                 if (element) {
                     // Support for inverted and coloured toolboxes
-                    if (pxtOptions.invertedToolbox) {
+                    var toolboxOptions = pxtOptions.toolboxOptions;
+                    if (toolboxOptions.inverted) {
                         if (this.hasColours_) {
                             element.style.color = '#fff';
                             element.style.background = (child.hexColour || '#ddd');
-                            var invertedMultiplier = pxtOptions.invertedMultiplier;
+                            var invertedMultiplier = toolboxOptions.invertedMultiplier;
                             if (!child.disabled) {
                                 // Hovering over toolbox category fades.
                                 Blockly.bindEvent_(child.getRowElement(), 'mouseenter', child, function (e) {
@@ -60,21 +59,40 @@ var pxtblocky;
                         }
                     }
                     else {
-                        if (this.hasColours_) {
-                            var border = '8px solid ' + (child.hexColour || '#ddd');
-                        }
-                        else {
-                            var border = 'none';
-                        }
-                        if (this.workspace_.RTL) {
-                            element.style.borderRight = border;
-                        }
-                        else {
-                            element.style.borderLeft = border;
+                        if (toolboxOptions.border) {
+                            // Only show if the toolbox type is not noborder
+                            if (this.hasColours_) {
+                                var border = '8px solid ' + (child.hexColour || '#ddd');
+                            }
+                            else {
+                                var border = 'none';
+                            }
+                            if (this.workspace_.RTL) {
+                                element.style.borderRight = border;
+                            }
+                            else {
+                                element.style.borderLeft = border;
+                            }
                         }
                         // support for a coloured toolbox
-                        if (pxtOptions.colouredToolbox && this.hasColours_) {
+                        if (toolboxOptions.colour && this.hasColours_) {
                             element.style.color = (child.hexColour || '#000');
+                        }
+                        if (toolboxOptions.colourIcons && this.hasColours_) {
+                            // find the icon child
+                            var iconElements = element.querySelectorAll('.blocklyTreeIcon');
+                            iconElements.forEach(function (iconElement) {
+                                iconElement.style.color = (child.hexColour || '#000');
+                            });
+                        }
+                        else if (toolboxOptions.invertedIcons && this.hasColours_) {
+                            // find the icon child
+                            var iconElements = element.querySelectorAll('.blocklyTreeIcon');
+                            iconElements.forEach(function (iconElement) {
+                                iconElement.style.backgroundColor = (child.hexColour || '#000');
+                                iconElement.style.borderRadius = '100px';
+                                iconElement.style.color = '#fff';
+                            });
                         }
                     }
                     // if disabled, show disabled opacity

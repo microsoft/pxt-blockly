@@ -25,6 +25,7 @@ goog.require('goog.dom');
 goog.require('Blockly.Field');
 goog.require('Blockly.Toolbox');
 goog.require('Blockly.FieldNumber');
+goog.require('Blockly.DropDownDiv');
 var pianoSize;
 (function (pianoSize) {
     pianoSize[pianoSize["small"] = 12] = "small";
@@ -276,6 +277,10 @@ var pxtblocky;
             //  change Note name to number frequency
             Blockly.FieldNumber.prototype.setText.call(this, this.getText());
             FieldNote.superClass_.showEditor_.call(this, true);
+            // If there is an existing drop-down someone else owns, hide it immediately and clear it.
+            Blockly.DropDownDiv.hideWithoutAnimation();
+            Blockly.DropDownDiv.clearContent();
+            var contentDiv = Blockly.DropDownDiv.getContentDiv();
             var pianoWidth;
             var pianoHeight;
             var keyWidth = 22;
@@ -307,7 +312,6 @@ var pxtblocky;
             var quietInput = opt_quietInput || false;
             if (!quietInput && (goog.userAgent.MOBILE || goog.userAgent.ANDROID)) {
                 pagination = true;
-                mobile = true;
                 var r = keyWidth / keyHeight;
                 keyWidth = Math.ceil(windowSize.width / 7);
                 keyHeight = Math.ceil(keyWidth / r);
@@ -317,9 +321,10 @@ var pxtblocky;
                 prevNextHeight = keyWidth / 1.5;
             }
             //  create piano div
-            var div = Blockly.WidgetDiv.DIV;
+            var div = contentDiv;
             var pianoDiv = goog.dom.createDom("div", {});
             pianoDiv.className = "blocklyPianoDiv";
+            pianoDiv.style.height = keyHeight + 25 + "px";
             div.appendChild(pianoDiv);
             var scrollOffset = goog.style.getViewportPageOffset(document);
             //let pianoHeight = keyHeight + div.scrollHeight + 5;
@@ -327,31 +332,25 @@ var pxtblocky;
             var borderBBox = this.getScaledBBox_();
             var topPosition = 0, leftPosition = 0;
             //  Flip the piano vertically if off the bottom (only in web view).
-            if (!mobile) {
-                if (xy.y + pianoHeight + borderBBox.height >=
-                    windowSize.height + scrollOffset.y) {
-                    topPosition = -(pianoHeight + borderBBox.height);
-                }
-                if (this.sourceBlock_.RTL) {
-                    xy.x += borderBBox.width;
-                    xy.x -= pianoWidth;
-                    leftPosition += borderBBox.width;
-                    leftPosition -= pianoWidth;
-                    // Don't go offscreen left.
-                    if (xy.x < scrollOffset.x) {
-                        leftPosition = scrollOffset.x - xy.x;
-                    }
-                }
-                else {
-                    // Don't go offscreen right.
-                    if (xy.x > windowSize.width + scrollOffset.x - pianoWidth) {
-                        leftPosition -= xy.x - (windowSize.width + scrollOffset.x - pianoWidth);
-                    }
+            if (xy.y + pianoHeight + borderBBox.height >=
+                windowSize.height + scrollOffset.y) {
+                topPosition = -(pianoHeight + borderBBox.height);
+            }
+            if (this.sourceBlock_.RTL) {
+                xy.x += borderBBox.width;
+                xy.x -= pianoWidth;
+                leftPosition += borderBBox.width;
+                leftPosition -= pianoWidth;
+                // Don't go offscreen left.
+                if (xy.x < scrollOffset.x) {
+                    leftPosition = scrollOffset.x - xy.x;
                 }
             }
             else {
-                leftPosition = -document.getElementsByClassName("blocklyWidgetDiv")[0].offsetLeft; //+ ((windowSize.width - this.pianoWidth_) / 2);
-                topPosition = windowSize.height - (keyHeight + labelHeight + prevNextHeight) - document.getElementsByClassName("blocklyWidgetDiv")[0].offsetTop - borderBBox.height;
+                // Don't go offscreen right.
+                if (xy.x > windowSize.width + scrollOffset.x - pianoWidth) {
+                    leftPosition -= xy.x - (windowSize.width + scrollOffset.x - pianoWidth);
+                }
             }
             //  save all changes in the same group of events
             Blockly.Events.setGroup(true);
@@ -367,11 +366,11 @@ var pxtblocky;
                 var bgColor = (isWhite(i)) ? "white" : "black";
                 var width = getKeyWidth(i);
                 var height = getKeyHeight(i);
-                var position = getPosition(i);
+                var position_1 = getPosition(i);
                 //  modify original position in pagination
                 if (pagination && i >= 12)
-                    position -= 7 * octaveCounter * keyWidth;
-                var style = getKeyStyle(bgColor, width, height, position + leftPosition, topPosition, isWhite(i) ? 1000 : 1001, isWhite(i) ? this.colour_ : "black", mobile);
+                    position_1 -= 7 * octaveCounter * keyWidth;
+                var style = getKeyStyle(bgColor, width, height, position_1 + leftPosition, topPosition, isWhite(i) ? 1000 : 1001, mobile);
                 key.setContent(style);
                 key.setId(this.noteName_[i]);
                 key.render(pianoDiv);
@@ -528,7 +527,7 @@ var pxtblocky;
              * @return {goog.dom} DOM with the new css style.
              * @private
              */
-            function getKeyStyle(bgColor, width, height, leftPosition, topPosition, z_index, keyBorderColour, isMobile) {
+            function getKeyStyle(bgColor, width, height, leftPosition, topPosition, z_index, isMobile) {
                 var div = goog.dom.createDom("div", {
                     "style": "background-color: " + bgColor
                         + "; width: " + width
@@ -536,7 +535,6 @@ var pxtblocky;
                         + "px; left: " + leftPosition
                         + "px; top: " + topPosition
                         + "px; z-index: " + z_index
-                        + ";   border-color: " + keyBorderColour
                         + ";"
                 });
                 div.className = "blocklyNote";
@@ -551,13 +549,12 @@ var pxtblocky;
              * @private
              */
             function getShowNoteStyle(topPosition, leftPosition, isMobile) {
-                topPosition += keyHeight;
+                topPosition += keyHeight + 7;
                 if (isMobile)
                     topPosition += prevNextHeight;
                 var div = goog.dom.createDom("div", {
                     "style": "top: " + topPosition
                         + "px; left: " + leftPosition
-                        + "px; background-color: " + thisField.colour_
                         + "; width: " + pianoWidth
                         + "px; border-color: " + thisField.colour_
                         + ";" + (isMobile ? " font-size: " + (labelHeight - 10) + "px; height: " + labelHeight + "px;" : "")
@@ -640,13 +637,65 @@ var pxtblocky;
                     return pos;
                 return pos - (keyWidth / 4);
             }
+            var primaryColour = (this.sourceBlock_.isShadow()) ?
+                this.sourceBlock_.parentBlock_.getColour() : this.sourceBlock_.getColour();
+            Blockly.DropDownDiv.setColour(primaryColour, this.sourceBlock_.getColourTertiary());
+            /*
+            var category = (this.sourceBlock_.isShadow()) ?
+                this.sourceBlock_.parentBlock_.getCategory() : this.sourceBlock_.getCategory();
+            Blockly.DropDownDiv.setCategory(category);
+            */
+            // Calculate positioning based on the field position.
+            var scale = this.sourceBlock_.workspace.scale;
+            var bBox = { width: this.size_.width, height: this.size_.height };
+            bBox.width *= scale;
+            bBox.height *= scale;
+            var position = this.fieldGroup_.getBoundingClientRect();
+            var primaryX = position.left + bBox.width / 2;
+            var primaryY = position.top + bBox.height;
+            var secondaryX = primaryX;
+            var secondaryY = position.top;
+            // Set bounds to workspace; show the drop-down.
+            Blockly.DropDownDiv.setBoundsElement(this.sourceBlock_.workspace.getParentSvg().parentNode);
+            Blockly.DropDownDiv.show(this, primaryX, primaryY, secondaryX, secondaryY, this.onHide.bind(this));
         };
+        /**
+         * Callback for when the drop-down is hidden.
+         */
+        FieldNote.prototype.onHide = function () {
+            //this.dropDownOpen_ = false;
+            // Update colour to look selected.
+            /*
+            if (!this.disableColourChange_ && this.sourceBlock_) {
+                if (this.sourceBlock_.isShadow()) {
+                this.sourceBlock_.setColour(this.savedPrimary_,
+                    this.sourceBlock_.getColourSecondary(), this.sourceBlock_.getColourTertiary());
+                } else if (this.box_) {
+                this.box_.setAttribute('fill', this.sourceBlock_.getColour());
+                }
+            }*/
+        };
+        ;
+        /**
+         * Handle key down to the editor.
+         * @param {!Event} e Keyboard event.
+         * @private
+         */
+        FieldNote.prototype.onHtmlInputKeyDown_ = function (e) {
+            var htmlInput = Blockly.FieldTextInput.htmlInput_;
+            var tabKey = 9, enterKey = 13, escKey = 27;
+            if (e.keyCode == enterKey || e.keyCode == escKey || e.keyCode == tabKey) {
+                Blockly.DropDownDiv.hideIfOwner(this);
+            }
+            Blockly.FieldNumber.superClass_.onHtmlInputKeyDown_(this, e);
+        };
+        ;
         /**
          * Close the note picker if this input is being deleted.
          */
         FieldNote.prototype.dispose = function () {
-            Blockly.WidgetDiv.hideIfOwner(this);
-            Blockly.FieldTextInput.superClass_.dispose.call(this);
+            Blockly.DropDownDiv.hideIfOwner(this);
+            Blockly.FieldNote.superClass_.dispose.call(this);
         };
         return FieldNote;
     }(Blockly.FieldNumber));

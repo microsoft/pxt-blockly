@@ -45,8 +45,11 @@ gulp.task("python-build", function(cb){
 
 function pxtPublishTask() {
 	if (fs.existsSync('../pxt')) {
-		gulp.src('./blocks_compressed.js').pipe(gulp.dest('../pxt/webapp/public/blockly/'));
-		gulp.src('./blockly_compressed.js').pipe(gulp.dest('../pxt/webapp/public/blockly/'));
+		gulp.src('./blocks_compressed.js').pipe(gulp.dest('../pxt/webapp/public/newblockly/'));
+		gulp.src('./blockly_compressed.js').pipe(gulp.dest('../pxt/webapp/public/newblockly/'));
+		gulp.src('./msg/messages.js').pipe(gulp.dest('../pxt/webapp/public/newblockly/msg/'));
+		gulp.src('./msg/js/en.js').pipe(gulp.dest('../pxt/webapp/public/newblockly/msg/js/'));
+		gulp.src('./msg/json/en.js').pipe(gulp.dest('../pxt/webapp/public/newblockly/msg/json/'));
 	}
 }
 

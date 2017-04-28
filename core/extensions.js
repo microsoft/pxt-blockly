@@ -336,8 +336,8 @@ Blockly.Extensions.buildTooltipForDropdown = function(dropdownName, lookupTable)
    */
   var extensionFn = function() {
     if (this.type && blockTypesChecked.indexOf(this.type) === -1) {
-      Blockly.Extensions.checkDropdownOptionsInTable_(
-        this, dropdownName, lookupTable);
+      //Blockly.Extensions.checkDropdownOptionsInTable_(
+      //  this, dropdownName, lookupTable);
       blockTypesChecked.push(this.type);
     }
 

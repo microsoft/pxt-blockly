@@ -45,9 +45,18 @@ goog.require('goog.userAgent');
  * @constructor
  */
 Blockly.Field = function(text, opt_validator) {
-  this.size_ = new goog.math.Size(0, Blockly.BlockSvg.MIN_BLOCK_Y);
+  this.size_ = new goog.math.Size(
+    Blockly.BlockSvg.FIELD_WIDTH,
+    Blockly.BlockSvg.FIELD_HEIGHT);
   this.setValue(text);
   this.setValidator(opt_validator);
+
+  /**
+   * Maximum characters of text to display before adding an ellipsis.
+   * Same for strings and numbers.
+   * @type {number}
+   */
+  this.maxDisplayLength = Blockly.BlockSvg.MAX_DISPLAY_LENGTH;
 };
 
 /**
@@ -73,12 +82,6 @@ Blockly.Field.cacheReference_ = 0;
 Blockly.Field.prototype.name = undefined;
 
 /**
- * Maximum characters of text to display before adding an ellipsis.
- * @type {number}
- */
-Blockly.Field.prototype.maxDisplayLength = 50;
-
-/**
  * Visible text to display.
  * @type {string}
  * @private
@@ -98,6 +101,13 @@ Blockly.Field.prototype.sourceBlock_ = null;
  * @private
  */
 Blockly.Field.prototype.visible_ = true;
+
+/**
+ * Null, or an array of the field's argTypes (for styling).
+ * @type {Array}
+ * @private
+ */
+Blockly.Field.prototype.argType_ = null;
 
 /**
  * Validation function called when user edits an editable field.
@@ -139,24 +149,36 @@ Blockly.Field.prototype.init = function() {
   if (!this.visible_) {
     this.fieldGroup_.style.display = 'none';
   }
-  this.borderRect_ = Blockly.utils.createSvgElement('rect',
-      {'rx': 4,
-       'ry': 4,
-       'x': -Blockly.BlockSvg.SEP_SPACE_X / 2,
-       'y': 0,
-       'height': 16}, this.fieldGroup_, this.sourceBlock_.workspace);
+  // Add an attribute to cassify the type of field.
+  if (this.getArgTypes() !== null) {
+    if (this.sourceBlock_.isShadow()) {
+      this.sourceBlock_.svgGroup_.setAttribute('data-argument-type',
+          this.getArgTypes());
+    } else {
+      // Fields without a shadow wrapper, like square dropdowns.
+      this.fieldGroup_.setAttribute('data-argument-type', this.getArgTypes());
+    }
+  }
+  // Adjust X to be flipped for RTL. Position is relative to horizontal start of source block.
+  var size = this.getSize();
+  var fieldX = (this.sourceBlock_.RTL) ? -size.width / 2 : size.width / 2;
   /** @type {!Element} */
   this.textElement_ = Blockly.utils.createSvgElement('text',
-      {'class': 'blocklyText', 'y': this.size_.height - 12.5},
+      {'class': 'blocklyText',
+       'x': fieldX,
+       'y': size.height / 2 + Blockly.BlockSvg.FIELD_TOP_PADDING,
+       'dominant-baseline': 'middle',
+       'text-anchor': 'middle'},
       this.fieldGroup_);
 
   this.updateEditable();
   this.sourceBlock_.getSvgRoot().appendChild(this.fieldGroup_);
   this.mouseUpWrapper_ =
-      Blockly.bindEventWithChecks_(this.fieldGroup_, 'mouseup', this,
+      Blockly.bindEventWithChecks_(this.getClickTarget_(), 'mouseup', this,
       this.onMouseUp_);
   // Force a render.
   this.render_();
+  this.size_.width = 0;
 };
 
 /**
@@ -171,7 +193,6 @@ Blockly.Field.prototype.dispose = function() {
   goog.dom.removeNode(this.fieldGroup_);
   this.fieldGroup_ = null;
   this.textElement_ = null;
-  this.borderRect_ = null;
   this.validator_ = null;
 };
 
@@ -226,6 +247,29 @@ Blockly.Field.prototype.setVisible = function(visible) {
   if (root) {
     root.style.display = visible ? 'block' : 'none';
     this.render_();
+  }
+};
+
+/**
+ * Adds a string to the field's array of argTypes (used for styling).
+ * @param {string} argType New argType.
+ */
+Blockly.Field.prototype.addArgType = function(argType) {
+  if (this.argType_ == null) {
+    this.argType_ = [];
+  }
+  this.argType_.push(argType);
+};
+
+/**
+ * Gets the field's argTypes joined as a string, or returns null (used for styling).
+ * @return {string} argType string, or null.
+ */
+Blockly.Field.prototype.getArgTypes = function() {
+  if (this.argType_ === null || this.argType_.length === 0) {
+    return null;
+  } else {
+    return this.argType_.join(' ');
   }
 };
 
@@ -296,17 +340,47 @@ Blockly.Field.prototype.getSvgRoot = function() {
  * @private
  */
 Blockly.Field.prototype.render_ = function() {
-  if (!this.visible_) {
-    this.size_.width = 0;
-    return;
+  if (this.visible_ && this.textElement_) {
+    // Replace the text.
+    goog.dom.removeChildren(/** @type {!Element} */ (this.textElement_));
+    var textNode = document.createTextNode(this.getDisplayText_());
+    this.textElement_.appendChild(textNode);
+    this.updateWidth();
+
+    // Update text centering, based on newly calculated width.
+    var centerTextX = (this.size_.width - this.arrowWidth_) / 2;
+    if (this.sourceBlock_.RTL) {
+      centerTextX += this.arrowWidth_;
+    }
+
+    // In a text-editing shadow block's field,
+    // if half the text length is not at least center of
+    // visible field (FIELD_WIDTH), center it there instead,
+    // unless there is a drop-down arrow.
+    if (this.sourceBlock_.isShadow() && !this.positionArrow) {
+      var minOffset = Blockly.BlockSvg.FIELD_WIDTH / 2;
+      if (this.sourceBlock_.RTL) {
+        // X position starts at the left edge of the block, in both RTL and LTR.
+        // First offset by the width of the block to move to the right edge,
+        // and then subtract to move to the same position as LTR.
+        var minCenter = this.size_.width - minOffset;
+        centerTextX = Math.min(minCenter, centerTextX);
+      } else {
+        // (width / 2) should exceed Blockly.BlockSvg.FIELD_WIDTH / 2
+        // if the text is longer.
+        centerTextX = Math.max(minOffset, centerTextX);
+      }
+    }
+
+    // Apply new text element x position.
+    this.textElement_.setAttribute('x', centerTextX);
   }
 
-  // Replace the text.
-  goog.dom.removeChildren(/** @type {!Element} */ (this.textElement_));
-  var textNode = document.createTextNode(this.getDisplayText_());
-  this.textElement_.appendChild(textNode);
-
-  this.updateWidth();
+  // Update any drawn box to the correct width and height.
+  if (this.box_) {
+    this.box_.setAttribute('width', this.size_.width);
+    this.box_.setAttribute('height', this.size_.height);
+  }
 };
 
 /**
@@ -316,10 +390,27 @@ Blockly.Field.prototype.render_ = function() {
  **/
 Blockly.Field.prototype.updateWidth = function() {
   var width = Blockly.Field.getCachedWidth(this.textElement_);
-  if (this.borderRect_) {
-    this.borderRect_.setAttribute('width',
-        width + Blockly.BlockSvg.SEP_SPACE_X);
+  // Calculate width of field
+  width = Blockly.Field.getCachedWidth(this.textElement_);
+
+  // Add padding to left and right of text.
+  if (this.EDITABLE) {
+    width += Blockly.BlockSvg.EDITABLE_FIELD_PADDING;
   }
+
+  // Adjust width for drop-down arrows.
+  this.arrowWidth_ = 0;
+  if (this.positionArrow) {
+    this.arrowWidth_ = this.positionArrow(width);
+    width += this.arrowWidth_;
+  }
+
+  // Add padding to any drawn box.
+  if (this.box_) {
+    width += 2 * Blockly.BlockSvg.BOX_FIELD_PADDING;
+  }
+
+  // Set width of the field.
   this.size_.width = width;
 };
 
@@ -399,10 +490,35 @@ Blockly.Field.prototype.getSize = function() {
  * @private
  */
 Blockly.Field.prototype.getScaledBBox_ = function() {
-  var bBox = this.borderRect_.getBBox();
-  // Create new object, as getBBox can return an uneditable SVGRect in IE.
-  return new goog.math.Size(bBox.width * this.sourceBlock_.workspace.scale,
-                            bBox.height * this.sourceBlock_.workspace.scale);
+  var size = this.getSize();
+  // Create new object, so as to not return an uneditable SVGRect in IE.
+  return new goog.math.Size(size.width * this.sourceBlock_.workspace.scale,
+                            size.height * this.sourceBlock_.workspace.scale);
+};
+
+/**
+ * Get the text from this field as displayed on screen.  May differ from getText
+ * due to ellipsis, and other formatting.
+ * @return {string} Currently displayed text.
+ * @private
+ */
+Blockly.Field.prototype.getDisplayText_ = function() {
+  var text = this.text_;
+  if (!text) {
+    // Prevent the field from disappearing if empty.
+    return Blockly.Field.NBSP;
+  }
+  if (text.length > this.maxDisplayLength) {
+    // Truncate displayed string and add an ellipsis ('...').
+    text = text.substring(0, this.maxDisplayLength - 2) + '\u2026';
+  }
+  // Replace whitespace with non-breaking spaces so the text doesn't collapse.
+  text = text.replace(/\s/g, Blockly.Field.NBSP);
+  if (this.sourceBlock_.RTL) {
+    // The SVG is LTR, force text to be RTL.
+    text += '\u200F';
+  }
+  return text;
 };
 
 /**
@@ -455,11 +571,47 @@ Blockly.Field.prototype.setText = function(newText) {
   this.text_ = newText;
   // Set width to 0 to force a rerender of this field.
   this.size_.width = 0;
-
   if (this.sourceBlock_ && this.sourceBlock_.rendered) {
     this.sourceBlock_.render();
     this.sourceBlock_.bumpNeighbours_();
   }
+};
+
+/**
+ * Update the text node of this field to display the current text.
+ * @private
+ */
+Blockly.Field.prototype.updateTextNode_ = function() {
+  if (!this.textElement_) {
+    // Not rendered yet.
+    return;
+  }
+  var text = this.text_;
+  if (text.length > this.maxDisplayLength) {
+    // Truncate displayed string and add an ellipsis ('...').
+    text = text.substring(0, this.maxDisplayLength - 2) + '\u2026';
+    // Add special class for sizing font when truncated
+    this.textElement_.setAttribute('class', 'blocklyText blocklyTextTruncated');
+  } else {
+    this.textElement_.setAttribute('class', 'blocklyText');
+  }
+  // Empty the text element.
+  goog.dom.removeChildren(/** @type {!Element} */ (this.textElement_));
+  // Replace whitespace with non-breaking spaces so the text doesn't collapse.
+  text = text.replace(/\s/g, Blockly.Field.NBSP);
+  if (this.sourceBlock_.RTL && text) {
+    // The SVG is LTR, force text to be RTL.
+    text += '\u200F';
+  }
+  if (!text) {
+    // Prevent the field from disappearing if empty.
+    text = Blockly.Field.NBSP;
+  }
+  var textNode = document.createTextNode(text);
+  this.textElement_.appendChild(textNode);
+
+  // Cached width is obsolete.  Clear it.
+  this.size_.width = 0;
 };
 
 /**
@@ -523,9 +675,35 @@ Blockly.Field.prototype.onMouseUp_ = function(e) {
  * Change the tooltip text for this field.
  * @param {string|!Element} newTip Text for tooltip or a parent element to
  *     link to for its tooltip.
+ * @abstract
  */
-Blockly.Field.prototype.setTooltip = function(newTip) {
+Blockly.Field.prototype.setTooltip = function(/*newTip*/) {
   // Non-abstract sub-classes may wish to implement this.  See FieldLabel.
+};
+
+/**
+ * Select the element to bind the click handler to. When this element is
+ * clicked on an editable field, the editor will open.
+ *
+ * <p>If the block has multiple fields, this is just the group containing the
+ * field. If the block has only one field, we handle clicks over the whole
+ * block.
+ *
+ * @return {!Element} Element to bind click handler to.
+ * @private
+ */
+Blockly.Field.prototype.getClickTarget_ = function() {
+  var nFields = 0;
+
+  for (var i = 0, input; input = this.sourceBlock_.inputList[i]; i++) {
+    nFields += input.fieldRow.length;
+  }
+
+  if (nFields <= 1) {
+    return this.sourceBlock_.getSvgRoot();
+  } else {
+    return this.getSvgRoot();
+  }
 };
 
 /**
@@ -535,5 +713,5 @@ Blockly.Field.prototype.setTooltip = function(newTip) {
  * @private
  */
 Blockly.Field.prototype.getAbsoluteXY_ = function() {
-  return goog.style.getPageOffset(this.borderRect_);
+  return goog.style.getPageOffset(this.getClickTarget_());
 };

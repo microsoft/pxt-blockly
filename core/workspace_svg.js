@@ -31,8 +31,10 @@ goog.provide('Blockly.WorkspaceSvg');
 
 // TODO(scr): Fix circular dependencies
 //goog.require('Blockly.BlockSvg');
+goog.require('Blockly.Colours');
 goog.require('Blockly.ConnectionDB');
 goog.require('Blockly.constants');
+goog.require('Blockly.DropDownDiv');
 goog.require('Blockly.Options');
 goog.require('Blockly.PXTOptions')
 goog.require('Blockly.ScrollbarPair');
@@ -517,7 +519,7 @@ Blockly.WorkspaceSvg.prototype.addFlyout_ = function(tagName) {
  * @return {Blockly.Flyout} The flyout on this workspace.
  * @package
  */
-Blockly.WorkspaceSvg.prototype.getFlyout_ = function() {
+Blockly.WorkspaceSvg.prototype.getFlyout = function() {
   if (this.flyout_) {
     return this.flyout_;
   }
@@ -734,8 +736,8 @@ Blockly.WorkspaceSvg.prototype.setVisible = function(isVisible) {
 
   // Tell the flyout whether its container is visible so it can
   // tell when to hide itself.
-  if (this.getFlyout_()) {
-    this.getFlyout_().setContainerVisible(isVisible);
+  if (this.getFlyout()) {
+    this.getFlyout().setContainerVisible(isVisible);
   }
 
   this.getParentSvg().style.display = isVisible ? 'block' : 'none';
@@ -750,6 +752,7 @@ Blockly.WorkspaceSvg.prototype.setVisible = function(isVisible) {
     }
   } else {
     Blockly.hideChaff(true);
+    Blockly.DropDownDiv.hideWithoutAnimation();
   }
 };
 
@@ -804,6 +807,61 @@ Blockly.WorkspaceSvg.prototype.highlightBlock = function(id, opt_state) {
     }
     block.setHighlighted(state);
   }
+};
+
+/**
+ * Glow/unglow a block in the workspace.
+ * @param {?string} id ID of block to find.
+ * @param {boolean} isGlowingBlock Whether to glow the block.
+ */
+Blockly.WorkspaceSvg.prototype.glowBlock = function(id, isGlowingBlock) {
+  var block = null;
+  if (id) {
+    block = this.getBlockById(id);
+    if (!block) {
+      throw 'Tried to glow block that does not exist.';
+    }
+  }
+  block.setGlowBlock(isGlowingBlock);
+};
+/**
+ * Glow/unglow a stack in the workspace.
+ * @param {?string} id ID of block which starts the stack.
+ * @param {boolean} isGlowingStack Whether to glow the stack.
+ */
+Blockly.WorkspaceSvg.prototype.glowStack = function(id, isGlowingStack) {
+  var block = null;
+  if (id) {
+    block = this.getBlockById(id);
+    if (!block) {
+      throw 'Tried to glow stack on block that does not exist.';
+    }
+  }
+  block.setGlowStack(isGlowingStack);
+};
+/**
+ * Visually report a value associated with a block.
+ * In Scratch, appears as a pop-up next to the block when a reporter block is clicked.
+ * @param {?string} id ID of block to report associated value.
+ * @param {?string} value String value to visually report.
+ */
+Blockly.WorkspaceSvg.prototype.reportValue = function(id, value) {
+  var block = this.getBlockById(id);
+  if (!block) {
+    throw 'Tried to report value on block that does not exist.';
+  }
+  Blockly.DropDownDiv.hideWithoutAnimation();
+  Blockly.DropDownDiv.clearContent();
+  var contentDiv = Blockly.DropDownDiv.getContentDiv();
+  var valueReportBox = goog.dom.createElement('div');
+  valueReportBox.setAttribute('class', 'valueReportBox');
+  valueReportBox.innerHTML = Blockly.encodeEntities(value);
+  contentDiv.appendChild(valueReportBox);
+  Blockly.DropDownDiv.setColour(
+    Blockly.Colours.valueReportBackground,
+    Blockly.Colours.valueReportBorder
+  );
+  Blockly.DropDownDiv.showPositionedByBlock(this, block);
 };
 
 /**
@@ -934,6 +992,7 @@ Blockly.WorkspaceSvg.prototype.onMouseDown_ = function(e) {
   }
   Blockly.terminateDrag_();  // In case mouse-up event was lost.
   Blockly.hideChaff();
+  Blockly.DropDownDiv.hide();
   var isTargetWorkspace = e.target && e.target.nodeName &&
       (e.target.nodeName.toLowerCase() == 'svg' ||
        e.target == this.svgBackground_);
@@ -1038,20 +1097,25 @@ Blockly.WorkspaceSvg.prototype.isDraggable = function() {
  */
 Blockly.WorkspaceSvg.prototype.onMouseWheel_ = function(e) {
   // TODO: Remove terminateDrag and compensate for coordinate skew during zoom.
-  Blockly.terminateDrag_();
-  // The vertical scroll distance that corresponds to a click of a zoom button.
-  var PIXELS_PER_ZOOM_STEP = 50;
-  var delta = -e.deltaY / PIXELS_PER_ZOOM_STEP;
-  var position = Blockly.utils.mouseToSvg(e, this.getParentSvg(),
-      this.getInverseScreenCTM());
-  // pxtblockly: Blockly zoom with Ctrl / Cmd + mousewheel scroll, and scroll workspace with just mousewheel scroll
-  if (e.ctrlKey || e.metaKey)
-      this.zoom(position.x, position.y, delta);
-  else if (this.scrollbar) {
-      var y = parseFloat(this.scrollbar.vScroll.svgHandle_.getAttribute("y") || "0");
-      y /= this.scrollbar.vScroll.ratio_;
-      this.scrollbar.vScroll.set(y + e.deltaY);
-      this.scrollbar.resize();
+  if (e.ctrlKey || e.metaKey) {
+    // pxtblockly: Blockly zoom with Ctrl / Cmd + mousewheel scroll, and scroll workspace with just mousewheel scroll
+    Blockly.terminateDrag_();
+    // The vertical scroll distance that corresponds to a click of a zoom button.
+    var PIXELS_PER_ZOOM_STEP = 50;
+    var delta = -e.deltaY / PIXELS_PER_ZOOM_STEP;
+    var position = Blockly.utils.mouseToSvg(e, this.getParentSvg(),
+        this.getInverseScreenCTM());
+    this.zoom(position.x, position.y, delta);
+  } else {
+    // This is a regular mouse wheel event - scroll the workspace
+    // First hide the WidgetDiv without animation
+    // (mouse scroll makes field out of place with div)
+    Blockly.WidgetDiv.hide(true);
+    Blockly.DropDownDiv.hideWithoutAnimation();
+    var x = this.scrollX - e.deltaX;
+    var y = this.scrollY - e.deltaY;
+    this.startDragMetrics = this.getMetrics();
+    this.scroll(x, y);
   }
   e.preventDefault();
 };
@@ -1313,6 +1377,10 @@ Blockly.WorkspaceSvg.prototype.preloadAudio_ = function() {
  * @param {number=} opt_volume Volume of sound (0-1).
  */
 Blockly.WorkspaceSvg.prototype.playAudio = function(name, opt_volume) {
+  // Send a UI event in case we wish to play the sound externally
+  var event = new Blockly.Events.Ui(null, 'sound', null, name);
+  event.workspaceId = this.id;
+  Blockly.Events.fire(event);
   var sound = this.SOUNDS_[name];
   if (sound) {
     // Don't play one sound on top of another.
@@ -1375,6 +1443,7 @@ Blockly.WorkspaceSvg.prototype.updateToolbox = function(tree) {
     this.options.languageTree = tree;
     this.flyout_.show(tree.childNodes);
   }
+  this.toolbox_.position();
 };
 
 /**
@@ -1459,6 +1528,9 @@ Blockly.WorkspaceSvg.prototype.zoom = function(x, y, amount) {
     this.scrollY = matrix.f - metrics.absoluteTop;
   }
   this.setScale(newScale);
+  // Hide the WidgetDiv without animation (zoom makes field out of place with div)
+  Blockly.WidgetDiv.hide(true);
+  Blockly.DropDownDiv.hideWithoutAnimation();
 };
 
 /**
@@ -1507,6 +1579,10 @@ Blockly.WorkspaceSvg.prototype.scrollCenter = function() {
     // Can't center a non-scrolling workspace.
     return;
   }
+  // Hide the WidgetDiv without animation (zoom makes field out of place with div)
+  Blockly.WidgetDiv.hide(true);
+  Blockly.DropDownDiv.hideWithoutAnimation();
+  Blockly.hideChaff(false);
   var metrics = this.getMetrics();
   var x = (metrics.contentWidth - metrics.viewWidth) / 2;
   if (this.flyout_) {
@@ -1529,7 +1605,12 @@ Blockly.WorkspaceSvg.prototype.setScale = function(newScale) {
     newScale = this.options.zoomOptions.minScale;
   }
   this.scale = newScale;
+  this.updateStackGlowScale_();
   this.updateGridPattern_();
+  // Hide the WidgetDiv without animation (zoom makes field out of place with div)
+  Blockly.WidgetDiv.hide(true);
+  Blockly.DropDownDiv.hideWithoutAnimation();
+  this.updateStackGlowScale_();
   if (this.scrollbar) {
     this.scrollbar.resize();
   } else {
@@ -1540,6 +1621,29 @@ Blockly.WorkspaceSvg.prototype.setScale = function(newScale) {
     // No toolbox, resize flyout.
     this.flyout_.reflow();
   }
+};
+
+/**
+ * Scroll the workspace by a specified amount, keeping in the bounds.
+ * Be sure to set this.startDragMetrics with cached metrics before calling.
+ * @param {number} x Target X to scroll to
+ * @param {number} y Target Y to scroll to
+ */
+Blockly.WorkspaceSvg.prototype.scroll = function(x, y) {
+  var metrics = this.startDragMetrics; // Cached values
+  x = Math.min(x, -metrics.contentLeft);
+  y = Math.min(y, -metrics.contentTop);
+  x = Math.max(x, metrics.viewWidth - metrics.contentLeft -
+               metrics.contentWidth);
+  y = Math.max(y, metrics.viewHeight - metrics.contentTop -
+               metrics.contentHeight);
+   // When the workspace starts scrolling, hide the WidgetDiv without animation.
+   // This is to prevent a dispoal animation from happening in the wrong location.
+  Blockly.WidgetDiv.hide(true);
+  Blockly.DropDownDiv.hideWithoutAnimation();
+  // Move the scrollbars and the page will scroll automatically.
+  this.scrollbar.set(-x - metrics.contentLeft,
+                     -y - metrics.contentTop);
 };
 
 /**
@@ -1578,6 +1682,18 @@ Blockly.WorkspaceSvg.prototype.updateGridPattern_ = function() {
   }
 };
 
+/**
+ * Update the workspace's stack glow radius to be proportional to scale.
+ * Ensures that stack glows always appear to be a fixed size.
+ */
+Blockly.WorkspaceSvg.prototype.updateStackGlowScale_ = function() {
+  // No such def in the flyout workspace.
+  if (this.options.stackGlowBlur) {
+    this.options.stackGlowBlur.setAttribute('stdDeviation',
+      Blockly.STACK_GLOW_RADIUS / this.scale
+    );
+  }
+};
 
 /**
  * Return an object with all the metrics required to size scrollbars for a

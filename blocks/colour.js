@@ -33,16 +33,8 @@ goog.provide('Blockly.Blocks.colour');  // Deprecated
 goog.provide('Blockly.Constants.Colour');
 
 goog.require('Blockly.Blocks');
+goog.require('Blockly.Colours');
 
-
-/**
- * Common HSV hue for all blocks in this category.
- * This should be the same as Blockly.Msg.COLOUR_HUE.
- * @readonly
- */
-Blockly.Constants.Colour.HUE = 20;
-/** @deprecated Use Blockly.Constants.Colour.HUE */
-Blockly.Blocks.colour.HUE = Blockly.Constants.Colour.HUE;
 
 Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
   // Block for colour picker.
@@ -57,7 +49,8 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
       }
     ],
     "output": "Colour",
-    "colour": "%{BKY_COLOUR_HUE}",
+    "colour": Blockly.Colours.textField,
+    "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
     "helpUrl": "%{BKY_COLOUR_PICKER_HELPURL}",
     "tooltip": "%{BKY_COLOUR_PICKER_TOOLTIP}",
     "extensions": ["parent_tooltip_when_inline"]
@@ -68,7 +61,10 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
     "type": "colour_random",
     "message0": "%{BKY_COLOUR_RANDOM_TITLE}",
     "output": "Colour",
-    "colour": "%{BKY_COLOUR_HUE}",
+    "colour": Blockly.Colours.colours.primary,
+    "colourSecondary": Blockly.Colours.colours.secondary,
+    "colourTertiary": Blockly.Colours.colours.tertiary,
+    "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
     "helpUrl": "%{BKY_COLOUR_RANDOM_HELPURL}",
     "tooltip": "%{BKY_COLOUR_RANDOM_TOOLTIP}"
   },
@@ -82,23 +78,26 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
         "type": "input_value",
         "name": "RED",
         "check": "Number",
-        "align": "RIGHT"
+        "align": "LEFT"
       },
       {
         "type": "input_value",
         "name": "GREEN",
         "check": "Number",
-        "align": "RIGHT"
+        "align": "LEFT"
       },
       {
         "type": "input_value",
         "name": "BLUE",
         "check": "Number",
-        "align": "RIGHT"
+        "align": "LEFT"
       }
     ],
     "output": "Colour",
-    "colour": "%{BKY_COLOUR_HUE}",
+    "colour": Blockly.Colours.colours.primary,
+    "colourSecondary": Blockly.Colours.colours.secondary,
+    "colourTertiary": Blockly.Colours.colours.tertiary,
+    "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
     "helpUrl": "%{BKY_COLOUR_RGB_HELPURL}",
     "tooltip": "%{BKY_COLOUR_RGB_TOOLTIP}"
   },
@@ -112,24 +111,28 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
         "type": "input_value",
         "name": "COLOUR1",
         "check": "Colour",
-        "align": "RIGHT"
+        "align": "LEFT"
       },
       {
         "type": "input_value",
         "name": "COLOUR2",
         "check": "Colour",
-        "align": "RIGHT"
+        "align": "LEFT"
       },
       {
         "type": "input_value",
         "name": "RATIO",
         "check": "Number",
-        "align": "RIGHT"
+        "align": "LEFT"
       }
     ],
     "output": "Colour",
-    "colour": "%{BKY_COLOUR_HUE}",
+    "colour": Blockly.Colours.colours.primary,
+    "colourSecondary": Blockly.Colours.colours.secondary,
+    "colourTertiary": Blockly.Colours.colours.tertiary,
+    "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
     "helpUrl": "%{BKY_COLOUR_BLEND_HELPURL}",
     "tooltip": "%{BKY_COLOUR_BLEND_TOOLTIP}"
   }
 ]);  // END JSON EXTRACT (Do not delete this comment.)
+

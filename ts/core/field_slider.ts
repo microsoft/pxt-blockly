@@ -56,7 +56,7 @@ namespace pxtblocky {
         constructor(value_: any, opt_min?: string, opt_max?: string, opt_precision?: string, opt_validator?: () => void) {
             let value = String(value_);
             super(value, opt_validator);
-            this.setConstraints(opt_min, opt_max, opt_precision);
+            this.setConstraints_(opt_min, opt_max, opt_precision);
         }
 
         /**

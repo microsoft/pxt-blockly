@@ -33,6 +33,7 @@ goog.provide('Blockly.Blocks.lists');  // Deprecated
 goog.provide('Blockly.Constants.Lists');
 
 goog.require('Blockly.Blocks');
+goog.require('Blockly.Colours');
 
 
 /**
@@ -75,7 +76,9 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
       }
     ],
     "output": "Array",
-    "colour": "%{BKY_LISTS_HUE}",
+    "colour": Blockly.Colours.lists.primary,
+    "colourSecondary": Blockly.Colours.lists.secondary,
+    "colourTertiary": Blockly.Colours.lists.tertiary,
     "tooltip": "%{BKY_LISTS_REPEAT_TOOLTIP}",
     "helpUrl": "%{BKY_LISTS_REPEAT_HELPURL}"
   },
@@ -92,7 +95,9 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
     ],
     "output": "Array",
     "inputsInline": true,
-    "colour": "%{BKY_LISTS_HUE}",
+    "colour": Blockly.Colours.lists.primary,
+    "colourSecondary": Blockly.Colours.lists.secondary,
+    "colourTertiary": Blockly.Colours.lists.tertiary,
     "tooltip": "%{BKY_LISTS_REVERSE_TOOLTIP}",
     "helpUrl": "%{BKY_LISTS_REVERSE_HELPURL}"
   },
@@ -108,7 +113,10 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
       }
     ],
     "output": "Boolean",
-    "colour": "%{BKY_LISTS_HUE}",
+    "colour": Blockly.Colours.lists.primary,
+    "colourSecondary": Blockly.Colours.lists.secondary,
+    "colourTertiary": Blockly.Colours.lists.tertiary,
+    "outputShape": Blockly.OUTPUT_SHAPE_HEXAGONAL,
     "tooltip": "%{BKY_LISTS_ISEMPTY_TOOLTIP}",
     "helpUrl": "%{BKY_LISTS_ISEMPTY_HELPURL}"
   },
@@ -124,7 +132,10 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
       }
     ],
     "output": "Number",
-    "colour": "%{BKY_LISTS_HUE}",
+    "colour": Blockly.Colours.lists.primary,
+    "colourSecondary": Blockly.Colours.lists.secondary,
+    "colourTertiary": Blockly.Colours.lists.tertiary,
+    "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
     "tooltip": "%{BKY_LISTS_LENGTH_TOOLTIP}",
     "helpUrl": "%{BKY_LISTS_LENGTH_HELPURL}"
   }
@@ -137,7 +148,7 @@ Blockly.Blocks['lists_create_with'] = {
    */
   init: function() {
     this.setHelpUrl(Blockly.Msg.LISTS_CREATE_WITH_HELPURL);
-    this.setColour(Blockly.Blocks.lists.HUE);
+    this.setColour(Blockly.Colours.lists.primary, Blockly.Colours.lists.secondary, Blockly.Colours.lists.tertiary);
     this.itemCount_ = 3;
     this.updateShape_();
     this.setOutput(true, 'Array');
@@ -260,7 +271,7 @@ Blockly.Blocks['lists_create_with_container'] = {
    * @this Blockly.Block
    */
   init: function() {
-    this.setColour(Blockly.Blocks.lists.HUE);
+    this.setColour(Blockly.Colours.lists.primary, Blockly.Colours.lists.secondary, Blockly.Colours.lists.tertiary);
     this.appendDummyInput()
         .appendField(Blockly.Msg.LISTS_CREATE_WITH_CONTAINER_TITLE_ADD);
     this.appendStatementInput('STACK');
@@ -275,7 +286,7 @@ Blockly.Blocks['lists_create_with_item'] = {
    * @this Blockly.Block
    */
   init: function() {
-    this.setColour(Blockly.Blocks.lists.HUE);
+    this.setColour(Blockly.Colours.lists.primary, Blockly.Colours.lists.secondary, Blockly.Colours.lists.tertiary);
     this.appendDummyInput()
         .appendField(Blockly.Msg.LISTS_CREATE_WITH_ITEM_TITLE);
     this.setPreviousStatement(true);
@@ -295,7 +306,7 @@ Blockly.Blocks['lists_indexOf'] = {
         [[Blockly.Msg.LISTS_INDEX_OF_FIRST, 'FIRST'],
          [Blockly.Msg.LISTS_INDEX_OF_LAST, 'LAST']];
     this.setHelpUrl(Blockly.Msg.LISTS_INDEX_OF_HELPURL);
-    this.setColour(Blockly.Blocks.lists.HUE);
+    this.setColour(Blockly.Colours.lists.primary, Blockly.Colours.lists.secondary, Blockly.Colours.lists.tertiary);
     this.setOutput(true, 'Number');
     this.appendValueInput('VALUE')
         .setCheck('Array')
@@ -329,7 +340,7 @@ Blockly.Blocks['lists_getIndex'] = {
          [Blockly.Msg.LISTS_GET_INDEX_LAST, 'LAST'],
          [Blockly.Msg.LISTS_GET_INDEX_RANDOM, 'RANDOM']];
     this.setHelpUrl(Blockly.Msg.LISTS_GET_INDEX_HELPURL);
-    this.setColour(Blockly.Blocks.lists.HUE);
+    this.setColour(Blockly.Colours.lists.primary, Blockly.Colours.lists.secondary, Blockly.Colours.lists.tertiary);
     var modeMenu = new Blockly.FieldDropdown(MODE, function(value) {
       var isStatement = (value == 'REMOVE');
       this.sourceBlock_.updateStatement_(isStatement);
@@ -509,7 +520,7 @@ Blockly.Blocks['lists_setIndex'] = {
          [Blockly.Msg.LISTS_GET_INDEX_LAST, 'LAST'],
          [Blockly.Msg.LISTS_GET_INDEX_RANDOM, 'RANDOM']];
     this.setHelpUrl(Blockly.Msg.LISTS_SET_INDEX_HELPURL);
-    this.setColour(Blockly.Blocks.lists.HUE);
+    this.setColour(Blockly.Colours.lists.primary, Blockly.Colours.lists.secondary, Blockly.Colours.lists.tertiary);
     this.appendValueInput('LIST')
         .setCheck('Array')
         .appendField(Blockly.Msg.LISTS_SET_INDEX_INPUT_IN_LIST);
@@ -644,7 +655,7 @@ Blockly.Blocks['lists_getSublist'] = {
          [Blockly.Msg.LISTS_GET_SUBLIST_END_FROM_END, 'FROM_END'],
          [Blockly.Msg.LISTS_GET_SUBLIST_END_LAST, 'LAST']];
     this.setHelpUrl(Blockly.Msg.LISTS_GET_SUBLIST_HELPURL);
-    this.setColour(Blockly.Blocks.lists.HUE);
+    this.setColour(Blockly.Colours.lists.primary, Blockly.Colours.lists.secondary, Blockly.Colours.lists.tertiary);
     this.appendValueInput('LIST')
         .setCheck('Array')
         .appendField(Blockly.Msg.LISTS_GET_SUBLIST_INPUT_IN_LIST);
@@ -769,7 +780,9 @@ Blockly.Blocks['lists_sort'] = {
         }
       ],
       "output": "Array",
-      "colour": Blockly.Blocks.lists.HUE,
+      "colour": Blockly.Colours.lists.primary,
+      "colourSecondary": Blockly.Colours.lists.secondary,
+      "colourTertiary": Blockly.Colours.lists.tertiary,
       "tooltip": Blockly.Msg.LISTS_SORT_TOOLTIP,
       "helpUrl": Blockly.Msg.LISTS_SORT_HELPURL
     });
@@ -791,7 +804,7 @@ Blockly.Blocks['lists_split'] = {
           thisBlock.updateType_(newMode);
         });
     this.setHelpUrl(Blockly.Msg.LISTS_SPLIT_HELPURL);
-    this.setColour(Blockly.Blocks.lists.HUE);
+    this.setColour(Blockly.Colours.lists.primary, Blockly.Colours.lists.secondary, Blockly.Colours.lists.tertiary);
     this.appendValueInput('INPUT')
         .setCheck('String')
         .appendField(dropdown, 'MODE');

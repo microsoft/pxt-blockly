@@ -28,6 +28,8 @@ goog.provide('Blockly.inject');
 
 goog.require('Blockly.BlockDragSurfaceSvg');
 goog.require('Blockly.Css');
+goog.require('Blockly.constants');
+goog.require('Blockly.DropDownDiv');
 goog.require('Blockly.Options');
 goog.require('Blockly.PXTOptions');
 goog.require('Blockly.WorkspaceSvg');
@@ -113,42 +115,60 @@ Blockly.createDom_ = function(container, options) {
     ... filters go here ...
   </defs>
   */
+  
   var defs = Blockly.utils.createSvgElement('defs', {}, svg);
   // Each filter/pattern needs a unique ID for the case of multiple Blockly
   // instances on a page.  Browser behaviour becomes undefined otherwise.
   // https://neil.fraser.name/news/2015/11/01/
+  // TODO (tmickel): Look into whether block highlighting still works.
+  // Reference commit:
+  // https://github.com/google/blockly/commit/144be4d49f36fdba260a26edbd170ae75bbc37a6
   var rnd = String(Math.random()).substring(2);
-  /*
-    <filter id="blocklyEmbossFilter837493">
-      <feGaussianBlur in="SourceAlpha" stdDeviation="1" result="blur" />
-      <feSpecularLighting in="blur" surfaceScale="1" specularConstant="0.5"
-                          specularExponent="10" lighting-color="white"
-                          result="specOut">
-        <fePointLight x="-5000" y="-10000" z="20000" />
-      </feSpecularLighting>
-      <feComposite in="specOut" in2="SourceAlpha" operator="in"
-                   result="specOut" />
-      <feComposite in="SourceGraphic" in2="specOut" operator="arithmetic"
-                   k1="0" k2="1" k3="1" k4="0" />
-    </filter>
-  */
-  var embossFilter = Blockly.utils.createSvgElement('filter',
-      {'id': 'blocklyEmbossFilter' + rnd}, defs);
+
+  // Using a dilate distorts the block shape.
+  // Instead use a gaussian blur, and then set all alpha to 1 with a transfer.
+  var stackGlowFilter = Blockly.utils.createSvgElement('filter',
+      {'id': 'blocklyStackGlowFilter',
+        'height': '160%', 'width': '180%', y: '-30%', x: '-40%'}, defs);
+  options.stackGlowBlur = Blockly.utils.createSvgElement('feGaussianBlur',
+      {'in': 'SourceGraphic',
+      'stdDeviation': Blockly.STACK_GLOW_RADIUS}, stackGlowFilter);
+  // Set all gaussian blur pixels to 1 opacity before applying flood
+  var componentTransfer = Blockly.utils.createSvgElement('feComponentTransfer', {'result': 'outBlur'}, stackGlowFilter);
+  Blockly.utils.createSvgElement('feFuncA',
+      {'type': 'table', 'tableValues': '0' + goog.string.repeat(' 1', 16)}, componentTransfer);
+  // Color the highlight
+  Blockly.utils.createSvgElement('feFlood',
+      {'flood-color': Blockly.Colours.stackGlow,
+       'flood-opacity': Blockly.Colours.stackGlowOpacity, 'result': 'outColor'}, stackGlowFilter);
+  Blockly.utils.createSvgElement('feComposite',
+      {'in': 'outColor', 'in2': 'outBlur',
+       'operator': 'in', 'result': 'outGlow'}, stackGlowFilter);
+  Blockly.utils.createSvgElement('feComposite',
+      {'in': 'SourceGraphic', 'in2': 'outGlow', 'operator': 'over'}, stackGlowFilter);
+
+  // Filter for replacement marker
+  var replacementGlowFilter = Blockly.utils.createSvgElement('filter',
+      {'id': 'blocklyReplacementGlowFilter',
+        'height': '160%', 'width': '180%', y: '-30%', x: '-40%'}, defs);
   Blockly.utils.createSvgElement('feGaussianBlur',
-      {'in': 'SourceAlpha', 'stdDeviation': 1, 'result': 'blur'}, embossFilter);
-  var feSpecularLighting = Blockly.utils.createSvgElement('feSpecularLighting',
-      {'in': 'blur', 'surfaceScale': 1, 'specularConstant': 0.5,
-       'specularExponent': 10, 'lighting-color': 'white', 'result': 'specOut'},
-      embossFilter);
-  Blockly.utils.createSvgElement('fePointLight',
-      {'x': -5000, 'y': -10000, 'z': 20000}, feSpecularLighting);
+      {'in': 'SourceGraphic',
+      'stdDeviation': Blockly.REPLACEMENT_GLOW_RADIUS}, replacementGlowFilter);
+  // Set all gaussian blur pixels to 1 opacity before applying flood
+  var componentTransfer = Blockly.utils.createSvgElement('feComponentTransfer',
+      {'result': 'outBlur'}, replacementGlowFilter);
+  Blockly.utils.createSvgElement('feFuncA',
+      {'type': 'table', 'tableValues': '0' + goog.string.repeat(' 1', 16)}, componentTransfer);
+  // Color the highlight
+  Blockly.utils.createSvgElement('feFlood',
+      {'flood-color': Blockly.Colours.replacementGlow,
+       'flood-opacity': Blockly.Colours.replacementGlowOpacity, 'result': 'outColor'}, replacementGlowFilter);
   Blockly.utils.createSvgElement('feComposite',
-      {'in': 'specOut', 'in2': 'SourceAlpha', 'operator': 'in',
-       'result': 'specOut'}, embossFilter);
+      {'in': 'outColor', 'in2': 'outBlur',
+       'operator': 'in', 'result': 'outGlow'}, replacementGlowFilter);
   Blockly.utils.createSvgElement('feComposite',
-      {'in': 'SourceGraphic', 'in2': 'specOut', 'operator': 'arithmetic',
-       'k1': 0, 'k2': 1, 'k3': 1, 'k4': 0}, embossFilter);
-  options.embossFilterId = embossFilter.id;
+      {'in': 'SourceGraphic', 'in2': 'outGlow', 'operator': 'over'}, replacementGlowFilter);
+
   /*
     <pattern id="blocklyDisabledPattern837493" patternUnits="userSpaceOnUse"
              width="10" height="10">
@@ -165,6 +185,7 @@ Blockly.createDom_ = function(container, options) {
   Blockly.utils.createSvgElement('path',
       {'d': 'M 0 0 L 10 10 M 10 0 L 0 10', 'stroke': '#cc0'}, disabledPattern);
   options.disabledPatternId = disabledPattern.id;
+
   /*
     <pattern id="blocklyGridPattern837493" patternUnits="userSpaceOnUse">
       <rect stroke="#888" />
@@ -267,6 +288,7 @@ Blockly.createMainWorkspace_ = function(svg, options, blockDragSurface, workspac
   // The SVG is now fully assembled.
   Blockly.svgResize(mainWorkspace);
   Blockly.WidgetDiv.createDom();
+  Blockly.DropDownDiv.createDom();
   Blockly.Tooltip.createDom();
   return mainWorkspace;
 };
@@ -368,17 +390,17 @@ Blockly.inject.bindDocumentEvents_ = function() {
  */
 Blockly.inject.loadSounds_ = function(pathToMedia, workspace) {
   workspace.loadAudio_(
-      [pathToMedia + 'click.mp3',
-       pathToMedia + 'click.wav',
+      [pathToMedia + 'click.wav',
+       pathToMedia + 'click.mp3',
        pathToMedia + 'click.ogg'], 'click');
   workspace.loadAudio_(
       [pathToMedia + 'disconnect.wav',
        pathToMedia + 'disconnect.mp3',
        pathToMedia + 'disconnect.ogg'], 'disconnect');
   workspace.loadAudio_(
-      [pathToMedia + 'delete.mp3',
-       pathToMedia + 'delete.ogg',
-       pathToMedia + 'delete.wav'], 'delete');
+      [pathToMedia + 'delete.wav',
+       pathToMedia + 'delete.mp3',
+       pathToMedia + 'delete.ogg'], 'delete');
 
   // Bind temporary hooks that preload the sounds.
   var soundBinds = [];

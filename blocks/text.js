@@ -28,6 +28,7 @@ goog.provide('Blockly.Blocks.texts');  // Deprecated
 goog.provide('Blockly.Constants.Text');
 
 goog.require('Blockly.Blocks');
+goog.require('Blockly.Colours');
 
 
 /**
@@ -35,9 +36,6 @@ goog.require('Blockly.Blocks');
  * Should be the same as Blockly.Msg.TEXTS_HUE
  * @readonly
  */
-Blockly.Constants.Text.HUE = 160;
-/** @deprecated Use Blockly.Constants.Text.HUE */
-Blockly.Blocks.texts.HUE = Blockly.Constants.Text.HUE;
 
 Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
   // Block for text value
@@ -50,11 +48,11 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
       "text": ""
     }],
     "output": "String",
-    "colour": "%{BKY_TEXTS_HUE}",
+    "outputShape": Blockly.OUTPUT_SHAPE_SQUARE,
+    "colour": Blockly.Colours.textField,
     "helpUrl": "%{BKY_TEXT_TEXT_HELPURL}",
     "tooltip": "%{BKY_TEXT_TEXT_TOOLTIP}",
     "extensions": [
-      "text_quotes",
       "parent_tooltip_when_inline"
     ]
   }
@@ -76,7 +74,8 @@ Blockly.Blocks['text_join'] = {
    */
   init: function() {
     this.setHelpUrl(Blockly.Msg.TEXT_JOIN_HELPURL);
-    this.setColour(Blockly.Blocks.texts.HUE);
+    this.setColour(Blockly.Colours.texts.primary, Blockly.Colours.texts.secondary, Blockly.Colours.texts.tertiary);
+    this.setOutputShape(Blockly.OUTPUT_SHAPE_SQUARE);
     this.itemCount_ = 2;
     this.mixin(Blockly.Constants.Text.QUOTE_IMAGE_MIXIN);
     this.updateShape_();
@@ -201,7 +200,7 @@ Blockly.Blocks['text_create_join_container'] = {
    * @this Blockly.Block
    */
   init: function() {
-    this.setColour(Blockly.Blocks.texts.HUE);
+    this.setColour(Blockly.Colours.texts.primary, Blockly.Colours.texts.secondary, Blockly.Colours.texts.tertiary);
     this.appendDummyInput()
         .appendField(Blockly.Msg.TEXT_CREATE_JOIN_TITLE_JOIN);
     this.appendStatementInput('STACK');
@@ -216,7 +215,8 @@ Blockly.Blocks['text_create_join_item'] = {
    * @this Blockly.Block
    */
   init: function() {
-    this.setColour(Blockly.Blocks.texts.HUE);
+    this.setColour(Blockly.Colours.texts.primary, Blockly.Colours.texts.secondary, Blockly.Colours.texts.tertiary);
+    this.setOutputShape(Blockly.OUTPUT_SHAPE_SQUARE);
     this.appendDummyInput()
         .appendField(Blockly.Msg.TEXT_CREATE_JOIN_ITEM_TITLE_ITEM);
     this.setPreviousStatement(true);
@@ -233,7 +233,7 @@ Blockly.Blocks['text_append'] = {
    */
   init: function() {
     this.setHelpUrl(Blockly.Msg.TEXT_APPEND_HELPURL);
-    this.setColour(Blockly.Blocks.texts.HUE);
+    this.setColour(Blockly.Colours.texts.primary, Blockly.Colours.texts.secondary, Blockly.Colours.texts.tertiary);
     this.appendValueInput('TEXT')
         .appendField(Blockly.Msg.TEXT_APPEND_TO)
         .appendField(new Blockly.FieldVariable(
@@ -266,7 +266,10 @@ Blockly.Blocks['text_length'] = {
         }
       ],
       "output": 'Number',
-      "colour": Blockly.Blocks.texts.HUE,
+      "colour": Blockly.Colours.texts.primary,
+      "colourSecondary": Blockly.Colours.texts.secondary,
+      "colourTertiary": Blockly.Colours.texts.tertiary,
+      "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
       "tooltip": Blockly.Msg.TEXT_LENGTH_TOOLTIP,
       "helpUrl": Blockly.Msg.TEXT_LENGTH_HELPURL
     });
@@ -289,7 +292,10 @@ Blockly.Blocks['text_isEmpty'] = {
         }
       ],
       "output": 'Boolean',
-      "colour": Blockly.Blocks.texts.HUE,
+      "colour": Blockly.Colours.texts.primary,
+      "colourSecondary": Blockly.Colours.texts.secondary,
+      "colourTertiary": Blockly.Colours.texts.tertiary,
+      "outputShape": Blockly.OUTPUT_SHAPE_HEXAGONAL,
       "tooltip": Blockly.Msg.TEXT_ISEMPTY_TOOLTIP,
       "helpUrl": Blockly.Msg.TEXT_ISEMPTY_HELPURL
     });
@@ -307,7 +313,8 @@ Blockly.Blocks['text_indexOf'] = {
       [Blockly.Msg.TEXT_INDEXOF_OPERATOR_LAST, 'LAST']
     ];
     this.setHelpUrl(Blockly.Msg.TEXT_INDEXOF_HELPURL);
-    this.setColour(Blockly.Blocks.texts.HUE);
+    this.setColour(Blockly.Colours.texts.primary, Blockly.Colours.texts.secondary, Blockly.Colours.texts.tertiary);
+    this.setOutputShape(Blockly.OUTPUT_SHAPE_SQUARE)
     this.setOutput(true, 'Number');
     this.appendValueInput('VALUE')
         .setCheck('String')
@@ -342,7 +349,8 @@ Blockly.Blocks['text_charAt'] = {
       [Blockly.Msg.TEXT_CHARAT_RANDOM, 'RANDOM']
     ];
     this.setHelpUrl(Blockly.Msg.TEXT_CHARAT_HELPURL);
-    this.setColour(Blockly.Blocks.texts.HUE);
+    this.setColour(Blockly.Colours.texts.primary, Blockly.Colours.texts.secondary, Blockly.Colours.texts.tertiary);
+    this.setOutputShape(Blockly.OUTPUT_SHAPE_SQUARE)
     this.setOutput(true, 'String');
     this.appendValueInput('VALUE')
         .setCheck('String')
@@ -445,7 +453,8 @@ Blockly.Blocks['text_getSubstring'] = {
       [Blockly.Msg.TEXT_GET_SUBSTRING_END_LAST, 'LAST']
     ];
     this.setHelpUrl(Blockly.Msg.TEXT_GET_SUBSTRING_HELPURL);
-    this.setColour(Blockly.Blocks.texts.HUE);
+    this.setColour(Blockly.Colours.texts.primary, Blockly.Colours.texts.secondary, Blockly.Colours.texts.tertiary);
+    this.setOutputShape(Blockly.OUTPUT_SHAPE_SQUARE);
     this.appendValueInput('STRING')
         .setCheck('String')
         .appendField(Blockly.Msg.TEXT_GET_SUBSTRING_INPUT_IN_TEXT);
@@ -550,7 +559,8 @@ Blockly.Blocks['text_changeCase'] = {
       [Blockly.Msg.TEXT_CHANGECASE_OPERATOR_TITLECASE, 'TITLECASE']
     ];
     this.setHelpUrl(Blockly.Msg.TEXT_CHANGECASE_HELPURL);
-    this.setColour(Blockly.Blocks.texts.HUE);
+    this.setColour(Blockly.Colours.texts.primary, Blockly.Colours.texts.secondary, Blockly.Colours.texts.tertiary);
+    this.setOutputShape(Blockly.OUTPUT_SHAPE_SQUARE);
     this.appendValueInput('TEXT')
         .setCheck('String')
         .appendField(new Blockly.FieldDropdown(OPERATORS), 'CASE');
@@ -571,7 +581,8 @@ Blockly.Blocks['text_trim'] = {
       [Blockly.Msg.TEXT_TRIM_OPERATOR_RIGHT, 'RIGHT']
     ];
     this.setHelpUrl(Blockly.Msg.TEXT_TRIM_HELPURL);
-    this.setColour(Blockly.Blocks.texts.HUE);
+    this.setColour(Blockly.Colours.texts.primary, Blockly.Colours.texts.secondary, Blockly.Colours.texts.tertiary);
+    this.setOutputShape(Blockly.OUTPUT_SHAPE_SQUARE);
     this.appendValueInput('TEXT')
         .setCheck('String')
         .appendField(new Blockly.FieldDropdown(OPERATORS), 'MODE');
@@ -596,7 +607,9 @@ Blockly.Blocks['text_print'] = {
       ],
       "previousStatement": null,
       "nextStatement": null,
-      "colour": Blockly.Blocks.texts.HUE,
+      "colour": Blockly.Colours.texts.primary,
+      "colourSecondary": Blockly.Colours.texts.secondary,
+      "colourTertiary": Blockly.Colours.texts.tertiary,
       "tooltip": Blockly.Msg.TEXT_PRINT_TOOLTIP,
       "helpUrl": Blockly.Msg.TEXT_PRINT_HELPURL
     });
@@ -614,7 +627,8 @@ Blockly.Blocks['text_prompt_ext'] = {
       [Blockly.Msg.TEXT_PROMPT_TYPE_NUMBER, 'NUMBER']
     ];
     this.setHelpUrl(Blockly.Msg.TEXT_PROMPT_HELPURL);
-    this.setColour(Blockly.Blocks.texts.HUE);
+    this.setColour(Blockly.Colours.texts.primary, Blockly.Colours.texts.secondary, Blockly.Colours.texts.tertiary);
+    this.setOutputShape(Blockly.OUTPUT_SHAPE_SQUARE);
     // Assign 'this' to a variable for use in the closures below.
     var thisBlock = this;
     var dropdown = new Blockly.FieldDropdown(TYPES, function(newOp) {
@@ -674,7 +688,7 @@ Blockly.Blocks['text_prompt'] = {
     // Assign 'this' to a variable for use in the closures below.
     var thisBlock = this;
     this.setHelpUrl(Blockly.Msg.TEXT_PROMPT_HELPURL);
-    this.setColour(Blockly.Blocks.texts.HUE);
+    this.setColour(Blockly.Colours.texts.primary, Blockly.Colours.texts.secondary, Blockly.Colours.texts.tertiary);
     var dropdown = new Blockly.FieldDropdown(TYPES, function(newOp) {
       thisBlock.updateType_(newOp);
     });
@@ -717,7 +731,10 @@ Blockly.Blocks['text_count'] = {
       ],
       "output": "Number",
       "inputsInline": true,
-      "colour": Blockly.Blocks.math.HUE,
+      "colour": Blockly.Colours.texts.primary,
+      "colourSecondary": Blockly.Colours.texts.secondary,
+      "colourTertiary": Blockly.Colours.texts.tertiary,
+      "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
       "tooltip": Blockly.Msg.TEXT_COUNT_TOOLTIP,
       "helpUrl": Blockly.Msg.TEXT_COUNT_HELPURL
     });
@@ -751,7 +768,10 @@ Blockly.Blocks['text_replace'] = {
       ],
       "output": "String",
       "inputsInline": true,
-      "colour": Blockly.Blocks.texts.HUE,
+      "colour": Blockly.Colours.texts.primary,
+      "colourSecondary": Blockly.Colours.texts.secondary,
+      "colourTertiary": Blockly.Colours.texts.tertiary,
+      "outputShape": Blockly.OUTPUT_SHAPE_SQUARE,
       "tooltip": Blockly.Msg.TEXT_REPLACE_TOOLTIP,
       "helpUrl": Blockly.Msg.TEXT_REPLACE_HELPURL
     });
@@ -775,7 +795,10 @@ Blockly.Blocks['text_reverse'] = {
       ],
       "output": "String",
       "inputsInline": true,
-      "colour": Blockly.Blocks.texts.HUE,
+      "colour": Blockly.Colours.texts.primary,
+      "colourSecondary": Blockly.Colours.texts.secondary,
+      "colourTertiary": Blockly.Colours.texts.tertiary,
+      "outputShape": Blockly.OUTPUT_SHAPE_SQUARE,
       "tooltip": Blockly.Msg.TEXT_REVERSE_TOOLTIP,
       "helpUrl": Blockly.Msg.TEXT_REVERSE_HELPURL
     });

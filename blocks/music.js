@@ -13,9 +13,8 @@
 goog.provide('Blockly.Blocks.music');
 
 goog.require('Blockly.Blocks');
+goog.require('Blockly.Colours');
 
-Blockly.Blocks.music.HUE = 150;
-// TODO: This should be the same as Blockly.Msg.COLOUR_HUE.
 Blockly.Blocks['note_picker'] = {
   /**
    * Block for notes picker.
@@ -29,11 +28,14 @@ Blockly.Blocks['note_picker'] = {
           "type": "field_note",
           "name": "NOTE",
           "note": "262",
-          "colour": Blockly.Blocks.music.HUE
+          "colour": Blockly.Colours.textField
         }
       ],
       "output": "Number",
-      "colour": Blockly.Blocks.music.HUE,
+      "colour": Blockly.Colours.music.primary,
+      "colourSecondary": Blockly.Colours.music.secondary,
+      "colourTertiary": Blockly.Colours.music.tertiary,
+      "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
       "helpUrl": Blockly.Msg.NOTE_PICKER_HELPURL
     });
     // Assign 'this' to a variable for use in the tooltip closure below.

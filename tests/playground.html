@@ -82,11 +82,6 @@ function start() {
           {comments: true,
            collapse: true,
            disable: true,
-           grid:
-             {spacing: 25,
-              length: 3,
-              colour: '#ccc',
-              snap: true},
            horizontalLayout: side == 'top' || side == 'bottom',
            maxBlocks: Infinity,
            media: '../media/',
@@ -96,14 +91,24 @@ function start() {
            scrollbars: true,
            toolbox: toolbox,
            toolboxPosition: side == 'top' || side == 'start' ? 'start' : 'end',
-           toolboxType: 'inverted',
+           toolboxOptions: {
+             border: false,
+             colour: false,
+             colourIcons: false,
+             inverted: false,
+             invertedIcons: true
+           },
            zoom:
              {controls: true,
               wheel: true,
-              startScale: 1.0,
+              startScale: 0.75,
               maxScale: 4,
               minScale: .25,
-              scaleSpeed: 1.1}
+              scaleSpeed: 1.1},
+          colours: {
+            fieldShadow: 'rgba(255, 255, 255, 0.3)',
+            dragShadowOpacity: 0.6
+          }
           });
   // Restore previously displayed text.
   if (sessionStorage) {
@@ -122,7 +127,7 @@ function start() {
 }
 
 function setBackgroundColor() {
-  var lilac = '#d6d6ff';
+  var lilac = '#fff';
 
   var currentPage = window.location.href;
   var regexFile = /^file[\S]*$/;
@@ -185,6 +190,30 @@ function logEvents(state) {
     workspace.addChangeListener(logger);
   } else {
     workspace.removeChangeListener(logger);
+  }
+}
+
+function glowBlock() {
+  if (Blockly.selected) {
+    workspace.glowBlock(Blockly.selected.id, true);
+  }
+}
+
+function unglowBlock() {
+  if (Blockly.selected) {
+    workspace.glowBlock(Blockly.selected.id, false);
+  }
+}
+
+function glowStack() {
+  if (Blockly.selected) {
+    workspace.glowStack(Blockly.selected.id, true);
+  }
+}
+
+function unglowStack() {
+  if (Blockly.selected) {
+    workspace.glowStack(Blockly.selected.id, false);
   }
 }
 
@@ -319,20 +348,38 @@ var spaghettiXml = [
 html, body {
   height: 100%;
 }
+
 body {
   background-color: #fff;
   font-family: sans-serif;
   overflow: hidden;
 }
+
 h1 {
   font-weight: normal;
   font-size: 140%;
 }
+
 #blocklyDiv {
   float: right;
   height: 95%;
   width: 70%;
 }
+
+#collaborators {
+  float: right;
+  width: 30px;
+  margin-left: 10px;
+}
+
+#collaborators > img {
+  margin-right: 5px;
+  height: 30px;
+  padding-bottom: 5px;
+  width: 30px;
+  border-radius: 3px;
+}
+
 #importExport {
   font-family: monospace;
 }
@@ -341,14 +388,42 @@ h1 {
   font-style: italic;
 }
 
+.blocklyTreeIcon {
+  text-align: center;
+}
+
 .blocklyTreeIconCustom {
   background: none;
   font-family: 'FontAwesome';
-  margin: -0.2em 0.25em 0.0em 0.25em;
-  width: 1.18em;
+  margin: -0.1em 0.25em 0.0em 0.25em;
+  width: 1.0em;
+  height: 1.0em;
 }
 .blocklyTreeIconCustom::before {
   content: "\f12e";
+}
+.blocklyToolboxDiv {
+  background: #fff;
+  color: #575E75;
+}
+
+.blocklyTreeRow:not(.blocklyTreeSelected):hover {
+  background-color: inherit;
+  color: #4C97FF !important;
+}
+
+span.blocklyTreeIcon {
+  border-radius: 100px;
+  box-shadow: 0px 0px 2px #888;
+  width: 1.1rem;
+  height: 1.1rem;
+  line-height: 1.1rem;
+  font-size: 1rem;
+  padding:0.1rem;
+}
+
+.blocklyFlyoutBackground {
+  fill: #000;
 }
 
 </style>
@@ -404,6 +479,14 @@ h1 {
     <input type="button" value="Spaghetti!" onclick="spaghetti(8)">
     <input type="button" value="Fake some drags!" onclick="fakeManyDrags()">
   </p>
+
+  <p>
+    Glows: &nbsp;
+    <input type="button" value="Glow last clicked block" onclick="glowBlock()" />
+    <input type="button" value="Unglow last clicked block" onclick="unglowBlock()" />
+    <input type="button" value="Stack glow last clicked block" onclick="glowStack()" />
+    <input type="button" value="Stack unglow last clicked block" onclick="unglowStack()" />
+  </p>
   <p>
     Log events: &nbsp;
     <input type="checkbox" onclick="logEvents(this.checked)" id="logCheck">
@@ -429,8 +512,9 @@ h1 {
   </xml>
 
   <xml id="toolbox-categories" style="display: none">
-    <category name="Logic" colour="210" iconclass="blocklyTreeIconCustom">
+    <category name="Logic" colour="#4C97FF" iconclass="blocklyTreeIconCustom">
       <block type="controls_if"></block>
+      <block type="controls_ifelse"></block>
       <block type="logic_compare"></block>
       <block type="logic_operation"></block>
       <block type="logic_negate"></block>
@@ -438,7 +522,7 @@ h1 {
       <block type="logic_null" disabled="true"></block>
       <block type="logic_ternary"></block>
     </category>
-    <category name="Loops" colour="120" iconclass="blocklyTreeIconCustom">
+    <category name="Loops" colour="#FFAB19" iconclass="blocklyTreeIconCustom">
       <block type="controls_repeat_ext">
         <value name="TIMES">
           <shadow type="math_number">
@@ -468,7 +552,7 @@ h1 {
       <block type="controls_forEach"></block>
       <block type="controls_flow_statements"></block>
     </category>
-    <category name="Math" disabled="true" colour="230" iconclass="blocklyTreeIconCustom">
+    <category name="Math" colour="#59C059" iconclass="blocklyTreeIconCustom">
       <block type="math_number" gap="32"></block>
       <block type="math_number_minmax" gap="32"></block>
       <block type="math_arithmetic">
@@ -570,7 +654,7 @@ h1 {
       </block>
       <block type="math_random_float"></block>
     </category>
-    <category name="Text" colour="160" iconclass="blocklyTreeIconCustom">
+    <category name="Text" colour="#5CB1D6" iconclass="blocklyTreeIconCustom">
       <block type="text"></block>
       <block type="text_join"></block>
       <block type="text_append">
@@ -672,7 +756,7 @@ h1 {
         </value>
       </block>
     </category>
-    <category name="Lists" colour="260" iconclass="blocklyTreeIconCustom">
+    <category name="Lists" colour="#9966FF" iconclass="blocklyTreeIconCustom">
       <block type="lists_create_with">
         <mutation items="0"></mutation>
       </block>
@@ -724,7 +808,7 @@ h1 {
       <block type="lists_sort"></block>
       <block type="lists_reverse"></block>
     </category>
-    <category name="Colour" colour="20" iconclass="blocklyTreeIconCustom">
+    <category name="Colour" disabled="true" colour="20" iconclass="blocklyTreeIconCustom">
       <block type="colour_picker"></block>
       <block type="colour_random"></block>
       <block type="colour_rgb">
@@ -762,12 +846,12 @@ h1 {
         </value>
       </block>
     </category>
-    <category name="Music" colour = "120" iconclass="blocklyTreeIconCustom">
+    <category name="Music" colour="#D65CD6" secondaryColour="#BD42BD" iconclass="blocklyTreeIconCustom">
       <block type="note_picker"></block>
     </category>
     <sep></sep>
-    <category name="Variables" colour="330" custom="VARIABLE"></category>
-    <category name="Functions" colour="290" custom="PROCEDURE"></category>
+    <category name="Variables" colour="330" custom="VARIABLE" iconclass="blocklyTreeIconCustom"></category>
+    <category name="Functions" colour="290" custom="PROCEDURE" iconclass="blocklyTreeIconCustom"></category>
   </xml>
 </body>
 </html>

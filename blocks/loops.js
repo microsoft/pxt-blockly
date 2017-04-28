@@ -33,6 +33,7 @@ goog.provide('Blockly.Blocks.loops');  // Deprecated
 goog.provide('Blockly.Constants.Loops');
 
 goog.require('Blockly.Blocks');
+goog.require('Blockly.Colours');
 
 
 /**
@@ -61,7 +62,9 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
     }],
     "previousStatement": null,
     "nextStatement": null,
-    "colour": "%{BKY_LOOPS_HUE}",
+    "colour": Blockly.Colours.loops.primary,
+    "colourSecondary": Blockly.Colours.loops.secondary,
+    "colourTertiary": Blockly.Colours.loops.tertiary,
     "tooltip": "%{BKY_CONTROLS_REPEAT_TOOLTIP}",
     "helpUrl": "%{BKY_CONTROLS_REPEAT_HELPURL}"
   },
@@ -82,9 +85,20 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
       "type": "input_statement",
       "name": "DO"
     }],
+    "args2": [
+      {
+        "type": "field_image",
+        "src": "/media/c_arrow.svg",
+        "width": 16,
+        "height": 16,
+        "alt": "*",
+        "flip_rtl": true
+      }],
     "previousStatement": null,
     "nextStatement": null,
-    "colour": "%{BKY_LOOPS_HUE}",
+    "colour": Blockly.Colours.loops.primary,
+    "colourSecondary": Blockly.Colours.loops.secondary,
+    "colourTertiary": Blockly.Colours.loops.tertiary,
     "tooltip": "%{BKY_CONTROLS_REPEAT_TOOLTIP}",
     "helpUrl": "%{BKY_CONTROLS_REPEAT_HELPURL}"
   },
@@ -114,7 +128,9 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
     }],
     "previousStatement": null,
     "nextStatement": null,
-    "colour": "%{BKY_LOOPS_HUE}",
+    "colour": Blockly.Colours.loops.primary,
+    "colourSecondary": Blockly.Colours.loops.secondary,
+    "colourTertiary": Blockly.Colours.loops.tertiary,
     "helpUrl": "%{BKY_CONTROLS_WHILEUNTIL_HELPURL}",
     "extensions": ["controls_whileUntil_tooltip"]
   },
@@ -132,19 +148,19 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
         "type": "input_value",
         "name": "FROM",
         "check": "Number",
-        "align": "RIGHT"
+        "align": "LEFT"
       },
       {
         "type": "input_value",
         "name": "TO",
         "check": "Number",
-        "align": "RIGHT"
+        "align": "LEFT"
       },
       {
         "type": "input_value",
         "name": "BY",
         "check": "Number",
-        "align": "RIGHT"
+        "align": "LEFT"
       }
     ],
     "message1": "%{BKY_CONTROLS_REPEAT_INPUT_DO} %1",
@@ -152,10 +168,21 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
       "type": "input_statement",
       "name": "DO"
     }],
+    "args2": [
+      {
+        "type": "field_image",
+        "src": "/media/c_arrow.svg",
+        "width": 16,
+        "height": 16,
+        "alt": "*",
+        "flip_rtl": true
+      }],
     "inputsInline": true,
     "previousStatement": null,
     "nextStatement": null,
-    "colour": "%{BKY_LOOPS_HUE}",
+    "colour": Blockly.Colours.loops.primary,
+    "colourSecondary": Blockly.Colours.loops.secondary,
+    "colourTertiary": Blockly.Colours.loops.tertiary,
     "helpUrl": "%{BKY_CONTROLS_FOR_HELPURL}",
     "extensions": [
       "contextMenu_newGetVariableBlock",
@@ -185,7 +212,9 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
     }],
     "previousStatement": null,
     "nextStatement": null,
-    "colour": "%{BKY_LOOPS_HUE}",
+    "colour": Blockly.Colours.loops.primary,
+    "colourSecondary": Blockly.Colours.loops.secondary,
+    "colourTertiary": Blockly.Colours.loops.tertiary,
     "helpUrl": "%{BKY_CONTROLS_FOREACH_HELPURL}",
     "extensions": [
       "contextMenu_newGetVariableBlock",
@@ -205,7 +234,9 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
       ]
     }],
     "previousStatement": null,
-    "colour": "%{BKY_LOOPS_HUE}",
+    "colour": Blockly.Colours.loops.primary,
+    "colourSecondary": Blockly.Colours.loops.secondary,
+    "colourTertiary": Blockly.Colours.loops.tertiary,
     "helpUrl": "%{BKY_CONTROLS_FLOW_STATEMENTS_HELPURL}",
     "extensions": [
       "controls_flow_tooltip",

@@ -3,6 +3,8 @@ node_js:
   - "5.7.0"
 python:
   - "3.4"
+before_install:
+  - git clone https://github.com/google/closure-library.git ~/builds/closure-library
 before_script:
   - "npm install"
 script:
@@ -13,6 +15,7 @@ notifications:
     - yelm-eng@microsoft.com
 cache:
   directories:
+    - ~/builds/closure-library
     - node_modules
 env:
   - CXX=g++-4.8

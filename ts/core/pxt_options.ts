@@ -20,11 +20,18 @@ namespace pxtblocky {
         toolboxType: string;
     }
 
+    export interface ToolboxOptions {
+        colour?: boolean;
+        colourIcons?: boolean;
+        invertedIcons?: boolean;
+        border?: boolean;
+        inverted?: boolean;
+        invertedMultiplier?: number;
+    }
+
     export class PXTOptions extends Blockly.Options {
 
-        public colouredToolbox: boolean;
-        public invertedToolbox: boolean;
-        public invertedMultiplier: number;
+        public toolboxOptions: ToolboxOptions;
 
         public disabledOpacity: number;
 
@@ -38,17 +45,33 @@ namespace pxtblocky {
         constructor(options: ExtendedOptions) {
             super(options);
 
-            let toolboxType = options['toolboxType'];
-            if (toolboxType == 'coloured') {
-                this.colouredToolbox = true;
+            this.toolboxOptions = {};
+            let toolboxOptions = options['toolboxOptions'];
+            if (toolboxOptions["border"] == undefined) {
+                toolboxOptions["border"] = true;
             }
-            if (toolboxType == 'inverted') {
-                this.invertedToolbox = true;
-                let invertedMultiplier = options['toolboxInvertedMultipler'];
-                if (invertedMultiplier == undefined)
-                    invertedMultiplier = 0.3;
-                this.invertedMultiplier = invertedMultiplier;
+            if (toolboxOptions["colour"] == undefined) {
+                toolboxOptions["colour"] = false;
             }
+            if (toolboxOptions["colourIcons"] == undefined) {
+                toolboxOptions["colourIcons"] = false;
+            }
+            if (toolboxOptions["invertedIcons"] == undefined) {
+                toolboxOptions["invertedIcons"] = false;
+            }
+            if (toolboxOptions["inverted"] == undefined) {
+                toolboxOptions["inverted"] = false;
+            }
+            if (toolboxOptions["invertedMultiplier"] == undefined) {
+                toolboxOptions["invertedMultiplier"] = 0.3;
+            }
+            this.toolboxOptions.border = toolboxOptions["border"];
+            this.toolboxOptions.colour = toolboxOptions["colour"];
+            this.toolboxOptions.colourIcons = toolboxOptions["colourIcons"];
+            this.toolboxOptions.invertedIcons = toolboxOptions["invertedIcons"];
+            this.toolboxOptions.inverted = toolboxOptions["inverted"];
+            this.toolboxOptions.invertedMultiplier = toolboxOptions["invertedMultiplier"];
+
             let disabledOpacity = options['disabledOpacityModifier'];
             if (disabledOpacity == undefined) {
                 disabledOpacity = 0.4;

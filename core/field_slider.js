@@ -46,7 +46,7 @@ var pxtblocky;
             var _this = this;
             var value = String(value_);
             _this = _super.call(this, value, opt_validator) || this;
-            _this.setConstraints(opt_min, opt_max, opt_precision);
+            _this.setConstraints_(opt_min, opt_max, opt_precision);
             return _this;
         }
         /**

@@ -36,6 +36,7 @@ goog.provide('Blockly.Blocks.math');  // Deprecated
 goog.provide('Blockly.Constants.Math');
 
 goog.require('Blockly.Blocks');
+goog.require('Blockly.Colours');
 
 
 /**
@@ -43,7 +44,6 @@ goog.require('Blockly.Blocks');
  * Should be the same as Blockly.Msg.MATH_HUE
  * @readonly
  */
-Blockly.Constants.Math.HUE = 230;
 /** @deprecated Use Blockly.Constants.Math.HUE */
 Blockly.Blocks.math.HUE = Blockly.Constants.Math.HUE;
 
@@ -58,7 +58,8 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
       "value": 0
     }],
     "output": "Number",
-    "colour": "%{BKY_MATH_HUE}",
+    "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
+    "colour": Blockly.Colours.textField,
     "helpUrl": "%{BKY_MATH_NUMBER_HELPURL}",
     "tooltip": "%{BKY_MATH_NUMBER_TOOLTIP}",
     "extensions": ["parent_tooltip_when_inline"]
@@ -75,7 +76,8 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
       "max": 100,
     }],
     "output": "Number",
-    "colour": "%{BKY_MATH_HUE}",
+    "colour": Blockly.Colours.textField,
+    "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
     "helpUrl": "%{BKY_MATH_NUMBER_HELPURL}",
     "tooltip": "%{BKY_MATH_NUMBER_TOOLTIP}",
     "extensions": ["parent_tooltip_when_inline"]
@@ -110,7 +112,10 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
     ],
     "inputsInline": true,
     "output": "Number",
-    "colour": "%{BKY_MATH_HUE}",
+    "colour": Blockly.Colours.math.primary,
+    "colourSecondary": Blockly.Colours.math.secondary,
+    "colourTertiary": Blockly.Colours.math.tertiary,
+    "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
     "helpUrl": "%{BKY_MATH_ARITHMETIC_HELPURL}",
     "extensions": ["math_op_tooltip"]
   },
@@ -140,7 +145,10 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
       }
     ],
     "output": "Number",
-    "colour": "%{BKY_MATH_HUE}",
+    "colour": Blockly.Colours.math.primary,
+    "colourSecondary": Blockly.Colours.math.secondary,
+    "colourTertiary": Blockly.Colours.math.tertiary,
+    "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
     "helpUrl": "%{BKY_MATH_SINGLE_HELPURL}",
     "extensions": ["math_op_tooltip"]
   },
@@ -151,7 +159,7 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
     "message0": "%1 %2",
     "args0": [
       {
-        "type": "field_dropdowngrid",
+        "type": "field_gridpicker",
         "name": "OP",
         "options": [
           ["%{BKY_MATH_SINGLE_OP_ROOT}", 'ROOT'],
@@ -170,7 +178,10 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
       }
     ],
     "output": "Number",
-    "colour": "%{BKY_MATH_HUE}",
+    "colour": Blockly.Colours.math.primary,
+    "colourSecondary": Blockly.Colours.math.secondary,
+    "colourTertiary": Blockly.Colours.math.tertiary,
+    "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
     "helpUrl": "%{BKY_MATH_SINGLE_HELPURL}",
     "extensions": ["math_op_tooltip"]
   },
@@ -181,24 +192,19 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
     "message0": "%1 %2",
     "args0": [
       {
-        "type": "field_dropdowngrid",
+        "type": "field_icondropdown",
         "name": "OP",
         "options": [
-          [{ alt: Blockly.Msg.MATH_SINGLE_OP_ROOT, width: 32, height: 32, src: '../media/sprites.png' }, 'ROOT'],
-          [{ alt: Blockly.Msg.MATH_SINGLE_OP_ABSOLUTE, width: 32, height: 32, src: '../media/sprites.png' }, 'ABS'],
-          [{ alt: '-', width: 32, height: 32, src: '../media/sprites.png' }, 'NEG'],
-          [{ alt: 'ln', width: 32, height: 32, src: '../media/sprites.png' }, 'LN'],
-          [{ alt: 'log10', width: 32, height: 32, src: '../media/sprites.png' }, 'LOG10'],
-          [{ alt: 'e^', width: 32, height: 32, src: '../media/sprites.png' }, 'EXP'],
-          [{ alt: '10^', width: 32, height: 32, src: '../media/sprites.png' }, 'POW10']
+          [{ alt: Blockly.Msg.MATH_SINGLE_OP_ROOT, width: 50, height: 50, value: 'Blue', src: '../media/icons/event_when-broadcast-received_blue.svg' }, 'ROOT'],
+          [{ alt: Blockly.Msg.MATH_SINGLE_OP_ABSOLUTE, width: 50, height: 50, value: 'Red', src: '../media/icons/event_when-broadcast-received_blue.svg' }, 'ABS'],
+          [{ alt: '-', width: 50, height: 50, value: 'Green', src: '../media/icons/event_when-broadcast-received_blue.svg'  }, 'NEG'],
+          [{ alt: 'ln', width: 50, height: 50, value: 'Yellow', src: '../media/icons/event_when-broadcast-received_blue.svg'  }, 'LN'],
+          [{ alt: 'log10', width: 50, height: 50, value: 'Violet', src: '../media/icons/event_when-broadcast-received_blue.svg'  }, 'LOG10'],
+          [{ alt: 'e^', width: 50, height: 50, value: 'Pink', src: '../media/icons/event_when-broadcast-received_blue.svg'  }, 'EXP'],
+          [{ alt: '10^', width: 50, height: 50, value: 'Orange', src: '../media/icons/event_when-broadcast-received_blue.svg'  }, 'POW10']
         ],
         "colour": Blockly.Blocks.math.HUE,
-        "columns": 5,
-        "width": 600,
-        "itemColour": 'white',
-        "tooltips": true,
-        "tooltipsXOffset": 15, 
-        "tooltipsYOffset": -10
+        "columns": 4
       },
       {
         "type": "input_value",
@@ -207,10 +213,14 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
       }
     ],
     "output": "Number",
-    "colour": "%{BKY_MATH_HUE}",
+    "colour": Blockly.Colours.math.primary,
+    "colourSecondary": Blockly.Colours.math.secondary,
+    "colourTertiary": Blockly.Colours.math.tertiary,
+    "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
     "helpUrl": "%{BKY_MATH_SINGLE_HELPURL}",
     "extensions": ["math_op_tooltip"]
   },
+
 
   // Block for trigonometry operators.
   {
@@ -236,7 +246,10 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
       }
     ],
     "output": "Number",
-    "colour": "%{BKY_MATH_HUE}",
+    "colour": Blockly.Colours.math.primary,
+    "colourSecondary": Blockly.Colours.math.secondary,
+    "colourTertiary": Blockly.Colours.math.tertiary,
+    "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
     "helpUrl": "%{BKY_MATH_TRIG_HELPURL}",
     "extensions": ["math_op_tooltip"]
   },
@@ -260,7 +273,10 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
       }
     ],
     "output": "Number",
-    "colour": "%{BKY_MATH_HUE}",
+    "colour": Blockly.Colours.math.primary,
+    "colourSecondary": Blockly.Colours.math.secondary,
+    "colourTertiary": Blockly.Colours.math.tertiary,
+    "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
     "tooltip": "%{BKY_MATH_CONSTANT_TOOLTIP}",
     "helpUrl": "%{BKY_MATH_CONSTANT_HELPURL}"
   },
@@ -292,7 +308,10 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
     ],
     "inputsInline": true,
     "output": "Boolean",
-    "colour": "%{BKY_MATH_HUE}",
+    "colour": Blockly.Colours.math.primary,
+    "colourSecondary": Blockly.Colours.math.secondary,
+    "colourTertiary": Blockly.Colours.math.tertiary,
+    "outputShape": Blockly.OUTPUT_SHAPE_HEXAGONAL,
     "tooltip": "%{BKY_MATH_IS_TOOLTIP}",
     "mutator": "math_is_divisibleby_mutator"
   },
@@ -341,7 +360,10 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
       }
     ],
     "output": "Number",
-    "colour": "%{BKY_MATH_HUE}",
+    "colour": Blockly.Colours.math.primary,
+    "colourSecondary": Blockly.Colours.math.secondary,
+    "colourTertiary": Blockly.Colours.math.tertiary,
+    "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
     "helpUrl": "%{BKY_MATH_ROUND_HELPURL}",
     "tooltip": "%{BKY_MATH_ROUND_TOOLTIP}"
   },
@@ -373,7 +395,10 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
       }
     ],
     "output": "Number",
-    "colour": "%{BKY_MATH_HUE}",
+    "colour": Blockly.Colours.math.primary,
+    "colourSecondary": Blockly.Colours.math.secondary,
+    "colourTertiary": Blockly.Colours.math.tertiary,
+    "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
     "helpUrl": "%{BKY_MATH_ONLIST_HELPURL}",
     "mutator": "math_modes_of_list_mutator",
     "extensions": ["math_op_tooltip"]
@@ -397,7 +422,10 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
     ],
     "inputsInline": true,
     "output": "Number",
-    "colour": "%{BKY_MATH_HUE}",
+    "colour": Blockly.Colours.math.primary,
+    "colourSecondary": Blockly.Colours.math.secondary,
+    "colourTertiary": Blockly.Colours.math.tertiary,
+    "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
     "tooltip": "%{BKY_MATH_MODULO_TOOLTIP}",
     "helpUrl": "%{BKY_MATH_MODULO_HELPURL}"
   },
@@ -425,7 +453,10 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
     ],
     "inputsInline": true,
     "output": "Number",
-    "colour": "%{BKY_MATH_HUE}",
+    "colour": Blockly.Colours.math.primary,
+    "colourSecondary": Blockly.Colours.math.secondary,
+    "colourTertiary": Blockly.Colours.math.tertiary,
+    "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
     "tooltip": "%{BKY_MATH_CONSTRAIN_TOOLTIP}",
     "helpUrl": "%{BKY_MATH_CONSTRAIN_HELPURL}"
   },
@@ -448,7 +479,10 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
     ],
     "inputsInline": true,
     "output": "Number",
-    "colour": "%{BKY_MATH_HUE}",
+    "colour": Blockly.Colours.math.primary,
+    "colourSecondary": Blockly.Colours.math.secondary,
+    "colourTertiary": Blockly.Colours.math.tertiary,
+    "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
     "tooltip": "%{BKY_MATH_RANDOM_INT_TOOLTIP}",
     "helpUrl": "%{BKY_MATH_RANDOM_INT_HELPURL}"
   },
@@ -458,7 +492,10 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
     "type": "math_random_float",
     "message0": "%{BKY_MATH_RANDOM_FLOAT_TITLE_RANDOM}",
     "output": "Number",
-    "colour": "%{BKY_MATH_HUE}",
+    "colour": Blockly.Colours.math.primary,
+    "colourSecondary": Blockly.Colours.math.secondary,
+    "colourTertiary": Blockly.Colours.math.tertiary,
+    "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
     "tooltip": "%{BKY_MATH_RANDOM_FLOAT_TOOLTIP}",
     "helpUrl": "%{BKY_MATH_RANDOM_FLOAT_HELPURL}"
   }

@@ -208,6 +208,7 @@ Blockly.Trashcan.prototype.createDom = function() {
 Blockly.Trashcan.prototype.init = function(bottom) {
   this.bottom_ = this.MARGIN_BOTTOM_ + bottom;
   this.setOpen_(false);
+  this.hide();
   return this.bottom_ + this.BODY_HEIGHT_ + this.LID_HEIGHT_;
 };
 
@@ -317,6 +318,23 @@ Blockly.Trashcan.prototype.animateLid_ = function() {
  */
 Blockly.Trashcan.prototype.close = function() {
   this.setOpen_(false);
+  this.hide();
+};
+
+/**
+ * Show the trashcan.
+ * Called on drag.
+ */
+Blockly.Trashcan.prototype.show = function() {
+  this.svgGroup_.style.opacity = 1;
+};
+
+/**
+ * Hide the trashcan.
+ * Called externally after a drag.
+ */
+Blockly.Trashcan.prototype.hide = function() {
+  this.svgGroup_.style.opacity = 0;
 };
 
 /**
