@@ -243,7 +243,6 @@ Blockly.Toolbox.prototype.position = function() {
     return;
   }
   var svg = this.workspace_.getParentSvg();
-  var svgPosition = goog.style.getPageOffset(svg);
   var svgSize = Blockly.svgSize(svg);
   if (this.horizontalLayout_) {
     treeDiv.style.left = '0';
@@ -307,7 +306,11 @@ Blockly.Toolbox.prototype.syncTrees_ = function(treeIn, treeOut, pathToMedia) {
     }
     switch (childIn.tagName.toUpperCase()) {
       case 'CATEGORY':
-        var childOut = this.tree_.createNode(childIn.getAttribute('name'));
+        // Decode the category name for any potential message references
+        // (eg. `%{BKY_CATEGORY_NAME_LOGIC}`).
+        var categoryName = Blockly.utils.replaceMessageReferences(
+          childIn.getAttribute('name'));
+        var childOut = this.tree_.createNode(categoryName);
         childOut.blocks = [];
         treeOut.add(childOut);
         var custom = childIn.getAttribute('custom');
@@ -320,7 +323,10 @@ Blockly.Toolbox.prototype.syncTrees_ = function(treeIn, treeOut, pathToMedia) {
             openNode = newOpenNode;
           }
         }
-        var colour = childIn.getAttribute('colour');
+        // Decode the colour for any potential message references
+        // (eg. `%{BKY_MATH_HUE}`).
+        var colour = Blockly.utils.replaceMessageReferences(
+          childIn.getAttribute('colour'));
         if (goog.isString(colour)) {
           if (colour.match(/^#[0-9a-fA-F]{6}$/)) {
             childOut.hexColour = colour;
@@ -421,6 +427,24 @@ Blockly.Toolbox.prototype.addColour_ = function(opt_tree) {
  */
 Blockly.Toolbox.prototype.clearSelection = function() {
   this.tree_.setSelectedItem(null);
+};
+
+/**
+ * Adds styles on the toolbox indicating blocks will be deleted.
+ * @package
+ */
+Blockly.Toolbox.prototype.addDeleteStyle = function() {
+  Blockly.utils.addClass(/** @type {!Element} */ (this.HtmlDiv),
+                         'blocklyToolboxDelete');
+};
+
+/**
+ * Remove styles from the toolbox that indicate blocks will be deleted.  
+ * @package
+ */
+Blockly.Toolbox.prototype.removeDeleteStyle = function() {
+  Blockly.utils.removeClass(/** @type {!Element} */ (this.HtmlDiv),
+                            'blocklyToolboxDelete');
 };
 
 /**
@@ -653,8 +677,8 @@ Blockly.Toolbox.TreeNode.prototype.onDoubleClick_ = function(e) {
 Blockly.Toolbox.TreeNode.prototype.onKeyDown = function(e) {
   if (this.tree.toolbox_.horizontalLayout_) {
     var map = {};
-    var next = goog.events.KeyCodes.DOWN
-    var prev = goog.events.KeyCodes.UP
+    var next = goog.events.KeyCodes.DOWN;
+    var prev = goog.events.KeyCodes.UP;
     map[goog.events.KeyCodes.RIGHT] = this.rightToLeft_ ? prev : next;
     map[goog.events.KeyCodes.LEFT] = this.rightToLeft_ ? next : prev;
     map[goog.events.KeyCodes.UP] = goog.events.KeyCodes.LEFT;
