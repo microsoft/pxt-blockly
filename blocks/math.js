@@ -66,7 +66,7 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
     "message0": "%1",
     "args0": [{
       "type": "field_slider",
-      "name": "NUM",
+      "name": "SLIDER",
       "value": 0
     }],
     "output": "Number",
@@ -591,8 +591,8 @@ Blockly.Constants.Math.MATH_NUMBER_MINMAX_MIXIN = {
    */
   mutationToDom: function() {
     var container = document.createElement('mutation');
-    var min = container.setAttribute('min', this.getInput("slider").fieldRow[0].min_);
-    var max = container.setAttribute('max', this.getInput("slider").fieldRow[0].max_);
+    var min = container.setAttribute('min', this.inputList[0].fieldRow[0].min_);
+    var max = container.setAttribute('max', this.inputList[0].fieldRow[0].max_);
     return container;
   },
   /**
@@ -603,7 +603,7 @@ Blockly.Constants.Math.MATH_NUMBER_MINMAX_MIXIN = {
   domToMutation: function(xmlElement) {
     var min = (xmlElement.getAttribute('min'));
     var max = (xmlElement.getAttribute('max'));
-    this.getInput("slider").fieldRow[0].setConstraints(min, max);
+    this.inputList[0].fieldRow[0].setConstraints(min, max);
   }
 };
 
