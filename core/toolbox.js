@@ -171,6 +171,8 @@ Blockly.Toolbox.prototype.init = function() {
         }
         Blockly.Touch.clearTouchIdentifier();  // Don't block future drags.
       });
+  // pxtblockly: Right clicking on the toolbox doesn't show the browser context menu
+  Blockly.bindEventWithChecks_(this.HtmlDiv, 'contextmenu', this, function(e) { e.preventDefault(); });
   var workspaceOptions = {
     disabledPatternId: workspace.options.disabledPatternId,
     parentWorkspace: workspace,
