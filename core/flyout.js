@@ -793,6 +793,10 @@ Blockly.Flyout.prototype.show = function(xmlList) {
 
   this.listeners_.push(Blockly.bindEventWithChecks_(this.svgBackground_,
       'mouseover', this, deselectAll));
+  // pxtblockly: handle right click, don't show a context menu
+  var contextMenu = function(e) { e.preventDefault(); }
+  this.listeners_.push(Blockly.bindEventWithChecks_(this.svgBackground_,
+      'contextmenu', this, contextMenu));
 
   if (this.horizontalLayout_) {
     this.height_ = 0;
@@ -926,6 +930,10 @@ Blockly.Flyout.prototype.addBlockListeners_ = function(root, block, rect) {
       block.addSelect));
   this.listeners_.push(Blockly.bindEvent_(rect, 'mouseout', block,
       block.removeSelect));
+  // pxtblockly: don't show context menu on right click
+  var contextMenu = function(e) { e.preventDefault(); }
+  this.listeners_.push(Blockly.bindEventWithChecks_(root, 'contextmenu', null,
+      contextMenu));
 };
 
 /**
