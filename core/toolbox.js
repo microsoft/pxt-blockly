@@ -172,7 +172,7 @@ Blockly.Toolbox.prototype.init = function() {
         Blockly.Touch.clearTouchIdentifier();  // Don't block future drags.
       });
   // pxtblockly: Right clicking on the toolbox doesn't show the browser context menu
-  Blockly.bindEventWithChecks_(this.HtmlDiv, 'contextmenu', this, function(e) { e.preventDefault(); });
+  Blockly.bindEventWithChecks_(this.HtmlDiv, 'contextmenu', this, Blockly.utils.noEvent);
   var workspaceOptions = {
     disabledPatternId: workspace.options.disabledPatternId,
     parentWorkspace: workspace,
@@ -504,9 +504,7 @@ Blockly.Toolbox.TreeControl.prototype.enterDocument = function() {
 
   // pxtblockly: Handle right click.
   var el = this.getElement();
-  Blockly.bindEventWithChecks_(el, goog.events.EventType.CONTEXTMENU, this,
-      this.handleContextMenuEvent_);
-  
+  Blockly.bindEventWithChecks_(el, goog.events.EventType.CONTEXTMENU, this, Blockly.utils.noEvent);
 };
 
 /**
@@ -524,16 +522,6 @@ Blockly.Toolbox.TreeControl.prototype.handleTouchEvent_ = function(e) {
       node.onMouseDown(e);  // Same behaviour for click and touch.
     }, 1);
   }
-};
-
-/**
- * Handles right click events.
- * @param {!goog.events.BrowserEvent} e The browser event.
- * @private
- */
-Blockly.Toolbox.TreeControl.prototype.handleContextMenuEvent_ = function(e) {
-  // pxtblockly: Handle right click as a normal click event
-  e.preventDefault();
 };
 
 /**

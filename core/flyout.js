@@ -795,7 +795,7 @@ Blockly.Flyout.prototype.show = function(xmlList) {
       'mouseover', this, deselectAll));
   // pxtblockly: handle right click, don't show a context menu
   this.listeners_.push(Blockly.bindEventWithChecks_(this.svgBackground_,
-      'contextmenu', this, function(e) { e.preventDefault(); }));
+      'contextmenu', this, Blockly.utils.noEvent));
 
   if (this.horizontalLayout_) {
     this.height_ = 0;
@@ -930,8 +930,7 @@ Blockly.Flyout.prototype.addBlockListeners_ = function(root, block, rect) {
   this.listeners_.push(Blockly.bindEvent_(rect, 'mouseout', block,
       block.removeSelect));
   // pxtblockly: don't show context menu on right click
-  this.listeners_.push(Blockly.bindEventWithChecks_(root, 'contextmenu', null,
-      function(e) { e.preventDefault(); }));
+  this.listeners_.push(Blockly.bindEventWithChecks_(root, 'contextmenu', null, Blockly.utils.noEvent));
 };
 
 /**
