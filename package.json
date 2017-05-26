@@ -3,24 +3,27 @@
   "version": "1.0.1",
   "description": "Blockly fork for Microsoft's Programming Experience Toolkit",
   "keywords": ["blockly", "pxt"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/google/blockly.git"
+  },
+  "bugs": {
+    "url": "https://github.com/google/blockly/issues"
+  },
+  "homepage": "https://developers.google.com/blockly/",
+  "author": {
+    "name": "Microsoft"
+  },
   "scripts": {
     "lint": "jshint .",
+    "pretest": "scripts/test_setup.sh",
+    "test": "node tests/jsunit/test_runner.js",
     "watch": "node_modules/.bin/gulp watch",
     "prepublish": "node_modules/.bin/gulp build",
     "publish": "node_modules/.bin/gulp release"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Microsoft/pxt-blockly.git"
-  },
-  "bugs": {
-    "url": "https://github.com/Microsoft/pxt-blockly/issues"
-  },
-  "homepage": "https://github.com/Microsoft/pxt-blockly/",
-  "author": {
-    "name": "Microsoft"
-  },
   "license": "MIT",
+  "private": true,
   "files": [
     "README.md",
     "blockly_compressed.js",
@@ -39,9 +42,22 @@
   },
   "jshintConfig": {
     "globalstrict": true,
-    "predef": ["Blockly", "goog", "window", "document", "soy", "XMLHttpRequest"],
+    "predef": [
+      "Blockly",
+      "goog",
+      "window",
+      "document",
+      "soy",
+      "XMLHttpRequest"
+    ],
     "sub": true,
     "undef": true,
     "unused": true
+  },
+  "dependencies": {
+    "install": "^0.8.8",
+    "npm": "^4.4.4",
+    "closure-library": "^1.43629075.2",
+    "webdriverio": "^4.6.2"
   }
 }
