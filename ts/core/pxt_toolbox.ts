@@ -19,12 +19,13 @@ namespace pxtblocky {
 
     export class PXTToolbox extends Blockly.Toolbox {
 
-        invertedToolbox: boolean;
-
         constructor(workspace: Blockly.Workspace) {
             super(workspace);
+        }
 
-            this.invertedToolbox = (workspace.options as PXTOptions).invertedToolbox;
+        isInverted() {
+            const pxtOptions = (this.workspace_.options as PXTOptions);
+            return pxtOptions.toolboxOptions.inverted;
         }
 
         /**
@@ -41,11 +42,12 @@ namespace pxtblocky {
                 var element = child.getRowElement();
                 if (element) {
                     // Support for inverted and coloured toolboxes
-                    if (pxtOptions.invertedToolbox) {
+                    let toolboxOptions = pxtOptions.toolboxOptions;
+                    if (toolboxOptions.inverted) {
                         if (this.hasColours_) {
                             element.style.color = '#fff';
                             element.style.background = (child.hexColour || '#ddd');
-                            var invertedMultiplier = pxtOptions.invertedMultiplier;
+                            var invertedMultiplier = toolboxOptions.invertedMultiplier;
                             if (!child.disabled) {
                                 // Hovering over toolbox category fades.
                                 Blockly.bindEvent_(child.getRowElement(), 'mouseenter', child,
@@ -63,24 +65,27 @@ namespace pxtblocky {
                             }
                         }
                     } else {
-                        if (this.hasColours_) {
-                            var border = '8px solid ' + (child.hexColour || '#ddd');
-                        } else {
-                            var border = 'none';
-                        }
-                        if (this.workspace_.RTL) {
-                            element.style.borderRight = border;
-                        } else {
-                            element.style.borderLeft = border;
+                        if (toolboxOptions.border) {
+                            // Only show if the toolbox type is not noborder
+                            if (this.hasColours_) {
+                                var border = '8px solid ' + (child.hexColour || '#ddd');
+                            } else {
+                                var border = 'none';
+                            }
+                            if (this.workspace_.RTL) {
+                                element.style.borderRight = border;
+                            } else {
+                                element.style.borderLeft = border;
+                            }
                         }
                         // support for a coloured toolbox
-                        if (pxtOptions.colouredToolbox && this.hasColours_) {
+                        if (toolboxOptions.colour && this.hasColours_) {
                             element.style.color = (child.hexColour || '#000');
                         }
                     }
                     // if disabled, show disabled opacity
                     if (child.disabled) {
-                        element.style.opacity = pxtOptions.disabledOpacity;
+                        element.style.opacity = toolboxOptions.disabledOpacity;
                     }
                 }
                 this.addColour_(child);

@@ -28,22 +28,28 @@ var pxtblocky;
          */
         function PXTOptions(options) {
             var _this = _super.call(this, options) || this;
-            var toolboxType = options['toolboxType'];
-            if (toolboxType == 'coloured') {
-                _this.colouredToolbox = true;
+            _this.toolboxOptions = {};
+            var toolboxOptions = options['toolboxOptions'];
+            if (toolboxOptions["border"] == undefined) {
+                toolboxOptions["border"] = true;
             }
-            if (toolboxType == 'inverted') {
-                _this.invertedToolbox = true;
-                var invertedMultiplier = options['toolboxInvertedMultipler'];
-                if (invertedMultiplier == undefined)
-                    invertedMultiplier = 0.3;
-                _this.invertedMultiplier = invertedMultiplier;
+            if (toolboxOptions["colour"] == undefined) {
+                toolboxOptions["colour"] = false;
             }
-            var disabledOpacity = options['disabledOpacityModifier'];
-            if (disabledOpacity == undefined) {
-                disabledOpacity = 0.4;
+            if (toolboxOptions["inverted"] == undefined) {
+                toolboxOptions["inverted"] = false;
             }
-            _this.disabledOpacity = disabledOpacity;
+            if (toolboxOptions["invertedMultiplier"] == undefined) {
+                toolboxOptions["invertedMultiplier"] = 0.3;
+            }
+            if (toolboxOptions["disabledOpacity"] == undefined) {
+                toolboxOptions["disabledOpacity"] = 0.4;
+            }
+            _this.toolboxOptions.border = toolboxOptions["border"];
+            _this.toolboxOptions.colour = toolboxOptions["colour"];
+            _this.toolboxOptions.inverted = toolboxOptions["inverted"];
+            _this.toolboxOptions.invertedMultiplier = toolboxOptions["invertedMultiplier"];
+            _this.toolboxOptions.disabledOpacity = toolboxOptions["disabledOpacity"];
             return _this;
         }
         return PXTOptions;

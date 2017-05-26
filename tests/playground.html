@@ -95,7 +95,10 @@ function start() {
            scrollbars: true,
            toolbox: toolbox,
            toolboxPosition: side == 'top' || side == 'start' ? 'start' : 'end',
-           toolboxType: 'inverted',
+           toolboxOptions:
+            {color: true,
+            inverted: true  
+            },
            zoom:
              {controls: true,
               wheel: true,
