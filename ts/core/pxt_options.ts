@@ -43,8 +43,8 @@ namespace pxtblocky {
         constructor(options: ExtendedOptions) {
             super(options);
 
+            let toolboxOptions = options['toolboxOptions'] || {};
             this.toolboxOptions = {};
-            let toolboxOptions = options['toolboxOptions'];
             if (toolboxOptions["border"] == undefined) {
                 toolboxOptions["border"] = true;
             }
