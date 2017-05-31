@@ -28,8 +28,8 @@ var pxtblocky;
          */
         function PXTOptions(options) {
             var _this = _super.call(this, options) || this;
+            var toolboxOptions = options['toolboxOptions'] || {};
             _this.toolboxOptions = {};
-            var toolboxOptions = options['toolboxOptions'];
             if (toolboxOptions["border"] == undefined) {
                 toolboxOptions["border"] = true;
             }
