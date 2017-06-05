@@ -170,7 +170,8 @@ Blockly.Toolbox.prototype.init = function() {
           Blockly.hideChaff(true);
         }
         Blockly.Touch.clearTouchIdentifier();  // Don't block future drags.
-      });
+      }, /*opt_noPreventDefault*/ false, /*opt_noPreventDefault*/ true);
+
   // pxtblockly: Right clicking on the toolbox doesn't show the browser context menu
   Blockly.bindEventWithChecks_(this.HtmlDiv, 'contextmenu', this, Blockly.utils.noEvent);
   var workspaceOptions = {
@@ -522,8 +523,9 @@ Blockly.Toolbox.TreeControl.prototype.enterDocument = function() {
   // Add touch handler.
   if (goog.events.BrowserFeature.TOUCH_ENABLED) {
     var el = this.getElement();
-    Blockly.bindEventWithChecks_(el, goog.events.EventType.TOUCHSTART, this,
-        this.handleTouchEvent_);
+    // pxtblockly: change TOUCHSTART for TOUCHEND for better touch scrolling of the toolbox
+    Blockly.bindEventWithChecks_(el, goog.events.EventType.TOUCHEND, this,
+      this.handleTouchEvent_);
   }
 
   // pxtblockly: Handle right click.
@@ -537,9 +539,10 @@ Blockly.Toolbox.TreeControl.prototype.enterDocument = function() {
  * @private
  */
 Blockly.Toolbox.TreeControl.prototype.handleTouchEvent_ = function(e) {
-  e.preventDefault();
+  // pxtblockly: Remove preventDefaut() to allow scrolling toolbox with touch
+  // e.preventDefault();
   var node = this.getNodeFromEvent_(e);
-  if (node && e.type === goog.events.EventType.TOUCHSTART) {
+  if (node && e.type === goog.events.EventType.TOUCHEND) {
     // Fire asynchronously since onMouseDown takes long enough that the browser
     // would fire the default mouse event before this method returns.
     setTimeout(function() {
