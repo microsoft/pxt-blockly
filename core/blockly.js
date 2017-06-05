@@ -431,7 +431,7 @@ Blockly.defineBlocksWithJsonArray = function(jsonArray) {
  * @private
  */
 Blockly.bindEventWithChecks_ = function(node, name, thisObject, func,
-    opt_noCaptureIdentifier) {
+    opt_noCaptureIdentifier, opt_noPreventDefault) { // pxtblockly: add option to remove calls to preventDefault()
   var handled = false;
   var wrapFunc = function(e) {
     var captureIdentifier = !opt_noCaptureIdentifier;
@@ -460,7 +460,8 @@ Blockly.bindEventWithChecks_ = function(node, name, thisObject, func,
     var touchWrapFunc = function(e) {
       wrapFunc(e);
       // Stop the browser from scrolling/zooming the page.
-      if (handled) {
+      var preventDef = !opt_noPreventDefault;
+      if (handled && preventDef) {
         e.preventDefault();
       }
     };
