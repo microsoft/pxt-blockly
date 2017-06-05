@@ -105,13 +105,13 @@ Blockly.Toolbox = function(workspace) {
 
   if (this.horizontalLayout_) {
     this.config_['cssTreeRow'] =
-        this.config_['cssTreeRow'] +
-        (workspace.RTL ?
+      this.config_['cssTreeRow'] +
+      (workspace.RTL ?
         ' blocklyHorizontalTreeRtl' : ' blocklyHorizontalTree');
 
     this.treeSeparatorConfig_['cssTreeRow'] =
-        'blocklyTreeSeparatorHorizontal ' +
-        (workspace.RTL ?
+      'blocklyTreeSeparatorHorizontal ' +
+      (workspace.RTL ?
         'blocklyHorizontalTreeRtl' : 'blocklyHorizontalTree');
     this.config_['cssTreeIcon'] = '';
   }
@@ -155,22 +155,22 @@ Blockly.Toolbox.prototype.init = function() {
    * @type {Element}
    */
   this.HtmlDiv =
-      goog.dom.createDom(goog.dom.TagName.DIV, 'blocklyToolboxDiv');
+    goog.dom.createDom(goog.dom.TagName.DIV, 'blocklyToolboxDiv');
   this.HtmlDiv.setAttribute('dir', workspace.RTL ? 'RTL' : 'LTR');
   svg.parentNode.insertBefore(this.HtmlDiv, svg);
 
   // Clicking on toolbox closes popups.
-  Blockly.bindEventWithChecks_(this.HtmlDiv, 'mousedown', this,
-      function(e) {
-        if (e.target == this.HtmlDiv) {
-          // Close flyout.
-          Blockly.hideChaff(false);
-        } else {
-          // Just close popups.
-          Blockly.hideChaff(true);
-        }
-        Blockly.Touch.clearTouchIdentifier();  // Don't block future drags.
-      });
+  Blockly.bindEventWithChecks_(this.HtmlDiv, 'mousedown', this, function(e) {
+    if (e.target == this.HtmlDiv) {
+      // Close flyout.
+      Blockly.hideChaff(false);
+    } else {
+      // Just close popups.
+      Blockly.hideChaff(true);
+    }
+    Blockly.Touch.clearTouchIdentifier();  // Don't block future drags.
+  }, /*opt_noPreventDefault*/ false, /*opt_noPreventDefault*/ true);
+
   // pxtblockly: Right clicking on the toolbox doesn't show the browser context menu
   Blockly.bindEventWithChecks_(this.HtmlDiv, 'contextmenu', this, Blockly.utils.noEvent);
   var workspaceOptions = {
@@ -187,12 +187,12 @@ Blockly.Toolbox.prototype.init = function() {
    */
   this.flyout_ = new Blockly.Flyout(workspaceOptions);
   goog.dom.insertSiblingAfter(this.flyout_.createDom('svg'),
-                              this.workspace_.getParentSvg());
+    this.workspace_.getParentSvg());
   this.flyout_.init(workspace);
 
   this.config_['cleardotPath'] = workspace.options.pathToMedia + '1x1.gif';
   this.config_['cssCollapsedFolderIcon'] =
-      'blocklyTreeIconClosed' + (workspace.RTL ? 'Rtl' : 'Ltr');
+    'blocklyTreeIconClosed' + (workspace.RTL ? 'Rtl' : 'Ltr');
   var tree = new Blockly.Toolbox.TreeControl(this, this.config_);
   this.tree_ = tree;
   tree.setShowRootNode(false);
@@ -371,7 +371,7 @@ Blockly.Toolbox.prototype.syncTrees_ = function(treeIn, treeOut, pathToMedia) {
             // Separator between two categories.
             // <sep></sep>
             treeOut.add(new Blockly.Toolbox.TreeSeparator(
-                this.treeSeparatorConfig_));
+              this.treeSeparatorConfig_));
           } else {
             // Change the gap between two blocks.
             // <sep gap="36"></sep>
@@ -437,7 +437,7 @@ Blockly.Toolbox.prototype.clearSelection = function() {
  */
 Blockly.Toolbox.prototype.addDeleteStyle = function() {
   Blockly.utils.addClass(/** @type {!Element} */ (this.HtmlDiv),
-                         'blocklyToolboxDelete');
+    'blocklyToolboxDelete');
 };
 
 /**
@@ -446,7 +446,7 @@ Blockly.Toolbox.prototype.addDeleteStyle = function() {
  */
 Blockly.Toolbox.prototype.removeDeleteStyle = function() {
   Blockly.utils.removeClass(/** @type {!Element} */ (this.HtmlDiv),
-                            'blocklyToolboxDelete');
+    'blocklyToolboxDelete');
 };
 
 /**
@@ -473,12 +473,12 @@ Blockly.Toolbox.prototype.getClientRect = function() {
   // (e.g. toolboxes in mutators) then this code will need to be more complex.
   if (this.toolboxPosition == Blockly.TOOLBOX_AT_LEFT) {
     return new goog.math.Rect(-BIG_NUM, -BIG_NUM, BIG_NUM + x + width,
-        2 * BIG_NUM);
+      2 * BIG_NUM);
   } else if (this.toolboxPosition == Blockly.TOOLBOX_AT_RIGHT) {
     return new goog.math.Rect(x, -BIG_NUM, BIG_NUM + width, 2 * BIG_NUM);
   } else if (this.toolboxPosition == Blockly.TOOLBOX_AT_TOP) {
     return new goog.math.Rect(-BIG_NUM, -BIG_NUM, 2 * BIG_NUM,
-        BIG_NUM + y + height);
+      BIG_NUM + y + height);
   } else {  // Bottom
     return new goog.math.Rect(0, y, 2 * BIG_NUM, BIG_NUM + width);
   }
@@ -522,8 +522,9 @@ Blockly.Toolbox.TreeControl.prototype.enterDocument = function() {
   // Add touch handler.
   if (goog.events.BrowserFeature.TOUCH_ENABLED) {
     var el = this.getElement();
-    Blockly.bindEventWithChecks_(el, goog.events.EventType.TOUCHSTART, this,
-        this.handleTouchEvent_);
+    // pxtblockly: change TOUCHSTART for TOUCHEND for better touch scrolling of the toolbox
+    Blockly.bindEventWithChecks_(el, goog.events.EventType.TOUCHEND, this,
+      this.handleTouchEvent_);
   }
 
   // pxtblockly: Handle right click.
@@ -537,9 +538,10 @@ Blockly.Toolbox.TreeControl.prototype.enterDocument = function() {
  * @private
  */
 Blockly.Toolbox.TreeControl.prototype.handleTouchEvent_ = function(e) {
-  e.preventDefault();
+  // pxtblockly: Remove preventDefaut() to allow scrolling toolbox with touch
+  // e.preventDefault();
   var node = this.getNodeFromEvent_(e);
-  if (node && e.type === goog.events.EventType.TOUCHSTART) {
+  if (node && e.type === goog.events.EventType.TOUCHEND) {
     // Fire asynchronously since onMouseDown takes long enough that the browser
     // would fire the default mouse event before this method returns.
     setTimeout(function() {
@@ -555,9 +557,9 @@ Blockly.Toolbox.TreeControl.prototype.handleTouchEvent_ = function(e) {
  * @override
  */
 Blockly.Toolbox.TreeControl.prototype.createNode = function(opt_html) {
-    // This is a change from mainline blockly to remove redundant event listeners.
-    // Previously this event handler was registered in the TreeNode constructor.
-    if (this.toolbox_ && !this.eventHandlerRegistered_) {
+  // This is a change from mainline blockly to remove redundant event listeners.
+  // Previously this event handler was registered in the TreeNode constructor.
+  if (this.toolbox_ && !this.eventHandlerRegistered_) {
     var resize = function() {
       // Even though the div hasn't changed size, the visible workspace
       // surface of the workspace has, so we may need to reposition everything.
@@ -565,14 +567,14 @@ Blockly.Toolbox.TreeControl.prototype.createNode = function(opt_html) {
     };
     // Fire a resize event since the toolbox may have changed width.
     goog.events.listen(this.toolbox_.tree_,
-        goog.ui.tree.BaseNode.EventType.EXPAND, resize);
+      goog.ui.tree.BaseNode.EventType.EXPAND, resize);
     goog.events.listen(this.toolbox_.tree_,
-        goog.ui.tree.BaseNode.EventType.COLLAPSE, resize);
-      this.eventHandlerRegistered_ = true;
+      goog.ui.tree.BaseNode.EventType.COLLAPSE, resize);
+    this.eventHandlerRegistered_ = true;
   }
   return new Blockly.Toolbox.TreeNode(this.toolbox_, opt_html ?
-      goog.html.SafeHtml.htmlEscape(opt_html) : goog.html.SafeHtml.EMPTY,
-      this.getConfig(), this.getDomHelper());
+    goog.html.SafeHtml.htmlEscape(opt_html) : goog.html.SafeHtml.EMPTY,
+    this.getConfig(), this.getDomHelper());
 };
 
 /**
@@ -610,7 +612,7 @@ Blockly.Toolbox.TreeControl.prototype.setSelectedItem = function(node) {
   }
   if (oldNode != node && oldNode != this) {
     var event = new Blockly.Events.Ui(null, 'category',
-        oldNode && oldNode.getHtml(), node && node.getHtml());
+      oldNode && oldNode.getHtml(), node && node.getHtml());
     event.workspaceId = toolbox.workspace_.id;
     Blockly.Events.fire(event);
   }
