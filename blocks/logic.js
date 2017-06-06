@@ -61,6 +61,7 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
     ],
     "output": "Boolean",
     "colour": "%{BKY_LOGIC_HUE}",
+    "outputShape": Blockly.OUTPUT_SHAPE_HEXAGONAL,
     "tooltip": "%{BKY_LOGIC_BOOLEAN_TOOLTIP}",
     "helpUrl": "%{BKY_LOGIC_BOOLEAN_HELPURL}"
   },
@@ -150,6 +151,7 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
     "inputsInline": true,
     "output": "Boolean",
     "colour": "%{BKY_LOGIC_HUE}",
+    "outputShape": Blockly.OUTPUT_SHAPE_HEXAGONAL,
     "helpUrl": "%{BKY_LOGIC_COMPARE_HELPURL}",
     "extensions": ["logic_compare", "logic_op_tooltip"]
   },
@@ -180,6 +182,7 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
     "inputsInline": true,
     "output": "Boolean",
     "colour": "%{BKY_LOGIC_HUE}",
+    "outputShape": Blockly.OUTPUT_SHAPE_HEXAGONAL,
     "helpUrl": "%{BKY_LOGIC_OPERATION_HELPURL}",
     "extensions": ["logic_op_tooltip"]
   },
@@ -196,6 +199,7 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
     ],
     "output": "Boolean",
     "colour": "%{BKY_LOGIC_HUE}",
+    "outputShape": Blockly.OUTPUT_SHAPE_HEXAGONAL,
     "tooltip": "%{BKY_LOGIC_NEGATE_TOOLTIP}",
     "helpUrl": "%{BKY_LOGIC_NEGATE_HELPURL}"
   },
@@ -332,6 +336,7 @@ Blockly.Constants.Logic.CONTROLS_IF_MUTATOR_MIXIN = {
    * @this Blockly.Block
    */
   domToMutation: function(xmlElement) {
+    if (!xmlElement) return;
     this.elseifCount_ = parseInt(xmlElement.getAttribute('elseif'), 10) || 0;
     this.elseCount_ = parseInt(xmlElement.getAttribute('else'), 10) || 0;
     this.updateShape_();

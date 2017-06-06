@@ -324,7 +324,6 @@ declare namespace Blockly {
     let selected: any;
     function bindEvent_(node: any, eventName: string, target: any, fn: (e: any) => void): void;
     function genUid(): string;
-    function terminateDrag_(): void;
     function mouseToSvg(e: Event, svg: Element): any;
     function svgResize(workspace: Blockly.Workspace): void;
     function hueToRgb(hue: number): string;
@@ -398,7 +397,7 @@ declare namespace Blockly {
 
     class FieldNumber extends FieldTextInput {
         constructor(value: string | number, opt_min?: any, opt_max?: any, opt_precision?: any, opt_validator?: any);
-        setConstraints(min: any, max: any, precision: any);
+        setConstraints_(min: any, max: any, precision: any);
     }
 
     class FieldDropdown extends Field {

@@ -69,7 +69,7 @@ Blockly.RenderedConnection.prototype.distanceFrom = function(otherConnection) {
  * @private
  */
 Blockly.RenderedConnection.prototype.bumpAwayFrom_ = function(staticConnection) {
-  if (Blockly.dragMode_ != Blockly.DRAG_NONE) {
+  if (this.sourceBlock_.workspace.isDragging()) {
     // Don't move blocks around while the user is doing the same.
     return;
   }
@@ -168,6 +168,7 @@ Blockly.RenderedConnection.prototype.tighten_ = function() {
     if (!svgRoot) {
       throw 'block is not rendered.';
     }
+    // Workspace coordinates.
     var xy = Blockly.utils.getRelativeXY(svgRoot);
     block.getSvgRoot().setAttribute('transform',
         'translate(' + (xy.x - dx) + ',' + (xy.y - dy) + ')');
@@ -177,18 +178,16 @@ Blockly.RenderedConnection.prototype.tighten_ = function() {
 
 /**
  * Find the closest compatible connection to this connection.
- * All parameters are in workspace units
+ * All parameters are in workspace units.
  * @param {number} maxLimit The maximum radius to another connection.
- * @param {number} dx Horizontal offset between this connection's location
- *     in the database and the current location (as a result of dragging).
- * @param {number} dy Vertical offset between this connection's location
+ * @param {!goog.math.Coordinate} dxy Offset between this connection's location
  *     in the database and the current location (as a result of dragging).
  * @return {!{connection: ?Blockly.Connection, radius: number}} Contains two
  *     properties: 'connection' which is either another connection or null,
  *     and 'radius' which is the distance.
  */
-Blockly.RenderedConnection.prototype.closest = function(maxLimit, dx, dy) {
-  return this.dbOpposite_.searchForClosest(this, maxLimit, dx, dy);
+Blockly.RenderedConnection.prototype.closest = function(maxLimit, dxy) {
+  return this.dbOpposite_.searchForClosest(this, maxLimit, dxy);
 };
 
 /**
@@ -196,11 +195,7 @@ Blockly.RenderedConnection.prototype.closest = function(maxLimit, dx, dy) {
  */
 Blockly.RenderedConnection.prototype.highlight = function() {
   var steps;
-  if (this.type == Blockly.INPUT_VALUE || this.type == Blockly.OUTPUT_VALUE) {
-    steps = 'm 0,0 ' + Blockly.BlockSvg.TAB_PATH_DOWN + ' v 5';
-  } else {
-    steps = 'm -20,0 h 5 ' + Blockly.BlockSvg.NOTCH_PATH_LEFT + ' h 5';
-  }
+  steps = 'm -20,0 h 5 ' + Blockly.BlockSvg.NOTCH_PATH_LEFT + ' h 5';
   var xy = this.sourceBlock_.getRelativeToSurfaceXY();
   var x = this.x_ - xy.x;
   var y = this.y_ - xy.y;

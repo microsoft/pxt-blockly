@@ -30,17 +30,37 @@ goog.provide('Blockly.constants');
 /**
  * Number of pixels the mouse must move before a drag starts.
  */
-Blockly.DRAG_RADIUS = 5;
+Blockly.DRAG_RADIUS = 3;
+
+/**
+ * Number of pixels the mouse must move before a drag/scroll starts from the
+ * flyout.  Because the drag-intention is determined when this is reached, it is
+ * larger than Blockly.DRAG_RADIUS so that the drag-direction is clearer.
+ */
+Blockly.FLYOUT_DRAG_RADIUS = 10;
 
 /**
  * Maximum misalignment between connections for them to snap together.
  */
-Blockly.SNAP_RADIUS = 20;
+Blockly.SNAP_RADIUS = 48;
+
+/**
+ * Maximum misalignment between connections for them to snap together,
+ * when a connection is already highlighted.
+ */
+Blockly.CONNECTING_SNAP_RADIUS = 96;
+
+/**
+ * How much to prefer staying connected to the current connection over moving to
+ * a new connection.  The current previewed connection is considered to be this
+ * much closer to the matching connection on the block than it actually is.
+ */
+Blockly.CURRENT_CONNECTION_PREFERENCE = 20;
 
 /**
  * Delay in ms between trigger and bumping unconnected block out of alignment.
  */
-Blockly.BUMP_DELAY = 250;
+Blockly.BUMP_DELAY = 0;
 
 /**
  * Number of characters to truncate a collapsed block to.
@@ -182,7 +202,6 @@ Blockly.OPPOSITE_TYPE[Blockly.OUTPUT_VALUE] = Blockly.INPUT_VALUE;
 Blockly.OPPOSITE_TYPE[Blockly.NEXT_STATEMENT] = Blockly.PREVIOUS_STATEMENT;
 Blockly.OPPOSITE_TYPE[Blockly.PREVIOUS_STATEMENT] = Blockly.NEXT_STATEMENT;
 
-
 /**
  * ENUM for toolbox and flyout at top of screen.
  * @const
@@ -207,6 +226,44 @@ Blockly.TOOLBOX_AT_LEFT = 2;
  */
 Blockly.TOOLBOX_AT_RIGHT = 3;
 
+/**
+ * ENUM for output shape: hexagonal (booleans/predicates).
+ * @const
+ */
+Blockly.OUTPUT_SHAPE_HEXAGONAL = 1;
+
+/**
+ * ENUM for output shape: rounded (numbers).
+ * @const
+ */
+Blockly.OUTPUT_SHAPE_ROUND = 2;
+
+/**
+ * ENUM for output shape: squared (any/all values; strings).
+ * @const
+ */
+Blockly.OUTPUT_SHAPE_SQUARE = 3;
+
+/**
+ * Radius of stack glow, in px.
+ * @type {number}
+ * @const
+ */
+Blockly.STACK_GLOW_RADIUS = 1.3;
+
+/**
+ * Radius of replacement glow, in px.
+ * @type {number}
+ * @const
+ */
+Blockly.REPLACEMENT_GLOW_RADIUS = 2;
+
+/**
+ * ENUM representing that an event is not in any delete areas.
+ * Null for backwards compatibility reasons.
+ * @const
+ */
+Blockly.DELETE_AREA_NONE = null;
 
 /**
  * ENUM representing that an event is in the delete area of the trash can.

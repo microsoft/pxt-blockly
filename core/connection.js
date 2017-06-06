@@ -140,8 +140,18 @@ Blockly.Connection.prototype.connect_ = function(childConnection) {
   var parentConnection = this;
   var parentBlock = parentConnection.getSourceBlock();
   var childBlock = childConnection.getSourceBlock();
+  var isSurroundingC = false;
+  if (parentConnection == parentBlock.getFirstStatementConnection()) {
+    isSurroundingC = true;
+  }
   // Disconnect any existing parent on the child connection.
   if (childConnection.isConnected()) {
+    // Scratch-specific behaviour:
+    // If we're using a c-shaped block to surround a stack, remember where the
+    // stack used to be connected.
+    if (isSurroundingC) {
+      var previousParentConnection = childConnection.targetConnection;
+    }
     childConnection.disconnect();
   }
   if (parentConnection.isConnected()) {
@@ -157,7 +167,8 @@ Blockly.Connection.prototype.connect_ = function(childConnection) {
       shadowDom = Blockly.Xml.blockToDom(orphanBlock);
       orphanBlock.dispose();
       orphanBlock = null;
-    } else if (parentConnection.type == Blockly.INPUT_VALUE) {
+      
+    } /*else if (parentConnection.type == Blockly.INPUT_VALUE) {
       // Value connections.
       // If female block is already connected, disconnect and bump the male.
       if (!orphanBlock.outputConnection) {
@@ -172,7 +183,7 @@ Blockly.Connection.prototype.connect_ = function(childConnection) {
         orphanBlock.outputConnection.connect(connection);
         orphanBlock = null;
       }
-    } else if (parentConnection.type == Blockly.NEXT_STATEMENT) {
+    } */else if (parentConnection.type == Blockly.NEXT_STATEMENT) {
       // Statement connections.
       // Statement blocks may be inserted into the middle of a stack.
       // Split the stack.
@@ -220,6 +231,10 @@ Blockly.Connection.prototype.connect_ = function(childConnection) {
     parentConnection.setShadowDom(shadowDom);
   }
 
+  if (isSurroundingC && previousParentConnection) {
+    previousParentConnection.connect(parentBlock.previousConnection);
+  }
+
   var event;
   if (Blockly.Events.isEnabled()) {
     event = new Blockly.Events.Move(childBlock);
@@ -244,14 +259,16 @@ Blockly.Connection.prototype.dispose = function() {
   if (this.inDB_) {
     this.db_.removeConnection_(this);
   }
-  if (Blockly.highlightedConnection_ == this) {
-    Blockly.highlightedConnection_ = null;
-  }
-  if (Blockly.localConnection_ == this) {
-    Blockly.localConnection_ = null;
-  }
   this.db_ = null;
   this.dbOpposite_ = null;
+};
+
+/**
+ * @return {boolean} true if the connection is not connected or is connected to
+ *    an insertion marker, false otherwise.
+ */
+Blockly.Connection.prototype.isConnectedToNonInsertionMarker = function() {
+  return this.targetConnection && !this.targetBlock().isInsertionMarker();
 };
 
 /**
@@ -347,45 +364,104 @@ Blockly.Connection.prototype.checkConnection_ = function(target) {
 
 /**
  * Check if the two connections can be dragged to connect to each other.
+ * This is used by the connection database when searching for the closest
+ * connection.
  * @param {!Blockly.Connection} candidate A nearby connection to check.
  * @return {boolean} True if the connection is allowed, false otherwise.
  */
 Blockly.Connection.prototype.isConnectionAllowed = function(candidate) {
+  
+  // Don't consider insertion markers.
+  if (candidate.sourceBlock_.isInsertionMarker()) {
+    return false;
+  }
+
   // Type checking.
   var canConnect = this.canConnectWithReason_(candidate);
   if (canConnect != Blockly.Connection.CAN_CONNECT) {
     return false;
   }
 
-  // Don't offer to connect an already connected left (male) value plug to
-  // an available right (female) value plug.  Don't offer to connect the
-  // bottom of a statement block to one that's already connected.
-  if (candidate.type == Blockly.OUTPUT_VALUE ||
-      candidate.type == Blockly.PREVIOUS_STATEMENT) {
-    if (candidate.isConnected() || this.isConnected()) {
+  var firstStatementConnection =
+      this.sourceBlock_.getFirstStatementConnection();
+  switch (candidate.type) {
+    case Blockly.PREVIOUS_STATEMENT: {
+      if (!firstStatementConnection || this != firstStatementConnection) {
+        if (this.targetConnection) {
+          return false;
+        }
+        if (candidate.targetConnection) {
+          // If the other side of this connection is the active insertion marker
+          // connection, we've obviously already decided that this is a good
+          // connection.
+          if (candidate.targetBlock().isInsertionMarker()) {
+            return true;
+          } else {
+            return false;
+          }
+        }
+      }
+
+      // Scratch-specific behaviour:
+      // If this is a c-shaped block, statement blocks cannot be connected
+      // anywhere other than inside the first statement input.
+      if (firstStatementConnection) {
+        // Can't connect if there is already a block inside the first statement
+        // input.
+        if (this == firstStatementConnection) {
+          if (this.targetConnection) {
+            return false;
+          }
+        }
+        // Can't connect this block's next connection unless we're connecting
+        // in front of the first block on a stack.
+        else if (this == this.sourceBlock_.nextConnection &&
+            candidate.isConnectedToNonInsertionMarker()) {
+          return false;
+        }
+      }
+      break;
+    }
+    case Blockly.OUTPUT_VALUE: {
+      // Can't drag an input to an output--you have to move the inferior block.
       return false;
     }
-  }
-
-  // Offering to connect the left (male) of a value block to an already
-  // connected value pair is ok, we'll splice it in.
-  // However, don't offer to splice into an immovable block.
-  if (candidate.type == Blockly.INPUT_VALUE && candidate.isConnected() &&
-      !candidate.targetBlock().isMovable() &&
-      !candidate.targetBlock().isShadow()) {
-    return false;
-  }
-
-  // Don't let a block with no next connection bump other blocks out of the
-  // stack.  But covering up a shadow block or stack of shadow blocks is fine.
-  // Similarly, replacing a terminal statement with another terminal statement
-  // is allowed.
-  if (this.type == Blockly.PREVIOUS_STATEMENT &&
-      candidate.isConnected() &&
-      !this.sourceBlock_.nextConnection &&
-      !candidate.targetBlock().isShadow() &&
-      candidate.targetBlock().nextConnection) {
-    return false;
+    case Blockly.INPUT_VALUE: {
+      // Offering to connect the left (male) of a value block to an already
+      // connected value pair is ok, we'll splice it in.
+      // However, don't offer to splice into an unmovable block.
+      if (candidate.targetConnection &&
+          !candidate.targetBlock().isMovable() &&
+          !candidate.targetBlock().isShadow()) {
+        return false;
+      }
+      break;
+    }
+    case Blockly.NEXT_STATEMENT: {
+        // Scratch-specific behaviour:
+        // If this is a c-block, we can't connect this block's
+        // previous connection unless we're connecting to the end of the last
+        // block on a stack or there's already a block connected inside the c.
+      if (firstStatementConnection &&
+          this == this.sourceBlock_.previousConnection &&
+          candidate.isConnectedToNonInsertionMarker() &&
+          !firstStatementConnection.targetConnection) {
+        return false;
+      }
+      // Don't let a block with no next connection bump other blocks out of the
+      // stack.  But covering up a shadow block or stack of shadow blocks is
+      // fine.  Similarly, replacing a terminal statement with another terminal
+      // statement is allowed.
+      if (candidate.isConnectedToNonInsertionMarker() &&
+          !this.sourceBlock_.nextConnection &&
+          !candidate.targetBlock().isShadow() &&
+          candidate.targetBlock().nextConnection) {
+        return false;
+      }
+      break;
+    }
+    default:
+      throw 'Unknown connection type in isConnectionAllowed';
   }
 
   // Don't let blocks try to connect to themselves or ones they nest.
@@ -609,6 +685,25 @@ Blockly.Connection.prototype.setCheck = function(check) {
     this.check_ = null;
   }
   return this;
+};
+
+/**
+ * Returns a shape enum for this connection.
+ * Used in scratch-blocks to draw unoccupied inputs.
+ * @return {number} Enum representing shape.
+ */
+Blockly.Connection.prototype.getOutputShape = function() {
+  if (!this.check_) return Blockly.OUTPUT_SHAPE_ROUND;
+  if (this.check_.indexOf('Boolean') !== -1) {
+    return Blockly.OUTPUT_SHAPE_HEXAGONAL;
+  }
+  if (this.check_.indexOf('Number') !== -1) {
+    return Blockly.OUTPUT_SHAPE_ROUND;
+  }
+  if (this.check_.indexOf('String') !== -1) {
+    return Blockly.OUTPUT_SHAPE_SQUARE;
+  }
+  return Blockly.OUTPUT_SHAPE_ROUND;
 };
 
 /**

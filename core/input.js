@@ -233,7 +233,7 @@ Blockly.Input.prototype.init = function() {
     return;  // Headless blocks don't need fields initialized.
   }
   for (var i = 0; i < this.fieldRow.length; i++) {
-    this.fieldRow[i].init();
+    this.fieldRow[i].init(this.sourceBlock_);
   }
 };
 

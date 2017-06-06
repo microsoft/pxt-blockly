@@ -92,7 +92,7 @@ window.BLOCKLY_DIR = (function() {
   if (!isNodeJS) {
     // Find name of current directory.
     var scripts = document.getElementsByTagName('script');
-    var re = new RegExp('(.+)[\/]blockly_uncompressed\.js$');
+    var re = new RegExp('(.+)[\/]blockly_uncompressed(_scratch|)\.js$');
     for (var i = 0, script; script = scripts[i]; i++) {
       var match = re.exec(script.src);
       if (match) {
@@ -175,11 +175,11 @@ class Gen_compressed(threading.Thread):
   def run(self):
     self.gen_core()
     self.gen_blocks()
-    self.gen_generator("javascript")
-    self.gen_generator("python")
-    self.gen_generator("php")
-    self.gen_generator("dart")
-    self.gen_generator("lua")
+    #self.gen_generator("javascript")
+    #self.gen_generator("python")
+    #self.gen_generator("php")
+    #self.gen_generator("dart")
+    #self.gen_generator("lua")
 
   def gen_core(self):
     target_filename = "blockly_compressed.js"
@@ -223,6 +223,9 @@ class Gen_compressed(threading.Thread):
     # Add Blockly.Blocks to be compatible with the compiler.
     params.append(("js_code", "goog.provide('Blockly.Blocks');"))
     filenames = glob.glob(os.path.join("blocks", "*.js"))
+    # Add Blockly.Colours for use of centralized colour bank
+    filenames.append(os.path.join("core", "colours.js"))
+    filenames.append(os.path.join("core", "constants.js"))
     for filename in filenames:
       f = open(filename)
       params.append(("js_code", "".join(f.readlines())))
@@ -433,7 +436,6 @@ class Gen_langfiles(threading.Thread):
       else:
         print("FAILED to create " + f)
 
-
 if __name__ == "__main__":
   try:
     calcdeps = import_path(os.path.join(
@@ -462,7 +464,9 @@ developers.google.com/blockly/guides/modify/web/closure""")
   # Run both tasks in parallel threads.
   # Uncompressed is limited by processor speed.
   # Compressed is limited by network and server speed.
+
   Gen_uncompressed(search_paths).start()
+
   Gen_compressed(search_paths).start()
 
   # This is run locally in a separate thread.

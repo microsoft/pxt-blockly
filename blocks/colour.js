@@ -33,7 +33,8 @@ goog.provide('Blockly.Blocks.colour');  // Deprecated
 goog.provide('Blockly.Constants.Colour');
 
 goog.require('Blockly.Blocks');
-
+goog.require('Blockly.Colours');
+goog.require('Blockly.constants');
 
 /**
  * Common HSV hue for all blocks in this category.
@@ -57,7 +58,8 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
       }
     ],
     "output": "Colour",
-    "colour": "%{BKY_COLOUR_HUE}",
+    "colour": Blockly.Colours.textField,
+    "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
     "helpUrl": "%{BKY_COLOUR_PICKER_HELPURL}",
     "tooltip": "%{BKY_COLOUR_PICKER_TOOLTIP}",
     "extensions": ["parent_tooltip_when_inline"]
@@ -69,6 +71,7 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
     "message0": "%{BKY_COLOUR_RANDOM_TITLE}",
     "output": "Colour",
     "colour": "%{BKY_COLOUR_HUE}",
+    "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
     "helpUrl": "%{BKY_COLOUR_RANDOM_HELPURL}",
     "tooltip": "%{BKY_COLOUR_RANDOM_TOOLTIP}"
   },
@@ -82,23 +85,24 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
         "type": "input_value",
         "name": "RED",
         "check": "Number",
-        "align": "RIGHT"
+        "align": "LEFT"
       },
       {
         "type": "input_value",
         "name": "GREEN",
         "check": "Number",
-        "align": "RIGHT"
+        "align": "LEFT"
       },
       {
         "type": "input_value",
         "name": "BLUE",
         "check": "Number",
-        "align": "RIGHT"
+        "align": "LEFT"
       }
     ],
     "output": "Colour",
     "colour": "%{BKY_COLOUR_HUE}",
+    "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
     "helpUrl": "%{BKY_COLOUR_RGB_HELPURL}",
     "tooltip": "%{BKY_COLOUR_RGB_TOOLTIP}"
   },
@@ -112,23 +116,24 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
         "type": "input_value",
         "name": "COLOUR1",
         "check": "Colour",
-        "align": "RIGHT"
+        "align": "LEFT"
       },
       {
         "type": "input_value",
         "name": "COLOUR2",
         "check": "Colour",
-        "align": "RIGHT"
+        "align": "LEFT"
       },
       {
         "type": "input_value",
         "name": "RATIO",
         "check": "Number",
-        "align": "RIGHT"
+        "align": "LEFT"
       }
     ],
     "output": "Colour",
     "colour": "%{BKY_COLOUR_HUE}",
+    "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
     "helpUrl": "%{BKY_COLOUR_BLEND_HELPURL}",
     "tooltip": "%{BKY_COLOUR_BLEND_TOOLTIP}"
   }

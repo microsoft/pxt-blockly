@@ -239,7 +239,16 @@ Blockly.Scrollbar = function(workspace, horizontal, opt_pair, opt_class) {
 Blockly.Scrollbar.prototype.origin_ = new goog.math.Coordinate(0, 0);
 
 /**
+   * Whether or not the origin of the scrollbar has changed. Used
+   * to help decide whether or not the reflow/resize calls need to happen.
+   * @type {boolean}
+   * @private
+   */
+Blockly.Scrollbar.prototype.originHasChanged_ = true;
+
+/**
  * The size of the area within which the scrollbar handle can move.
+ * Coordinate system: pixel coordinates.
  * @type {number}
  * @private
  */
@@ -247,6 +256,7 @@ Blockly.Scrollbar.prototype.scrollViewSize_ = 0;
 
 /**
  * The length of the scrollbar handle.
+ * Coordinate system: pixel coordinates.
  * @type {number}
  * @private
  */
@@ -254,6 +264,7 @@ Blockly.Scrollbar.prototype.handleLength_ = 0;
 
 /**
  * The offset of the start of the handle from the start of the scrollbar range.
+ * Coordinate system: pixel coordinates.
  * @type {number}
  * @private
  */
@@ -276,9 +287,8 @@ Blockly.Scrollbar.prototype.containerVisible_ = true;
 /**
  * Width of vertical scrollbar or height of horizontal scrollbar.
  * Increase the size of scrollbars on touch devices.
- * Don't define if there is no document object (e.g. node.js).
  */
-Blockly.Scrollbar.scrollbarThickness = 15;
+Blockly.Scrollbar.scrollbarThickness = 11;
 if (goog.events.BrowserFeature.TOUCH_ENABLED) {
   Blockly.Scrollbar.scrollbarThickness = 25;
 }
@@ -404,7 +414,11 @@ Blockly.Scrollbar.prototype.resize = function(opt_metrics) {
     }
   }
 
-  if (Blockly.Scrollbar.metricsAreEquivalent_(hostMetrics,
+  // If the origin has changed (e.g. the toolbox is moving from start to end)
+  // we want to continue with the resize even if workspace metrics haven't.
+  if (this.originHasChanged_) {
+    this.originHasChanged_ = false;
+  } else if (Blockly.Scrollbar.metricsAreEquivalent_(hostMetrics,
       this.oldHostMetrics_)) {
     return;
   }
@@ -693,9 +707,12 @@ Blockly.Scrollbar.prototype.onMouseDownBar_ = function(e) {
     // Increase the scrollbar's value by a page.
     handlePosition += pageLength;
   }
+  // When the scrollbars are clicked, hide the WidgetDiv/DropDownDiv without
+  // animation in anticipation of a workspace move.
+  Blockly.WidgetDiv.hide(true);
+  Blockly.DropDownDiv.hideWithoutAnimation();
 
   this.setHandlePosition(this.constrainHandle_(handlePosition));
-
   this.onScroll_();
   e.stopPropagation();
   e.preventDefault();
@@ -730,6 +747,11 @@ Blockly.Scrollbar.prototype.onMouseDownHandle_ = function(e) {
       'mouseup', this, this.onMouseUpHandle_);
   Blockly.Scrollbar.onMouseMoveWrapper_ = Blockly.bindEventWithChecks_(document,
       'mousemove', this, this.onMouseMoveHandle_);
+  // When the scrollbars are clicked, hide the WidgetDiv/DropDownDiv without
+  // animation in anticipation of a workspace move.
+  Blockly.WidgetDiv.hide(true);
+  Blockly.DropDownDiv.hideWithoutAnimation();
+
   e.stopPropagation();
   e.preventDefault();
 };
@@ -827,5 +849,8 @@ Blockly.Scrollbar.prototype.set = function(value) {
  * @param {number} y The y coordinate of the scrollbar's origin.
  */
 Blockly.Scrollbar.prototype.setOrigin = function(x, y) {
-  this.origin_ = new goog.math.Coordinate(x, y);
+  if (x != this.origin_.x || y != this.origin_.y) {
+    this.origin_ = new goog.math.Coordinate(x, y);
+    this.originHasChanged_ = true;
+  }
 };

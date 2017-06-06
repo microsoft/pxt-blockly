@@ -171,8 +171,6 @@ Blockly.Toolbox.prototype.init = function() {
         }
         Blockly.Touch.clearTouchIdentifier();  // Don't block future drags.
       });
-  // pxtblockly: Right clicking on the toolbox doesn't show the browser context menu
-  Blockly.bindEventWithChecks_(this.HtmlDiv, 'contextmenu', this, Blockly.utils.noEvent);
   var workspaceOptions = {
     disabledPatternId: workspace.options.disabledPatternId,
     parentWorkspace: workspace,
@@ -525,10 +523,6 @@ Blockly.Toolbox.TreeControl.prototype.enterDocument = function() {
     Blockly.bindEventWithChecks_(el, goog.events.EventType.TOUCHSTART, this,
         this.handleTouchEvent_);
   }
-
-  // pxtblockly: Handle right click.
-  var el = this.getElement();
-  Blockly.bindEventWithChecks_(el, goog.events.EventType.CONTEXTMENU, this, Blockly.utils.noEvent);
 };
 
 /**
@@ -632,6 +626,18 @@ Blockly.Toolbox.TreeControl.prototype.setSelectedItem = function(node) {
  */
 Blockly.Toolbox.TreeNode = function(toolbox, html, opt_config, opt_domHelper) {
   goog.ui.tree.TreeNode.call(this, html, opt_config, opt_domHelper);
+  if (toolbox) {
+    var resize = function() {
+      // Even though the div hasn't changed size, the visible workspace
+      // surface of the workspace has, so we may need to reposition everything.
+      Blockly.svgResize(toolbox.workspace_);
+    };
+    // Fire a resize event since the toolbox may have changed width.
+    goog.events.listen(toolbox.tree_,
+        goog.ui.tree.BaseNode.EventType.EXPAND, resize);
+    goog.events.listen(toolbox.tree_,
+        goog.ui.tree.BaseNode.EventType.COLLAPSE, resize);
+  }
 };
 goog.inherits(Blockly.Toolbox.TreeNode, goog.ui.tree.TreeNode);
 

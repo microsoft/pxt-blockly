@@ -50,11 +50,10 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
       "text": ""
     }],
     "output": "String",
-    "colour": "%{BKY_TEXTS_HUE}",
+    "colour": Blockly.Colours.textField,
     "helpUrl": "%{BKY_TEXT_TEXT_HELPURL}",
     "tooltip": "%{BKY_TEXT_TEXT_TOOLTIP}",
     "extensions": [
-      "text_quotes",
       "parent_tooltip_when_inline"
     ]
   }
@@ -81,6 +80,7 @@ Blockly.Blocks['text_join'] = {
     this.mixin(Blockly.Constants.Text.QUOTE_IMAGE_MIXIN);
     this.updateShape_();
     this.setOutput(true, 'String');
+    this.setOutputShape(Blockly.OUTPUT_SHAPE_ROUND);
     this.setMutator(new Blockly.Mutator(['text_create_join_item']));
     this.setTooltip(Blockly.Msg.TEXT_JOIN_TOOLTIP);
   },
@@ -202,6 +202,7 @@ Blockly.Blocks['text_create_join_container'] = {
    */
   init: function() {
     this.setColour(Blockly.Blocks.texts.HUE);
+    this.setOutputShape(Blockly.OUTPUT_SHAPE_ROUND);
     this.appendDummyInput()
         .appendField(Blockly.Msg.TEXT_CREATE_JOIN_TITLE_JOIN);
     this.appendStatementInput('STACK');
@@ -234,6 +235,7 @@ Blockly.Blocks['text_append'] = {
   init: function() {
     this.setHelpUrl(Blockly.Msg.TEXT_APPEND_HELPURL);
     this.setColour(Blockly.Blocks.texts.HUE);
+    this.setOutputShape(Blockly.OUTPUT_SHAPE_ROUND);
     this.appendValueInput('TEXT')
         .appendField(Blockly.Msg.TEXT_APPEND_TO)
         .appendField(new Blockly.FieldVariable(
@@ -266,6 +268,7 @@ Blockly.Blocks['text_length'] = {
         }
       ],
       "output": 'Number',
+      "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
       "colour": Blockly.Blocks.texts.HUE,
       "tooltip": Blockly.Msg.TEXT_LENGTH_TOOLTIP,
       "helpUrl": Blockly.Msg.TEXT_LENGTH_HELPURL
@@ -289,6 +292,7 @@ Blockly.Blocks['text_isEmpty'] = {
         }
       ],
       "output": 'Boolean',
+      "outputShape": Blockly.OUTPUT_SHAPE_HEXAGONAL,
       "colour": Blockly.Blocks.texts.HUE,
       "tooltip": Blockly.Msg.TEXT_ISEMPTY_TOOLTIP,
       "helpUrl": Blockly.Msg.TEXT_ISEMPTY_HELPURL
@@ -309,6 +313,7 @@ Blockly.Blocks['text_indexOf'] = {
     this.setHelpUrl(Blockly.Msg.TEXT_INDEXOF_HELPURL);
     this.setColour(Blockly.Blocks.texts.HUE);
     this.setOutput(true, 'Number');
+    this.setOutputShape(Blockly.OUTPUT_SHAPE_ROUND);
     this.appendValueInput('VALUE')
         .setCheck('String')
         .appendField(Blockly.Msg.TEXT_INDEXOF_INPUT_INTEXT);

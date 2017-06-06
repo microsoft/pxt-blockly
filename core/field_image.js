@@ -38,18 +38,19 @@ goog.require('goog.userAgent');
  * @param {number} width Width of the image.
  * @param {number} height Height of the image.
  * @param {string=} opt_alt Optional alt text for when block is collapsed.
+ * @param {boolean} flip_rtl Whether to flip the icon in RTL
  * @extends {Blockly.Field}
  * @constructor
  */
-Blockly.FieldImage = function(src, width, height, opt_alt) {
+Blockly.FieldImage = function(src, width, height, opt_alt, flip_rtl) {
   this.sourceBlock_ = null;
 
   // Ensure height and width are numbers.  Strings are bad at math.
   this.height_ = Number(height);
   this.width_ = Number(width);
-  this.size_ = new goog.math.Size(this.width_,
-      this.height_ + 2 * Blockly.BlockSvg.INLINE_PADDING_Y);
+  this.size_ = new goog.math.Size(this.width_, this.height_);
   this.text_ = opt_alt || '';
+  this.flipRTL_ = flip_rtl;
   this.setValue(src);
 };
 goog.inherits(Blockly.FieldImage, Blockly.Field);
@@ -134,6 +135,14 @@ Blockly.FieldImage.prototype.setValue = function(src) {
 };
 
 /**
+ * Get whether to flip this image in RTL
+ * @return {boolean} True if we should flip in RTL.
+ */
+Blockly.FieldImage.prototype.getFlipRTL = function() {
+  return this.flipRTL_;
+};
+
+/**
  * Set the alt text of this image.
  * @param {?string} alt New alt text.
  * @override
@@ -153,6 +162,7 @@ Blockly.FieldImage.prototype.setText = function(alt) {
 Blockly.FieldImage.prototype.render_ = function() {
   // NOP
 };
+
 /**
  * Images are fixed width, no need to update.
  * @private

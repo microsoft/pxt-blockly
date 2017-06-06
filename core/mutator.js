@@ -30,7 +30,6 @@ goog.provide('Blockly.Mutator');
 goog.require('Blockly.Bubble');
 goog.require('Blockly.Icon');
 goog.require('Blockly.WorkspaceSvg');
-goog.require('goog.Timer');
 goog.require('goog.dom');
 
 
@@ -67,13 +66,19 @@ Blockly.Mutator.prototype.drawIcon_ = function(group) {
   // Square with rounded corners.
   Blockly.utils.createSvgElement('rect',
       {'class': 'blocklyIconShape',
-       'rx': '4', 'ry': '4',
+       'rx': '10', 'ry': '10',
        'height': '16', 'width': '16'},
        group);
   // Gear teeth.
   Blockly.utils.createSvgElement('path',
       {'class': 'blocklyIconSymbol',
-       'd': 'm4.203,7.296 0,1.368 -0.92,0.677 -0.11,0.41 0.9,1.559 0.41,0.11 1.043,-0.457 1.187,0.683 0.127,1.134 0.3,0.3 1.8,0 0.3,-0.299 0.127,-1.138 1.185,-0.682 1.046,0.458 0.409,-0.11 0.9,-1.559 -0.11,-0.41 -0.92,-0.677 0,-1.366 0.92,-0.677 0.11,-0.41 -0.9,-1.559 -0.409,-0.109 -1.046,0.458 -1.185,-0.682 -0.127,-1.138 -0.3,-0.299 -1.8,0 -0.3,0.3 -0.126,1.135 -1.187,0.682 -1.043,-0.457 -0.41,0.11 -0.899,1.559 0.108,0.409z'},
+       'd': 'm4.203,7.296 0,1.368 -0.92,0.677 -0.11,0.41 0.9,1.559 ' +
+       '0.41,0.11 1.043,-0.457 1.187,0.683 0.127,1.134 0.3,0.3 ' +
+       '1.8,0 0.3,-0.299 0.127,-1.138 1.185,-0.682 1.046,0.458 0.409,-0.11 ' +
+       '0.9,-1.559 -0.11,-0.41 -0.92,-0.677 0,-1.366 0.92,-0.677 0.11,-0.41 ' +
+       '-0.9,-1.559 -0.409,-0.109 -1.046,0.458 -1.185,-0.682 -0.127,-1.138 ' +
+       '-0.3,-0.299 -1.8,0 -0.3,0.3 -0.126,1.135 -1.187,0.682 -1.043,-0.457 ' +
+       '-0.41,0.11 -0.899,1.559 0.108,0.409z'},
        group);
   // Axle hole.
   Blockly.utils.createSvgElement('circle',
@@ -128,7 +133,7 @@ Blockly.Mutator.prototype.createEditor_ = function() {
     getMetrics: this.getFlyoutMetrics_.bind(this),
     setMetrics: null
   };
-  this.workspace_ = new Blockly.WorkspaceSvg(workspaceOptions);
+  this.workspace_ = new Blockly.WorkspaceSvg(workspaceOptions, this.block_.workspace.dragSurface);
   this.workspace_.isMutator = true;
 
   // Mutator flyouts go inside the mutator workspace's <g> rather than in
@@ -289,7 +294,7 @@ Blockly.Mutator.prototype.setVisible = function(visible) {
  * @private
  */
 Blockly.Mutator.prototype.workspaceChanged_ = function() {
-  if (Blockly.dragMode_ == Blockly.DRAG_NONE) {
+  if (!this.workspace_.isDragging()) {
     var blocks = this.workspace_.getTopBlocks(false);
     var MARGIN = 20;
     for (var b = 0, block; block = blocks[b]; b++) {
@@ -333,7 +338,11 @@ Blockly.Mutator.prototype.workspaceChanged_ = function() {
     if (block.rendered) {
       block.render();
     }
-    this.resizeBubble_();
+    // Don't update the bubble until the drag has ended, to avoid moving blocks
+    // under the cursor.
+    if (!this.workspace_.isDragging()) {
+      this.resizeBubble_();
+    }
     Blockly.Events.setGroup(false);
   }
 };

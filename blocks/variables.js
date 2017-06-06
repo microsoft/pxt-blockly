@@ -58,6 +58,7 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
     ],
     "output": null,
     "colour": "%{BKY_VARIABLES_HUE}",
+    "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
     "helpUrl": "%{BKY_VARIABLES_GET_HELPURL}",
     "tooltip": "%{BKY_VARIABLES_GET_TOOLTIP}",
     "extensions": ["contextMenu_variableSetterGetter"]

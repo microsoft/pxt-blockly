@@ -34,6 +34,7 @@
 goog.provide('Blockly');
 
 goog.require('Blockly.BlockSvg.render');
+goog.require('Blockly.DropDownDiv');
 goog.require('Blockly.Events');
 goog.require('Blockly.FieldAngle');
 goog.require('Blockly.FieldCheckbox');
@@ -42,9 +43,12 @@ goog.require('Blockly.FieldColour');
 // Add it only if you need it.
 //goog.require('Blockly.FieldDate');
 goog.require('Blockly.FieldDropdown');
+goog.require('Blockly.FieldIconMenu');
 goog.require('Blockly.FieldImage');
 goog.require('Blockly.FieldTextInput');
+goog.require('Blockly.FieldTextDropdown');
 goog.require('Blockly.FieldNumber');
+goog.require('Blockly.FieldNumberDropdown');
 goog.require('Blockly.FieldVariable');
 goog.require('Blockly.FieldSlider');
 goog.require('Blockly.Generator');
@@ -112,15 +116,6 @@ Blockly.clipboardXml_ = null;
  * @private
  */
 Blockly.clipboardSource_ = null;
-
-/**
- * Is the mouse dragging a block?
- * DRAG_NONE - No drag operation.
- * DRAG_STICKY - Still inside the sticky DRAG_RADIUS.
- * DRAG_FREE - Freely draggable.
- * @private
- */
-Blockly.dragMode_ = Blockly.DRAG_NONE;
 
 /**
  * Cached value for whether 3D is supported.
@@ -201,20 +196,23 @@ Blockly.onKeyDown_ = function(e) {
     // When focused on an HTML text input widget, don't trap any keys.
     return;
   }
-  var deleteBlock = false;
   if (e.keyCode == 27) {
-    // Pressing esc closes the context menu.
+    // Pressing esc closes the context menu and any drop-down
     Blockly.hideChaff();
+    Blockly.DropDownDiv.hide();
   } else if (e.keyCode == 8 || e.keyCode == 46) {
     // Delete or backspace.
     // Stop the browser from going back to the previous page.
-    // Do this first to prevent an error in the delete code from resulting in
-    // data loss.
     e.preventDefault();
-    if (Blockly.selected && Blockly.selected.isDeletable()) {
-      deleteBlock = true;
+    // Don't delete while dragging.  Jeez.
+    if (Blockly.mainWorkspace.isDragging()) {
+      return;
     }
   } else if (e.altKey || e.ctrlKey || e.metaKey) {
+    // Don't use meta keys during drags.
+    if (Blockly.mainWorkspace.isDragging()) {
+      return;
+    }
     if (Blockly.selected &&
         Blockly.selected.isDeletable() && Blockly.selected.isMovable()) {
       if (e.keyCode == 67) {
@@ -224,7 +222,8 @@ Blockly.onKeyDown_ = function(e) {
       } else if (e.keyCode == 88) {
         // 'x' for cut.
         Blockly.copy_(Blockly.selected);
-        deleteBlock = true;
+        Blockly.hideChaff();
+        Blockly.selected.dispose(/* heal */ true, true);
       }
     }
     if (e.keyCode == 86) {
@@ -240,27 +239,6 @@ Blockly.onKeyDown_ = function(e) {
       Blockly.mainWorkspace.undo(e.shiftKey);
     }
   }
-  if (deleteBlock) {
-    // Common code for delete and cut.
-    Blockly.Events.setGroup(true);
-    Blockly.hideChaff();
-    var heal = Blockly.dragMode_ != Blockly.DRAG_FREE;
-    Blockly.selected.dispose(heal, true);
-    if (Blockly.highlightedConnection_) {
-      Blockly.highlightedConnection_.unhighlight();
-      Blockly.highlightedConnection_ = null;
-    }
-    Blockly.Events.setGroup(false);
-  }
-};
-
-/**
- * Stop binding to the global mouseup and mousemove events.
- * @private
- */
-Blockly.terminateDrag_ = function() {
-  Blockly.BlockSvg.terminateDrag();
-  Blockly.Flyout.terminateDrag_();
 };
 
 /**
@@ -270,9 +248,6 @@ Blockly.terminateDrag_ = function() {
  */
 Blockly.copy_ = function(block) {
   var xmlBlock = Blockly.Xml.blockToDom(block);
-  if (Blockly.dragMode_ != Blockly.DRAG_FREE) {
-    Blockly.Xml.deleteNext(xmlBlock);
-  }
   // Encode start position in XML.
   var xy = block.getRelativeToSurfaceXY();
   xmlBlock.setAttribute('x', block.RTL ? -xy.x : xy.x);
@@ -319,6 +294,7 @@ Blockly.onContextMenu_ = function(e) {
 Blockly.hideChaff = function(opt_allowToolbox) {
   Blockly.Tooltip.hide();
   Blockly.WidgetDiv.hide();
+  Blockly.DropDownDiv.hideWithoutAnimation();
   if (!opt_allowToolbox) {
     var workspace = Blockly.getMainWorkspace();
     if (workspace.toolbox_ &&
@@ -327,20 +303,6 @@ Blockly.hideChaff = function(opt_allowToolbox) {
       workspace.toolbox_.clearSelection();
     }
   }
-};
-
-/**
- * When something in Blockly's workspace changes, call a function.
- * @param {!Function} func Function to call.
- * @return {!Array.<!Array>} Opaque data that can be passed to
- *     removeChangeListener.
- * @deprecated April 2015
- */
-Blockly.addChangeListener = function(func) {
-  // Backwards compatibility from before there could be multiple workspaces.
-  console.warn('Deprecated call to Blockly.addChangeListener, ' +
-               'use workspace.addChangeListener instead.');
-  return Blockly.getMainWorkspace().addChangeListener(func);
 };
 
 /**
@@ -573,4 +535,3 @@ if (!goog.global['Blockly']) {
   goog.global['Blockly'] = {};
 }
 goog.global['Blockly']['getMainWorkspace'] = Blockly.getMainWorkspace;
-goog.global['Blockly']['addChangeListener'] = Blockly.addChangeListener;

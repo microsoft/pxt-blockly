@@ -101,7 +101,7 @@ Blockly.FlyoutButton = function(workspace, targetWorkspace, xml, isLabel) {
 /**
  * The margin around the text in the button.
  */
-Blockly.FlyoutButton.MARGIN = 5;
+Blockly.FlyoutButton.MARGIN = 40;
 
 /**
  * The width of the button's rect.
@@ -113,7 +113,14 @@ Blockly.FlyoutButton.prototype.width = 0;
  * The height of the button's rect.
  * @type {number}
  */
-Blockly.FlyoutButton.prototype.height = 0;
+Blockly.FlyoutButton.prototype.height = 40; // Can't be computed like the width
+
+/**
+ * Opaque data that can be passed to Blockly.unbindEvent_.
+ * @type {Array.<!Array>}
+ * @private
+ */
+Blockly.FlyoutButton.prototype.onMouseUpWrapper_ = null;
 
 /**
  * Create the button elements.
@@ -150,7 +157,6 @@ Blockly.FlyoutButton.prototype.createDom = function() {
 
   this.width = svgText.getComputedTextLength() +
       2 * Blockly.FlyoutButton.MARGIN;
-  this.height = 20;  // Can't compute it :(
 
   if (!this.isLabel_) {
     shadow.setAttribute('width', this.width);
@@ -159,10 +165,15 @@ Blockly.FlyoutButton.prototype.createDom = function() {
   rect.setAttribute('width', this.width);
   rect.setAttribute('height', this.height);
 
+  svgText.setAttribute('text-anchor', 'middle');
+  svgText.setAttribute('alignment-baseline', 'central');
   svgText.setAttribute('x', this.width / 2);
-  svgText.setAttribute('y', this.height - Blockly.FlyoutButton.MARGIN);
+  svgText.setAttribute('y', this.height / 2);
 
   this.updateTransform_();
+
+  this.mouseUpWrapper_ = Blockly.bindEventWithChecks_(this.svgGroup_, 'mouseup',
+      this, this.onMouseUp_);
   return this.svgGroup_;
 };
 
@@ -207,6 +218,9 @@ Blockly.FlyoutButton.prototype.getTargetWorkspace = function() {
  * Dispose of this button.
  */
 Blockly.FlyoutButton.prototype.dispose = function() {
+  if (this.onMouseUpWrapper_) {
+    Blockly.unbindEvent_(this.onMouseUpWrapper_);
+  }
   if (this.svgGroup_) {
     goog.dom.removeNode(this.svgGroup_);
     this.svgGroup_ = null;
@@ -218,15 +232,13 @@ Blockly.FlyoutButton.prototype.dispose = function() {
 /**
  * Do something when the button is clicked.
  * @param {!Event} e Mouse up event.
+ * @private
  */
-Blockly.FlyoutButton.prototype.onMouseUp = function(e) {
-  // Don't scroll the page.
-  e.preventDefault();
-  // Don't propagate mousewheel event (zooming).
-  e.stopPropagation();
-  // Stop binding to mouseup and mousemove events--flyout mouseup would normally
-  // do this, but we're skipping that.
-  Blockly.Flyout.terminateDrag_();
+Blockly.FlyoutButton.prototype.onMouseUp_ = function(e) {
+  var gesture = this.targetWorkspace_.getGesture(e);
+  if (gesture) {
+    gesture.cancel();
+  }
 
   // Call the callback registered to this button.
   if (this.callback_) {

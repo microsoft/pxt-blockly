@@ -28,6 +28,10 @@ goog.provide('Blockly.inject');
 
 goog.require('Blockly.BlockDragSurfaceSvg');
 goog.require('Blockly.Css');
+goog.require('Blockly.Colours');
+goog.require('Blockly.constants');
+goog.require('Blockly.DropDownDiv');
+goog.require('Blockly.Grid');
 goog.require('Blockly.Options');
 goog.require('Blockly.PXTOptions');
 goog.require('Blockly.WorkspaceSvg');
@@ -149,6 +153,51 @@ Blockly.createDom_ = function(container, options) {
       {'in': 'SourceGraphic', 'in2': 'specOut', 'operator': 'arithmetic',
        'k1': 0, 'k2': 1, 'k3': 1, 'k4': 0}, embossFilter);
   options.embossFilterId = embossFilter.id;
+
+  // Using a dilate distorts the block shape.
+  // Instead use a gaussian blur, and then set all alpha to 1 with a transfer.
+  var stackGlowFilter = Blockly.utils.createSvgElement('filter',
+      {'id': 'blocklyStackGlowFilter',
+        'height': '160%', 'width': '180%', y: '-30%', x: '-40%'}, defs);
+  options.stackGlowBlur = Blockly.utils.createSvgElement('feGaussianBlur',
+      {'in': 'SourceGraphic',
+      'stdDeviation': Blockly.STACK_GLOW_RADIUS}, stackGlowFilter);
+  // Set all gaussian blur pixels to 1 opacity before applying flood
+  var componentTransfer = Blockly.utils.createSvgElement('feComponentTransfer', {'result': 'outBlur'}, stackGlowFilter);
+  Blockly.utils.createSvgElement('feFuncA',
+      {'type': 'table', 'tableValues': '0' + goog.string.repeat(' 1', 16)}, componentTransfer);
+  // Color the highlight
+  Blockly.utils.createSvgElement('feFlood',
+      {'flood-color': Blockly.Colours.stackGlow,
+       'flood-opacity': Blockly.Colours.stackGlowOpacity, 'result': 'outColor'}, stackGlowFilter);
+  Blockly.utils.createSvgElement('feComposite',
+      {'in': 'outColor', 'in2': 'outBlur',
+       'operator': 'in', 'result': 'outGlow'}, stackGlowFilter);
+  Blockly.utils.createSvgElement('feComposite',
+      {'in': 'SourceGraphic', 'in2': 'outGlow', 'operator': 'over'}, stackGlowFilter);
+
+  // Filter for replacement marker
+  var replacementGlowFilter = Blockly.utils.createSvgElement('filter',
+      {'id': 'blocklyReplacementGlowFilter',
+        'height': '160%', 'width': '180%', y: '-30%', x: '-40%'}, defs);
+  Blockly.utils.createSvgElement('feGaussianBlur',
+      {'in': 'SourceGraphic',
+      'stdDeviation': Blockly.REPLACEMENT_GLOW_RADIUS}, replacementGlowFilter);
+  // Set all gaussian blur pixels to 1 opacity before applying flood
+  var componentTransfer = Blockly.utils.createSvgElement('feComponentTransfer',
+      {'result': 'outBlur'}, replacementGlowFilter);
+  Blockly.utils.createSvgElement('feFuncA',
+      {'type': 'table', 'tableValues': '0' + goog.string.repeat(' 1', 16)}, componentTransfer);
+  // Color the highlight
+  Blockly.utils.createSvgElement('feFlood',
+      {'flood-color': Blockly.Colours.replacementGlow,
+       'flood-opacity': Blockly.Colours.replacementGlowOpacity, 'result': 'outColor'}, replacementGlowFilter);
+  Blockly.utils.createSvgElement('feComposite',
+      {'in': 'outColor', 'in2': 'outBlur',
+       'operator': 'in', 'result': 'outGlow'}, replacementGlowFilter);
+  Blockly.utils.createSvgElement('feComposite',
+      {'in': 'SourceGraphic', 'in2': 'outGlow', 'operator': 'over'}, replacementGlowFilter);
+
   /*
     <pattern id="blocklyDisabledPattern837493" patternUnits="userSpaceOnUse"
              width="10" height="10">
@@ -165,27 +214,8 @@ Blockly.createDom_ = function(container, options) {
   Blockly.utils.createSvgElement('path',
       {'d': 'M 0 0 L 10 10 M 10 0 L 0 10', 'stroke': '#cc0'}, disabledPattern);
   options.disabledPatternId = disabledPattern.id;
-  /*
-    <pattern id="blocklyGridPattern837493" patternUnits="userSpaceOnUse">
-      <rect stroke="#888" />
-      <rect stroke="#888" />
-    </pattern>
-  */
-  var gridPattern = Blockly.utils.createSvgElement('pattern',
-      {'id': 'blocklyGridPattern' + rnd,
-       'patternUnits': 'userSpaceOnUse'}, defs);
-  if (options.gridOptions['length'] > 0 && options.gridOptions['spacing'] > 0) {
-    Blockly.utils.createSvgElement('line',
-        {'stroke': options.gridOptions['colour']},
-        gridPattern);
-    if (options.gridOptions['length'] > 1) {
-      Blockly.utils.createSvgElement('line',
-          {'stroke': options.gridOptions['colour']},
-          gridPattern);
-    }
-    // x1, y1, x1, x2 properties will be set later in updateGridPattern_.
-  }
-  options.gridPattern = gridPattern;
+
+  options.gridPattern = Blockly.Grid.createDom(rnd, options.gridOptions, defs);
   return svg;
 };
 
@@ -218,7 +248,7 @@ Blockly.createMainWorkspace_ = function(svg, options, blockDragSurface, workspac
 
   if (!options.readOnly && !options.hasScrollbars) {
     var workspaceChanged = function() {
-      if (Blockly.dragMode_ == Blockly.DRAG_NONE) {
+      if (!mainWorkspace.isDragging()) {
         var metrics = mainWorkspace.getMetrics();
         var edgeLeft = metrics.viewLeft + metrics.absoluteLeft;
         var edgeTop = metrics.viewTop + metrics.absoluteTop;
@@ -267,6 +297,7 @@ Blockly.createMainWorkspace_ = function(svg, options, blockDragSurface, workspac
   // The SVG is now fully assembled.
   Blockly.svgResize(mainWorkspace);
   Blockly.WidgetDiv.createDom();
+  Blockly.DropDownDiv.createDom();
   Blockly.Tooltip.createDom();
   return mainWorkspace;
 };
@@ -306,12 +337,19 @@ Blockly.init_ = function(mainWorkspace) {
       mainWorkspace.flyout_.init(mainWorkspace);
       mainWorkspace.flyout_.show(options.languageTree.childNodes);
       mainWorkspace.flyout_.scrollToStart();
-      // Translate the workspace sideways to avoid the fixed flyout.
-      mainWorkspace.scrollX = mainWorkspace.flyout_.width_;
-      if (options.toolboxPosition == Blockly.TOOLBOX_AT_RIGHT) {
-        mainWorkspace.scrollX *= -1;
+      // Translate the workspace to avoid the fixed flyout.
+      if (options.horizontalLayout) {
+        mainWorkspace.scrollY = mainWorkspace.flyout_.height_;
+        if (options.toolboxPosition == Blockly.TOOLBOX_AT_BOTTOM) {
+          mainWorkspace.scrollY *= -1;
+        }
+      } else {
+        mainWorkspace.scrollX = mainWorkspace.flyout_.width_;
+        if (options.toolboxPosition == Blockly.TOOLBOX_AT_RIGHT) {
+          mainWorkspace.scrollX *= -1;
+        }
       }
-      mainWorkspace.translate(mainWorkspace.scrollX, 0);
+      mainWorkspace.translate(mainWorkspace.scrollX, mainWorkspace.scrollY);
     }
   }
 
@@ -347,7 +385,7 @@ Blockly.inject.bindDocumentEvents_ = function() {
     // Don't use bindEvent_ for document's mouseup since that would create a
     // corresponding touch handler that would squelch the ability to interact
     // with non-Blockly elements.
-    document.addEventListener('mouseup', Blockly.onMouseUp_, false);
+    // ?? document.addEventListener('mouseup', Blockly.onMouseUp_, false);
     // Some iPad versions don't fire resize after portrait to landscape change.
     if (goog.userAgent.IPAD) {
       Blockly.bindEventWithChecks_(window, 'orientationchange', document,
@@ -367,15 +405,16 @@ Blockly.inject.bindDocumentEvents_ = function() {
  * @private
  */
 Blockly.inject.loadSounds_ = function(pathToMedia, workspace) {
-  workspace.loadAudio_(
+  var audioMgr = workspace.getAudioManager();
+  audioMgr.load(
       [pathToMedia + 'click.mp3',
        pathToMedia + 'click.wav',
        pathToMedia + 'click.ogg'], 'click');
-  workspace.loadAudio_(
+  audioMgr.load(
       [pathToMedia + 'disconnect.wav',
        pathToMedia + 'disconnect.mp3',
        pathToMedia + 'disconnect.ogg'], 'disconnect');
-  workspace.loadAudio_(
+  audioMgr.load(
       [pathToMedia + 'delete.mp3',
        pathToMedia + 'delete.ogg',
        pathToMedia + 'delete.wav'], 'delete');
@@ -386,21 +425,18 @@ Blockly.inject.loadSounds_ = function(pathToMedia, workspace) {
     while (soundBinds.length) {
       Blockly.unbindEvent_(soundBinds.pop());
     }
-    workspace.preloadAudio_();
+    audioMgr.preload();
   };
 
-  // These are bound on mouse/touch events with Blockly.bindEventWithChecks_, so
-  // they restrict the touch identifier that will be recognized.  But this is
-  // really something that happens on a click, not a drag, so that's not
-  // necessary.
-
+  // opt_noCaptureIdentifier is true because this is an action to take on a
+  // click, not a drag.
   // Android ignores any sound not loaded as a result of a user action.
   soundBinds.push(
       Blockly.bindEventWithChecks_(document, 'mousemove', null, unbindSounds,
-          true));
+          /* opt_noCaptureIdentifier */ true));
   soundBinds.push(
       Blockly.bindEventWithChecks_(document, 'touchstart', null, unbindSounds,
-          true));
+          /* opt_noCaptureIdentifier */ true));
 };
 
 /**
