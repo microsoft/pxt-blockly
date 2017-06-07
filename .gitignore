@@ -1,8 +1,26 @@
-node_modules
-npm-debug.log
+# OSX
 .DS_Store
+
+# NPM
+/node_modules
+npm-*
+
+# Localization / I18N
+common.pyc
 .settings
 .project
 *.pyc
 *.komodoproject
 /nbproject/private/
+
+/accessible/*
+/dist
+/msg/json/synonyms.json
+/msg/json/qqq.json
+/blockly_compressed_horizontal.js
+/blockly_compressed_vertical.js
+/blockly_uncompressed_horizontal.js
+/blockly_uncompressed_vertical.js
+/blocks_compressed_horizontal.js
+/blocks_compressed_vertical.js
+/blocks_compressed.js

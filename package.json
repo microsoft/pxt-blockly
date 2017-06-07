@@ -1,7 +1,7 @@
 {
   "name": "pxt-blockly",
   "version": "1.0.1",
-  "description": "Blockly fork for Microsoft's Programming Experience Toolkit",
+  "description": "Blockly fork for Microsoft MakeCode",
   "keywords": ["blockly", "pxt"],
   "repository": {
     "type": "git",
