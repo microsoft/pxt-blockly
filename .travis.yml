@@ -19,6 +19,7 @@ before_install:
 - npm install gulp
 - npm install gulp-tsb
 - npm install merge-stream
+- npm install gulp-bump
 # Symlink closure library
 - ln -s $(npm root)/google-closure-library ../closure-library
 before_script:
