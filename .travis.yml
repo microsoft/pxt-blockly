@@ -30,10 +30,6 @@ script:
   - set -x
   - npm test
 
-cache:
-  directories:
-    - node_modules
-
 after_script:
 - |
   # RELEASE_BRANCHES and NPM_ACCESS_TOKEN defined in Travis settings panel
