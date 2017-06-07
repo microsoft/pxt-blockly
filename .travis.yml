@@ -1,4 +1,7 @@
 language: node_js
+node_js:
+- "4"
+- "stable"
 matrix:
   include: 
     - os: linux
@@ -12,20 +15,17 @@ matrix:
     - os: osx
       node_js: stable
       osx_image: xcode8.3
-
 before_install:
-- npm install
 - npm install google-closure-library
 - npm install webdriverio
+- npm install gulp
 # Symlink closure library
 - ln -s $(npm root)/google-closure-library ../closure-library
-
 before_script:
   - export DISPLAY=:99.0
   - if [ "${TRAVIS_OS_NAME}" == "linux" ]; then ( scripts/setup_linux_env.sh  ) fi
   - if [ "${TRAVIS_OS_NAME}" == "osx" ]; then ( scripts/setup_osx_env.sh ) fi
   - sleep 2 
-
 script:
   - set -x
   - npm test
