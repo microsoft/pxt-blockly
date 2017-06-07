@@ -18,7 +18,10 @@ matrix:
 before_install:
 - npm install google-closure-library
 - npm install webdriverio
+- npm install typescript
 - npm install gulp
+- npm install gulp-tsb
+- npm install merge-stream
 # Symlink closure library
 - ln -s $(npm root)/google-closure-library ../closure-library
 before_script:
