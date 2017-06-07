@@ -320,9 +320,6 @@ Blockly.Workspace.prototype.renameVariableById = function(id, newName) {
  * @return {?Blockly.VariableModel} The newly created variable.
  */
 Blockly.Workspace.prototype.createVariable = function(name, opt_type, opt_id) {
-  if (name.toLowerCase() == Blockly.Variables.noVariableText()) {
-    return;
-  }
   return this.variableMap_.createVariable(name, opt_type, opt_id);
 };
 
