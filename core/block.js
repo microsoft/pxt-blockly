@@ -69,7 +69,7 @@ Blockly.Block = function(workspace, prototypeName, opt_id) {
   /** @type {!Array.<!Blockly.Input>} */
   this.inputList = [];
   /** @type {boolean|undefined} */
-  this.inputsInline = false;
+  this.inputsInline = true;
   /** @type {boolean} */
   this.disabled = false;
   /** @type {string|!Function} */
@@ -181,6 +181,20 @@ Blockly.Block = function(workspace, prototypeName, opt_id) {
   if (goog.isFunction(this.onchange)) {
     this.setOnChange(this.onchange);
   }
+};
+
+/**
+ * Obtain a newly created block.
+ * @param {!Blockly.Workspace} workspace The block's workspace.
+ * @param {?string} prototypeName Name of the language object containing
+ *     type-specific functions for this block.
+ * @return {!Blockly.Block} The created block.
+ * @deprecated December 2015
+ */
+Blockly.Block.obtain = function(workspace, prototypeName) {
+  console.warn('Deprecated call to Blockly.Block.obtain, ' +
+               'use workspace.newBlock instead.');
+  return workspace.newBlock(prototypeName);
 };
 
 /**
@@ -334,7 +348,7 @@ Blockly.Block.prototype.getConnections_ = function() {
 /**
  * Walks down a stack of blocks and finds the last next connection on the stack.
  * @return {Blockly.Connection} The last next connection on the stack, or null.
- * @private
+ * @package
  */
 Blockly.Block.prototype.lastConnectionInStack = function() {
   var nextConnection = this.nextConnection;
@@ -505,12 +519,15 @@ Blockly.Block.prototype.setParent = function(newParent) {
  * Includes this block in the list.
  * Includes value and block inputs, as well as any following statements.
  * Excludes any connection on an output tab or any preceding statements.
+ * @param {boolean=} opt_ignoreShadows If set, don't include shadow blocks.
  * @return {!Array.<!Blockly.Block>} Flattened array of blocks.
  */
-Blockly.Block.prototype.getDescendants = function() {
+Blockly.Block.prototype.getDescendants = function(opt_ignoreShadows) {
   var blocks = [this];
   for (var child, x = 0; child = this.childBlocks_[x]; x++) {
-    blocks.push.apply(blocks, child.getDescendants());
+    if (!opt_ignoreShadows || !child.isShadow_) {
+      blocks.push.apply(blocks, child.getDescendants(opt_ignoreShadows));
+    }
   }
   return blocks;
 };
@@ -728,7 +745,7 @@ Blockly.Block.prototype.makeColour_ = function(colour) {
 };
 
 /**
- * Change the colour of a block, and optional secondary/tertiary colours
+ * Change the colour of a block, and optional secondary/teriarty colours.
  * @param {number|string} colour HSV hue value, or #RRGGBB string.
  * @param {number|string} colourSecondary HSV hue value, or #RRGGBB string.
  * @param {number|string} colourTertiary HSV hue value, or #RRGGBB string.
@@ -1222,10 +1239,14 @@ Blockly.Block.prototype.interpolate_ = function(message, args, lastDummyAlign) {
   for (var i = 0; i < tokens.length; i++) {
     var token = tokens[i];
     if (typeof token == 'number') {
-      goog.asserts.assert(token > 0 && token <= args.length,
-          'Message index %%s out of range.', token);
-      goog.asserts.assert(!indexDup[token],
-          'Message index %%s duplicated.', token);
+      if (token <= 0 || token > args.length) {
+        throw new Error('Block \"' + this.type + '\": ' +
+            'Message index %' + token + ' out of range.');
+      }
+      if (indexDup[token]) {
+        throw new Error('Block \"' + this.type + '\": ' +
+            'Message index %' + token + ' duplicated.');
+      }
       indexDup[token] = true;
       indexCount++;
       elements.push(args[token - 1]);
@@ -1236,8 +1257,10 @@ Blockly.Block.prototype.interpolate_ = function(message, args, lastDummyAlign) {
       }
     }
   }
-  goog.asserts.assert(indexCount == args.length,
-      'block "%s": Message does not reference all %s arg(s).', this.type, args.length);
+  if(indexCount != args.length) {
+    throw new Error('Block \"' + this.type + '\": ' +
+        'Message does not reference all ' + args.length + ' arg(s).');
+  }
   // Add last dummy input if needed.
   if (elements.length && (typeof elements[elements.length - 1] == 'string' ||
       goog.string.startsWith(elements[elements.length - 1]['type'],
@@ -1579,6 +1602,7 @@ Blockly.Block.prototype.setCommentText = function(text) {
 Blockly.Block.prototype.setOutputShape = function(outputShape) {
   this.outputShape_ = outputShape;
 };
+
 /**
  * Get this block's output shape.
  * @return {?number} Value representing output shape (see constants.js).

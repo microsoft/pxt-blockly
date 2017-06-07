@@ -1,0 +1,9 @@
+# Localization / I18N
+common.pyc
+.settings
+.project
+*.pyc
+*.komodoproject
+/nbproject/private/
+
+/accessible/*

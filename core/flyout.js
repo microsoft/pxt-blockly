@@ -47,6 +47,7 @@ goog.require('goog.userAgent');
 Blockly.Flyout = function(workspaceOptions) {
   workspaceOptions.getMetrics = this.getMetrics_.bind(this);
   workspaceOptions.setMetrics = this.setMetrics_.bind(this);
+
   /**
    * @type {!Blockly.Workspace}
    * @private
@@ -139,13 +140,6 @@ Blockly.Flyout.prototype.containerVisible_ = true;
 Blockly.Flyout.prototype.CORNER_RADIUS = 8;
 
 /**
- * Number of pixels the mouse must move before a drag/scroll starts. Because the
- * drag-intention is determined when this is reached, it is larger than
- * Blockly.DRAG_RADIUS so that the drag-direction is clearer.
- */
-Blockly.Flyout.prototype.DRAG_RADIUS = 10;
-
-/**
  * Margin around the edges of the blocks in the flyout.
  * @type {number}
  * @const
@@ -186,15 +180,6 @@ Blockly.Flyout.prototype.width_ = 0;
  * @private
  */
 Blockly.Flyout.prototype.height_ = 0;
-
-/**
- * Is the flyout dragging (scrolling)?
- * DRAG_NONE - no drag is ongoing or state is undetermined.
- * DRAG_STICKY - still within the sticky drag radius.
- * DRAG_FREE - in scroll mode (never create a new block).
- * @private
- */
-Blockly.Flyout.prototype.dragMode_ = Blockly.DRAG_NONE;
 
 /**
  * Range of a drag angle from a flyout considered "dragging toward workspace".
@@ -259,6 +244,7 @@ Blockly.Flyout.prototype.init = function(targetWorkspace) {
     this.filterWrapper_ = this.filterForCapacity_.bind(this);
     this.targetWorkspace_.addChangeListener(this.filterWrapper_);
   }
+
   // Dragging the flyout up and down.
   Array.prototype.push.apply(this.eventWrappers_,
       Blockly.bindEventWithChecks_(this.svgBackground_, 'mousedown', this,
@@ -268,10 +254,11 @@ Blockly.Flyout.prototype.init = function(targetWorkspace) {
   this.workspace_.getGesture =
       this.targetWorkspace_.getGesture.bind(this.targetWorkspace_);
 
-  // Get variables from the main workspace rather than the target workspace.		
-  this.workspace_.getVariable =		
-      this.targetWorkspace_.getVariable.bind(this.targetWorkspace_);		
-  this.workspace_.getVariableById =		
+  // Get variables from the main workspace rather than the target workspace.
+  this.workspace_.getVariable =
+      this.targetWorkspace_.getVariable.bind(this.targetWorkspace_);
+
+  this.workspace_.getVariableById =
       this.targetWorkspace_.getVariableById.bind(this.targetWorkspace_);
 };
 
@@ -320,12 +307,12 @@ Blockly.Flyout.prototype.getHeight = function() {
 };
 
 /**
- * Get the workspace inside the flyout.		
- * @return {!Blockly.WorkspaceSvg} The workspace inside the flyout.		
- * @package		
- */		
-Blockly.Flyout.prototype.getWorkspace = function() {		
-  return this.workspace_;		
+ * Get the workspace inside the flyout.
+ * @return {!Blockly.WorkspaceSvg} The workspace inside the flyout.
+ * @package
+ */
+Blockly.Flyout.prototype.getWorkspace = function() {
+  return this.workspace_;
 };
 
 /**
@@ -756,9 +743,6 @@ Blockly.Flyout.prototype.show = function(xmlList) {
 
   this.listeners_.push(Blockly.bindEventWithChecks_(this.svgBackground_,
       'mouseover', this, deselectAll));
-  // pxtblockly: handle right click, don't show a context menu
-  this.listeners_.push(Blockly.bindEventWithChecks_(this.svgBackground_,
-      'contextmenu', this, Blockly.utils.noEvent));
 
   if (this.horizontalLayout_) {
     this.height_ = 0;
@@ -990,12 +974,11 @@ Blockly.Flyout.prototype.createBlock = function(originalBlock) {
   }
   if (this.autoClose) {
     this.hide();
-  } else {		
+  } else {
     this.filterForCapacity_();
   }
   return newBlock;
 };
-
 
 /**
  * Copy a block from the flyout to the workspace and position it correctly.
@@ -1083,7 +1066,7 @@ Blockly.Flyout.prototype.placeNewBlock_ = function(originBlock) {
 
 /**
  * Filter the blocks on the flyout to disable the ones that are above the
- * capacity limit. For instance, if the user may only place two more blocks on
+ * capacity limit.  For instance, if the user may only place two more blocks on
  * the workspace, an "a + b" block that has two shadow blocks would be disabled.
  * @private
  */

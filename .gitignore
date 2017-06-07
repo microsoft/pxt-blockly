@@ -9,6 +9,7 @@ npm-*
 common.pyc
 .settings
 .project
+*.orig
 *.pyc
 *.komodoproject
 /nbproject/private/

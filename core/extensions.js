@@ -442,5 +442,3 @@ Blockly.Extensions.extensionParentTooltip_ = function() {
 };
 Blockly.Extensions.register('parent_tooltip_when_inline',
     Blockly.Extensions.extensionParentTooltip_);
-
-

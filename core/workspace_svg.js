@@ -977,6 +977,7 @@ Blockly.WorkspaceSvg.prototype.renameVariable = function(oldName, newName) {
  *     variable immediately.
  * TODO: #468
  * @param {string} name The new variable's name.
+ * @return {?Blockly.VariableModel} The newly created variable.
  */
 Blockly.WorkspaceSvg.prototype.createVariable = function(name) {
   var newVar = Blockly.WorkspaceSvg.superClass_.createVariable.call(this, name);
@@ -1007,7 +1008,6 @@ Blockly.WorkspaceSvg.prototype.recordDeleteAreas = function() {
 
 /**
  * Is the mouse event over a delete area (toolbox or non-closing flyout)?
- * Opens or closes the trashcan and sets the cursor as a side effect.
  * @param {!Event} e Mouse move event.
  * @return {?number} Null if not over a delete area, or an enum representing
  *     which delete area the event is over.

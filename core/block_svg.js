@@ -561,7 +561,7 @@ Blockly.BlockSvg.prototype.setCollapsed = function(collapsed) {
   var COLLAPSED_INPUT_NAME = '_TEMP_COLLAPSED_INPUT';
   if (collapsed) {
     var icons = this.getIcons();
-    for (i = 0; i < icons.length; i++) {
+    for (var i = 0; i < icons.length; i++) {
       icons[i].setVisible(false);
     }
     var text = this.toString(Blockly.COLLAPSE_CHARS);
@@ -611,7 +611,7 @@ Blockly.BlockSvg.prototype.tab = function(start, forward) {
       }
     }
   }
-  i = list.indexOf(start);
+  var i = list.indexOf(start);
   if (i == -1) {
     // No start location, start at the beginning or end.
     i = forward ? -1 : list.length;
@@ -649,8 +649,7 @@ Blockly.BlockSvg.prototype.onMouseDown_ = function(e) {
 Blockly.BlockSvg.prototype.showHelp_ = function() {
   var url = goog.isFunction(this.helpUrl) ? this.helpUrl() : this.helpUrl;
   if (url) {
-    // @todo rewrite
-    alert(url);
+    window.open(url);
   }
 };
 
@@ -676,9 +675,13 @@ Blockly.BlockSvg.prototype.showContextMenu_ = function(e) {
         Blockly.duplicate_(block);
       }
     };
+    if (this.getDescendants().length > this.workspace.remainingCapacity()) {
+      duplicateOption.enabled = false;
+    }
     menuOptions.push(duplicateOption);
 
-    if (this.isEditable() && this.workspace.options.comments) {
+    if (this.isEditable() && !this.collapsed_ &&
+        this.workspace.options.comments) {
       // Option to add/remove a comment.
       var commentOption = {enabled: !goog.userAgent.IE};
       if (this.comment) {
@@ -693,6 +696,19 @@ Blockly.BlockSvg.prototype.showContextMenu_ = function(e) {
         };
       }
       menuOptions.push(commentOption);
+    }
+
+    if (this.workspace.options.disable) {
+      // Option to disable/enable block.
+      var disableOption = {
+        text: this.disabled ?
+            Blockly.Msg.ENABLE_BLOCK : Blockly.Msg.DISABLE_BLOCK,
+        enabled: !this.getInheritedDisabled(),
+        callback: function() {
+          block.setDisabled(!block.disabled);
+        }
+      };
+      menuOptions.push(disableOption);
     }
 
     // Option to delete this block.
@@ -757,12 +773,12 @@ Blockly.BlockSvg.prototype.moveConnections_ = function(dx, dy) {
     myConnections[i].moveBy(dx, dy);
   }
   var icons = this.getIcons();
-  for (i = 0; i < icons.length; i++) {
+  for (var i = 0; i < icons.length; i++) {
     icons[i].computeIconLocation();
   }
 
   // Recurse through all blocks attached under this one.
-  for (i = 0; i < this.childBlocks_.length; i++) {
+  for (var i = 0; i < this.childBlocks_.length; i++) {
     this.childBlocks_[i].moveConnections_(dx, dy);
   }
 };
@@ -928,13 +944,6 @@ Blockly.BlockSvg.prototype.disposeUiEffect = function() {
 };
 
 /**
- * Play some UI effects (sound) after a connection has been established.
- */
-Blockly.BlockSvg.prototype.connectionUiEffect = function() {
-  this.workspace.getAudioManager().play('click');
-};
-
-/**
  * Animate a cloned block and eventually dispose of it.
  * This is a class method, not an instance method since the original block has
  * been destroyed and is no longer accessible.
@@ -964,20 +973,127 @@ Blockly.BlockSvg.disposeUiStep_ = function(clone, rtl, start, workspaceScale) {
 };
 
 /**
- * Play some UI effects (sound, animation) when disconnecting a block.
- * No-op in scratch-blocks, which has no disconnect animation.
+ * Play some UI effects (sound, ripple) after a connection has been established.
+ */
+Blockly.BlockSvg.prototype.connectionUiEffect = function() {
+  this.workspace.getAudioManger().play('click');
+  if (this.workspace.scale < 1) {
+    return;  // Too small to care about visual effects.
+  }
+  // Determine the absolute coordinates of the inferior block.
+  var xy = this.workspace.getSvgXY(/** @type {!Element} */ (this.svgGroup_));
+  // Offset the coordinates based on the two connection types, fix scale.
+  if (this.outputConnection) {
+    xy.x += (this.RTL ? 3 : -3) * this.workspace.scale;
+    xy.y += 13 * this.workspace.scale;
+  } else if (this.previousConnection) {
+    xy.x += (this.RTL ? -23 : 23) * this.workspace.scale;
+    xy.y += 3 * this.workspace.scale;
+  }
+  var ripple = Blockly.utils.createSvgElement('circle',
+      {'cx': xy.x, 'cy': xy.y, 'r': 0, 'fill': 'none',
+       'stroke': '#888', 'stroke-width': 10},
+      this.workspace.getParentSvg());
+  // Start the animation.
+  Blockly.BlockSvg.connectionUiStep_(ripple, new Date, this.workspace.scale);
+};
+
+/**
+ * Expand a ripple around a connection.
+ * @param {!Element} ripple Element to animate.
+ * @param {!Date} start Date of animation's start.
+ * @param {number} workspaceScale Scale of workspace.
  * @private
  */
+Blockly.BlockSvg.connectionUiStep_ = function(ripple, start, workspaceScale) {
+  var ms = new Date - start;
+  var percent = ms / 150;
+  if (percent > 1) {
+    goog.dom.removeNode(ripple);
+  } else {
+    ripple.setAttribute('r', percent * 25 * workspaceScale);
+    ripple.style.opacity = 1 - percent;
+    var closure = function() {
+      Blockly.BlockSvg.connectionUiStep_(ripple, start, workspaceScale);
+    };
+    Blockly.BlockSvg.disconnectUiStop_.pid_ = setTimeout(closure, 10);
+  }
+};
+
+/**
+ * Play some UI effects (sound, animation) when disconnecting a block.
+ */
 Blockly.BlockSvg.prototype.disconnectUiEffect = function() {
+  this.workspace.getAudioManager().play('disconnect');
+  if (this.workspace.scale < 1) {
+    return;  // Too small to care about visual effects.
+  }
+  // Horizontal distance for bottom of block to wiggle.
+  var DISPLACEMENT = 10;
+  // Scale magnitude of skew to height of block.
+  var height = this.getHeightWidth().height;
+  var magnitude = Math.atan(DISPLACEMENT / height) / Math.PI * 180;
+  if (!this.RTL) {
+    magnitude *= -1;
+  }
+  // Start the animation.
+  Blockly.BlockSvg.disconnectUiStep_(this.svgGroup_, magnitude, new Date);
+};
+
+/**
+ * Animate a brief wiggle of a disconnected block.
+ * @param {!Element} group SVG element to animate.
+ * @param {number} magnitude Maximum degrees skew (reversed for RTL).
+ * @param {!Date} start Date of animation's start.
+ * @private
+ */
+Blockly.BlockSvg.disconnectUiStep_ = function(group, magnitude, start) {
+  var DURATION = 200;  // Milliseconds.
+  var WIGGLES = 3;  // Half oscillations.
+
+  var ms = new Date - start;
+  var percent = ms / DURATION;
+
+  if (percent > 1) {
+    group.skew_ = '';
+  } else {
+    var skew = Math.round(Math.sin(percent * Math.PI * WIGGLES) *
+        (1 - percent) * magnitude);
+    group.skew_ = 'skewX(' + skew + ')';
+    var closure = function() {
+      Blockly.BlockSvg.disconnectUiStep_(group, magnitude, start);
+    };
+    Blockly.BlockSvg.disconnectUiStop_.group = group;
+    Blockly.BlockSvg.disconnectUiStop_.pid = setTimeout(closure, 10);
+  }
+  group.setAttribute('transform', group.translate_ + group.skew_);
 };
 
 /**
  * Stop the disconnect UI animation immediately.
- * No-op in scratch-blocks, which has no disconnect animation.
  * @private
  */
 Blockly.BlockSvg.disconnectUiStop_ = function() {
+  if (Blockly.BlockSvg.disconnectUiStop_.group) {
+    clearTimeout(Blockly.BlockSvg.disconnectUiStop_.pid);
+    var group = Blockly.BlockSvg.disconnectUiStop_.group;
+    group.skew_ = '';
+    group.setAttribute('transform', group.translate_);
+    Blockly.BlockSvg.disconnectUiStop_.group = null;
+  }
 };
+
+/**
+ * PID of disconnect UI animation.  There can only be one at a time.
+ * @type {number}
+ */
+Blockly.BlockSvg.disconnectUiStop_.pid = 0;
+
+/**
+ * SVG group of wobbling block.  There can only be one at a time.
+ * @type {Element}
+ */
+Blockly.BlockSvg.disconnectUiStop_.group = null;
 
 /**
  * Enable or disable a block.
@@ -1077,6 +1193,19 @@ Blockly.BlockSvg.prototype.setWarningText = function(text, opt_id) {
   }
   if (this.isInFlyout) {
     text = null;
+  }
+
+  // Bubble up to add a warning on top-most collapsed block.
+  var parent = this.getSurroundParent();
+  var collapsedParent = null;
+  while (parent) {
+    if (parent.isCollapsed()) {
+      collapsedParent = parent;
+    }
+    parent = parent.getSurroundParent();
+  }
+  if (collapsedParent) {
+    collapsedParent.setWarningText(text, 'collapsed ' + this.id + ' ' + id);
   }
 
   var changedState = false;

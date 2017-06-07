@@ -121,7 +121,7 @@ Blockly.Workspace.SCAN_ANGLE = 3;
 
 /**
  * Add a block to the list of top blocks.
- * @param {!Blockly.Block} block Block to remove.
+ * @param {!Blockly.Block} block Block to add.
  */
 Blockly.Workspace.prototype.addTopBlock = function(block) {
   this.topBlocks_.push(block);
@@ -320,6 +320,9 @@ Blockly.Workspace.prototype.renameVariableById = function(id, newName) {
  * @return {?Blockly.VariableModel} The newly created variable.
  */
 Blockly.Workspace.prototype.createVariable = function(name, opt_type, opt_id) {
+  if (name.toLowerCase() == Blockly.Variables.noVariableText()) {
+    return;
+  }
   return this.variableMap_.createVariable(name, opt_type, opt_id);
 };
 
@@ -566,7 +569,20 @@ Blockly.Workspace.prototype.fireChangeListener = function(event) {
  */
 Blockly.Workspace.prototype.getBlockById = function(id) {
   var block = this.blockDB_[id];
+  // TODO: check this:
+  if (!block && this.getFlyout() && this.getFlyout().getWorkspace()) {
+    block = this.getFlyout().getWorkspace().blockDB_[id];
+  }
   return block || null;
+};
+
+/**
+ * Getter for the flyout associated with this workspace.  This is null in a
+ * non-rendered workspace, but may be overriden by subclasses.
+ * @return {Blockly.Flyout} The flyout on this workspace.
+ */
+Blockly.Workspace.prototype.getFlyout = function() {
+  return null;
 };
 
 /**

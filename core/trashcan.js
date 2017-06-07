@@ -26,6 +26,7 @@
 
 goog.provide('Blockly.Trashcan');
 
+goog.require('goog.Timer');
 goog.require('goog.dom');
 goog.require('goog.math');
 goog.require('goog.math.Rect');
@@ -221,7 +222,7 @@ Blockly.Trashcan.prototype.dispose = function() {
   }
   this.svgLid_ = null;
   this.workspace_ = null;
-  clearTimeout(this.lidTask_);
+  goog.Timer.clear(this.lidTask_);
 };
 
 /**
@@ -286,7 +287,7 @@ Blockly.Trashcan.prototype.setOpen_ = function(state) {
   if (this.isOpen == state) {
     return;
   }
-  clearTimeout(this.lidTask_);
+  goog.Timer.clear(this.lidTask_);
   this.isOpen = state;
   this.animateLid_();
 };
@@ -306,7 +307,7 @@ Blockly.Trashcan.prototype.animateLid_ = function() {
   var opacity = goog.math.lerp(0.4, 0.8, this.lidOpen_);
   this.svgGroup_.style.opacity = opacity;
   if (this.lidOpen_ > 0 && this.lidOpen_ < 1) {
-    this.lidTask_ = setTimeout(this.animateLid_.bind(this), 20);
+    this.lidTask_ = goog.Timer.callOnce(this.animateLid_, 20, this);
   }
 };
 
