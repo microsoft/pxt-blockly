@@ -50,7 +50,7 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
       "text": ""
     }],
     "output": "String",
-    "outputShape": Blockly.OUTPUT_SHAPE_SQUARE,
+    "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
     "colour": Blockly.Colours.textField,
     "helpUrl": "%{BKY_TEXT_TEXT_HELPURL}",
     "tooltip": "%{BKY_TEXT_TEXT_TOOLTIP}",
