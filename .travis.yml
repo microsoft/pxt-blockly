@@ -14,8 +14,7 @@ matrix:
       osx_image: xcode8.3
 
 before_install:
-- npm install google-closure-library
-- npm install webdriverio
+- npm install
 # Symlink closure library
 - ln -s $(npm root)/google-closure-library ../closure-library
 
