@@ -30,7 +30,6 @@ before_script:
   - sleep 2 
 script:
   - set -x
-  - npm test
 
 after_script:
 - |
