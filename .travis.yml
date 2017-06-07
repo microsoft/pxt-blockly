@@ -30,6 +30,9 @@ before_script:
   - sleep 2 
 script:
   - set -x
+cache:
+  directories:
+  - node_modules
 
 after_script:
 - |
@@ -40,8 +43,8 @@ after_script:
   if [[
     # Execute after all jobs finish successfully
     $exitCode = 0 &&
-    # Only release on release branches
-    $RELEASE_BRANCHES =~ $TRAVIS_BRANCH &&
+    # Only release on tagged branches
+    $TRAVIS_TAG &&
     # Don't release on PR builds
     $TRAVIS_PULL_REQUEST = "false"
   ]]; then
