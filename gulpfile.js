@@ -36,7 +36,7 @@ gulp.task('watch', ['compile'], function() {
 
 gulp.task("python-build", function(cb){
 	console.info('Starting python build');
-	var python = spawn('python', ['build.py'], {stdio: 'inherit'});
+	var python = spawn('python', ['build.py', 'core'], {stdio: 'inherit'});
 	python.on('close', function (code) {
 		console.log('python exited with code ' + code);
 		cb(code);
