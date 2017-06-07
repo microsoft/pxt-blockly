@@ -34,9 +34,18 @@ gulp.task('watch', ['compile'], function() {
 	gulp.watch('ts/**/*.ts', ['compile-without-clean']);
 });
 
-gulp.task("python-build", function(cb){
+gulp.task("python-build-core", function(cb){
 	console.info('Starting python build');
 	var python = spawn('python', ['build.py', 'core'], {stdio: 'inherit'});
+	python.on('close', function (code) {
+		console.log('python exited with code ' + code);
+		cb(code);
+	});
+});
+
+gulp.task("python-build", function(cb){
+	console.info('Starting python build');
+	var python = spawn('python', ['build.py'], {stdio: 'inherit'});
 	python.on('close', function (code) {
 		console.log('python exited with code ' + code);
 		cb(code);
@@ -54,11 +63,11 @@ function pxtPublishTask() {
 	}
 }
 
-gulp.task('build', ['compile', 'python-build'], function (cb) {
+gulp.task('build', ['compile', 'python-build-core'], function (cb) {
 	cb(0);	
 });
 
-gulp.task('publish', ['compile', 'python-build'], pxtPublishTask);
+gulp.task('publish', ['compile', 'python-build-core'], pxtPublishTask);
 
 gulp.task('release', ['compile', 'python-build'], function (done) {
 	spawn('npm', ['publish'], { stdio: 'inherit' }).on('close', done);
