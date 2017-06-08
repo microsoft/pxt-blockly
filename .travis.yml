@@ -46,7 +46,7 @@ after_script:
     # Only release on tagged branches
     #$TRAVIS_TAG &&
     # Don't release on PR builds
-    #$TRAVIS_PULL_REQUEST = "false"
+    $TRAVIS_PULL_REQUEST = "false"
   ]]; then
     # Authenticate NPM
     echo "//registry.npmjs.org/:_authToken=\${NPM_ACCESS_TOKEN}" > .npmrc
