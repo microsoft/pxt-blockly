@@ -21,6 +21,7 @@ before_install:
 - npm install merge-stream
 - npm install gulp-bump
 - npm install rimraf
+- npm install webpack
 # Symlink closure library
 - ln -s $(npm root)/google-closure-library ../closure-library
 before_script:
