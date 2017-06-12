@@ -327,10 +327,10 @@ Blockly.Msg.TEXT_CHARAT_FIRST = "nimm ersten";
 Blockly.Msg.TEXT_CHARAT_FROM_END = "nimm von hinten";
 Blockly.Msg.TEXT_CHARAT_FROM_START = "nimm";
 Blockly.Msg.TEXT_CHARAT_HELPURL = "http://publib.boulder.ibm.com/infocenter/lnxpcomp/v8v101/index.jsp?topic=%2Fcom.ibm.xlcpp8l.doc%2Flanguage%2Fref%2Farsubex.htm";
-Blockly.Msg.TEXT_CHARAT_INPUT_INTEXT = "vom Text";
 Blockly.Msg.TEXT_CHARAT_LAST = "nimm letzten";
 Blockly.Msg.TEXT_CHARAT_RANDOM = "nimm zufälligen";
 Blockly.Msg.TEXT_CHARAT_TAIL = "Buchstaben";
+Blockly.Msg.TEXT_CHARAT_TITLE = "in text %1 %2";  // untranslated
 Blockly.Msg.TEXT_CHARAT_TOOLTIP = "Extrahiert einen Buchstaben von einer bestimmten Position.";
 Blockly.Msg.TEXT_COUNT_HELPURL = "https://github.com/google/blockly/wiki/Text#counting-substrings";
 Blockly.Msg.TEXT_COUNT_MESSAGE0 = "zähle %1 in %2";
@@ -349,10 +349,9 @@ Blockly.Msg.TEXT_GET_SUBSTRING_START_FROM_START = "nimm Teil ab";
 Blockly.Msg.TEXT_GET_SUBSTRING_TAIL = "Buchstabe";
 Blockly.Msg.TEXT_GET_SUBSTRING_TOOLTIP = "Gibt den angegebenen Textabschnitt zurück.";
 Blockly.Msg.TEXT_INDEXOF_HELPURL = "http://publib.boulder.ibm.com/infocenter/lnxpcomp/v8v101/index.jsp?topic=%2Fcom.ibm.xlcpp8l.doc%2Flanguage%2Fref%2Farsubex.htm";
-Blockly.Msg.TEXT_INDEXOF_INPUT_INTEXT = "im Text";
 Blockly.Msg.TEXT_INDEXOF_OPERATOR_FIRST = "suche erstes Auftreten des Begriffs";
 Blockly.Msg.TEXT_INDEXOF_OPERATOR_LAST = "suche letztes Auftreten des Begriffs";
-Blockly.Msg.TEXT_INDEXOF_TAIL = "";
+Blockly.Msg.TEXT_INDEXOF_TITLE = "in text %1 %2 %3";  // untranslated
 Blockly.Msg.TEXT_INDEXOF_TOOLTIP = "Findet das erste / letzte Auftreten eines Suchbegriffs in einem Text.  Gibt die Position des Begriffs zurück oder %1 falls der Suchbegriff nicht gefunden wurde.";
 Blockly.Msg.TEXT_ISEMPTY_HELPURL = "https://github.com/google/blockly/wiki/Text#checking-for-empty-text";  // untranslated
 Blockly.Msg.TEXT_ISEMPTY_TITLE = "%1 ist leer";
