@@ -867,9 +867,10 @@ Blockly.WorkspaceSvg.prototype.glowStack = function(id, isGlowingStack) {
   }
   block.setGlowStack(isGlowingStack);
 };
+
 /**
  * Visually report a value associated with a block.
- * In Scratch, appears as a pop-up next to the block when a reporter block is clicked.
+ * Appears as a pop-up next to the block when a reporter block is clicked.
  * @param {?string} id ID of block to report associated value.
  * @param {?string} value String value to visually report.
  */
@@ -897,7 +898,7 @@ Blockly.WorkspaceSvg.prototype.reportValue = function(id, value) {
  * @param {!Element} xmlBlock XML block element.
  */
 Blockly.WorkspaceSvg.prototype.paste = function(xmlBlock) {
-  if (!this.rendered || xmlBlock.getElementsByTagName('block').length >= this.remainingCapacity()) {
+  if (!this.rendered) {
     return;
   }
   if (this.currentGesture_) {
@@ -906,14 +907,30 @@ Blockly.WorkspaceSvg.prototype.paste = function(xmlBlock) {
   Blockly.Events.disable();
   try {
     var block = Blockly.Xml.domToBlock(xmlBlock, this);
-    // Rerender to get around problem with IE and Edge not measuring text
-    // correctly when it is hidden.
-    if (goog.userAgent.IE || goog.userAgent.EDGE) {
-      var blocks = block.getDescendants();
-      for (var i = blocks.length - 1; i >= 0; i--) {
-        blocks[i].render(false);
+
+    var blocks = block.getDescendants();
+    for (var i = blocks.length - 1; i >= 0; i--) {
+      var descendant = blocks[i];
+
+      // Scratch-specific: Give shadow dom new IDs to prevent duplicating on paste
+      for (var j = 0; j < descendant.inputList.length; j++) {
+        var connection = descendant.inputList[j].connection;
+        if (connection) {
+          var shadowDom = connection.getShadowDom();
+          if (shadowDom) {
+            shadowDom.setAttribute('id', Blockly.utils.genUid());
+            connection.setShadowDom(shadowDom);
+          }
+        }
+      }
+
+      // Rerender to get around problem with IE and Edge not measuring text
+      // correctly when it is hidden.
+      if (goog.userAgent.IE || goog.userAgent.EDGE) {
+        descendant.render(false);
       }
     }
+
     // Move the duplicate to original position.
     var blockX = parseInt(xmlBlock.getAttribute('x'), 10);
     var blockY = parseInt(xmlBlock.getAttribute('y'), 10);
@@ -961,7 +978,7 @@ Blockly.WorkspaceSvg.prototype.paste = function(xmlBlock) {
     Blockly.Events.enable();
   }
   if (Blockly.Events.isEnabled() && !block.isShadow()) {
-    Blockly.Events.fire(new Blockly.Events.BlockCreate(block));
+    Blockly.Events.fire(new Blockly.Events.Create(block));
   }
   block.select();
 };

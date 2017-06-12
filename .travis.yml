@@ -46,7 +46,7 @@ after_script:
     # Execute after all jobs finish successfully
     $exitCode = 0 &&
     # Only release on tagged branches
-    #$TRAVIS_TAG &&
+    $TRAVIS_TAG &&
     # Don't release on PR builds
     $TRAVIS_PULL_REQUEST = "false"
   ]]; then
