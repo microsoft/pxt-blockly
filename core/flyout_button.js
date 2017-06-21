@@ -96,6 +96,23 @@ Blockly.FlyoutButton = function(workspace, targetWorkspace, xml, isLabel) {
    * @private
    */
   this.cssClass_ = xml.getAttribute('web-class') || null;
+
+  /**
+   * If specified, an icon to add to this button.
+   * @type {?string}
+   * @private
+   */
+  this.icon_ = xml.getAttribute('web-icon') || null;
+  this.iconClass_ = xml.getAttribute('web-icon-class') || null;
+  this.iconColor_ = xml.getAttribute('web-icon-color') || null;
+
+  /**
+   * If specified, a line to add underneath this button.
+   * @type {?string}
+   * @private
+   */
+  this.line_ = xml.getAttribute('web-line') || null;
+  this.lineWidth_ = xml.getAttribute('web-line-width') || null;
 };
 
 /**
@@ -157,6 +174,36 @@ Blockly.FlyoutButton.prototype.createDom = function() {
 
   this.width = svgText.getComputedTextLength() +
       2 * Blockly.FlyoutButton.MARGIN;
+
+  if (this.icon_ || this.iconClass_) {
+    var svgIcon = Blockly.utils.createSvgElement('text',
+      {'class': this.iconClass_ ? 'blocklyFlyoutLabelIcon ' + this.iconClass_ : 'blocklyFlyoutLabelIcon',
+          'x': 0, 'y': 0, 'text-anchor': 'middle'},
+      this.svgGroup_);
+    if (this.icon_) svgIcon.textContent = this.icon_;
+    if (this.iconColor_) svgIcon.setAttribute('style', 'fill: ' + this.iconColor_);
+
+    this.width += svgIcon.getComputedTextLength();
+
+    svgIcon.setAttribute('text-anchor', 'end');
+    svgIcon.setAttribute('alignment-baseline', 'central');
+    svgIcon.setAttribute('x', Blockly.FlyoutButton.MARGIN);
+    svgIcon.setAttribute('y', this.height / 2);
+  } else if (this.isLabel_) {
+    this.width = svgText.getComputedTextLength() +
+    2 * Blockly.BlockSvg.TAB_WIDTH;
+  }
+
+  if (this.line_) {
+    var svgLine = Blockly.utils.createSvgElement('line',
+      {'class': 'blocklyFlyoutLine', 'stroke-dasharray': this.line_,
+          'text-anchor': 'middle'},
+      this.svgGroup_);
+    svgLine.setAttribute('x1', 0);
+    svgLine.setAttribute('x2', this.width);
+    svgLine.setAttribute('y1', this.height);
+    svgLine.setAttribute('y2', this.height);
+  }
 
   if (!this.isLabel_) {
     shadow.setAttribute('width', this.width);
