@@ -200,7 +200,7 @@ Blockly.FlyoutButton.prototype.createDom = function() {
           'text-anchor': 'middle'},
       this.svgGroup_);
     svgLine.setAttribute('x1', 0);
-    svgLine.setAttribute('x2', this.lineWidth_ || this.width);
+    svgLine.setAttribute('x2', this.lineWidth_ != null ? this.lineWidth_ : this.width);
     svgLine.setAttribute('y1', this.height);
     svgLine.setAttribute('y2', this.height);
   }
