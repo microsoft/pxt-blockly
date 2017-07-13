@@ -1673,4 +1673,99 @@ goog.addDependency("../../third_party/closure/goog/deps.js", [], []);
 goog.addDependency("../../third_party/closure/goog/caja/string/html/htmlparser.js", ['goog.string.html', 'goog.string.html.HtmlParser', 'goog.string.html.HtmlParser.EFlags', 'goog.string.html.HtmlParser.Elements', 'goog.string.html.HtmlParser.Entities', 'goog.string.html.HtmlSaxHandler'], []);
 goog.addDependency("../../third_party/closure/goog/dojo/dom/query.js", ['goog.dom.query'], ['goog.array', 'goog.dom', 'goog.functions', 'goog.string', 'goog.userAgent']);
 goog.addDependency("../../third_party/closure/goog/dojo/dom/query_test.js", [], ['goog.dom', 'goog.dom.query', 'goog.testing.asserts', 'goog.userAgent']);
-goog.addDependency("../../third_party/closure/goog/loremipsum/text/loremipsum.js", ['goog.text.LoremIpsum'], ['go
+goog.addDependency("../../third_party/closure/goog/loremipsum/text/loremipsum.js", ['goog.text.LoremIpsum'], ['goog.array', 'goog.math', 'goog.string', 'goog.structs.Map', 'goog.structs.Set']);
+goog.addDependency("../../third_party/closure/goog/mochikit/async/deferred.js", ['goog.async.Deferred', 'goog.async.Deferred.AlreadyCalledError', 'goog.async.Deferred.CanceledError'], ['goog.Promise', 'goog.Thenable', 'goog.array', 'goog.asserts', 'goog.debug.Error']);
+goog.addDependency("../../third_party/closure/goog/mochikit/async/deferredlist.js", ['goog.async.DeferredList'], ['goog.async.Deferred']);
+goog.addDependency("../../third_party/closure/goog/svgpan/svgpan.js", ['svgpan.SvgPan'], ['goog.Disposable', 'goog.events', 'goog.events.EventType', 'goog.events.MouseWheelHandler']);
+
+// Load Blockly.
+goog.require('Blockly');
+goog.require('Blockly.Block');
+goog.require('Blockly.BlockDragSurfaceSvg');
+goog.require('Blockly.BlockDragger');
+goog.require('Blockly.BlockSvg');
+goog.require('Blockly.BlockSvg.render');
+goog.require('Blockly.Blocks');
+goog.require('Blockly.Bubble');
+goog.require('Blockly.Colours');
+goog.require('Blockly.Comment');
+goog.require('Blockly.Connection');
+goog.require('Blockly.ConnectionDB');
+goog.require('Blockly.ContextMenu');
+goog.require('Blockly.Css');
+goog.require('Blockly.DraggedConnectionManager');
+goog.require('Blockly.DropDownDiv');
+goog.require('Blockly.Events');
+goog.require('Blockly.Extensions');
+goog.require('Blockly.Field');
+goog.require('Blockly.FieldAngle');
+goog.require('Blockly.FieldCheckbox');
+goog.require('Blockly.FieldColour');
+goog.require('Blockly.FieldDate');
+goog.require('Blockly.FieldDropdown');
+goog.require('Blockly.FieldIconMenu');
+goog.require('Blockly.FieldImage');
+goog.require('Blockly.FieldLabel');
+goog.require('Blockly.FieldNumber');
+goog.require('Blockly.FieldNumberDropdown');
+goog.require('Blockly.FieldSlider');
+goog.require('Blockly.FieldTextDropdown');
+goog.require('Blockly.FieldTextInput');
+goog.require('Blockly.FieldVariable');
+goog.require('Blockly.Flyout');
+goog.require('Blockly.FlyoutButton');
+goog.require('Blockly.FlyoutDragger');
+goog.require('Blockly.Generator');
+goog.require('Blockly.Gesture');
+goog.require('Blockly.Grid');
+goog.require('Blockly.HorizontalFlyout');
+goog.require('Blockly.Icon');
+goog.require('Blockly.Input');
+goog.require('Blockly.InsertionMarkerManager');
+goog.require('Blockly.Msg');
+goog.require('Blockly.Mutator');
+goog.require('Blockly.Names');
+goog.require('Blockly.Options');
+goog.require('Blockly.PXTOptions');
+goog.require('Blockly.PXTToolbox');
+goog.require('Blockly.PXTUtils');
+goog.require('Blockly.Procedures');
+goog.require('Blockly.RenderedConnection');
+goog.require('Blockly.Scrollbar');
+goog.require('Blockly.ScrollbarPair');
+goog.require('Blockly.Toolbox');
+goog.require('Blockly.Tooltip');
+goog.require('Blockly.Touch');
+goog.require('Blockly.Trashcan');
+goog.require('Blockly.VariableMap');
+goog.require('Blockly.VariableModel');
+goog.require('Blockly.Variables');
+goog.require('Blockly.VerticalFlyout');
+goog.require('Blockly.Warning');
+goog.require('Blockly.WidgetDiv');
+goog.require('Blockly.Workspace');
+goog.require('Blockly.WorkspaceAudio');
+goog.require('Blockly.WorkspaceDragSurfaceSvg');
+goog.require('Blockly.WorkspaceDragger');
+goog.require('Blockly.WorkspaceSvg');
+goog.require('Blockly.Xml');
+goog.require('Blockly.ZoomControls');
+goog.require('Blockly.constants');
+goog.require('Blockly.inject');
+goog.require('Blockly.utils');
+
+delete this.BLOCKLY_DIR;
+delete this.BLOCKLY_BOOT;
+};
+
+if (isNodeJS) {
+  window.BLOCKLY_BOOT();
+  module.exports = Blockly;
+} else {
+  // Delete any existing Closure (e.g. Soy's nogoog_shim).
+  document.write('<script>var goog = undefined;</script>');
+  // Load fresh Closure Library.
+  document.write('<script src="' + window.BLOCKLY_DIR +
+      '/../closure-library/closure/goog/base.js"></script>');
+  document.write('<script>window.BLOCKLY_BOOT();</script>');
+}
