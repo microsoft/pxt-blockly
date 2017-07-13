@@ -55,12 +55,16 @@ Blockly.Variables.allUsedVariables = function(root) {
   if (root instanceof Blockly.Block) {
     // Root is Block.
     blocks = root.getDescendants();
-  } else if (root.getAllBlocks) {
+  } else if (root instanceof Blockly.Workspace ||
+      root instanceof Blockly.WorkspaceSvg) {
     // Root is Workspace.
     blocks = root.getAllBlocks();
   } else {
     throw 'Not Block or Workspace: ' + root;
   }
+
+  var ignorableName = Blockly.Variables.noVariableText();
+
   var variableHash = Object.create(null);
   // Iterate through every block and add each variable to the hash.
   for (var x = 0; x < blocks.length; x++) {
@@ -69,7 +73,7 @@ Blockly.Variables.allUsedVariables = function(root) {
       for (var y = 0; y < blockVariables.length; y++) {
         var varName = blockVariables[y];
         // Variable name may be null if the block is only half-built.
-        if (varName) {
+        if (varName && varName.toLowerCase() != ignorableName) {
           variableHash[varName.toLowerCase()] = varName;
         }
       }
@@ -174,6 +178,16 @@ Blockly.Variables.flyoutCategoryBlocks = function(workspace) {
     }
   }
   return xmlList;
+};
+
+/**
+ * Return the text that should be used in a field_variable or
+ * field_variable_getter when no variable exists.
+ * TODO: #572
+ * @return {string} The text to display.
+ */
+Blockly.Variables.noVariableText = function() {
+  return "No variable selected";
 };
 
 /**

@@ -399,9 +399,11 @@ Blockly.Connection.prototype.canConnectToPrevious_ = function(candidate) {
   // Complex blocks with no previous connection will not be allowed to connect
   // mid-stack.
   var sourceHasPreviousConn = this.sourceBlock_.previousConnection != null;
+
   if (isFirstStatementConnection && sourceHasPreviousConn) {
     return true;
   }
+
   if (isNextConnection ||
       (isFirstStatementConnection && !sourceHasPreviousConn)) {
     // If the candidate is the first connection in a stack, we can connect.
@@ -429,6 +431,7 @@ Blockly.Connection.prototype.canConnectToPrevious_ = function(candidate) {
  * @return {boolean} True if the connection is allowed, false otherwise.
  */
 Blockly.Connection.prototype.isConnectionAllowed = function(candidate) {
+
   // Don't consider insertion markers.
   if (candidate.sourceBlock_.isInsertionMarker()) {
     return false;

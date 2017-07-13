@@ -56,8 +56,11 @@ goog.require('goog.string');
  * @constructor
  */
 Blockly.Block = function(workspace, prototypeName, opt_id) {
+  var flyoutWorkspace = workspace && workspace.getFlyout && workspace.getFlyout() ?
+     workspace.getFlyout().getWorkspace() : null;
   /** @type {string} */
-  this.id = (opt_id && !workspace.getBlockById(opt_id)) ?
+  this.id = (opt_id && !workspace.getBlockById(opt_id) &&
+      (!flyoutWorkspace || !flyoutWorkspace.getBlockById(opt_id))) ?
       opt_id : Blockly.utils.genUid();
   workspace.blockDB_[this.id] = this;
   /** @type {Blockly.Connection} */
@@ -1129,18 +1132,7 @@ Blockly.Block.prototype.jsonInit = function(json) {
 
   // Set basic properties of block.
   if (json['colour'] !== undefined) {
-    // TODO: Consider a helper function here.
-    var rawValue = json['colour'];
-    var primary = goog.isString(rawValue) ?
-        Blockly.utils.replaceMessageReferences(rawValue) : rawValue;
-    rawValue = json['colourSecondary'];
-    var secondary = goog.isString(rawValue) ?
-        Blockly.utils.replaceMessageReferences(rawValue) : rawValue;
-    rawValue = json['colourTertiary'];
-    var tertiary = goog.isString(rawValue) ?
-        Blockly.utils.replaceMessageReferences(rawValue) : rawValue;
-
-    this.setColour(primary, secondary, tertiary);
+    this.setColourFromJson_(json);
   }
 
   // Interpolate the message blocks.
@@ -1199,6 +1191,9 @@ Blockly.Block.prototype.jsonInit = function(json) {
   if (json['outputShape'] !== undefined) {
     this.setOutputShape(json['outputShape']);
   }
+  if (json['category'] !== undefined) {
+    this.setCategory(json['category']);
+  }
 };
 
 /**
@@ -1227,6 +1222,39 @@ Blockly.Block.prototype.mixin = function(mixinObj, opt_disableCheck) {
     }
   }
   goog.mixin(this, mixinObj);
+};
+
+/**
+ * Set the colour of the block from strings or string table references.
+ * @param {string|?} primary Primary colour, which may be a string that contains
+ *     string table references.
+ * @param {string|?} secondary Secondary colour, which may be a string that
+ *     contains string table references.
+ * @param {string|?} tertiary Tertiary colour, which may be a string that
+ *     contains string table references.
+ * @private
+ */
+Blockly.Block.prototype.setColourFromRawValues_ = function(primary, secondary,
+    tertiary) {
+  primary = goog.isString(primary) ?
+      Blockly.utils.replaceMessageReferences(primary) : primary;
+  secondary = goog.isString(secondary) ?
+      Blockly.utils.replaceMessageReferences(secondary) : secondary;
+  tertiary = goog.isString(tertiary) ?
+      Blockly.utils.replaceMessageReferences(tertiary) : tertiary;
+
+  this.setColour(primary, secondary, tertiary);
+};
+
+/**
+ * Set the colour of the block from JSON, replacing message references as
+ * needed.
+ * @param {!Object} json Structured data describing the block.
+ * @private
+ */
+Blockly.Block.prototype.setColourFromJson_ = function(json) {
+  this.setColourFromRawValues_(json['colour'], json['colourSecondary'],
+      json['colourTertiary']);
 };
 
 /**

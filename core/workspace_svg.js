@@ -31,6 +31,7 @@ goog.provide('Blockly.WorkspaceSvg');
 
 // TODO(scr): Fix circular dependencies
 //goog.require('Blockly.BlockSvg');
+goog.require('Blockly.Colours');
 goog.require('Blockly.ConnectionDB');
 goog.require('Blockly.constants');
 goog.require('Blockly.DropDownDiv');
@@ -42,6 +43,7 @@ goog.require('Blockly.PXTOptions')
 goog.require('Blockly.ScrollbarPair');
 goog.require('Blockly.Touch');
 goog.require('Blockly.Trashcan');
+//goog.require('Blockly.VerticalFlyout');
 goog.require('Blockly.Workspace');
 goog.require('Blockly.WorkspaceAudio');
 goog.require('Blockly.WorkspaceDragSurfaceSvg');
@@ -99,6 +101,7 @@ Blockly.WorkspaceSvg = function(options, opt_blockDragSurface, opt_wsDragSurface
    * @private
    */
   this.audioManager_ = new Blockly.WorkspaceAudio(options.parentWorkspace);
+
   /**
    * This workspace's grid object or null.
    * @type {Blockly.Grid}
@@ -321,6 +324,18 @@ Blockly.WorkspaceSvg.prototype.getSvgXY = function(element) {
 };
 
 /**
+ * Return the position of the workspace origin relative to the injection div
+ * origin in pixels.
+ * The workspace origin is where a block would render at position (0, 0).
+ * It is not the upper left corner of the workspace SVG.
+ * @return {!goog.math.Coordinate} Offset in pixels.
+ * @package
+ */
+Blockly.WorkspaceSvg.prototype.getOriginOffsetInPixels = function() {
+  return Blockly.utils.getInjectionDivXY_(this.svgBlockCanvas_);
+};
+
+/**
  * Save resize handler data so we can delete it later in dispose.
  * @param {!Array.<!Array>} handler Data that can be passed to unbindEvent_.
  */
@@ -346,6 +361,7 @@ Blockly.WorkspaceSvg.prototype.createDom = function(opt_backgroundClass) {
    */
   this.svgGroup_ = Blockly.utils.createSvgElement('g',
       {'class': 'blocklyWorkspace'}, null);
+
   // Note that a <g> alone does not receive mouse events--it must have a
   // valid target inside it.  If no background class is specified, as in the
   // flyout, the workspace will not receive mouse events.
@@ -354,6 +370,7 @@ Blockly.WorkspaceSvg.prototype.createDom = function(opt_backgroundClass) {
     this.svgBackground_ = Blockly.utils.createSvgElement('rect',
         {'height': '100%', 'width': '100%', 'class': opt_backgroundClass},
         this.svgGroup_);
+
     if (opt_backgroundClass == 'blocklyMainBackground' && this.grid_) {
       this.svgBackground_.style.fill =
           'url(#' + this.grid_.getPatternId() + ')';
@@ -441,6 +458,7 @@ Blockly.WorkspaceSvg.prototype.dispose = function() {
     this.audioManager_.dispose();
     this.audioManager_ = null;
   }
+
   if (this.grid_) {
     this.grid_.dispose();
     this.grid_ = null;
@@ -868,6 +886,63 @@ Blockly.WorkspaceSvg.prototype.glowStack = function(id, isGlowingStack) {
 /**
  * Visually report a value associated with a block.
  * Appears as a pop-up next to the block when a reporter block is clicked.
+ * @param {?string} id ID of block to report associated value.
+ * @param {?string} value String value to visually report.
+ */
+Blockly.WorkspaceSvg.prototype.reportValue = function(id, value) {
+  var block = this.getBlockById(id);
+  if (!block) {
+    throw 'Tried to report value on block that does not exist.';
+  }
+  Blockly.DropDownDiv.hideWithoutAnimation();
+  Blockly.DropDownDiv.clearContent();
+  var contentDiv = Blockly.DropDownDiv.getContentDiv();
+  var valueReportBox = goog.dom.createElement('div');
+  valueReportBox.setAttribute('class', 'valueReportBox');
+  valueReportBox.innerHTML = Blockly.utils.encodeEntities(value);
+  contentDiv.appendChild(valueReportBox);
+  Blockly.DropDownDiv.setColour(
+    Blockly.Colours.valueReportBackground,
+    Blockly.Colours.valueReportBorder
+  );
+  Blockly.DropDownDiv.showPositionedByBlock(this, block);
+};
+
+/**
+ * Glow/unglow a block in the workspace.
+ * @param {?string} id ID of block to find.
+ * @param {boolean} isGlowingBlock Whether to glow the block.
+ */
+Blockly.WorkspaceSvg.prototype.glowBlock = function(id, isGlowingBlock) {
+  var block = null;
+  if (id) {
+    block = this.getBlockById(id);
+    if (!block) {
+      throw 'Tried to glow block that does not exist.';
+    }
+  }
+  block.setGlowBlock(isGlowingBlock);
+};
+
+/**
+ * Glow/unglow a stack in the workspace.
+ * @param {?string} id ID of block which starts the stack.
+ * @param {boolean} isGlowingStack Whether to glow the stack.
+ */
+Blockly.WorkspaceSvg.prototype.glowStack = function(id, isGlowingStack) {
+  var block = null;
+  if (id) {
+    block = this.getBlockById(id);
+    if (!block) {
+      throw 'Tried to glow stack on block that does not exist.';
+    }
+  }
+  block.setGlowStack(isGlowingStack);
+};
+
+/**
+ * Visually report a value associated with a block.
+ * In Scratch, appears as a pop-up next to the block when a reporter block is clicked.
  * @param {?string} id ID of block to report associated value.
  * @param {?string} value String value to visually report.
  */
@@ -1326,7 +1401,6 @@ Blockly.WorkspaceSvg.prototype.showContextMenu_ = function(e) {
   for (var i = 0; i < topBlocks.length; i++) {
     addDeletableBlocks(topBlocks[i]);
   }
-
   function deleteNext() {
     Blockly.Events.setGroup(eventGroup);
     var block = deleteList.shift();
@@ -1843,6 +1917,7 @@ Blockly.WorkspaceSvg.prototype.removeToolboxCategoryCallback = function(key) {
  */
 Blockly.WorkspaceSvg.prototype.getGesture = function(e) {
   var isStart = (e.type == 'mousedown' || e.type == 'touchstart');
+
   var gesture = this.currentGesture_;
   if (gesture) {
     if (isStart && gesture.hasStarted()) {
@@ -1854,6 +1929,7 @@ Blockly.WorkspaceSvg.prototype.getGesture = function(e) {
     }
     return gesture;
   }
+
   // No gesture existed on this workspace, but this looks like the start of a
   // new gesture.
   if (isStart) {
@@ -1863,6 +1939,7 @@ Blockly.WorkspaceSvg.prototype.getGesture = function(e) {
   // No gesture existed and this event couldn't be the start of a new gesture.
   return null;
 };
+
 /**
  * Clear the reference to the current gesture.
  * @package
@@ -1870,6 +1947,7 @@ Blockly.WorkspaceSvg.prototype.getGesture = function(e) {
 Blockly.WorkspaceSvg.prototype.clearGesture = function() {
   this.currentGesture_ = null;
 };
+
 /**
  * Cancel the current gesture, if one exists.
  * @package
@@ -1879,6 +1957,7 @@ Blockly.WorkspaceSvg.prototype.cancelCurrentGesture = function() {
     this.currentGesture_.cancel();
   }
 };
+
 /**
  * Get the audio manager for this workspace.
  * @return {Blockly.WorkspaceAudio} The audio manager for this workspace.
@@ -1887,6 +1966,7 @@ Blockly.WorkspaceSvg.prototype.cancelCurrentGesture = function() {
 Blockly.WorkspaceSvg.prototype.getAudioManager = function() {
   return this.audioManager_;
 };
+
 /**
  * Get the grid object for this workspace, or null if there is none.
  * @return {Blockly.Grid} The grid object for this workspace.

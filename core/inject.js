@@ -40,7 +40,6 @@ goog.require('goog.dom');
 goog.require('goog.ui.Component');
 goog.require('goog.userAgent');
 
-
 /**
  * Inject a Blockly editor into the specified container element (usually a div).
  * @param {!Element|string} container Containing element, or its ID,
@@ -60,6 +59,7 @@ Blockly.inject = function(container, opt_options) {
   var options = new Blockly.Options(opt_options || {});
   var subContainer = goog.dom.createDom('div', 'injectionDiv');
   container.appendChild(subContainer);
+
   var svg = Blockly.createDom_(subContainer, options);
 
   // Create surfaces for dragging things. These are optimizations
@@ -122,37 +122,6 @@ Blockly.createDom_ = function(container, options) {
   // instances on a page.  Browser behaviour becomes undefined otherwise.
   // https://neil.fraser.name/news/2015/11/01/
   var rnd = String(Math.random()).substring(2);
-  /*
-    <filter id="blocklyEmbossFilter837493">
-      <feGaussianBlur in="SourceAlpha" stdDeviation="1" result="blur" />
-      <feSpecularLighting in="blur" surfaceScale="1" specularConstant="0.5"
-                          specularExponent="10" lighting-color="white"
-                          result="specOut">
-        <fePointLight x="-5000" y="-10000" z="20000" />
-      </feSpecularLighting>
-      <feComposite in="specOut" in2="SourceAlpha" operator="in"
-                   result="specOut" />
-      <feComposite in="SourceGraphic" in2="specOut" operator="arithmetic"
-                   k1="0" k2="1" k3="1" k4="0" />
-    </filter>
-  */
-  var embossFilter = Blockly.utils.createSvgElement('filter',
-      {'id': 'blocklyEmbossFilter' + rnd}, defs);
-  Blockly.utils.createSvgElement('feGaussianBlur',
-      {'in': 'SourceAlpha', 'stdDeviation': 1, 'result': 'blur'}, embossFilter);
-  var feSpecularLighting = Blockly.utils.createSvgElement('feSpecularLighting',
-      {'in': 'blur', 'surfaceScale': 1, 'specularConstant': 0.5,
-       'specularExponent': 10, 'lighting-color': 'white', 'result': 'specOut'},
-      embossFilter);
-  Blockly.utils.createSvgElement('fePointLight',
-      {'x': -5000, 'y': -10000, 'z': 20000}, feSpecularLighting);
-  Blockly.utils.createSvgElement('feComposite',
-      {'in': 'specOut', 'in2': 'SourceAlpha', 'operator': 'in',
-       'result': 'specOut'}, embossFilter);
-  Blockly.utils.createSvgElement('feComposite',
-      {'in': 'SourceGraphic', 'in2': 'specOut', 'operator': 'arithmetic',
-       'k1': 0, 'k2': 1, 'k3': 1, 'k4': 0}, embossFilter);
-  options.embossFilterId = embossFilter.id;
 
   // Using a dilate distorts the block shape.
   // Instead use a gaussian blur, and then set all alpha to 1 with a transfer.
@@ -197,7 +166,6 @@ Blockly.createDom_ = function(container, options) {
        'operator': 'in', 'result': 'outGlow'}, replacementGlowFilter);
   Blockly.utils.createSvgElement('feComposite',
       {'in': 'SourceGraphic', 'in2': 'outGlow', 'operator': 'over'}, replacementGlowFilter);
-
   /*
     <pattern id="blocklyDisabledPattern837493" patternUnits="userSpaceOnUse"
              width="10" height="10">

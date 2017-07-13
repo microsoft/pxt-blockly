@@ -192,8 +192,6 @@ Blockly.onKeyDown_ = function(e) {
   } else if (e.keyCode == 8 || e.keyCode == 46) {
     // Delete or backspace.
     // Stop the browser from going back to the previous page.
-    // Do this first to prevent an error in the delete code from resulting in
-    // data loss.
     e.preventDefault();
     // Don't delete while dragging.  Jeez.
     if (Blockly.mainWorkspace.isDragging()) {

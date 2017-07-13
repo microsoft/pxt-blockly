@@ -29,6 +29,7 @@ goog.provide('Blockly.Gesture');
 
 goog.require('Blockly.BlockDragger');
 goog.require('Blockly.constants');
+goog.require('Blockly.Events');
 goog.require('Blockly.FlyoutDragger');
 goog.require('Blockly.Tooltip');
 goog.require('Blockly.Touch');
@@ -613,9 +614,13 @@ Blockly.Gesture.prototype.doBlockClick_ = function() {
       newBlock.scheduleSnapAndBump();
     }
   } else {
-    // Clicks events are on the start block, even if it was a shadow.
-    Blockly.Events.fire(
-        new Blockly.Events.Ui(this.startBlock_, 'click', undefined, undefined));
+    // A field is being edited if either the WidgetDiv or DropDownDiv is currently open.
+    // If a field is being edited, don't fire any click events.
+    var fieldEditing = Blockly.WidgetDiv.isVisible() || Blockly.DropDownDiv.isVisible();
+    if (!fieldEditing) {
+      Blockly.Events.fire(
+          new Blockly.Events.Ui(this.startBlock_, 'click', undefined, undefined));
+    }
   }
   this.bringBlockToFront_();
   Blockly.Events.setGroup(false);

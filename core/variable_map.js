@@ -26,6 +26,8 @@
 
 goog.provide('Blockly.VariableMap');
 
+goog.require('Blockly.VariableModel');
+
 /**
  * Class for a variable map.  This contains a dictionary data structure with
  * variable types as keys and lists of variables as values.  The list of
@@ -33,7 +35,7 @@ goog.provide('Blockly.VariableMap');
  * @param {!Blockly.Workspace} workspace The workspace this map belongs to.
  * @constructor
  */
- Blockly.VariableMap = function(workspace) {
+Blockly.VariableMap = function(workspace) {
  /**
    * @type {!Object<string, !Array.<Blockly.VariableModel>>}
    * A map from variable type to list of variable names.  The lists contain all

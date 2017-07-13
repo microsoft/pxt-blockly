@@ -60,16 +60,22 @@ Blockly.Workspace = function(opt_options) {
    * @private
    */
   this.listeners_ = [];
+
+  /** @type {!Array.<!Function>} */
+  this.tapListeners_ = [];
+
   /**
    * @type {!Array.<!Blockly.Events.Abstract>}
    * @private
    */
   this.undoStack_ = [];
+
   /**
    * @type {!Array.<!Blockly.Events.Abstract>}
    * @private
    */
   this.redoStack_ = [];
+
   /**
    * @type {!Object}
    * @private
@@ -197,6 +203,13 @@ Blockly.Workspace.prototype.clear = function() {
     Blockly.Events.setGroup(false);
   }
   this.variableMap_.clear();
+  // Any block with a drop-down or WidgetDiv was disposed.
+  if (Blockly.DropDownDiv) {
+    Blockly.DropDownDiv.hideWithoutAnimation();
+  }
+  if (Blockly.WidgetDiv) {
+    Blockly.WidgetDiv.hide(true);
+  }
 };
 
 /**
@@ -216,7 +229,7 @@ Blockly.Workspace.prototype.updateVariableStore = function(clear) {
     var tempVar = this.getVariable(name);
     if (tempVar) {
       varList.push({'name': tempVar.name, 'type': tempVar.type,
-          'id': tempVar.getId()});
+                    'id': tempVar.getId()});
     }
     else {
       varList.push({'name': name, 'type': null, 'id': null});
@@ -270,7 +283,6 @@ Blockly.Workspace.prototype.renameVariableInternal_ = function(variable, newName
   Blockly.Events.setGroup(false);
 };
 
-
 /**
  * Rename a variable by updating its name in the variable map. Identify the
  * variable to rename with the given name.
@@ -306,6 +318,9 @@ Blockly.Workspace.prototype.renameVariableById = function(id, newName) {
  * @return {?Blockly.VariableModel} The newly created variable.
  */
 Blockly.Workspace.prototype.createVariable = function(name, opt_type, opt_id) {
+  if (name.toLowerCase() == Blockly.Variables.noVariableText()) {
+    return;
+  }
   return this.variableMap_.createVariable(name, opt_type, opt_id);
 };
 
@@ -409,7 +424,7 @@ Blockly.Workspace.prototype.deleteVariableInternal_ = function(variable) {
  *     not present.
  * @deprecated April 2017
  */
-Blockly.Workspace.prototype.variableIndexOf = function(name) {
+Blockly.Workspace.prototype.variableIndexOf = function(/* name */) {
   console.warn(
       'Deprecated call to Blockly.Workspace.prototype.variableIndexOf');
   return -1;
@@ -543,7 +558,9 @@ Blockly.Workspace.prototype.fireChangeListener = function(event) {
       this.undoStack_.unshift();
     }
   }
-  for (var i = 0, func; func = this.listeners_[i]; i++) {
+  // Copy listeners in case a listener attaches/detaches itself.
+  var currentListeners = this.listeners_.slice();
+  for (var i = 0, func; func = currentListeners[i]; i++) {
     func(event);
   }
 };
@@ -554,7 +571,20 @@ Blockly.Workspace.prototype.fireChangeListener = function(event) {
  * @return {Blockly.Block} The sought after block or null if not found.
  */
 Blockly.Workspace.prototype.getBlockById = function(id) {
-  return this.blockDB_[id] || null;
+  var block = this.blockDB_[id];
+  if (!block && this.getFlyout() && this.getFlyout().getWorkspace()) {
+    block = this.getFlyout().getWorkspace().blockDB_[id];
+  }
+  return block || null;
+};
+
+/**
+ * Getter for the flyout associated with this workspace.  This is null in a
+ * non-rendered workspace, but may be overriden by subclasses.
+ * @return {Blockly.Flyout} The flyout on this workspace.
+ */
+Blockly.Workspace.prototype.getFlyout = function() {
+  return null;
 };
 
 /**

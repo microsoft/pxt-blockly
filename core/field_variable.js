@@ -48,6 +48,7 @@ Blockly.FieldVariable = function(varname, opt_validator) {
   Blockly.FieldVariable.superClass_.constructor.call(this,
       Blockly.FieldVariable.dropdownCreate, opt_validator);
   this.setValue(varname || '');
+  this.addArgType('variable');
 };
 goog.inherits(Blockly.FieldVariable, Blockly.FieldDropdown);
 

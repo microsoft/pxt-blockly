@@ -3,9 +3,14 @@
 /msg/*
 /core/css.js
 /tests/jsunit/*
+/tests/workspace_svg/*
+/tests/blocks/*
 /tests/generators/*
 /generators/*
 /demos/*
 /accessible/*
 /appengine/*
+/shim/*
+/dist/*
 /gh-pages/*
+/webpack.config.js

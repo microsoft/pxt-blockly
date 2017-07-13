@@ -562,7 +562,7 @@ Blockly.BlockSvg.prototype.setCollapsed = function(collapsed) {
   var COLLAPSED_INPUT_NAME = '_TEMP_COLLAPSED_INPUT';
   if (collapsed) {
     var icons = this.getIcons();
-    for (var i = 0; i < icons.length; i++) {
+    for (i = 0; i < icons.length; i++) {
       icons[i].setVisible(false);
     }
     var text = this.toString(Blockly.COLLAPSE_CHARS);
@@ -612,7 +612,7 @@ Blockly.BlockSvg.prototype.tab = function(start, forward) {
       }
     }
   }
-  var i = list.indexOf(start);
+  i = list.indexOf(start);
   if (i == -1) {
     // No start location, start at the beginning or end.
     i = forward ? -1 : list.length;
@@ -650,7 +650,8 @@ Blockly.BlockSvg.prototype.onMouseDown_ = function(e) {
 Blockly.BlockSvg.prototype.showHelp_ = function() {
   var url = goog.isFunction(this.helpUrl) ? this.helpUrl() : this.helpUrl;
   if (url) {
-    window.open(url);
+    // @todo rewrite
+    alert(url);
   }
 };
 
@@ -774,12 +775,12 @@ Blockly.BlockSvg.prototype.moveConnections_ = function(dx, dy) {
     myConnections[i].moveBy(dx, dy);
   }
   var icons = this.getIcons();
-  for (var i = 0; i < icons.length; i++) {
+  for (i = 0; i < icons.length; i++) {
     icons[i].computeIconLocation();
   }
 
   // Recurse through all blocks attached under this one.
-  for (var i = 0; i < this.childBlocks_.length; i++) {
+  for (i = 0; i < this.childBlocks_.length; i++) {
     this.childBlocks_[i].moveConnections_(dx, dy);
   }
 };
@@ -942,6 +943,13 @@ Blockly.BlockSvg.prototype.disposeUiEffect = function() {
   // Start the animation.
   Blockly.BlockSvg.disposeUiStep_(clone, this.RTL, new Date,
       this.workspace.scale);
+};
+
+/**
+ * Play some UI effects (sound) after a connection has been established.
+ */
+Blockly.BlockSvg.prototype.connectionUiEffect = function() {
+  this.workspace.getAudioManager().play('click');
 };
 
 /**
@@ -1278,10 +1286,8 @@ Blockly.BlockSvg.prototype.setHighlighted = function(highlighted) {
   if (highlighted) {
     this.svgPath_.setAttribute('filter',
         'url(#' + this.workspace.options.embossFilterId + ')');
-    this.svgPathLight_.style.display = 'none';
   } else {
     Blockly.utils.removeAttribute(this.svgPath_, 'filter');
-    delete this.svgPathLight_.style.display;
   }
 };
 
