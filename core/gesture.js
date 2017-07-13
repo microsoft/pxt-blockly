@@ -605,19 +605,17 @@ Blockly.Gesture.prototype.doFieldClick_ = function() {
 Blockly.Gesture.prototype.doBlockClick_ = function() {
   // Block click in an autoclosing flyout.
   if (this.flyout_ && this.flyout_.autoClose) {
-    if (!Blockly.Events.getGroup()) {
-      Blockly.Events.setGroup(true);
+    if (!this.targetBlock_.disabled) {
+      if (!Blockly.Events.getGroup()) {
+        Blockly.Events.setGroup(true);
+      }
+      var newBlock = this.flyout_.createBlock(this.targetBlock_);
+      newBlock.scheduleSnapAndBump();
     }
-    var newBlock = this.flyout_.createBlock(this.targetBlock_);
-    newBlock.scheduleSnapAndBump();
   } else {
-    // A field is being edited if either the WidgetDiv or DropDownDiv is currently open.
-    // If a field is being edited, don't fire any click events.
-    var fieldEditing = Blockly.WidgetDiv.isVisible() || Blockly.DropDownDiv.isVisible();
-    if (!fieldEditing) {
-      Blockly.Events.fire(
-          new Blockly.Events.Ui(this.startBlock_, 'click', undefined, undefined));
-    }
+    // Clicks events are on the start block, even if it was a shadow.
+    Blockly.Events.fire(
+        new Blockly.Events.Ui(this.startBlock_, 'click', undefined, undefined));
   }
   this.bringBlockToFront_();
   Blockly.Events.setGroup(false);
@@ -745,7 +743,8 @@ Blockly.Gesture.prototype.isBlockClick_ = function() {
 Blockly.Gesture.prototype.isFieldClick_ = function() {
   var fieldEditable = this.startField_ ?
       this.startField_.isCurrentlyEditable() : false;
-  return fieldEditable && !this.hasExceededDragRadius_ && !this.flyout_;;
+  return fieldEditable && !this.hasExceededDragRadius_ && (!this.flyout_ ||
+    !this.flyout_.autoClose);
 };
 
 /**

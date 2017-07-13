@@ -155,13 +155,6 @@ Blockly.Css.CONTENT = [
     'touch-action: none',
   '}',
 
-  '.blocklyNonSelectable {',
-    'user-select: none;',
-    '-moz-user-select: none;',
-    '-webkit-user-select: none;',
-    '-ms-user-select: none;',
-  '}',
-
   '.blocklyWidgetDiv.fieldTextInput {',
     'overflow: hidden;',
     'border: 1px solid;',
@@ -576,6 +569,10 @@ Blockly.Css.CONTENT = [
   '.blocklyFlyoutBackground {',
     'fill: $colour_flyout;',
     'fill-opacity: .8;',
+  '}',
+
+  '.blocklyTransparentBackground {',
+    'opacity: 0;',
   '}',
 
   '.blocklyMainWorkspaceScrollbar {',

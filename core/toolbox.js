@@ -172,7 +172,10 @@ Blockly.Toolbox.prototype.init = function() {
           Blockly.hideChaff(true);
         }
         Blockly.Touch.clearTouchIdentifier();  // Don't block future drags.
-      });
+      }, /*opt_noPreventDefault*/ false, /*opt_noPreventDefault*/ true);
+
+  // pxtblockly: Right clicking on the toolbox doesn't show the browser context menu
+  Blockly.bindEventWithChecks_(this.HtmlDiv, 'contextmenu', this, Blockly.utils.noEvent);
   var workspaceOptions = {
     disabledPatternId: workspace.options.disabledPatternId,
     parentWorkspace: workspace,
@@ -446,7 +449,7 @@ Blockly.Toolbox.prototype.addDeleteStyle = function() {
 };
 
 /**
- * Remove styles from the toolbox that indicate blocks will be deleted.  
+ * Remove styles from the toolbox that indicate blocks will be deleted.
  * @package
  */
 Blockly.Toolbox.prototype.removeDeleteStyle = function() {
@@ -527,9 +530,14 @@ Blockly.Toolbox.TreeControl.prototype.enterDocument = function() {
   // Add touch handler.
   if (goog.events.BrowserFeature.TOUCH_ENABLED) {
     var el = this.getElement();
-    Blockly.bindEventWithChecks_(el, goog.events.EventType.TOUCHSTART, this,
-        this.handleTouchEvent_);
+    // pxtblockly: change TOUCHSTART for TOUCHEND for better touch scrolling of the toolbox
+    Blockly.bindEventWithChecks_(el, goog.events.EventType.TOUCHEND, this,
+      this.handleTouchEvent_);
   }
+
+  // pxtblockly: Handle right click.
+  var el = this.getElement();
+  Blockly.bindEventWithChecks_(el, goog.events.EventType.CONTEXTMENU, this, Blockly.utils.noEvent);
 };
 
 /**
@@ -538,9 +546,10 @@ Blockly.Toolbox.TreeControl.prototype.enterDocument = function() {
  * @private
  */
 Blockly.Toolbox.TreeControl.prototype.handleTouchEvent_ = function(e) {
-  e.preventDefault();
+  // pxtblockly: Remove preventDefaut() to allow scrolling toolbox with touch
+  // e.preventDefault();
   var node = this.getNodeFromEvent_(e);
-  if (node && e.type === goog.events.EventType.TOUCHSTART) {
+  if (node && e.type === goog.events.EventType.TOUCHEND) {
     // Fire asynchronously since onMouseDown takes long enough that the browser
     // would fire the default mouse event before this method returns.
     setTimeout(function() {
@@ -633,18 +642,6 @@ Blockly.Toolbox.TreeControl.prototype.setSelectedItem = function(node) {
  */
 Blockly.Toolbox.TreeNode = function(toolbox, html, opt_config, opt_domHelper) {
   goog.ui.tree.TreeNode.call(this, html, opt_config, opt_domHelper);
-  if (toolbox) {
-    var resize = function() {
-      // Even though the div hasn't changed size, the visible workspace
-      // surface of the workspace has, so we may need to reposition everything.
-      Blockly.svgResize(toolbox.workspace_);
-    };
-    // Fire a resize event since the toolbox may have changed width.
-    goog.events.listen(toolbox.tree_,
-        goog.ui.tree.BaseNode.EventType.EXPAND, resize);
-    goog.events.listen(toolbox.tree_,
-        goog.ui.tree.BaseNode.EventType.COLLAPSE, resize);
-  }
 };
 goog.inherits(Blockly.Toolbox.TreeNode, goog.ui.tree.TreeNode);
 

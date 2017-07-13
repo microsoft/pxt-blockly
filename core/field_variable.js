@@ -30,6 +30,7 @@ goog.require('Blockly.FieldDropdown');
 goog.require('Blockly.Msg');
 goog.require('Blockly.VariableModel');
 goog.require('Blockly.Variables');
+goog.require('Blockly.VariableModel');
 goog.require('goog.asserts');
 goog.require('goog.string');
 
@@ -47,7 +48,6 @@ Blockly.FieldVariable = function(varname, opt_validator) {
   Blockly.FieldVariable.superClass_.constructor.call(this,
       Blockly.FieldVariable.dropdownCreate, opt_validator);
   this.setValue(varname || '');
-  this.addArgType('variable');
 };
 goog.inherits(Blockly.FieldVariable, Blockly.FieldDropdown);
 
@@ -103,15 +103,29 @@ Blockly.FieldVariable.prototype.getValue = function() {
 
 /**
  * Set the variable name.
- * @param {string} newValue New text.
+ * @param {string} value New text.
  */
-Blockly.FieldVariable.prototype.setValue = function(newValue) {
-  if (this.sourceBlock_ && Blockly.Events.isEnabled()) {
-    Blockly.Events.fire(new Blockly.Events.BlockChange(
-        this.sourceBlock_, 'field', this.name, this.value_, newValue));
+Blockly.FieldVariable.prototype.setValue = function(value) {
+  var newValue = value;
+  var newText = value;
+
+  if (this.sourceBlock_) {
+    var variable = this.sourceBlock_.workspace.getVariableById(value);
+    if (variable) {
+      newText = variable.name;
+    }
+    // TODO(marisaleung): Remove name lookup after converting all Field Variable
+    //     instances to use id instead of name.
+    else if (variable = this.sourceBlock_.workspace.getVariable(value)) {
+      newValue = variable.getId();
+    }
+    if (Blockly.Events.isEnabled()) {
+      Blockly.Events.fire(new Blockly.Events.BlockChange(
+          this.sourceBlock_, 'field', this.name, this.value_, newValue));
+    }
   }
   this.value_ = newValue;
-  this.setText(newValue);
+  this.setText(newText);
 };
 
 /**
@@ -133,7 +147,7 @@ Blockly.FieldVariable.dropdownCreate = function() {
   if (workspace) {
     // Get a copy of the list, so that adding rename and new variable options
     // doesn't modify the workspace's list.
-    var variableModelList = workspace.getVariablesOfType('');
+    variableModelList = workspace.getVariablesOfType('');
     for (var i = 0; i < variableModelList.length; i++){
       if (createSelectedVariable &&
           goog.string.caseInsensitiveEquals(variableModelList[i].name, name)) {

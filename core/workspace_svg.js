@@ -163,13 +163,13 @@ Blockly.WorkspaceSvg.prototype.scrollX = 0;
 Blockly.WorkspaceSvg.prototype.scrollY = 0;
 
 /**
- * Horizontal scroll value when scrolling started in pixel units..
+ * Horizontal scroll value when scrolling started in pixel units.
  * @type {number}
  */
 Blockly.WorkspaceSvg.prototype.startScrollX = 0;
 
 /**
- * Vertical scroll value when scrolling started in pixel units..
+ * Vertical scroll value when scrolling started in pixel units.
  * @type {number}
  */
 Blockly.WorkspaceSvg.prototype.startScrollY = 0;
@@ -376,9 +376,6 @@ Blockly.WorkspaceSvg.prototype.createDom = function(opt_backgroundClass) {
   if (!this.isFlyout) {
     Blockly.bindEventWithChecks_(this.svgGroup_, 'mousedown', this,
         this.onMouseDown_);
-    var thisWorkspace = this;
-    //Blockly.bindEvent_(this.svgGroup_, 'touchstart', null,
-    //                   function(e) {Blockly.longStart_(e, thisWorkspace);}); //TODO: Do we need this?
     if (this.options.zoomOptions && this.options.zoomOptions.wheel) {
       // Mouse-wheel.
       Blockly.bindEventWithChecks_(this.svgGroup_, 'wheel', this,
@@ -907,30 +904,14 @@ Blockly.WorkspaceSvg.prototype.paste = function(xmlBlock) {
   Blockly.Events.disable();
   try {
     var block = Blockly.Xml.domToBlock(xmlBlock, this);
-
-    var blocks = block.getDescendants();
-    for (var i = blocks.length - 1; i >= 0; i--) {
-      var descendant = blocks[i];
-
-      // Scratch-specific: Give shadow dom new IDs to prevent duplicating on paste
-      for (var j = 0; j < descendant.inputList.length; j++) {
-        var connection = descendant.inputList[j].connection;
-        if (connection) {
-          var shadowDom = connection.getShadowDom();
-          if (shadowDom) {
-            shadowDom.setAttribute('id', Blockly.utils.genUid());
-            connection.setShadowDom(shadowDom);
-          }
-        }
-      }
-
-      // Rerender to get around problem with IE and Edge not measuring text
-      // correctly when it is hidden.
-      if (goog.userAgent.IE || goog.userAgent.EDGE) {
-        descendant.render(false);
+    // Rerender to get around problem with IE and Edge not measuring text
+    // correctly when it is hidden.
+    if (goog.userAgent.IE || goog.userAgent.EDGE) {
+      var blocks = block.getDescendants();
+      for (var i = blocks.length - 1; i >= 0; i--) {
+        blocks[i].render(false);
       }
     }
-
     // Move the duplicate to original position.
     var blockX = parseInt(xmlBlock.getAttribute('x'), 10);
     var blockY = parseInt(xmlBlock.getAttribute('y'), 10);
@@ -978,9 +959,19 @@ Blockly.WorkspaceSvg.prototype.paste = function(xmlBlock) {
     Blockly.Events.enable();
   }
   if (Blockly.Events.isEnabled() && !block.isShadow()) {
-    Blockly.Events.fire(new Blockly.Events.Create(block));
+    Blockly.Events.fire(new Blockly.Events.BlockCreate(block));
   }
   block.select();
+};
+
+/**
+ * Refresh the toolbox unless there's a drag in progress.
+ * @private
+ */
+Blockly.WorkspaceSvg.prototype.refreshToolboxSelection_ = function() {
+  if (this.toolbox_ && this.toolbox_.flyout_ && !this.currentGesture_) {
+    this.toolbox_.refreshSelection();
+  }
 };
 
 /**
@@ -988,28 +979,63 @@ Blockly.WorkspaceSvg.prototype.paste = function(xmlBlock) {
  * TODO: google/blockly:#468
  * @param {string} oldName Variable to rename.
  * @param {string} newName New variable name.
+ * @package
  */
 Blockly.WorkspaceSvg.prototype.renameVariable = function(oldName, newName) {
   Blockly.WorkspaceSvg.superClass_.renameVariable.call(this, oldName, newName);
-  // Refresh the toolbox unless there's a drag in progress.
-  if (this.toolbox_ && this.toolbox_.flyout_ && !Blockly.Flyout.startFlyout_) {
-    this.toolbox_.refreshSelection();
-  }
+  this.refreshToolboxSelection_();
+};
+
+/**
+ * Rename a variable by updating its name in the variable map.  Update the
+ *     flyout to show the renamed variable immediately.
+ * @param {string} id Id of the variable to rename.
+ * @param {string} newName New variable name.
+ * @package
+ */
+Blockly.WorkspaceSvg.prototype.renameVariableById = function(id, newName) {
+  Blockly.WorkspaceSvg.superClass_.renameVariableById.call(this, id, newName);
+  this.refreshToolboxSelection_();
+};
+
+/**
+ * Delete a variable by the passed in name.   Update the flyout to show
+ *     immediately that the variable is deleted.
+ * @param {string} name Name of variable to delete.
+ * @package
+ */
+Blockly.WorkspaceSvg.prototype.deleteVariable = function(name) {
+  Blockly.WorkspaceSvg.superClass_.deleteVariable.call(this, name);
+  this.refreshToolboxSelection_();
+};
+
+/**
+ * Delete a variable by the passed in id.   Update the flyout to show
+ *     immediately that the variable is deleted.
+ * @param {string} id Id of variable to delete.
+ * @package
+ */
+Blockly.WorkspaceSvg.prototype.deleteVariableById = function(id) {
+  Blockly.WorkspaceSvg.superClass_.deleteVariableById.call(this, id);
+  this.refreshToolboxSelection_();
 };
 
 /**
  * Create a new variable with the given name.  Update the flyout to show the new
  *     variable immediately.
- * TODO: #468
  * @param {string} name The new variable's name.
+ * @param {string=} opt_type The type of the variable like 'int' or 'string'.
+ *     Does not need to be unique. Field_variable can filter variables based on
+ *     their type. This will default to '' which is a specific type.
+ * @param {string=} opt_id The unique id of the variable. This will default to
+ *     a UUID.
  * @return {?Blockly.VariableModel} The newly created variable.
+ * @package
  */
-Blockly.WorkspaceSvg.prototype.createVariable = function(name) {
-  var newVar = Blockly.WorkspaceSvg.superClass_.createVariable.call(this, name);
-  // Don't refresh the toolbox if there's a drag in progress.
-  if (this.toolbox_ && this.toolbox_.flyout_ && !this.currentGesture_) {
-    this.toolbox_.refreshSelection();
-  }
+Blockly.WorkspaceSvg.prototype.createVariable = function(name, opt_type, opt_id) {
+  var newVar = Blockly.WorkspaceSvg.superClass_.createVariable.call(this, name,
+    opt_type, opt_id);
+  this.refreshToolboxSelection_();
   return newVar;
 };
 
@@ -1116,6 +1142,7 @@ Blockly.WorkspaceSvg.prototype.onMouseWheel_ = function(e) {
   if (this.currentGesture_) {
     this.currentGesture_.cancel();
   }
+  // pxtblockly: Blockly zoom with Ctrl / Cmd + mousewheel scroll, and scroll workspace with just mousewheel scroll
   if (e.ctrlKey || e.metaKey) {
     // The vertical scroll distance that corresponds to a click of a zoom button.
     var PIXELS_PER_ZOOM_STEP = 50;
@@ -1628,6 +1655,7 @@ Blockly.WorkspaceSvg.getTopLevelWorkspaceMetrics_ = function() {
   var MARGIN = Blockly.Flyout.prototype.CORNER_RADIUS - 1;
   var viewWidth = svgSize.width - MARGIN;
   var viewHeight = svgSize.height - MARGIN;
+
   var blockBox = this.getBlocksBoundingBox();
 
   // Fix scale.

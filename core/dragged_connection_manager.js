@@ -133,7 +133,7 @@ Blockly.DraggedConnectionManager.prototype.applyConnections = function() {
   if (this.closestConnection_) {
     // Connect two blocks together.
     this.localConnection_.connect(this.closestConnection_);
-    if (this.rendered) {
+    if (this.topBlock_.rendered) {
       // Trigger a connection animation.
       // Determine which connection is inferior (lower in the source stack).
       var inferiorConnection = this.localConnection_.isSuperior() ?
@@ -204,7 +204,7 @@ Blockly.DraggedConnectionManager.prototype.addHighlighting_ = function() {
 Blockly.DraggedConnectionManager.prototype.initAvailableConnections_ = function() {
   var available = this.topBlock_.getConnections_(false);
   // Also check the last connection on this stack
-  var lastOnStack = this.topBlock_.lastConnectionInStack();
+  var lastOnStack = this.topBlock_.lastConnectionInStack_();
   if (lastOnStack && lastOnStack != this.topBlock_.nextConnection) {
     available.push(lastOnStack);
   }

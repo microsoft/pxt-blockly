@@ -184,7 +184,7 @@ Blockly.Tooltip.onMouseOver_ = function(e) {
  * @param {!Event} e Mouse event.
  * @private
  */
-Blockly.Tooltip.onMouseOut_ = function(/*e*/) {
+Blockly.Tooltip.onMouseOut_ = function(e) {
   if (Blockly.Tooltip.blocked_) {
     // Someone doesn't want us to show tooltips.
     return;

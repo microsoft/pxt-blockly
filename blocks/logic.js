@@ -87,7 +87,7 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
     "nextStatement": null,
     "colour": "%{BKY_LOGIC_HUE}",
     "helpUrl": "%{BKY_CONTROLS_IF_HELPURL}",
-    "mutator": "controls_if_mutator",
+    //"mutator": "controls_if_mutator",
     "extensions": ["controls_if_tooltip"]
   },
   // If/else block that does not use a mutator.

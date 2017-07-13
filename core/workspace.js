@@ -60,8 +60,6 @@ Blockly.Workspace = function(opt_options) {
    * @private
    */
   this.listeners_ = [];
-  /** @type {!Array.<!Function>} */
-  this.tapListeners_ = [];
   /**
    * @type {!Array.<!Blockly.Events.Abstract>}
    * @private
@@ -198,15 +196,7 @@ Blockly.Workspace.prototype.clear = function() {
   if (!existingGroup) {
     Blockly.Events.setGroup(false);
   }
-
   this.variableMap_.clear();
-  // Any block with a drop-down or WidgetDiv was disposed.
-  if (Blockly.DropDownDiv) {
-    Blockly.DropDownDiv.hideWithoutAnimation();
-  }
-  if (Blockly.WidgetDiv) {
-    Blockly.WidgetDiv.hide(true);
-  }
 };
 
 /**
@@ -245,11 +235,9 @@ Blockly.Workspace.prototype.updateVariableStore = function(clear) {
   }
 };
 
-
 /**
  * Rename a variable by updating its name in the variable map. Identify the
  * variable to rename with the given variable.
- * TODO: #468
  * @param {?Blockly.VariableModel} variable Variable to rename.
  * @param {string} newName New variable name.
  */
@@ -286,7 +274,6 @@ Blockly.Workspace.prototype.renameVariableInternal_ = function(variable, newName
 /**
  * Rename a variable by updating its name in the variable map. Identify the
  * variable to rename with the given name.
- * TODO: #468
  * @param {string} oldName Variable to rename.
  * @param {string} newName New variable name.
  */
@@ -556,9 +543,7 @@ Blockly.Workspace.prototype.fireChangeListener = function(event) {
       this.undoStack_.unshift();
     }
   }
-  // Copy listeners in case a listener attaches/detaches itself.
-  var currentListeners = this.listeners_.slice();
-  for (var i = 0, func; func = currentListeners[i]; i++) {
+  for (var i = 0, func; func = this.listeners_[i]; i++) {
     func(event);
   }
 };
@@ -569,21 +554,7 @@ Blockly.Workspace.prototype.fireChangeListener = function(event) {
  * @return {Blockly.Block} The sought after block or null if not found.
  */
 Blockly.Workspace.prototype.getBlockById = function(id) {
-  var block = this.blockDB_[id];
-  // TODO: check this:
-  if (!block && this.getFlyout() && this.getFlyout().getWorkspace()) {
-    block = this.getFlyout().getWorkspace().blockDB_[id];
-  }
-  return block || null;
-};
-
-/**
- * Getter for the flyout associated with this workspace.  This is null in a
- * non-rendered workspace, but may be overriden by subclasses.
- * @return {Blockly.Flyout} The flyout on this workspace.
- */
-Blockly.Workspace.prototype.getFlyout = function() {
-  return null;
+  return this.blockDB_[id] || null;
 };
 
 /**
