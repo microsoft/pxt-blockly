@@ -59,6 +59,8 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
     ],
     "output": "Colour",
     "colour": Blockly.Colours.textField,
+    "colourSecondary": Blockly.Colours.textField,
+    "colourTertiary": Blockly.Colours.textField,
     "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
     "helpUrl": "%{BKY_COLOUR_PICKER_HELPURL}",
     "tooltip": "%{BKY_COLOUR_PICKER_TOOLTIP}",

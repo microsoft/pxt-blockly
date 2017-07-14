@@ -1297,6 +1297,7 @@ Blockly.BlockSvg.prototype.setHighlighted = function(highlighted) {
 Blockly.BlockSvg.prototype.addSelect = function() {
   Blockly.utils.addClass(/** @type {!Element} */ (this.svgGroup_),
                     'blocklySelected');
+  if (!this.disabled) this.setGlowBlock(true);
 };
 
 /**
@@ -1305,6 +1306,7 @@ Blockly.BlockSvg.prototype.addSelect = function() {
 Blockly.BlockSvg.prototype.removeSelect = function() {
   Blockly.utils.removeClass(/** @type {!Element} */ (this.svgGroup_),
                        'blocklySelected');
+  if (!this.disabled) this.setGlowBlock(false);
 };
 
 /**

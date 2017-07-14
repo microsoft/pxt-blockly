@@ -833,7 +833,7 @@ Blockly.WorkspaceSvg.prototype.highlightBlock = function(id, opt_state) {
   if (opt_state === undefined) {
     // Unhighlight all blocks.
     for (var i = 0, block; block = this.highlightedBlocks_[i]; i++) {
-      block.setHighlighted(false);
+      block.setGlowStack(false);
     }
     this.highlightedBlocks_.length = 0;
   }
@@ -847,65 +847,8 @@ Blockly.WorkspaceSvg.prototype.highlightBlock = function(id, opt_state) {
     } else if (this.highlightedBlocks_.indexOf(block) == -1) {
       this.highlightedBlocks_.push(block);
     }
-    block.setHighlighted(state);
+    block.setGlowStack(state);
   }
-};
-
-
-/**
- * Glow/unglow a block in the workspace.
- * @param {?string} id ID of block to find.
- * @param {boolean} isGlowingBlock Whether to glow the block.
- */
-Blockly.WorkspaceSvg.prototype.glowBlock = function(id, isGlowingBlock) {
-  var block = null;
-  if (id) {
-    block = this.getBlockById(id);
-    if (!block) {
-      throw 'Tried to glow block that does not exist.';
-    }
-  }
-  block.setGlowBlock(isGlowingBlock);
-};
-/**
- * Glow/unglow a stack in the workspace.
- * @param {?string} id ID of block which starts the stack.
- * @param {boolean} isGlowingStack Whether to glow the stack.
- */
-Blockly.WorkspaceSvg.prototype.glowStack = function(id, isGlowingStack) {
-  var block = null;
-  if (id) {
-    block = this.getBlockById(id);
-    if (!block) {
-      throw 'Tried to glow stack on block that does not exist.';
-    }
-  }
-  block.setGlowStack(isGlowingStack);
-};
-
-/**
- * Visually report a value associated with a block.
- * Appears as a pop-up next to the block when a reporter block is clicked.
- * @param {?string} id ID of block to report associated value.
- * @param {?string} value String value to visually report.
- */
-Blockly.WorkspaceSvg.prototype.reportValue = function(id, value) {
-  var block = this.getBlockById(id);
-  if (!block) {
-    throw 'Tried to report value on block that does not exist.';
-  }
-  Blockly.DropDownDiv.hideWithoutAnimation();
-  Blockly.DropDownDiv.clearContent();
-  var contentDiv = Blockly.DropDownDiv.getContentDiv();
-  var valueReportBox = goog.dom.createElement('div');
-  valueReportBox.setAttribute('class', 'valueReportBox');
-  valueReportBox.innerHTML = Blockly.utils.encodeEntities(value);
-  contentDiv.appendChild(valueReportBox);
-  Blockly.DropDownDiv.setColour(
-    Blockly.Colours.valueReportBackground,
-    Blockly.Colours.valueReportBorder
-  );
-  Blockly.DropDownDiv.showPositionedByBlock(this, block);
 };
 
 /**

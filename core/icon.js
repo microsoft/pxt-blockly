@@ -47,7 +47,7 @@ Blockly.Icon.prototype.collapseHidden = true;
 /**
  * Height and width of icons.
  */
-Blockly.Icon.prototype.SIZE = 17;
+Blockly.Icon.prototype.SIZE = 25;
 
 /**
  * Bubble UI (if visible).
@@ -152,13 +152,13 @@ Blockly.Icon.prototype.renderIcon = function(cursorX) {
   }
   this.iconGroup_.setAttribute('display', 'block');
 
-  var TOP_MARGIN = 12;
+  var TOP_MARGIN = 9;
   var width = this.SIZE;
   if (this.block_.RTL) {
     cursorX -= width;
   }
   this.iconGroup_.setAttribute('transform',
-      'translate(' + cursorX + ',' + TOP_MARGIN + ')');
+      'translate(' + cursorX + ',' + TOP_MARGIN + '),scale(1.4)');
   this.computeIconLocation();
   if (this.block_.RTL) {
     cursorX -= Blockly.BlockSvg.SEP_SPACE_X;

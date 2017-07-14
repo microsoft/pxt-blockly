@@ -167,6 +167,37 @@ Blockly.createDom_ = function(container, options) {
   Blockly.utils.createSvgElement('feComposite',
       {'in': 'SourceGraphic', 'in2': 'outGlow', 'operator': 'over'}, replacementGlowFilter);
   /*
+    <filter id="blocklyEmbossFilter837493">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="1" result="blur" />
+      <feSpecularLighting in="blur" surfaceScale="1" specularConstant="0.5"
+                          specularExponent="10" lighting-color="white"
+                          result="specOut">
+        <fePointLight x="-5000" y="-10000" z="20000" />
+      </feSpecularLighting>
+      <feComposite in="specOut" in2="SourceAlpha" operator="in"
+                   result="specOut" />
+      <feComposite in="SourceGraphic" in2="specOut" operator="arithmetic"
+                   k1="0" k2="1" k3="1" k4="0" />
+    </filter>
+  */
+  var embossFilter = Blockly.utils.createSvgElement('filter',
+      {'id': 'blocklyEmbossFilter' + rnd}, defs);
+  Blockly.utils.createSvgElement('feGaussianBlur',
+      {'in': 'SourceAlpha', 'stdDeviation': 1, 'result': 'blur'}, embossFilter);
+  var feSpecularLighting = Blockly.utils.createSvgElement('feSpecularLighting',
+      {'in': 'blur', 'surfaceScale': 1, 'specularConstant': 0.5,
+       'specularExponent': 10, 'lighting-color': 'white', 'result': 'specOut'},
+      embossFilter);
+  Blockly.utils.createSvgElement('fePointLight',
+      {'x': -5000, 'y': -10000, 'z': 20000}, feSpecularLighting);
+  Blockly.utils.createSvgElement('feComposite',
+      {'in': 'specOut', 'in2': 'SourceAlpha', 'operator': 'in',
+       'result': 'specOut'}, embossFilter);
+  Blockly.utils.createSvgElement('feComposite',
+      {'in': 'SourceGraphic', 'in2': 'specOut', 'operator': 'arithmetic',
+       'k1': 0, 'k2': 1, 'k3': 1, 'k4': 0}, embossFilter);
+  options.embossFilterId = embossFilter.id;
+  /*
     <pattern id="blocklyDisabledPattern837493" patternUnits="userSpaceOnUse"
              width="10" height="10">
       <rect width="10" height="10" fill="#aaa" />

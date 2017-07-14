@@ -612,6 +612,8 @@ declare namespace Blockly {
         zoom(x: number, y: number, type: number): void;
         zoomCenter(type: number): void;
         highlightBlock(id: string): void;
+        glowBlock(id: string, state: boolean): void;
+        glowStack(id: string, state: boolean): void;
         undo(redo?: boolean): void;
         redo(): void;
         clearUndo(): void;

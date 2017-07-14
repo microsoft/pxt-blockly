@@ -355,8 +355,8 @@ Blockly.Css.CONTENT = [
   '}',
 
   '.blocklySelected>.blocklyPath {',
-     'stroke: #fc3;',
-     'stroke-width: 2px;',
+     //'stroke: #fc3;',
+     //'stroke-width: 2px;',
   '}',
 
   '.blocklySelected>.blocklyPathLight {',
@@ -465,6 +465,7 @@ Blockly.Css.CONTENT = [
   '}',
 
   '.blocklyFlyoutButtonBackground {',
+      'fill: #fff;',
       'stroke: #c6c6c6;',
   '}',
 

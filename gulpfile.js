@@ -76,7 +76,7 @@ gulp.task('build', ['compile', 'python-build-core'], function (cb) {
 	cb(0);	
 });
 
-gulp.task('publish', ['compile', 'python-build-core'], pxtPublishTask);
+gulp.task('publish', ['compile', 'python-build-all'], pxtPublishTask);
 
 gulp.task('release', ['compile', 'python-build-all'], function (done) {
 	spawn('npm', ['publish'], { stdio: 'inherit' }).on('close', done);
