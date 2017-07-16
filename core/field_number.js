@@ -335,3 +335,26 @@ Blockly.FieldNumber.prototype.onHide_ = function() {
   Blockly.DropDownDiv.content_.removeAttribute('role');
   Blockly.DropDownDiv.content_.removeAttribute('aria-haspopup');
 };
+
+/**
+ * Ensure that only a number in the correct range may be entered.
+ * @param {string} text The user's text.
+ * @return {?string} A string representing a valid number, or null if invalid.
+ */
+Blockly.FieldNumber.prototype.classValidator = function(text) {
+  if (text === null) {
+    return null;
+  }
+  text = String(text);
+  // TODO: Handle cases like 'ten', '1.203,14', etc.
+  // 'O' is sometimes mistaken for '0' by inexperienced users.
+  text = text.replace(/O/ig, '0');
+  // Strip out thousands separators.
+  text = text.replace(/,/g, '');
+  var n = parseFloat(text || 0);
+  if (isNaN(n)) {
+    // Invalid number.
+    return null;
+  }
+  return String(n);
+};

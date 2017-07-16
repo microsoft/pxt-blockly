@@ -1078,11 +1078,5 @@ Blockly.Css.CONTENT = [
     'stroke-width: 5px;',
   '}',
 
-  /* pxtblockly: Apply a faded colour to disabled blocks, so a user is still able to associate the category with the block */
-  '.blocklyDisabled>.blocklyPathDark {',
-    'display: block !important;',
-    'fill-opacity: 0.5;',
-  '}',
-
   ''
 ];
