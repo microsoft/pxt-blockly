@@ -358,3 +358,15 @@ Blockly.FieldNumber.prototype.classValidator = function(text) {
   }
   return String(n);
 };
+
+/**
+ * pxtblockly: redefined this function to simulate the
+ * old blockly behavior of calling the class validator when text
+ * is edited rather than when focus is lost. Otherwise this might
+ * return garbage values if called while text is being edited.
+ * @return {string} Current value.
+ */
+Blockly.FieldNumber.prototype.getValue = function() {
+  var value = Blockly.FieldNumber.superClass_.getValue.call(this);
+  return this.classValidator(value);
+};
