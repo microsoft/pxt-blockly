@@ -87,7 +87,7 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
     "nextStatement": null,
     "colour": "%{BKY_LOGIC_HUE}",
     "helpUrl": "%{BKY_CONTROLS_IF_HELPURL}",
-    //"mutator": "controls_if_mutator",
+    "mutator": "controls_if_mutator",
     "extensions": ["controls_if_tooltip"]
   },
   // If/else block that does not use a mutator.
@@ -347,61 +347,63 @@ Blockly.Constants.Logic.CONTROLS_IF_MUTATOR_MIXIN = {
    * @return {!Blockly.Block} Root block in mutator.
    * @this Blockly.Block
    */
-  decompose: function(workspace) {
-    var containerBlock = workspace.newBlock('controls_if_if');
-    containerBlock.initSvg();
-    var connection = containerBlock.nextConnection;
-    for (var i = 1; i <= this.elseifCount_; i++) {
-      var elseifBlock = workspace.newBlock('controls_if_elseif');
-      elseifBlock.initSvg();
-      connection.connect(elseifBlock.previousConnection);
-      connection = elseifBlock.nextConnection;
-    }
-    if (this.elseCount_) {
-      var elseBlock = workspace.newBlock('controls_if_else');
-      elseBlock.initSvg();
-      connection.connect(elseBlock.previousConnection);
-    }
-    return containerBlock;
-  },
+  // pxtblockly: Removing the cogwheel for logic blocks
+  // decompose: function(workspace) {
+  //   var containerBlock = workspace.newBlock('controls_if_if');
+  //   containerBlock.initSvg();
+  //   var connection = containerBlock.nextConnection;
+  //   for (var i = 1; i <= this.elseifCount_; i++) {
+  //     var elseifBlock = workspace.newBlock('controls_if_elseif');
+  //     elseifBlock.initSvg();
+  //     connection.connect(elseifBlock.previousConnection);
+  //     connection = elseifBlock.nextConnection;
+  //   }
+  //   if (this.elseCount_) {
+  //     var elseBlock = workspace.newBlock('controls_if_else');
+  //     elseBlock.initSvg();
+  //     connection.connect(elseBlock.previousConnection);
+  //   }
+  //   return containerBlock;
+  // },
   /**
    * Reconfigure this block based on the mutator dialog's components.
    * @param {!Blockly.Block} containerBlock Root block in mutator.
    * @this Blockly.Block
    */
-  compose: function(containerBlock) {
-    var clauseBlock = containerBlock.nextConnection.targetBlock();
-    // Count number of inputs.
-    this.elseifCount_ = 0;
-    this.elseCount_ = 0;
-    var valueConnections = [null];
-    var statementConnections = [null];
-    var elseStatementConnection = null;
-    while (clauseBlock) {
-      switch (clauseBlock.type) {
-        case 'controls_if_elseif':
-          this.elseifCount_++;
-          valueConnections.push(clauseBlock.valueConnection_);
-          statementConnections.push(clauseBlock.statementConnection_);
-          break;
-        case 'controls_if_else':
-          this.elseCount_++;
-          elseStatementConnection = clauseBlock.statementConnection_;
-          break;
-        default:
-          throw 'Unknown block type.';
-      }
-      clauseBlock = clauseBlock.nextConnection &&
-          clauseBlock.nextConnection.targetBlock();
-    }
-    this.updateShape_();
-    // Reconnect any child blocks.
-    for (var i = 1; i <= this.elseifCount_; i++) {
-      Blockly.Mutator.reconnect(valueConnections[i], this, 'IF' + i);
-      Blockly.Mutator.reconnect(statementConnections[i], this, 'DO' + i);
-    }
-    Blockly.Mutator.reconnect(elseStatementConnection, this, 'ELSE');
-  },
+  // pxtblockly: Removing the cogwheel for logic blocks
+  // compose: function(containerBlock) {
+  //   var clauseBlock = containerBlock.nextConnection.targetBlock();
+  //   // Count number of inputs.
+  //   this.elseifCount_ = 0;
+  //   this.elseCount_ = 0;
+  //   var valueConnections = [null];
+  //   var statementConnections = [null];
+  //   var elseStatementConnection = null;
+  //   while (clauseBlock) {
+  //     switch (clauseBlock.type) {
+  //       case 'controls_if_elseif':
+  //         this.elseifCount_++;
+  //         valueConnections.push(clauseBlock.valueConnection_);
+  //         statementConnections.push(clauseBlock.statementConnection_);
+  //         break;
+  //       case 'controls_if_else':
+  //         this.elseCount_++;
+  //         elseStatementConnection = clauseBlock.statementConnection_;
+  //         break;
+  //       default:
+  //         throw 'Unknown block type.';
+  //     }
+  //     clauseBlock = clauseBlock.nextConnection &&
+  //         clauseBlock.nextConnection.targetBlock();
+  //   }
+  //   this.updateShape_();
+  //   // Reconnect any child blocks.
+  //   for (var i = 1; i <= this.elseifCount_; i++) {
+  //     Blockly.Mutator.reconnect(valueConnections[i], this, 'IF' + i);
+  //     Blockly.Mutator.reconnect(statementConnections[i], this, 'DO' + i);
+  //   }
+  //   Blockly.Mutator.reconnect(elseStatementConnection, this, 'ELSE');
+  // },
   /**
    * Store pointers to any connected child blocks.
    * @param {!Blockly.Block} containerBlock Root block in mutator.
