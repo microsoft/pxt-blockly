@@ -136,7 +136,7 @@ Blockly.FieldDropdown.prototype.init = function() {
       'stroke': this.sourceBlock_.getColourTertiary(),
       'fill': this.sourceBlock_.getColour(),
       'class': 'blocklyBlockBackground',
-      'fill-opacity': this.sourceBlock_.disabled ? 0 : 1
+      'fill-opacity': 1
     }, null);
     this.fieldGroup_.insertBefore(this.box_, this.textElement_);
   }

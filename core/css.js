@@ -419,6 +419,9 @@ Blockly.Css.CONTENT = [
     'fill-opacity: .5;',
     'stroke-opacity: .5;',
   '}',
+  '.blocklyDisabled .blocklyEditableText .blocklyBlockBackground {',
+    'fill-opacity: 0.1 !important;',
+  '}',
 
   '.blocklyInsertionMarker>.blocklyPath {',
     'stroke: none;',
