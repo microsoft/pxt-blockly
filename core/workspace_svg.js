@@ -461,14 +461,6 @@ Blockly.WorkspaceSvg.prototype.createDom = function(opt_backgroundClass) {
             this.onTouchMove_);
         Blockly.bindEvent_(this.svgGroup_, goog.events.EventType.TOUCHEND, this,
             this.onTouchEnd_);
-      } else if (window.MSPointerEvent && !window.PointerEvent) {
-        // IE10 has prefixed support, pointer events
-        Blockly.bindEvent_(this.svgGroup_, "MSPointerDown", this,
-            this.onPointerStart_);
-        Blockly.bindEvent_(this.svgGroup_, "MSPointerMove", this,
-            this.onPointerMove_);
-        Blockly.bindEvent_(this.svgGroup_, "MSPointerUp", this,
-            this.onPointerEnd_);
       } else if (window.PointerEvent) {
         // Edge pointer events
         Blockly.bindEvent_(this.svgGroup_, goog.events.EventType.POINTERDOWN, this,
@@ -1333,8 +1325,7 @@ Blockly.WorkspaceSvg.prototype.onTouchEnd_ = function(e) {
  * @private
  */
 Blockly.WorkspaceSvg.prototype.onPointerStart_ = function(e) {
-  // in IE10 pointer types is defined as an enum
-  if (e.pointerType == 2 || e.pointerType == "touch") {
+  if (e.pointerType == "touch") {
     var pointerId = e.pointerId;
     // store the pointerId in the current list of pointers
     var metrics = this.getMetrics();
@@ -1366,8 +1357,7 @@ Blockly.WorkspaceSvg.prototype.onPointerStart_ = function(e) {
  * @private
  */
 Blockly.WorkspaceSvg.prototype.onPointerMove_ = function(e) {
-  // in IE10 pointer types is defined as an enum
-  if (e.pointerType == 2 || e.pointerType == "touch") {
+  if (e.pointerType == "touch") {
     var pointerId = e.pointerId;
     // Update the cache
     var metrics = this.getMetrics();
@@ -1420,21 +1410,14 @@ Blockly.WorkspaceSvg.prototype.onPointerMove_ = function(e) {
  * @private
  */
 Blockly.WorkspaceSvg.prototype.onPointerEnd_ = function(e) {
-  // in IE10 pointer types is defined as an enum
-  if (e.pointerType == 2 || e.pointerType == "touch") {
+  if (e.pointerType == "touch") {
     var pointerId = e.pointerId;
     if (this.cachedPoints[pointerId]) delete this.cachedPoints[pointerId];
     if (Object.keys(this.cachedPoints).length < 2) {
       this.cachedPoints = {};
       this.lastGestureScale_ = 0;
     }
-    //e.preventDefault();
-  } /*else if (e.pointerType == 3 || e.pointerType == "pen") {
-    // Check if the pen eraser button is clicked
-    if (e.button == 5 && e.buttons == 32) {
-      // Delete the block 
-    }
-  }*/
+  }
 }
 
 /**
