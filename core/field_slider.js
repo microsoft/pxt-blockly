@@ -44,7 +44,9 @@ var pxtblocky;
          */
         function FieldSlider(value_, opt_min, opt_max, opt_precision, opt_validator) {
             var _this = _super.call(this, String(value_), opt_validator) || this;
-            _this.setConstraints_(opt_min, opt_max, opt_precision);
+            _this.min_ = parseFloat(opt_min);
+            _this.max_ = parseFloat(opt_max);
+            _this.precision_ = parseFloat(opt_precision);
             return _this;
         }
         /**
@@ -56,6 +58,29 @@ var pxtblocky;
             if (this.max_ == Infinity || this.min_ == -Infinity) {
                 return;
             }
+            this.showSlider_();
+        };
+        /**
+         * Show the slider.
+         * @private
+         */
+        FieldSlider.prototype.showSlider_ = function () {
+            // If there is an existing drop-down someone else owns, hide it immediately
+            // and clear it.
+            Blockly.DropDownDiv.hideWithoutAnimation();
+            Blockly.DropDownDiv.clearContent();
+            var contentDiv = Blockly.DropDownDiv.getContentDiv();
+            // Accessibility properties
+            contentDiv.setAttribute('role', 'menu');
+            contentDiv.setAttribute('aria-haspopup', 'true');
+            this.addSlider_(contentDiv);
+            // Set colour and size of drop-down
+            Blockly.DropDownDiv.setColour(Blockly.Colours.numPadBackground, Blockly.Colours.numPadBorder);
+            contentDiv.style.width = FieldSlider.SLIDER_WIDTH + 'px';
+            this.position_();
+        };
+        ;
+        FieldSlider.prototype.addSlider_ = function (contentDiv) {
             var slider = new goog.ui.Slider();
             /** @type {!HTMLInputElement} */
             this.slider_ = slider;
@@ -63,14 +88,7 @@ var pxtblocky;
             slider.setMinimum(this.min_);
             slider.setMaximum(this.max_);
             slider.setRightToLeft(this.sourceBlock_.RTL);
-            // Position the palette to line up with the field.
-            // Record windowSize and scrollOffset before adding the palette.
-            var windowSize = goog.dom.getViewportSize();
-            var scrollOffset = goog.style.getViewportPageOffset(document);
-            var xy = this.getAbsoluteXY_();
-            var borderBBox = this.getScaledBBox_();
-            var div = Blockly.WidgetDiv.DIV;
-            slider.render(div);
+            slider.render(contentDiv);
             var value = parseFloat(this.getValue());
             value = isNaN(value) ? 0 : value;
             slider.setValue(value);
@@ -90,7 +108,7 @@ var pxtblocky;
             });
         };
         FieldSlider.prototype.onHtmlInputChange_ = function (e) {
-            _super.prototype.onHtmlInputChange_.call(this);
+            _super.prototype.onHtmlInputChange_.call(this, e);
             if (this.slider_) {
                 this.slider_.setValue(parseFloat(this.getValue()));
             }
@@ -104,6 +122,7 @@ var pxtblocky;
         };
         return FieldSlider;
     }(Blockly.FieldNumber));
+    FieldSlider.SLIDER_WIDTH = 168;
     pxtblocky.FieldSlider = FieldSlider;
 })(pxtblocky || (pxtblocky = {}));
 Blockly.FieldSlider = pxtblocky.FieldSlider;

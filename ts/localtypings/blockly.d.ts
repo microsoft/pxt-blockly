@@ -398,6 +398,7 @@ declare namespace Blockly {
     class FieldNumber extends FieldTextInput {
         constructor(value: string | number, opt_min?: any, opt_max?: any, opt_precision?: any, opt_validator?: any);
         setConstraints_(min: any, max: any, precision: any);
+        position_();
     }
 
     class FieldDropdown extends Field {
@@ -788,6 +789,25 @@ declare namespace Blockly {
         function hide(): void;
         function position(anchorX: number, anchorY: number, windowSize: goog.math.Size,
             scrollOffset: goog.math.Coordinate, rtl: boolean): void;
+    }
+
+    namespace DropDownDiv {
+        let content_: HTMLElement;
+        function hide(): void;
+        function hideIfOwner(owner: any): void;
+        function hideWithoutAnimation(): void;
+        function showPositionedByBlock(owner: any, block: Blockly.Block, opt_onHide?: Function, opt_secondaryYOffset?: number): void;
+        function clearContent(): void;
+        function getContentDiv(): HTMLElement;
+        function setColour(backgroundColour: string, borderColour: string): void;
+    }
+
+    interface Colours {
+        textField: string;
+        insertionMarker: string;
+        insertionMarkerOpacity: string;
+        numPadBackground: string;
+        numPadBorder: string;
     }
 
     var Tooltip: any;

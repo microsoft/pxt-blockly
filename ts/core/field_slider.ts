@@ -40,6 +40,8 @@ namespace pxtblocky {
 
         private changeEventKey_: any;
 
+        public static SLIDER_WIDTH = 168;
+
         /**
          * Class for an editable number field.
          * @param {number|string} value The initial content of the field.
@@ -55,7 +57,9 @@ namespace pxtblocky {
          */
         constructor(value_: any, opt_min?: string, opt_max?: string, opt_precision?: string, opt_validator?: () => void) {
             super(String(value_), opt_validator);
-            this.setConstraints_(opt_min, opt_max, opt_precision);
+            this.min_ = parseFloat(opt_min);
+            this.max_ = parseFloat(opt_max);
+            this.precision_ = parseFloat(opt_precision);
         }
 
         /**
@@ -68,6 +72,36 @@ namespace pxtblocky {
                 return;
             }
 
+            this.showSlider_();
+        }
+
+        /**
+         * Show the slider.
+         * @private
+         */
+        private showSlider_() {
+            // If there is an existing drop-down someone else owns, hide it immediately
+            // and clear it.
+            Blockly.DropDownDiv.hideWithoutAnimation();
+            Blockly.DropDownDiv.clearContent();
+
+            var contentDiv = Blockly.DropDownDiv.getContentDiv();
+
+            // Accessibility properties
+            contentDiv.setAttribute('role', 'menu');
+            contentDiv.setAttribute('aria-haspopup', 'true');
+
+            this.addSlider_(contentDiv);
+
+            // Set colour and size of drop-down
+            Blockly.DropDownDiv.setColour(Blockly.Colours.numPadBackground, Blockly.Colours.numPadBorder);
+            contentDiv.style.width = FieldSlider.SLIDER_WIDTH + 'px';
+
+            this.position_();
+        };
+
+
+        private addSlider_(contentDiv: HTMLElement) {
             var slider = new goog.ui.Slider();
             /** @type {!HTMLInputElement} */
             this.slider_ = slider;
@@ -76,15 +110,7 @@ namespace pxtblocky {
             slider.setMaximum(this.max_);
             slider.setRightToLeft(this.sourceBlock_.RTL);
 
-            // Position the palette to line up with the field.
-            // Record windowSize and scrollOffset before adding the palette.
-            var windowSize = goog.dom.getViewportSize();
-            var scrollOffset = goog.style.getViewportPageOffset(document);
-            var xy = this.getAbsoluteXY_();
-            var borderBBox = this.getScaledBBox_();
-            var div = Blockly.WidgetDiv.DIV;
-
-            slider.render(div);
+            slider.render(contentDiv);
 
             var value = parseFloat(this.getValue());
             value = isNaN(value) ? 0 : value;
@@ -106,10 +132,11 @@ namespace pxtblocky {
                         htmlInput.value = val;
                     }
                 });
+
         }
 
         onHtmlInputChange_(e: any) {
-            super.onHtmlInputChange_.call(this);
+            super.onHtmlInputChange_.call(this, e);
             if (this.slider_) {
                 this.slider_.setValue(parseFloat(this.getValue()))
             }
