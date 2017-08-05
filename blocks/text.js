@@ -65,6 +65,7 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
     "message0": "",
     "output": "String",
     "outputShape": Blockly.OUTPUT_SHAPE_SQUARE,
+    "inputsInline": false,
     "colour": "%{BKY_TEXTS_HUE}",
     "helpUrl": "%{BKY_TEXT_JOIN_HELPURL}",
     "tooltip": "%{BKY_TEXT_JOIN_TOOLTIP}",
@@ -747,6 +748,8 @@ Blockly.Constants.Text.TEXT_JOIN_MUTATOR_MIXIN = {
         var input = this.appendValueInput('ADD' + i);
         if (i == 0) {
           input.appendField(Blockly.Msg.TEXT_JOIN_TITLE_CREATEWITH);
+        } else {
+          input.setAlign(Blockly.ALIGN_RIGHT);
         }
       }
     }

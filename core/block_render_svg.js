@@ -688,6 +688,7 @@ Blockly.BlockSvg.prototype.renderCompute_ = function(iconWidth) {
   var hasStatement = false;
   var hasDummy = false;
   var lastType = undefined;
+  var isInline = this.getInputsInline() && !this.isCollapsed();
 
   // Previously created row, for special-casing row heights on C- and E- shaped blocks.
   var previousRow;
@@ -696,13 +697,13 @@ Blockly.BlockSvg.prototype.renderCompute_ = function(iconWidth) {
       continue;
     }
     var row;
-    if (!lastType ||
+    if (!isInline || !lastType ||
         lastType == Blockly.NEXT_STATEMENT ||
         input.type == Blockly.NEXT_STATEMENT) {
       // Create new row.
       lastType = input.type;
       row = [];
-      if (input.type != Blockly.NEXT_STATEMENT) {
+      if (!isInline && input.type != Blockly.NEXT_STATEMENT) {
         row.type = Blockly.BlockSvg.INLINE;
       } else {
         row.type = input.type;
@@ -1179,7 +1180,7 @@ Blockly.BlockSvg.prototype.renderDrawRight_ = function(steps,
       // Move to the right edge
       cursorX = Math.max(cursorX, inputRows.rightEdge);
       this.width = Math.max(this.width, cursorX);
-      if (!this.edgeShape_) {
+      if (y == 0 && !this.edgeShape_) {
         // Include corner radius in drawing the horizontal line.
         steps.push('H', cursorX - Blockly.BlockSvg.CORNER_RADIUS - this.edgeShapeWidth_);
         steps.push(Blockly.BlockSvg.TOP_RIGHT_CORNER);
@@ -1189,8 +1190,10 @@ Blockly.BlockSvg.prototype.renderDrawRight_ = function(steps,
       }
       // Subtract CORNER_RADIUS * 2 to account for the top right corner
       // and also the bottom right corner. Only move vertically the non-corner length.
-      if (!this.edgeShape_) {
+      if (y == 0 && !this.edgeShape_) {
         steps.push('v', row.height - Blockly.BlockSvg.CORNER_RADIUS * 2);
+      } else if (!this.edgeShape_) {
+        steps.push('v', row.height);
       }
     } else if (row.type == Blockly.NEXT_STATEMENT) {
       // Nested statement.

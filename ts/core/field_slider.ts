@@ -94,7 +94,7 @@ namespace pxtblocky {
             this.addSlider_(contentDiv);
 
             // Set colour and size of drop-down
-            Blockly.DropDownDiv.setColour(Blockly.Colours.numPadBackground, Blockly.Colours.numPadBorder);
+            Blockly.DropDownDiv.setColour((Blockly as any).Colours.numPadBackground, (Blockly as any).Colours.numPadBorder);
             contentDiv.style.width = FieldSlider.SLIDER_WIDTH + 'px';
 
             this.position_();
