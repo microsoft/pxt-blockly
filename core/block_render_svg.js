@@ -703,7 +703,7 @@ Blockly.BlockSvg.prototype.renderCompute_ = function(iconWidth) {
       // Create new row.
       lastType = input.type;
       row = [];
-      if (!isInline && input.type != Blockly.NEXT_STATEMENT) {
+      if (!isInline || input.type != Blockly.NEXT_STATEMENT) {
         row.type = Blockly.BlockSvg.INLINE;
       } else {
         row.type = input.type;
