@@ -65,7 +65,6 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
     "message0": "",
     "output": "String",
     "outputShape": Blockly.OUTPUT_SHAPE_SQUARE,
-    "inputsInline": false,
     "colour": "%{BKY_TEXTS_HUE}",
     "helpUrl": "%{BKY_TEXT_JOIN_HELPURL}",
     "tooltip": "%{BKY_TEXT_JOIN_TOOLTIP}",

@@ -146,7 +146,6 @@ Blockly.Blocks['lists_create_with'] = {
     this.itemCount_ = 3;
     this.updateShape_();
     this.setOutput(true, 'Array');
-    this.setInputsInline(false);
     this.setOutputShape(Blockly.OUTPUT_SHAPE_ROUND);
     this.setMutator(new Blockly.Mutator(['lists_create_with_item']));
     this.setTooltip(Blockly.Msg.LISTS_CREATE_WITH_TOOLTIP);
