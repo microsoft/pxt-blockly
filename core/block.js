@@ -73,6 +73,8 @@ Blockly.Block = function(workspace, prototypeName, opt_id) {
   this.inputList = [];
   /** @type {boolean|undefined} */
   this.inputsInline = true;
+  /** @type {boolean|undefined} */
+  this.startHat = false;
   /** @type {boolean} */
   this.disabled = false;
   /** @type {string|!Function} */
@@ -999,6 +1001,24 @@ Blockly.Block.prototype.getInputsInline = function() {
 };
 
 /**
+ * Set whether value statements have a start hat or not.
+ * @param {boolean} newBoolean True if statement should have a start hat.
+ */
+Blockly.Block.prototype.setStartHat = function(newBoolean) {
+  if (this.startHat != newBoolean) {
+    this.startHat = newBoolean;
+  }
+};
+
+/**
+ * Get whether value inputs are arranged horizontally or vertically.
+ * @return {boolean} True if inputs are horizontal.
+ */
+Blockly.Block.prototype.getStartHat = function() {
+  return this.startHat;
+}
+
+/**
  * Set whether the block is disabled or not.
  * @param {boolean} disabled True if disabled.
  */
@@ -1145,6 +1165,9 @@ Blockly.Block.prototype.jsonInit = function(json) {
 
   if (json['inputsInline'] !== undefined) {
     this.setInputsInline(json['inputsInline']);
+  }
+  if (json['startHat'] !== undefined) {
+    this.setStartHat(json['startHat']);
   }
   // Set output and previous/next connections.
   if (json['output'] !== undefined) {
