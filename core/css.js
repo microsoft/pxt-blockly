@@ -427,6 +427,10 @@ Blockly.Css.CONTENT = [
     'stroke: none;',
   '}',
 
+  '.blocklyInsertionMarker>.blocklyIconGroup {',
+    'display: none;',
+  '}',
+
   '.blocklyText {',
     'fill: #fff;',
     'font-family: "Helvetica Neue", Helvetica, sans-serif;',
