@@ -1119,6 +1119,7 @@ Blockly.BlockSvg.prototype.renderDrawRight_ = function(steps,
   var cursorX = 0;
   var cursorY = 0;
   var connectionX, connectionY;
+  var prevWidth = 0;
   for (var y = 0, row; row = inputRows[y]; y++) {
     cursorX = row.paddingStart;
     if (y == 0) {
@@ -1180,7 +1181,7 @@ Blockly.BlockSvg.prototype.renderDrawRight_ = function(steps,
       // Move to the right edge
       cursorX = Math.max(cursorX, inputRows.rightEdge);
       this.width = Math.max(this.width, cursorX);
-      if (y == 0 && !this.edgeShape_) {
+      if ((this.width > prevWidth) && !this.edgeShape_) {
         // Include corner radius in drawing the horizontal line.
         steps.push('H', cursorX - Blockly.BlockSvg.CORNER_RADIUS - this.edgeShapeWidth_);
         steps.push(Blockly.BlockSvg.TOP_RIGHT_CORNER);
@@ -1240,6 +1241,7 @@ Blockly.BlockSvg.prototype.renderDrawRight_ = function(steps,
       }
     }
     cursorY += row.height;
+    prevWidth = this.width;
   }
   if (this.edgeShape_) {
     // Draw the right-side edge shape.
