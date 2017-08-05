@@ -688,7 +688,7 @@ Blockly.BlockSvg.prototype.renderCompute_ = function(iconWidth) {
   var hasStatement = false;
   var hasDummy = false;
   var lastType = undefined;
-  var isInline = this.getInputsInline() && !this.isCollapsed();
+  var isInline = this.getInputsInline();
 
   // Previously created row, for special-casing row heights on C- and E- shaped blocks.
   var previousRow;
