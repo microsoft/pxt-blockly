@@ -1191,11 +1191,12 @@ Blockly.BlockSvg.prototype.renderDrawRight_ = function(steps,
       }
       // Subtract CORNER_RADIUS * 2 to account for the top right corner
       // and also the bottom right corner. Only move vertically the non-corner length.
-      if (y == 0 && !this.edgeShape_) {
+      if ((y == 0 || prevWidth == 0) && !this.edgeShape_) {
         steps.push('v', row.height - Blockly.BlockSvg.CORNER_RADIUS * 2);
       } else if (!this.edgeShape_) {
         steps.push('v', row.height);
       }
+      prevWidth = this.width;
     } else if (row.type == Blockly.NEXT_STATEMENT) {
       // Nested statement.
       var input = row[0];
@@ -1239,9 +1240,9 @@ Blockly.BlockSvg.prototype.renderDrawRight_ = function(steps,
         steps.push('v', Blockly.BlockSvg.EXTRA_STATEMENT_ROW_Y - 2 * Blockly.BlockSvg.CORNER_RADIUS);
         cursorY += Blockly.BlockSvg.EXTRA_STATEMENT_ROW_Y;
       }
+      prevWidth = 0;
     }
     cursorY += row.height;
-    prevWidth = this.width;
   }
   if (this.edgeShape_) {
     // Draw the right-side edge shape.

@@ -37,7 +37,7 @@ Blockly.Colours = {
   "textField": "#FFFFFF",
   "insertionMarker": "#000000",
   "insertionMarkerOpacity": 0.2,
-  "dragShadowOpacity": 0.3,
+  "dragShadowOpacity": 0.4,
   "stackGlow": "#FFF200",
   "stackGlowOpacity": 1,
   "replacementGlow": "#FFFFFF",

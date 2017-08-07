@@ -342,7 +342,7 @@ declare namespace Blockly {
     }
 
     class FieldImage {
-        constructor(url: string, width: number, height: number, def: string);
+        constructor(src: string, width: number, height: number, opt_alt?: string, opt_onClick?: Function, flip_rtl?: boolean);
     }
 
     interface BlockDefinition {
