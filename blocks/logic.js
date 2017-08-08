@@ -57,6 +57,8 @@ Blockly.Blocks['controls_if'] = {
         that.addElseIf_();
       }
     }();
+    this.elseifCount_ = 0;
+    this.elseCount_ = 0;
     this.setHelpUrl(Blockly.Msg.CONTROLS_IF_HELPURL);
     this.setColour(Blockly.Blocks.logic.HUE);
     this.appendValueInput('IF0')
