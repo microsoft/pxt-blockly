@@ -62,6 +62,10 @@ namespace pxtblocky {
             this.precision_ = parseFloat(opt_precision);
         }
 
+        init() {
+            Blockly.FieldTextInput.superClass_.init.call(this);
+        }
+
         /**
          * Show the inline free-text editor on top of the text.
          * @private

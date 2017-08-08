@@ -49,6 +49,9 @@ var pxtblocky;
             _this.precision_ = parseFloat(opt_precision);
             return _this;
         }
+        FieldSlider.prototype.init = function () {
+            Blockly.FieldTextInput.superClass_.init.call(this);
+        };
         /**
          * Show the inline free-text editor on top of the text.
          * @private
