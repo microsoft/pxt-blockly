@@ -121,7 +121,6 @@ Blockly.Blocks['controls_if'] = {
    * Restore pointers to any connected child blocks.
    */
   restoreConnections_: function () {
-    var i = 1;
     for (var i = 1; i <= this.elseifCount_; i++) {
        Blockly.Mutator.reconnect(this.valueConnections_[i], this, 'IF' + i);
        Blockly.Mutator.reconnect(this.statementConnections_[i], this, 'DO' + i);

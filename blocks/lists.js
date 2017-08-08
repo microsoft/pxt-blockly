@@ -223,23 +223,61 @@ Blockly.Blocks['lists_create_with'] = {
    * @param {!Blockly.Block} containerBlock Root block in mutator.
    * @this Blockly.Block
    */
-  saveConnections: function(containerBlock) {
-    var itemBlock = containerBlock.getInputTargetBlock('STACK');
-    var i = 0;
-    while (itemBlock) {
-      var input = this.getInput('ADD' + i);
-      itemBlock.valueConnection_ = input && input.connection.targetConnection;
-      i++;
-      itemBlock = itemBlock.nextConnection &&
-          itemBlock.nextConnection.targetBlock();
+  // saveConnections: function(containerBlock) {
+  //   var itemBlock = containerBlock.getInputTargetBlock('STACK');
+  //   var i = 0;
+  //   while (itemBlock) {
+  //     var input = this.getInput('ADD' + i);
+  //     itemBlock.valueConnection_ = input && input.connection.targetConnection;
+  //     i++;
+  //     itemBlock = itemBlock.nextConnection &&
+  //         itemBlock.nextConnection.targetBlock();
+  //   }
+  // },
+  /**
+   * Store pointers to any connected child blocks.
+   */
+  storeConnections_: function (arg) {
+    this.valueConnections_ = [];
+    for (var i = 0; i < this.itemCount_; i++) {
+      if (arg != i) {
+        this.valueConnections_.push(this.getInput('ADD' + i).connection.targetConnection);
+      } else {
+        if (this.getInput('ADD' + i).connection.targetConnection) this.getInput('ADD' + i).connection.disconnect();
+      }
     }
   },
-  update_: function () {
+  restoreConnections_: function () {
+    for (var i = 0; i < this.itemCount_; i++) {
+       Blockly.Mutator.reconnect(this.valueConnections_[i], this, 'ADD' + i);
+    }
+  },
+  addItem_: function () {
+    this.storeConnections_();
+    var update = function () {
+      this.itemCount_++;
+    }
+    this.update_(update);
+    this.restoreConnections_();
+  },
+  removeItem_: function (item) {
+    this.storeConnections_(item);
+    var update = function () {
+      this.itemCount_--;
+    }
+    this.update_(update);
+    this.restoreConnections_();
+  },
+  update_: function (update) {
     Blockly.Events.setGroup(true);
     var block = this;
+    var oldMutationDom = block.mutationToDom();
+    var oldMutation = oldMutationDom && Blockly.Xml.domToText(oldMutationDom);
     // Switch off rendering while the source block is rebuilt.
     var savedRendered = block.rendered;
     block.rendered = false;
+    // Update the mutation 
+    if (update) update.call(this)
     // Allow the source block to rebuild itself.
     this.updateShape_();
     // Restore rendering and show the changes.
@@ -248,11 +286,17 @@ Blockly.Blocks['lists_create_with'] = {
     block.initSvg();
     // Ensure that any bump is part of this mutation's event group.
     var group = Blockly.Events.getGroup();
-    setTimeout(function() {
-      Blockly.Events.setGroup(group);
-      block.bumpNeighbours_();
-      Blockly.Events.setGroup(false);
-    }, Blockly.BUMP_DELAY);
+    var newMutationDom = block.mutationToDom();
+    var newMutation = newMutationDom && Blockly.Xml.domToText(newMutationDom);
+    if (oldMutation != newMutation) {
+      Blockly.Events.fire(new Blockly.Events.BlockChange(
+          block, 'mutation', null, oldMutation, newMutation));
+      setTimeout(function() {
+        Blockly.Events.setGroup(group);
+        block.bumpNeighbours_();
+        Blockly.Events.setGroup(false);
+      }, Blockly.BUMP_DELAY);
+    }
     if (block.rendered) {
       block.render();
     }
@@ -266,8 +310,7 @@ Blockly.Blocks['lists_create_with'] = {
   updateShape_: function() {
     var that = this;
     var add = function() {
-      that.itemCount_++;
-      that.update_();
+      that.addItem_();
     }
     if (this.itemCount_) {
       if (this.getInput('EMPTY')) this.removeInput('EMPTY');
@@ -290,14 +333,12 @@ Blockly.Blocks['lists_create_with'] = {
     for (var i = 0; i < this.itemCount_; i++) {
       if (!this.getInput('ADD' + i)) {
         var input = this.appendValueInput('ADD' + i)
-        var removeListItem = function (arg) {
+        var removeItem = function (arg) {
           return function () {
-            that.itemCount_--;
-            that.removeInput('ADD' + arg);
-            that.update_();
+            that.removeItem_(arg);
           }
         }(i);
-        input.appendField(new Blockly.FieldImage(Blockly.mainWorkspace.options.pathToMedia + "/remove.svg", 24, 24, "*", removeListItem));
+        input.appendField(new Blockly.FieldImage(Blockly.mainWorkspace.options.pathToMedia + "/remove.svg", 24, 24, "*", removeItem));
       }
     }
     // Remove deleted inputs.
