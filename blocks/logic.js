@@ -50,13 +50,6 @@ Blockly.Blocks['controls_if'] = {
    * @this Blockly.Block
    */
   init: function() {
-    var that = this;
-    var addElseIf = function () {
-      return function () {
-        if (!that.elseifCount_) that.elseifCount_ = 0;
-        that.addElseIf_();
-      }
-    }();
     this.elseifCount_ = 0;
     this.elseCount_ = 0;
     this.setHelpUrl(Blockly.Msg.CONTROLS_IF_HELPURL);
@@ -66,9 +59,8 @@ Blockly.Blocks['controls_if'] = {
         .appendField(Blockly.Msg.CONTROLS_IF_MSG_IF);
     this.appendDummyInput('THEN0')
         .appendField(Blockly.Msg.CONTROLS_IF_MSG_THEN)
-        .appendField(
-      new Blockly.FieldImage(Blockly.mainWorkspace.options.pathToMedia + "/add.svg", 24, 24, "*", addElseIf))
     this.appendStatementInput('DO0');
+    this.updateShape_();
     this.setInputsInline(true);
     this.setColour(Blockly.Constants.Logic.HUE);
     this.setPreviousStatement(true);
@@ -221,6 +213,17 @@ Blockly.Blocks['controls_if'] = {
           .appendField(Blockly.Msg.CONTROLS_IF_MSG_ELSE)
       this.appendStatementInput('ELSE');
     }
+    if (this.getInput('ADDBUTTON')) this.removeInput('ADDBUTTON');
+    var that = this;
+    var addElseIf = function () {
+      return function () {
+        if (!that.elseifCount_) that.elseifCount_ = 0;
+        that.addElseIf_();
+      }
+    }();
+    this.appendDummyInput('ADDBUTTON')
+        .appendField(
+      new Blockly.FieldImage(Blockly.mainWorkspace.options.pathToMedia + "/add.svg", 24, 24, "*", addElseIf))
   }
 };
 
