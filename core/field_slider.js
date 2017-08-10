@@ -49,6 +49,10 @@ var pxtblocky;
             _this.precision_ = parseFloat(opt_precision);
             return _this;
         }
+        FieldSlider.prototype.setMinMax = function (min, max) {
+            this.min_ = min;
+            this.max_ = max;
+        };
         FieldSlider.prototype.init = function () {
             Blockly.FieldTextInput.superClass_.init.call(this);
         };

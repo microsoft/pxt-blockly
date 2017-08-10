@@ -624,7 +624,7 @@ Blockly.Constants.Math.MATH_NUMBER_MINMAX_MIXIN = {
   domToMutation: function(xmlElement) {
     var min = (xmlElement.getAttribute('min'));
     var max = (xmlElement.getAttribute('max'));
-    this.inputList[0].fieldRow[0].setConstraints_(min, max);
+    this.inputList[0].fieldRow[0].setMinMax(min, max);
   }
 };
 

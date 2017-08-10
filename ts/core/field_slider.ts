@@ -62,6 +62,11 @@ namespace pxtblocky {
             this.precision_ = parseFloat(opt_precision);
         }
 
+        setMinMax(min: number, max: number) {
+            this.min_ = min;
+            this.max_ = max;
+        }
+
         init() {
             Blockly.FieldTextInput.superClass_.init.call(this);
         }
