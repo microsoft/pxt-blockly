@@ -1734,7 +1734,7 @@ Blockly.WorkspaceSvg.prototype.clear = function() {
  * Register a callback function associated with a given key, for clicks on
  * buttons and labels in the flyout.
  * For instance, a button specified by the XML
- * <button text="create variable" callbackKey="CREATE_VARIABLE"></button>
+ * <button text="create variable" callbackkey="CREATE_VARIABLE"></button>
  * should be matched by a call to
  * registerButtonCallback("CREATE_VARIABLE", yourCallbackFunction).
  * @param {string} key The name to use to look up this function.
