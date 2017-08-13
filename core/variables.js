@@ -114,7 +114,7 @@ Blockly.Variables.flyoutCategory = function(workspace) {
   var xmlList = [];
   var button = goog.dom.createDom('button');
   button.setAttribute('text', Blockly.Msg.NEW_VARIABLE);
-  button.setAttribute('callbackKey', 'CREATE_VARIABLE');
+  button.setAttribute('callbackkey', 'CREATE_VARIABLE');
 
   workspace.registerButtonCallback('CREATE_VARIABLE', function(button) {
     Blockly.Variables.createVariable(button.getTargetWorkspace());

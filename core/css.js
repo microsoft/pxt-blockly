@@ -849,9 +849,6 @@ Blockly.Css.CONTENT = [
 
   '.blocklyWidgetDiv .goog-menu {',
     'background: #fff;',
-    'border-color: #ccc #666 #666 #ccc;',
-    'border-style: solid;',
-    'border-width: 1px;',
     'cursor: default;',
     'font: normal 13px "Helvetica Neue", Helvetica, sans-serif;',
     'margin: 0;',
@@ -861,6 +858,7 @@ Blockly.Css.CONTENT = [
     'overflow-y: auto;',
     'overflow-x: hidden;',
     'z-index: 20000;',  /* Arbitrary, but some apps depend on it... */
+    'box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);',
   '}',
 
   '.blocklyDropDownDiv .goog-menu {',
@@ -905,7 +903,7 @@ Blockly.Css.CONTENT = [
     'list-style: none;',
     'margin: 0;',
      /* 28px on the left for icon or checkbox; 7em on the right for shortcut. */
-    'padding: 4px 7em 4px 28px;',
+    'padding: 5px 7em 5px 28px;',
     'white-space: nowrap;',
   '}',
 
@@ -916,7 +914,7 @@ Blockly.Css.CONTENT = [
     'list-style: none;',
     'margin: 0;',
      /* 28px on the left for icon or checkbox; 7em on the right for shortcut. */
-    'padding: 4px 7em 4px 28px;',
+    'padding: 5px 7em 5px 28px;',
     'white-space: nowrap;',
   '}',
 
@@ -976,8 +974,8 @@ Blockly.Css.CONTENT = [
     'border-color: #d6e9f8;',
     'border-style: dotted;',
     'border-width: 1px 0;',
-    'padding-bottom: 3px;',
-    'padding-top: 3px;',
+    'padding-bottom: 4px;',
+    'padding-top: 4px;',
   '}',
 
   '.blocklyDropDownDiv .goog-menuitem-highlight,',
