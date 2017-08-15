@@ -72,14 +72,10 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
     "args0": [{
       "type": "field_slider",
       "name": "SLIDER",
-      "value": 0,
-      "min": 0,
-      "max": 100
+      "value": 0
     }],
     "output": "Number",
     "colour": Blockly.Colours.textField,
-    "colourSecondary": Blockly.Colours.textField,
-    "colourTertiary": Blockly.Colours.textField,
     "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
     "helpUrl": "%{BKY_MATH_NUMBER_HELPURL}",
     "tooltip": "%{BKY_MATH_NUMBER_TOOLTIP}",
