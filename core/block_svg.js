@@ -1,5 +1,5 @@
 /**
- * This file has been modified by Microsoft on Apr/2017.
+ * This file has been modified by Microsoft on Aug/2017.
  */
 /**
  * @license
@@ -872,12 +872,16 @@ Blockly.BlockSvg.prototype.showContextMenu_ = function(e) {
 
   // Option to get help.
   var url = goog.isFunction(this.helpUrl) ? this.helpUrl() : this.helpUrl;
-  var helpOption = {enabled: !!url};
-  helpOption.text = Blockly.Msg.HELP;
-  helpOption.callback = function() {
-    block.showHelp_();
-  };
-  menuOptions.push(helpOption);
+
+  // pxtblockly: Don't show help item if no help url is set
+  if (!!url) {
+    var helpOption = {enabled: true};
+    helpOption.text = Blockly.Msg.HELP;
+    helpOption.callback = function() {
+      block.showHelp_();
+    };
+    menuOptions.push(helpOption);
+  }
 
   // Allow the block to add or modify menuOptions.
   if (this.customContextMenu && !block.isInFlyout) {
@@ -1073,7 +1077,7 @@ Blockly.BlockSvg.prototype.updateCursor_ = function(e, closestConnection) {
   if (showDeleteCursor) {
     Blockly.utils.addClass(/** @type {!Element} */ (this.svgGroup_),
                       'blocklyDraggingDelete');
-    
+
     if (this.workspace.toolbox_) {
       // Change the cursor to a hand with an 'x'
       this.workspace.toolbox_.addDeleteStyle();
