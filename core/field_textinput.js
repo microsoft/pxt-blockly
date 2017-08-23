@@ -85,8 +85,9 @@ Blockly.FieldTextInput.prototype.spellcheck_ = true;
 Blockly.FieldTextInput.prototype.init = function() {
 
   Blockly.FieldTextInput.superClass_.init.call(this);
-  // If not in a shadow block, draw a box.
-  if (!this.sourceBlock_.isShadow()) {
+  // If not in a shadow block, and has more than one input, draw a box.
+  if (!this.sourceBlock_.isShadow()
+    && (this.sourceBlock_.inputList && this.sourceBlock_.inputList.length > 1)) {
     this.box_ = Blockly.utils.createSvgElement('rect', {
       'rx': Blockly.BlockSvg.CORNER_RADIUS,
       'ry': Blockly.BlockSvg.CORNER_RADIUS,
@@ -286,11 +287,14 @@ Blockly.FieldTextInput.prototype.onHtmlInputKeyDown_ = function(e) {
   var tabKey = 9, enterKey = 13, escKey = 27;
   if (e.keyCode == enterKey) {
     Blockly.WidgetDiv.hide();
+    Blockly.DropDownDiv.hideWithoutAnimation();
   } else if (e.keyCode == escKey) {
     htmlInput.value = htmlInput.defaultValue;
     Blockly.WidgetDiv.hide();
+    Blockly.DropDownDiv.hideWithoutAnimation();
   } else if (e.keyCode == tabKey) {
     Blockly.WidgetDiv.hide();
+    Blockly.DropDownDiv.hideWithoutAnimation();
     this.sourceBlock_.tab(this, !e.shiftKey);
     e.preventDefault();
   }

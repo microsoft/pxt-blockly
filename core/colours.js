@@ -44,7 +44,7 @@ Blockly.Colours = {
   "replacementGlowOpacity": 1,
   "colourPickerStroke": "#FFFFFF",
   // CSS colours: support RGBA
-  "fieldShadow": "rgba(0,0,0,0.1)",
+  "fieldShadow": "rgba(255, 255, 255, 0.3)",
   "dropDownShadow": "rgba(0, 0, 0, .3)",
   "numPadBackground": "#547AB2",
   "numPadBorder": "#435F91",
