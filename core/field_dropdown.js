@@ -125,7 +125,7 @@ Blockly.FieldDropdown.prototype.init = function() {
 
   Blockly.FieldDropdown.superClass_.init.call(this);
   // If not in a shadow block, draw a box.
-  if (!this.sourceBlock_.isShadow()) {
+  if (this.shouldShowRect_()) {
     this.box_ = Blockly.utils.createSvgElement('rect', {
       'rx': Blockly.BlockSvg.CORNER_RADIUS,
       'ry': Blockly.BlockSvg.CORNER_RADIUS,
@@ -145,6 +145,15 @@ Blockly.FieldDropdown.prototype.init = function() {
   this.text_ = null;
   this.setText(text);
 };
+
+/**
+ * Whether or not to show a box around the dropdown menu.
+ * @return {boolean} True if we should show a box (rect) around the dropdown menu. Otherwise false.
+ * @private
+ */
+Blockly.FieldDropdown.prototype.shouldShowRect_ = function() {
+    return !this.sourceBlock_.isShadow();
+}
 
 /**
  * Create a dropdown menu under the text.
