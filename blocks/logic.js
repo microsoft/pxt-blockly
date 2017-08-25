@@ -205,7 +205,7 @@ Blockly.Blocks['controls_if'] = {
           .appendField(Blockly.Msg.CONTROLS_IF_MSG_THEN);
       this.appendDummyInput('IFBUTTONS' + i)
           .appendField(
-        new Blockly.FieldImage(Blockly.mainWorkspace.options.pathToMedia + "/remove.svg", 24, 24, "*", removeElseIf));
+        new Blockly.FieldImage(Blockly.mainWorkspace.options.pathToMedia + "remove.svg", 24, 24, "*", removeElseIf));
       this.appendStatementInput('DO' + i)
     }
     if (this.elseCount_) {
