@@ -223,7 +223,7 @@ Blockly.Blocks['controls_if'] = {
     }();
     this.appendDummyInput('ADDBUTTON')
         .appendField(
-      new Blockly.FieldImage(Blockly.mainWorkspace.options.pathToMedia + "/add.svg", 24, 24, "*", addElseIf))
+      new Blockly.FieldImage(Blockly.mainWorkspace.options.pathToMedia + "add.svg", 24, 24, "*", addElseIf))
   }
 };
 
