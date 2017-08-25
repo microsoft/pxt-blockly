@@ -1121,7 +1121,7 @@ Blockly.BlockSvg.prototype.renderDrawRight_ = function(steps,
   var connectionX, connectionY;
   var prevWidth = 0;
   for (var y = 0, row; row = inputRows[y]; y++) {
-    cursorX = row.paddingStart || 0;
+    cursorX = row.paddingStart;
     if (y == 0) {
       cursorX += this.RTL ? -iconWidth : iconWidth;
     }
