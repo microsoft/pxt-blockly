@@ -443,7 +443,6 @@ Blockly.Blocks['lists_getIndex'] = {
     }
     this.setInputsInline(true);
     this.setOutput(true);
-    this.setOutputShape(Blockly.OUTPUT_SHAPE_SQUARE);
     this.updateAt_(true);
     // Assign 'this' to a variable for use in the tooltip closure below.
     var thisBlock = this;
