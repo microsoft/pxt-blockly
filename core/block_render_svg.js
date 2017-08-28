@@ -621,11 +621,12 @@ Blockly.BlockSvg.prototype.render = function(opt_bubble) {
  * @param {!Array.<!Blockly.Field>} fieldList List of fields.
  * @param {number} cursorX X-coordinate to start the fields.
  * @param {number} cursorY Y-coordinate around which fields are centered.
+ * @param {number} rowIndex index of the current row.
  * @return {number} X-coordinate of the end of the field row (plus a gap).
  * @private
  */
 Blockly.BlockSvg.prototype.renderFields_ =
-    function(fieldList, cursorX, cursorY) {
+    function(fieldList, cursorX, cursorY, rowIndex) {
   /* eslint-disable indent */
   if (this.RTL) {
     cursorX = -cursorX;
@@ -635,31 +636,45 @@ Blockly.BlockSvg.prototype.renderFields_ =
     if (!root) {
       continue;
     }
-    // In blocks with a notch, non-label fields should be bumped to a min X,		
-    // to avoid overlapping with the notch.		
-    if (this.previousConnection && !(field instanceof Blockly.FieldLabel) && !(field instanceof Blockly.FieldImage)) {		
-      cursorX = this.RTL ?		
-        Math.min(cursorX, -Blockly.BlockSvg.INPUT_AND_FIELD_MIN_X) :		
-        Math.max(cursorX, Blockly.BlockSvg.INPUT_AND_FIELD_MIN_X);		
+    // In blocks with a notch, fields should be bumped to a min X,
+    // to avoid overlapping with the notch. Label and image fields are
+    // excluded.
+    if (this.previousConnection && !(field instanceof Blockly.FieldLabel) &&
+        !(field instanceof Blockly.FieldImage) && rowIndex == 0) {
+      cursorX = this.RTL ?
+        Math.min(cursorX, -Blockly.BlockSvg.INPUT_AND_FIELD_MIN_X) :
+        Math.max(cursorX, Blockly.BlockSvg.INPUT_AND_FIELD_MIN_X);
     }
+    
     // Offset the field upward by half its height.
     // This vertically centers the fields around cursorY.
     var yOffset = -field.getSize().height / 2;
+    var translateX, translateY;
+    var scale = '';
     if (this.RTL) {
       cursorX -= field.renderSep + field.renderWidth;
-      root.setAttribute('transform',
-          'translate(' + cursorX + ',' + (cursorY + yOffset) + ')');
+      translateX = cursorX;
+      translateY = cursorY + yOffset;
       if (field.renderWidth) {
         cursorX -= Blockly.BlockSvg.SEP_SPACE_X;
       }
     } else {
-      root.setAttribute('transform',
-          'translate(' + (cursorX + field.renderSep) + ',' + (cursorY + yOffset) + ')');
+      translateX = cursorX + field.renderSep;
+      translateY = cursorY + yOffset;
       if (field.renderWidth) {
         cursorX += field.renderSep + field.renderWidth +
             Blockly.BlockSvg.SEP_SPACE_X;
       }
     }
+    if (this.RTL &&
+        field instanceof Blockly.FieldImage &&
+        field.getFlipRTL()) {
+      scale = 'scale(-1 1)';
+      translateX += field.renderWidth;
+    }
+    root.setAttribute('transform',
+      'translate(' + translateX + ', ' + translateY + ') ' + scale
+    );
     // Fields are invisible on insertion marker.
     if (this.isInsertionMarker()) {
       root.setAttribute('display', 'none');
@@ -1148,7 +1163,7 @@ Blockly.BlockSvg.prototype.renderDrawRight_ = function(steps,
           );
         }
 
-        cursorX = this.renderFields_(input.fieldRow, fieldX, fieldY);
+        cursorX = this.renderFields_(input.fieldRow, fieldX, fieldY, y);
         if (input.type == Blockly.INPUT_VALUE) {
           // Create inline input connection.
           // In blocks with a notch, inputs should be bumped to a min X,
@@ -1202,7 +1217,7 @@ Blockly.BlockSvg.prototype.renderDrawRight_ = function(steps,
       var input = row[0];
       var fieldX = cursorX;
       var fieldY = cursorY;
-      this.renderFields_(input.fieldRow, fieldX, fieldY);
+      this.renderFields_(input.fieldRow, fieldX, fieldY, y);
 
       steps.push(Blockly.BlockSvg.BOTTOM_RIGHT_CORNER);
       // Move to the start of the notch.
