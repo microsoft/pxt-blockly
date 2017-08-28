@@ -220,3 +220,12 @@ Blockly.FieldVariable.prototype.onItemSelected = function(menu, menuItem) {
     this.setValue(itemText);
   }
 };
+
+/**
+ * Whether or not to show a box around the dropdown menu.
+ * @return {boolean} True if we should show a box (rect) around the dropdown menu. Otherwise false.
+ * @private
+ */
+Blockly.FieldVariable.prototype.shouldShowRect_ = function () {
+  return !this.sourceBlock_.isShadow() && this.sourceBlock_.type != 'variables_get';
+}
