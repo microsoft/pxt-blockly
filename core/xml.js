@@ -625,8 +625,8 @@ Blockly.Xml.domToBlockHeadless_ = function(xmlBlock, workspace) {
           }
         }
         if (!field) {
-          console.warn('Ignoring non-existent field ' + name + ' in block ' +
-                       prototypeName);
+          //console.warn('Ignoring non-existent field ' + name + ' in block ' +
+          //             prototypeName);
           break;
         }
         field.setValue(text);
@@ -635,8 +635,8 @@ Blockly.Xml.domToBlockHeadless_ = function(xmlBlock, workspace) {
       case 'statement':
         input = block.getInput(name);
         if (!input) {
-          console.warn('Ignoring non-existent input ' + name + ' in block ' +
-                       prototypeName);
+          //console.warn('Ignoring non-existent input ' + name + ' in block ' +
+          //             prototypeName);
           break;
         }
         if (childShadowNode) {
