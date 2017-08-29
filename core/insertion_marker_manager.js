@@ -206,7 +206,6 @@ Blockly.InsertionMarkerManager.prototype.applyConnections = function() {
           this.closestConnection_ : this.localConnection_;
       inferiorConnection.getSourceBlock().connectionUiEffect();
     }
-    this.removeHighlighting_();
   }
 };
 
