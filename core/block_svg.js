@@ -1075,6 +1075,7 @@ Blockly.BlockSvg.disconnectUiStep_ = function(group, magnitude, start) {
     Blockly.BlockSvg.disconnectUiStop_.group = group;
     Blockly.BlockSvg.disconnectUiStop_.pid = setTimeout(closure, 10);
   }
+  if (!group.translate_) group.translate_ = '';
   group.setAttribute('transform', group.translate_ + group.skew_);
 };
 

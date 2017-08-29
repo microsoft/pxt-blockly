@@ -195,7 +195,7 @@ Blockly.RenderedConnection.prototype.closest = function(maxLimit, dxy) {
  */
 Blockly.RenderedConnection.prototype.highlight = function() {
   var steps;
-  steps = 'm -20,0 h 5 ' + Blockly.BlockSvg.NOTCH_PATH_LEFT + ' h 5';
+  steps = 'm -24,0 h 5 ' + Blockly.BlockSvg.NOTCH_PATH_LEFT + ' h 5';
   var xy = this.sourceBlock_.getRelativeToSurfaceXY();
   var x = this.x_ - xy.x;
   var y = this.y_ - xy.y;
