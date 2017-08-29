@@ -1206,8 +1206,10 @@ Blockly.BlockSvg.prototype.renderDrawRight_ = function(steps,
       }
       // Subtract CORNER_RADIUS * 2 to account for the top right corner
       // and also the bottom right corner. Only move vertically the non-corner length.
-      if ((y == 0 || prevWidth == 0) && !this.edgeShape_) {
+      if ((y == 0 || prevWidth == 0) && (this.width > prevWidth) && !this.edgeShape_) {
         steps.push('v', row.height - Blockly.BlockSvg.CORNER_RADIUS * 2);
+      } else if ((this.width > prevWidth) && !this.edgeShape_) {
+        steps.push('v', row.height - Blockly.BlockSvg.CORNER_RADIUS);
       } else if (!this.edgeShape_) {
         steps.push('v', row.height);
       }
