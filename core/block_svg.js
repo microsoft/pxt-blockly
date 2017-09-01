@@ -237,6 +237,10 @@ Blockly.BlockSvg.prototype.unselect = function() {
  * @param {boolean} isGlowingBlock Whether the block should glow.
  */
 Blockly.BlockSvg.prototype.setGlowBlock = function(isGlowingBlock) {
+  //pxtblockly: Sanity check that the block is rendered before setting the highlight
+  if (!this.rendered) {
+    return;
+  }
   this.isGlowingBlock_ = isGlowingBlock;
   this.updateColour();
 };
@@ -246,6 +250,10 @@ Blockly.BlockSvg.prototype.setGlowBlock = function(isGlowingBlock) {
  * @param {boolean} isGlowingStack Whether the stack starting with this block should glow.
  */
 Blockly.BlockSvg.prototype.setGlowStack = function(isGlowingStack) {
+  //pxtblockly: Sanity check that the block is rendered before setting the highlight
+  if (!this.rendered) {
+    return;
+  }
   this.isGlowingStack_ = isGlowingStack;
   // Update the applied SVG filter if the property has changed
   var svg = this.getSvgRoot();
