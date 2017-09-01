@@ -606,6 +606,7 @@ Blockly.Flyout.prototype.createBlock = function(originalBlock) {
   this.targetWorkspace_.setResizesEnabled(false);
   try {
     newBlock = this.placeNewBlock_(originalBlock);
+    /*
     //Force a render on IE and Edge to get around the issue described in
     //Blockly.Field.getCachedWidth
     if (goog.userAgent.IE || goog.userAgent.EDGE) {
@@ -613,7 +614,7 @@ Blockly.Flyout.prototype.createBlock = function(originalBlock) {
       for (var i = blocks.length - 1; i >= 0; i--) {
         blocks[i].render(false);
       }
-    }
+    }*/
     // Close the flyout.
     Blockly.hideChaff();
   } finally {
