@@ -966,8 +966,10 @@ Blockly.BlockSvg.prototype.computeOutputPadding_ = function(inputRows) {
     row.paddingEnd += Blockly.BlockSvg.SHAPE_IN_SHAPE_PADDING[shape][otherShape];
     if (shape == Blockly.OUTPUT_SHAPE_ROUND && inputRows.length > 1) {
       // Multi-line reporter blocks need extra padding
-      // assumes the edge of the circle is 1 unit lower than the row top
-      var roundPad = inputRows.bottomEdge * (1  / 2 - Math.sin(Math.acos((inputRows.bottomEdge - Blockly.BlockSvg.GRID_UNIT) / inputRows.bottomEdge)));
+      // assumes the edge of the circle clamps 2 units vertically at the start of the block
+      var radius = inputRows.bottomEdge / 2;
+      var topPad = Blockly.BlockSvg.GRID_UNIT * 2;
+      var roundPad = radius * (1 - Math.sin(Math.acos((radius - topPad) / radius)));
       row.paddingStart += roundPad;
       row.paddingEnd += roundPad;
     }
