@@ -843,6 +843,12 @@ Blockly.BlockSvg.prototype.renderCompute_ = function(iconWidth) {
     }
     previousRow = row;
   }
+
+  // Bottom edge is sum of row heights
+  for (var i = 0; i < inputRows.length; i++) {
+    inputRows.bottomEdge += inputRows[i].height;
+  }
+  
   // Compute padding for output blocks.
   // Data is attached to the row.
   this.computeOutputPadding_(inputRows);
@@ -870,11 +876,6 @@ Blockly.BlockSvg.prototype.renderCompute_ = function(iconWidth) {
     // Statement blocks (C- or E- shaped) have a longer minimum width.
     inputRows.rightEdge = Math.max(inputRows.rightEdge,
       Blockly.BlockSvg.MIN_BLOCK_X_WITH_STATEMENT);
-  }
-
-  // Bottom edge is sum of row heights
-  for (var i = 0; i < inputRows.length; i++) {
-    inputRows.bottomEdge += inputRows[i].height;
   }
 
   // Ensure insertion markers are at least insertionMarkerMinWidth_ wide.
@@ -965,9 +966,10 @@ Blockly.BlockSvg.prototype.computeOutputPadding_ = function(inputRows) {
     row.paddingEnd += Blockly.BlockSvg.SHAPE_IN_SHAPE_PADDING[shape][otherShape];
     if (shape == Blockly.OUTPUT_SHAPE_ROUND && inputRows.length > 1) {
       // Multi-line reporter blocks need extra padding
-      var rowCount = inputRows.length;
-      row.paddingStart += (10 + rowCount * 7);
-      row.paddingEnd += (10 + rowCount * 7);
+      // assumes the edge of the circle is 1 unit lower than the row top
+      var roundPad = inputRows.bottomEdge * (1  / 2 - Math.sin(Math.acos((inputRows.bottomEdge - Blockly.BlockSvg.GRID_UNIT) / inputRows.bottomEdge)));
+      row.paddingStart += roundPad;
+      row.paddingEnd += roundPad;
     }
   }
 };
