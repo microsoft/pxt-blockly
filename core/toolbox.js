@@ -170,7 +170,7 @@ Blockly.Toolbox.prototype.init = function() {
           Blockly.hideChaff(true);
         }
         Blockly.Touch.clearTouchIdentifier();  // Don't block future drags.
-      }, /*opt_noPreventDefault*/ false, /*opt_noPreventDefault*/ true);
+      }, /*opt_noCaptureIdentifier*/ false, /*opt_noPreventDefault*/ true);
 
   // pxtblockly: Right clicking on the toolbox doesn't show the browser context menu
   Blockly.bindEventWithChecks_(this.HtmlDiv, 'contextmenu', this, Blockly.utils.noEvent);
