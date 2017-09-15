@@ -158,12 +158,6 @@ Blockly.BlockSvg.START_HAT_HEIGHT = 16;
 Blockly.BlockSvg.START_HAT_PATH = 'c 25,-22 71,-22 96,0';
 
 /**
- * Amount of spilling of the left circle when using multi-row output blocks
- * @const
- */
-Blockly.BlockSvg.MULTI_ROW_SPILL = Blockly.BlockSvg.GRID_UNIT * 2;
-
-/**
  * SVG path for drawing next/previous notch from left to right.
  * @const
  */
@@ -974,7 +968,7 @@ Blockly.BlockSvg.prototype.computeOutputPadding_ = function(inputRows) {
       // Multi-line reporter blocks need extra padding
       // assumes the edge of the circle clamps 2 units vertically at the start of the block
       var radius = inputRows.bottomEdge / 2;
-      var topPad = Blockly.MULTI_ROW_SPILL;
+      var topPad = Blockly.BlockSvg.GRID_UNIT * 2;
       var roundPad = radius * (1 - Math.sin(Math.acos((radius - topPad) / radius)));
       row.paddingStart += roundPad;
       row.paddingEnd += roundPad;
@@ -1220,7 +1214,7 @@ Blockly.BlockSvg.prototype.renderDrawRight_ = function(steps,
       }
       // Remove final separator and replace it with right-padding.
       cursorX -= Blockly.BlockSvg.SEP_SPACE_X;
-      cursorX += row.paddingEnd;
+      cursorX += row.paddingEnd || 0;
       // Update right edge for all inputs, such that all rows
       // stretch to be at least the size of all previous rows.
       inputRows.rightEdge = Math.max(cursorX, inputRows.rightEdge);
