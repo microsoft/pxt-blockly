@@ -1214,7 +1214,7 @@ Blockly.BlockSvg.prototype.renderDrawRight_ = function(steps,
       }
       // Remove final separator and replace it with right-padding.
       cursorX -= Blockly.BlockSvg.SEP_SPACE_X;
-      cursorX += row.paddingEnd || 0;
+      cursorX += row.paddingEnd;
       // Update right edge for all inputs, such that all rows
       // stretch to be at least the size of all previous rows.
       inputRows.rightEdge = Math.max(cursorX, inputRows.rightEdge);
