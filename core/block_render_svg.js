@@ -1147,6 +1147,8 @@ Blockly.BlockSvg.prototype.renderDrawRight_ = function(steps,
   var cursorX = 0;
   var cursorY = 0;
   var connectionX, connectionY;
+  // we assume that a block maybe a sequence of INLINE blocks, followed by a sequence of statement blocks
+  // any kind of mixed bag of those 2 kind of entries is not supported
   var rowHeight = 0;
   var this_ = this;
 
