@@ -1147,7 +1147,7 @@ Blockly.BlockSvg.prototype.renderDrawRight_ = function(steps,
   var cursorX = 0;
   var cursorY = 0;
   var connectionX, connectionY;
-  var prevWidth = 0;
+  var rowHeight = 0;
   for (var y = 0, row; row = inputRows[y]; y++) {
     cursorX = row.paddingStart;
     if (y == 0) {
@@ -1208,26 +1208,10 @@ Blockly.BlockSvg.prototype.renderDrawRight_ = function(steps,
       // Move to the right edge
       cursorX = Math.max(cursorX, inputRows.rightEdge);
       this.width = Math.max(this.width, cursorX);
-      if ((this.width > prevWidth) && !this.edgeShape_) {
-        // Include corner radius in drawing the horizontal line.
-        steps.push('H', cursorX - Blockly.BlockSvg.CORNER_RADIUS - this.edgeShapeWidth_);
-        steps.push(Blockly.BlockSvg.TOP_RIGHT_CORNER);
-      } else {
-        // Don't include corner radius - no corner (edge shape drawn).
-        steps.push('H', cursorX - this.edgeShapeWidth_);
-      }
-      // Subtract CORNER_RADIUS * 2 to account for the top right corner
-      // and also the bottom right corner. Only move vertically the non-corner length.
-      if ((y == 0 || prevWidth == 0) && (this.width > prevWidth) && !this.edgeShape_) {
-        steps.push('v', row.height - Blockly.BlockSvg.CORNER_RADIUS * 2);
-      } else if ((this.width > prevWidth) && !this.edgeShape_) {
-        steps.push('v', row.height - Blockly.BlockSvg.CORNER_RADIUS);
-      } else if (!this.edgeShape_) {
-        steps.push('v', row.height);
-      }
-      prevWidth = this.width;
+      rowHeight += row.height;     
     } else if (row.type == Blockly.NEXT_STATEMENT) {
-      // Nested statement.
+      goog.asserts.assert(rowHeight == 0, 'did not expect a mix of inline and statements')
+        // Nested statement.
       var input = row[0];
       var fieldX = cursorX;
       var fieldY = cursorY;
@@ -1269,10 +1253,21 @@ Blockly.BlockSvg.prototype.renderDrawRight_ = function(steps,
         steps.push('v', Blockly.BlockSvg.EXTRA_STATEMENT_ROW_Y - 2 * Blockly.BlockSvg.CORNER_RADIUS);
         cursorY += Blockly.BlockSvg.EXTRA_STATEMENT_ROW_Y;
       }
-      prevWidth = 0;
     }
     cursorY += row.height;
   }
+  // rowHeight will be positive if inline blocks have been rendered, render a single line on the right
+  if (rowHeight > 0) {
+    if (!this.edgeShape_) {
+      // Include corner radius in drawing the horizontal line.		          
+      steps.push('H', this.width - Blockly.BlockSvg.CORNER_RADIUS - this.edgeShapeWidth_);
+      steps.push(Blockly.BlockSvg.TOP_RIGHT_CORNER);
+      steps.push('v', rowHeight - Blockly.BlockSvg.CORNER_RADIUS * 2);
+    } else {
+      steps.push('H', this.width - this.edgeShapeWidth_);      
+    }
+    rowHeight = 0;
+  }      
   if (this.edgeShape_) {
     // Draw the right-side edge shape.
     if (this.edgeShape_ === Blockly.OUTPUT_SHAPE_ROUND) {
