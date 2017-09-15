@@ -1148,6 +1148,23 @@ Blockly.BlockSvg.prototype.renderDrawRight_ = function(steps,
   var cursorY = 0;
   var connectionX, connectionY;
   var rowHeight = 0;
+  var this_ = this;
+
+  function flushRows() {
+    // rowHeight will be positive if inline blocks have been rendered, render a single line on the right
+    if (rowHeight > 0) {
+      if (!this_.edgeShape_) {
+        // Include corner radius in drawing the horizontal line.		          
+        steps.push('H', this_.width - Blockly.BlockSvg.CORNER_RADIUS - this_.edgeShapeWidth_);
+        steps.push(Blockly.BlockSvg.TOP_RIGHT_CORNER);
+        steps.push('v', rowHeight - Blockly.BlockSvg.CORNER_RADIUS * 2);
+      } else {
+        steps.push('H', this_.width - this_.edgeShapeWidth_);      
+      }
+      rowHeight = 0;
+    }          
+  }
+
   for (var y = 0, row; row = inputRows[y]; y++) {
     cursorX = row.paddingStart;
     if (y == 0) {
@@ -1210,7 +1227,7 @@ Blockly.BlockSvg.prototype.renderDrawRight_ = function(steps,
       this.width = Math.max(this.width, cursorX);
       rowHeight += row.height;     
     } else if (row.type == Blockly.NEXT_STATEMENT) {
-      goog.asserts.assert(rowHeight == 0, 'did not expect a mix of inline and statements')
+      flushRows();
         // Nested statement.
       var input = row[0];
       var fieldX = cursorX;
@@ -1256,18 +1273,7 @@ Blockly.BlockSvg.prototype.renderDrawRight_ = function(steps,
     }
     cursorY += row.height;
   }
-  // rowHeight will be positive if inline blocks have been rendered, render a single line on the right
-  if (rowHeight > 0) {
-    if (!this.edgeShape_) {
-      // Include corner radius in drawing the horizontal line.		          
-      steps.push('H', this.width - Blockly.BlockSvg.CORNER_RADIUS - this.edgeShapeWidth_);
-      steps.push(Blockly.BlockSvg.TOP_RIGHT_CORNER);
-      steps.push('v', rowHeight - Blockly.BlockSvg.CORNER_RADIUS * 2);
-    } else {
-      steps.push('H', this.width - this.edgeShapeWidth_);      
-    }
-    rowHeight = 0;
-  }      
+  flushRows();
   if (this.edgeShape_) {
     // Draw the right-side edge shape.
     if (this.edgeShape_ === Blockly.OUTPUT_SHAPE_ROUND) {
