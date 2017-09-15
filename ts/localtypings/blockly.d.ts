@@ -132,8 +132,12 @@ declare namespace goog {
             setMoveToPointEnabled(val: boolean);
             setMinimum(min: number);
             setMaximum(max: number);
+            setUnitIncrement(increments: number);
             setRightToLeft(rightToLeft: boolean);
             setValue(value: number);
+            animatedSetValue(value: number);
+            setOrientation(orientation: any);
+            setVisible(visible: boolean);
         }
     }
 

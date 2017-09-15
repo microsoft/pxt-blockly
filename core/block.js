@@ -1406,7 +1406,7 @@ Blockly.Block.prototype.interpolate_ = function(message, args, lastDummyAlign) {
               break;
             case 'field_slider':
               field = new Blockly.FieldSlider(element['value'],
-                  element['min'], element['max'], element['precision']);
+                  element['min'], element['max'], element['precision'], element['step'], element['labelText']);
               break;
             case 'field_date':
               if (Blockly.FieldDate) {

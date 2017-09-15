@@ -72,10 +72,14 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
     "args0": [{
       "type": "field_slider",
       "name": "SLIDER",
-      "value": 0
+      "value": 0,
+      "step": 1,
+      "labelText": "Number"
     }],
     "output": "Number",
     "colour": Blockly.Colours.textField,
+    "colourSecondary": Blockly.Colours.textField,
+    "colourTertiary": Blockly.Colours.textField,
     "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
     "helpUrl": "%{BKY_MATH_NUMBER_HELPURL}",
     "tooltip": "%{BKY_MATH_NUMBER_TOOLTIP}",
@@ -608,8 +612,10 @@ Blockly.Constants.Math.MATH_NUMBER_MINMAX_MIXIN = {
    */
   mutationToDom: function() {
     var container = document.createElement('mutation');
-    var min = container.setAttribute('min', this.inputList[0].fieldRow[0].min_);
-    var max = container.setAttribute('max', this.inputList[0].fieldRow[0].max_);
+    if (this.inputList[0].fieldRow[0].min_ != undefined) var min = container.setAttribute('min', this.inputList[0].fieldRow[0].min_);
+    if (this.inputList[0].fieldRow[0].max_ != undefined) var max = container.setAttribute('max', this.inputList[0].fieldRow[0].max_);
+    if (this.inputList[0].fieldRow[0].labelText_ != undefined) var label = container.setAttribute('label', this.inputList[0].fieldRow[0].labelText_);
+    if (this.inputList[0].fieldRow[0].step_ != undefined) var step = container.setAttribute('step', this.inputList[0].fieldRow[0].step_);
     return container;
   },
   /**
@@ -620,7 +626,10 @@ Blockly.Constants.Math.MATH_NUMBER_MINMAX_MIXIN = {
   domToMutation: function(xmlElement) {
     var min = (xmlElement.getAttribute('min'));
     var max = (xmlElement.getAttribute('max'));
-    this.inputList[0].fieldRow[0].setMinMax(min, max);
+    var step = (xmlElement.getAttribute('step'));
+    var label = (xmlElement.getAttribute('label'));
+    this.inputList[0].fieldRow[0].setLabel(label);
+    this.inputList[0].fieldRow[0].setMinMax(min, max, step);
   }
 };
 

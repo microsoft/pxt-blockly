@@ -36,9 +36,16 @@ namespace pxtblocky {
         //  Precision for value 
         private precision_: number;
 
+        private step_: number;
+
+        private labelText_: string;
+
         private slider_: goog.ui.Slider;
 
+        private readout_: any;
+
         private changeEventKey_: any;
+        private focusEventKey_: any;
 
         public static SLIDER_WIDTH = 168;
 
@@ -48,6 +55,7 @@ namespace pxtblocky {
          * @param {number|string|undefined} opt_min Minimum value.
          * @param {number|string|undefined} opt_max Maximum value.
          * @param {number|string|undefined} opt_precision Precision for value.
+         * @param {number|string|undefined} opt_labelText Label text
          * @param {Function=} opt_validator An optional function that is called
          *     to validate any constraints on what the user entered.  Takes the new
          *     text as an argument and returns either the accepted text, a replacement
@@ -55,16 +63,23 @@ namespace pxtblocky {
          * @extends {Blockly.FieldNumber}
          * @constructor
          */
-        constructor(value_: any, opt_min?: string, opt_max?: string, opt_precision?: string, opt_validator?: () => void) {
+        constructor(value_: any, opt_min?: string, opt_max?: string, opt_precision?: string, opt_step?: string, opt_labelText?: string, opt_validator?: () => void) {
             super(String(value_), opt_validator);
             this.min_ = parseFloat(opt_min);
             this.max_ = parseFloat(opt_max);
+            this.step_ = parseFloat(opt_step);
+            this.labelText_ = opt_labelText;
             this.precision_ = parseFloat(opt_precision);
         }
 
-        setMinMax(min: number, max: number) {
-            this.min_ = min;
-            this.max_ = max;
+        setMinMax(min: string, max: string, step: string) {
+            this.min_ = parseFloat(min);
+            this.max_ = parseFloat(max);
+            this.step_ = parseFloat(step) || undefined;
+        }
+
+        setLabel(labelText: string) {
+            if (labelText != undefined) this.labelText_ = labelText;
         }
 
         init() {
@@ -76,7 +91,7 @@ namespace pxtblocky {
          * @private
          */
         showEditor_() {
-            FieldSlider.superClass_.showEditor_.call(this, true);
+            FieldSlider.superClass_.showEditor_.call(this, false);
             if (this.max_ == Infinity || this.min_ == -Infinity) {
                 return;
             }
@@ -103,31 +118,36 @@ namespace pxtblocky {
             this.addSlider_(contentDiv);
 
             // Set colour and size of drop-down
-            Blockly.DropDownDiv.setColour((Blockly as any).Colours.numPadBackground, (Blockly as any).Colours.numPadBorder);
-            contentDiv.style.width = FieldSlider.SLIDER_WIDTH + 'px';
+            Blockly.DropDownDiv.setColour('#ffffff', '#dddddd');
+            Blockly.DropDownDiv.showPositionedByBlock(this, this.sourceBlock_);
+            //contentDiv.style.width = FieldSlider.SLIDER_WIDTH + 'px';
 
-            this.position_();
+            if (this.slider_) this.slider_.setVisible(true)
         };
 
-
         private addSlider_(contentDiv: HTMLElement) {
-            var slider = new goog.ui.Slider();
-            /** @type {!HTMLInputElement} */
-            this.slider_ = slider;
-            slider.setMoveToPointEnabled(true)
-            slider.setMinimum(this.min_);
-            slider.setMaximum(this.max_);
-            slider.setRightToLeft(this.sourceBlock_.RTL);
-
-            slider.render(contentDiv);
+            if (this.labelText_) {
+                let elements = this.createLabelDom_(this.labelText_);
+                contentDiv.appendChild(elements[0]);
+                this.readout_ = elements[1];
+            }
+            this.slider_ = new goog.ui.Slider();
+            this.slider_.setMoveToPointEnabled(true);
+            this.slider_.setMinimum(this.min_);
+            this.slider_.setMaximum(this.max_);
+            if (this.step_) this.slider_.setUnitIncrement(this.step_);
+            this.slider_.setRightToLeft(this.sourceBlock_.RTL);
 
             var value = parseFloat(this.getValue());
             value = isNaN(value) ? 0 : value;
-            slider.setValue(value);
+            console.log(value);
+            this.slider_.setValue(value);
+
+            this.slider_.render(contentDiv);
 
             // Configure event handler.
             var thisField = this;
-            this.changeEventKey_ = goog.events.listen(slider as any,
+            this.changeEventKey_ = goog.events.listen(this.slider_ as any,
                 goog.ui.Component.EventType.CHANGE,
                 function (event) {
                     var val = event.target.getValue() || 0;
@@ -136,12 +156,42 @@ namespace pxtblocky {
                         val = thisField.callValidator(val);
                     }
                     if (val !== null) {
+                        console.log("...")
+                        console.log(val)
                         thisField.setValue(val);
                         var htmlInput = Blockly.FieldTextInput.htmlInput_;
                         htmlInput.value = val;
+                        htmlInput.focus();
                     }
                 });
 
+            this.focusEventKey_ = goog.events.listen(this.slider_.getElement() as any,
+                goog.ui.Component.EventType.FOCUS,
+                (event: any) => {
+                    // Switch focus to the HTML input field
+                    let htmlInput = Blockly.FieldTextInput.htmlInput_;
+                    htmlInput.focus();
+                })
+        }
+
+        private createLabelDom_(labelText: string) {
+            let labelContainer = document.createElement('div');
+            labelContainer.setAttribute('class', 'blocklyFieldSliderLabel');
+            let readout = document.createElement('span');
+            readout.setAttribute('class', 'blocklyFieldSliderReadout');
+            let label = document.createElement('span');
+            label.setAttribute('class', 'blocklyFieldSliderLabelText');
+            label.innerHTML = labelText;
+            labelContainer.appendChild(label);
+            labelContainer.appendChild(readout);
+            return [labelContainer, readout];
+        }
+
+        setValue(value: string) {
+            super.setValue(value);
+            if (this.slider_ && this.readout_) {
+                this.readout_.innerHTML = this.getValue();
+            }
         }
 
         onHtmlInputChange_(e: any) {
@@ -155,7 +205,7 @@ namespace pxtblocky {
          * Close the slider if this input is being deleted.
          */
         public dispose() {
-            Blockly.WidgetDiv.hideIfOwner(this);
+            Blockly.DropDownDiv.hideIfOwner(this);
             super.dispose();
         }
     }

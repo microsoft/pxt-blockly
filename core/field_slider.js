@@ -35,6 +35,7 @@ var pxtblocky;
          * @param {number|string|undefined} opt_min Minimum value.
          * @param {number|string|undefined} opt_max Maximum value.
          * @param {number|string|undefined} opt_precision Precision for value.
+         * @param {number|string|undefined} opt_labelText Label text
          * @param {Function=} opt_validator An optional function that is called
          *     to validate any constraints on what the user entered.  Takes the new
          *     text as an argument and returns either the accepted text, a replacement
@@ -42,16 +43,23 @@ var pxtblocky;
          * @extends {Blockly.FieldNumber}
          * @constructor
          */
-        function FieldSlider(value_, opt_min, opt_max, opt_precision, opt_validator) {
+        function FieldSlider(value_, opt_min, opt_max, opt_precision, opt_step, opt_labelText, opt_validator) {
             var _this = _super.call(this, String(value_), opt_validator) || this;
             _this.min_ = parseFloat(opt_min);
             _this.max_ = parseFloat(opt_max);
+            _this.step_ = parseFloat(opt_step);
+            _this.labelText_ = opt_labelText;
             _this.precision_ = parseFloat(opt_precision);
             return _this;
         }
-        FieldSlider.prototype.setMinMax = function (min, max) {
-            this.min_ = min;
-            this.max_ = max;
+        FieldSlider.prototype.setMinMax = function (min, max, step) {
+            this.min_ = parseFloat(min);
+            this.max_ = parseFloat(max);
+            this.step_ = parseFloat(step) || undefined;
+        };
+        FieldSlider.prototype.setLabel = function (labelText) {
+            if (labelText != undefined)
+                this.labelText_ = labelText;
         };
         FieldSlider.prototype.init = function () {
             Blockly.FieldTextInput.superClass_.init.call(this);
@@ -61,7 +69,7 @@ var pxtblocky;
          * @private
          */
         FieldSlider.prototype.showEditor_ = function () {
-            FieldSlider.superClass_.showEditor_.call(this, true);
+            FieldSlider.superClass_.showEditor_.call(this, false);
             if (this.max_ == Infinity || this.min_ == -Infinity) {
                 return;
             }
@@ -82,37 +90,71 @@ var pxtblocky;
             contentDiv.setAttribute('aria-haspopup', 'true');
             this.addSlider_(contentDiv);
             // Set colour and size of drop-down
-            Blockly.DropDownDiv.setColour(Blockly.Colours.numPadBackground, Blockly.Colours.numPadBorder);
-            contentDiv.style.width = FieldSlider.SLIDER_WIDTH + 'px';
-            this.position_();
+            Blockly.DropDownDiv.setColour('#ffffff', '#dddddd');
+            Blockly.DropDownDiv.showPositionedByBlock(this, this.sourceBlock_);
+            //contentDiv.style.width = FieldSlider.SLIDER_WIDTH + 'px';
+            if (this.slider_)
+                this.slider_.setVisible(true);
         };
         ;
         FieldSlider.prototype.addSlider_ = function (contentDiv) {
-            var slider = new goog.ui.Slider();
-            /** @type {!HTMLInputElement} */
-            this.slider_ = slider;
-            slider.setMoveToPointEnabled(true);
-            slider.setMinimum(this.min_);
-            slider.setMaximum(this.max_);
-            slider.setRightToLeft(this.sourceBlock_.RTL);
-            slider.render(contentDiv);
+            if (this.labelText_) {
+                var elements = this.createLabelDom_(this.labelText_);
+                contentDiv.appendChild(elements[0]);
+                this.readout_ = elements[1];
+            }
+            this.slider_ = new goog.ui.Slider();
+            this.slider_.setMoveToPointEnabled(true);
+            this.slider_.setMinimum(this.min_);
+            this.slider_.setMaximum(this.max_);
+            if (this.step_)
+                this.slider_.setUnitIncrement(this.step_);
+            this.slider_.setRightToLeft(this.sourceBlock_.RTL);
             var value = parseFloat(this.getValue());
             value = isNaN(value) ? 0 : value;
-            slider.setValue(value);
+            console.log(value);
+            this.slider_.setValue(value);
+            this.slider_.render(contentDiv);
             // Configure event handler.
             var thisField = this;
-            this.changeEventKey_ = goog.events.listen(slider, goog.ui.Component.EventType.CHANGE, function (event) {
+            this.changeEventKey_ = goog.events.listen(this.slider_, goog.ui.Component.EventType.CHANGE, function (event) {
                 var val = event.target.getValue() || 0;
                 if (thisField.sourceBlock_) {
                     // Call any validation function, and allow it to override.
                     val = thisField.callValidator(val);
                 }
                 if (val !== null) {
+                    console.log("...");
+                    console.log(val);
                     thisField.setValue(val);
                     var htmlInput = Blockly.FieldTextInput.htmlInput_;
                     htmlInput.value = val;
+                    htmlInput.focus();
                 }
             });
+            this.focusEventKey_ = goog.events.listen(this.slider_.getElement(), goog.ui.Component.EventType.FOCUS, function (event) {
+                // Switch focus to the HTML input field
+                var htmlInput = Blockly.FieldTextInput.htmlInput_;
+                htmlInput.focus();
+            });
+        };
+        FieldSlider.prototype.createLabelDom_ = function (labelText) {
+            var labelContainer = document.createElement('div');
+            labelContainer.setAttribute('class', 'blocklyFieldSliderLabel');
+            var readout = document.createElement('span');
+            readout.setAttribute('class', 'blocklyFieldSliderReadout');
+            var label = document.createElement('span');
+            label.setAttribute('class', 'blocklyFieldSliderLabelText');
+            label.innerHTML = labelText;
+            labelContainer.appendChild(label);
+            labelContainer.appendChild(readout);
+            return [labelContainer, readout];
+        };
+        FieldSlider.prototype.setValue = function (value) {
+            _super.prototype.setValue.call(this, value);
+            if (this.slider_ && this.readout_) {
+                this.readout_.innerHTML = this.getValue();
+            }
         };
         FieldSlider.prototype.onHtmlInputChange_ = function (e) {
             _super.prototype.onHtmlInputChange_.call(this, e);
@@ -124,7 +166,7 @@ var pxtblocky;
          * Close the slider if this input is being deleted.
          */
         FieldSlider.prototype.dispose = function () {
-            Blockly.WidgetDiv.hideIfOwner(this);
+            Blockly.DropDownDiv.hideIfOwner(this);
             _super.prototype.dispose.call(this);
         };
         return FieldSlider;
