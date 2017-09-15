@@ -140,7 +140,6 @@ namespace pxtblocky {
 
             var value = parseFloat(this.getValue());
             value = isNaN(value) ? 0 : value;
-            console.log(value);
             this.slider_.setValue(value);
 
             this.slider_.render(contentDiv);
@@ -156,8 +155,6 @@ namespace pxtblocky {
                         val = thisField.callValidator(val);
                     }
                     if (val !== null) {
-                        console.log("...")
-                        console.log(val)
                         thisField.setValue(val);
                         var htmlInput = Blockly.FieldTextInput.htmlInput_;
                         htmlInput.value = val;
