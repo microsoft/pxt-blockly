@@ -158,6 +158,12 @@ Blockly.BlockSvg.START_HAT_HEIGHT = 16;
 Blockly.BlockSvg.START_HAT_PATH = 'c 25,-22 71,-22 96,0';
 
 /**
+ * Amount of spilling of the left circle when using multi-row output blocks
+ * @const
+ */
+Blockly.BlockSvg.MULTI_ROW_SPILL = Blockly.BlockSvg.GRID_UNIT * 2;
+
+/**
  * SVG path for drawing next/previous notch from left to right.
  * @const
  */
@@ -968,7 +974,7 @@ Blockly.BlockSvg.prototype.computeOutputPadding_ = function(inputRows) {
       // Multi-line reporter blocks need extra padding
       // assumes the edge of the circle clamps 2 units vertically at the start of the block
       var radius = inputRows.bottomEdge / 2;
-      var topPad = Blockly.BlockSvg.GRID_UNIT * 2;
+      var topPad = Blockly.MULTI_ROW_SPILL;
       var roundPad = radius * (1 - Math.sin(Math.acos((radius - topPad) / radius)));
       row.paddingStart += roundPad;
       row.paddingEnd += roundPad;
@@ -1141,7 +1147,26 @@ Blockly.BlockSvg.prototype.renderDrawRight_ = function(steps,
   var cursorX = 0;
   var cursorY = 0;
   var connectionX, connectionY;
-  var prevWidth = 0;
+  // we assume that a block maybe a sequence of INLINE blocks, followed by a sequence of statement blocks
+  // any kind of mixed bag of those 2 kind of entries is not supported
+  var rowHeight = 0;
+  var this_ = this;
+
+  function flushRows() {
+    // rowHeight will be positive if inline blocks have been rendered, render a single line on the right
+    if (rowHeight > 0) {
+      if (!this_.edgeShape_) {
+        // Include corner radius in drawing the horizontal line.		          
+        steps.push('H', this_.width - Blockly.BlockSvg.CORNER_RADIUS - this_.edgeShapeWidth_);
+        steps.push(Blockly.BlockSvg.TOP_RIGHT_CORNER);
+        steps.push('v', rowHeight - Blockly.BlockSvg.CORNER_RADIUS * 2);
+      } else {
+        steps.push('H', this_.width - this_.edgeShapeWidth_);      
+      }
+      rowHeight = 0;
+    }          
+  }
+
   for (var y = 0, row; row = inputRows[y]; y++) {
     cursorX = row.paddingStart;
     if (y == 0) {
@@ -1202,26 +1227,10 @@ Blockly.BlockSvg.prototype.renderDrawRight_ = function(steps,
       // Move to the right edge
       cursorX = Math.max(cursorX, inputRows.rightEdge);
       this.width = Math.max(this.width, cursorX);
-      if ((this.width > prevWidth) && !this.edgeShape_) {
-        // Include corner radius in drawing the horizontal line.
-        steps.push('H', cursorX - Blockly.BlockSvg.CORNER_RADIUS - this.edgeShapeWidth_);
-        steps.push(Blockly.BlockSvg.TOP_RIGHT_CORNER);
-      } else {
-        // Don't include corner radius - no corner (edge shape drawn).
-        steps.push('H', cursorX - this.edgeShapeWidth_);
-      }
-      // Subtract CORNER_RADIUS * 2 to account for the top right corner
-      // and also the bottom right corner. Only move vertically the non-corner length.
-      if ((y == 0 || prevWidth == 0) && (this.width > prevWidth) && !this.edgeShape_) {
-        steps.push('v', row.height - Blockly.BlockSvg.CORNER_RADIUS * 2);
-      } else if ((this.width > prevWidth) && !this.edgeShape_) {
-        steps.push('v', row.height - Blockly.BlockSvg.CORNER_RADIUS);
-      } else if (!this.edgeShape_) {
-        steps.push('v', row.height);
-      }
-      prevWidth = this.width;
+      rowHeight += row.height;     
     } else if (row.type == Blockly.NEXT_STATEMENT) {
-      // Nested statement.
+      flushRows();
+        // Nested statement.
       var input = row[0];
       var fieldX = cursorX;
       var fieldY = cursorY;
@@ -1263,10 +1272,10 @@ Blockly.BlockSvg.prototype.renderDrawRight_ = function(steps,
         steps.push('v', Blockly.BlockSvg.EXTRA_STATEMENT_ROW_Y - 2 * Blockly.BlockSvg.CORNER_RADIUS);
         cursorY += Blockly.BlockSvg.EXTRA_STATEMENT_ROW_Y;
       }
-      prevWidth = 0;
     }
     cursorY += row.height;
   }
+  flushRows();
   if (this.edgeShape_) {
     // Draw the right-side edge shape.
     if (this.edgeShape_ === Blockly.OUTPUT_SHAPE_ROUND) {
