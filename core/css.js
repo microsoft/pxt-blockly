@@ -432,10 +432,11 @@ Blockly.Css.CONTENT = [
   '}',
 
   '.blocklyText {',
+    'cursor: default;',
     'fill: #fff;',
-    'font-family: "Helvetica Neue", Helvetica, sans-serif;',
+    'font-family: "Helvetica Neue", "Segoe UI", Helvetica, sans-serif;',
     'font-size: 12pt;',
-    'font-weight: 500;',
+    'font-weight: bold;',
   '}',
 
   '.blocklyTextTruncated {',
@@ -554,7 +555,7 @@ Blockly.Css.CONTENT = [
 
   '.blocklyHtmlInput {',
     'border: none;',
-    'font-family: "Helvetica Neue", Helvetica, sans-serif;',
+    'font-family: "Helvetica Neue", "Segoe UI", Helvetica, sans-serif;',
     'font-size: 12pt;',
     'height: 100%;',
     'margin: 0;',
