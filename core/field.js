@@ -168,9 +168,8 @@ Blockly.Field.prototype.init = function() {
   this.textElement_ = Blockly.utils.createSvgElement('text',
       {'class': 'blocklyText',
        'x': fieldX,
-       'y': size.height / 2 + Blockly.BlockSvg.FIELD_TOP_PADDING,
-       'dominant-baseline': 'middle',
-       'text-anchor': 'middle'},
+       'dy': '0.6ex',
+       'y': size.height / 2},
       this.fieldGroup_);
 
   this.updateEditable();
@@ -383,7 +382,9 @@ Blockly.Field.prototype.render_ = function() {
     }
 
     // Apply new text element x position.
-    this.textElement_.setAttribute('x', centerTextX);
+    var width = Blockly.Field.getCachedWidth(this.textElement_);
+    var newX = centerTextX - width / 2;
+    this.textElement_.setAttribute('x', newX);
   }
 
   // Update any drawn box to the correct width and height.
@@ -449,16 +450,18 @@ Blockly.Field.getCachedWidth = function(textElement) {
 
   // Attempt to compute fetch the width of the SVG text element.
   try {
-    width = textElement.getComputedTextLength();
+    if (goog.userAgent.IE || goog.userAgent.EDGE) {
+      width = textElement.getBBox().width;
+    } else {
+      width = textElement.getComputedTextLength();
+    }
   } catch (e) {
-    // MSIE 11 and Edge are known to throw "Unexpected call to method or
-    // property access." if the block is hidden. Instead, use an
+    // In other cases where we fail to get the computed text. Instead, use an
     // approximation and do not cache the result. At some later point in time
     // when the block is inserted into the visible DOM, this method will be
     // called again and, at that point in time, will not throw an exception.
-    return textElement.textContent.length * 8;
+    return textElement.textContent.length * 8;    
   }
-
   // Cache the computed width and return.
   if (Blockly.Field.cacheWidths_) {
     Blockly.Field.cacheWidths_[key] = width;
