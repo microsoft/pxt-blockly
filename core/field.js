@@ -168,9 +168,8 @@ Blockly.Field.prototype.init = function() {
   this.textElement_ = Blockly.utils.createSvgElement('text',
       {'class': 'blocklyText',
        'x': fieldX,
-       'y': size.height / 2 + Blockly.BlockSvg.FIELD_TOP_PADDING,
-       'dominant-baseline': 'middle',
-       'text-anchor': 'middle'},
+       'dy': '0.6ex',
+       'y': size.height / 2},
       this.fieldGroup_);
 
   this.updateEditable();
@@ -382,7 +381,9 @@ Blockly.Field.prototype.render_ = function() {
     }
 
     // Apply new text element x position.
-    this.textElement_.setAttribute('x', centerTextX);
+    var width = Blockly.Field.getCachedWidth(this.textElement_);
+    var newX = centerTextX - width / 2;
+    this.textElement_.setAttribute('x', newX);
   }
 
   // Update any drawn box to the correct width and height.
