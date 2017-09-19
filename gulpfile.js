@@ -63,6 +63,7 @@ gulp.task("python-build-all", function(cb){
 
 function pxtPublishTask() {
 	if (fs.existsSync('../pxt')) {
+		gulp.src('./ts/localtypings/blockly.d.ts').pipe(gulp.dest('../pxt/localtypings/'));
 		gulp.src('./blocks_compressed.js').pipe(gulp.dest('../pxt/webapp/public/blockly/'));
 		gulp.src('./blockly_compressed.js').pipe(gulp.dest('../pxt/webapp/public/blockly/'));
 		gulp.src('./msg/js/en.js').pipe(gulp.dest('../pxt/webapp/public/blockly/msg/js/'));
