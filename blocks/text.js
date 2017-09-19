@@ -45,18 +45,19 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
     "type": "text",
     "message0": "%1",
     "args0": [{
-      "type": "field_input",
+      "type": "field_string",
       "name": "TEXT",
       "text": ""
     }],
     "output": "String",
-    "outputShape": Blockly.OUTPUT_SHAPE_SQUARE,
+    "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
     "colour": Blockly.Colours.textField,
     "colourSecondary": Blockly.Colours.textField,
     "colourTertiary": Blockly.Colours.textField,
     "helpUrl": "%{BKY_TEXT_TEXT_HELPURL}",
     "tooltip": "%{BKY_TEXT_TEXT_TOOLTIP}",
     "extensions": [
+      //"text_quotes",
       "parent_tooltip_when_inline"
     ]
   },
@@ -64,7 +65,7 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
     "type": "text_join",
     "message0": "",
     "output": "String",
-    "outputShape": Blockly.OUTPUT_SHAPE_SQUARE,
+    "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
     "colour": "%{BKY_TEXTS_HUE}",
     "helpUrl": "%{BKY_TEXT_JOIN_HELPURL}",
     "tooltip": "%{BKY_TEXT_JOIN_TOOLTIP}",
@@ -197,7 +198,7 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
       }
     ],
     "output": "String",
-    "outputShape": Blockly.OUTPUT_SHAPE_SQUARE,
+    "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
     "colour": "%{BKY_TEXTS_HUE}",
     "helpUrl": "%{BKY_TEXT_CHARAT_HELPURL}",
     "inputsInline": true,
@@ -234,7 +235,7 @@ Blockly.Blocks['text_getSubstring'] = {
     }
     this.setInputsInline(true);
     this.setOutput(true, 'String');
-    this.setOutputShape(Blockly.OUTPUT_SHAPE_SQUARE);
+    this.setOutputShape(Blockly.OUTPUT_SHAPE_ROUND);
     this.updateAt_(1, true);
     this.updateAt_(2, true);
     this.setTooltip(Blockly.Msg.TEXT_GET_SUBSTRING_TOOLTIP);
@@ -333,7 +334,7 @@ Blockly.Blocks['text_changeCase'] = {
         .setCheck('String')
         .appendField(new Blockly.FieldDropdown(OPERATORS), 'CASE');
     this.setOutput(true, 'String');
-    this.setOutputShape(Blockly.OUTPUT_SHAPE_SQUARE);
+    this.setOutputShape(Blockly.OUTPUT_SHAPE_ROUND);
     this.setTooltip(Blockly.Msg.TEXT_CHANGECASE_TOOLTIP);
   }
 };
@@ -355,7 +356,7 @@ Blockly.Blocks['text_trim'] = {
         .setCheck('String')
         .appendField(new Blockly.FieldDropdown(OPERATORS), 'MODE');
     this.setOutput(true, 'String');
-    this.setOutputShape(Blockly.OUTPUT_SHAPE_SQUARE);
+    this.setOutputShape(Blockly.OUTPUT_SHAPE_ROUND);
     this.setTooltip(Blockly.Msg.TEXT_TRIM_TOOLTIP);
   }
 };
@@ -403,7 +404,7 @@ Blockly.Blocks['text_prompt_ext'] = {
     this.appendValueInput('TEXT')
         .appendField(dropdown, 'TYPE');
     this.setOutput(true, 'String');
-    this.setOutputShape(Blockly.OUTPUT_SHAPE_SQUARE);
+    this.setOutputShape(Blockly.OUTPUT_SHAPE_ROUND);
     this.setTooltip(function() {
       return (thisBlock.getFieldValue('TYPE') == 'TEXT') ?
           Blockly.Msg.TEXT_PROMPT_TOOLTIP_TEXT :
@@ -465,7 +466,7 @@ Blockly.Blocks['text_prompt'] = {
         .appendField(new Blockly.FieldTextInput(''), 'TEXT')
         .appendField(this.newQuote_(false));
     this.setOutput(true, 'String');
-    this.setOutputShape(Blockly.OUTPUT_SHAPE_SQUARE);
+    this.setOutputShape(Blockly.OUTPUT_SHAPE_ROUND);
     this.setTooltip(function() {
       return (thisBlock.getFieldValue('TYPE') == 'TEXT') ?
           Blockly.Msg.TEXT_PROMPT_TOOLTIP_TEXT :
@@ -533,7 +534,7 @@ Blockly.Blocks['text_replace'] = {
         }
       ],
       "output": "String",
-      "outputShape": Blockly.OUTPUT_SHAPE_SQUARE,
+      "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
       "inputsInline": true,
       "colour": Blockly.Blocks.texts.HUE,
       "tooltip": Blockly.Msg.TEXT_REPLACE_TOOLTIP,
@@ -558,7 +559,7 @@ Blockly.Blocks['text_reverse'] = {
         }
       ],
       "output": "String",
-      "outputShape": Blockly.OUTPUT_SHAPE_SQUARE,
+      "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
       "inputsInline": true,
       "colour": Blockly.Blocks.texts.HUE,
       "tooltip": Blockly.Msg.TEXT_REVERSE_TOOLTIP,
@@ -579,13 +580,13 @@ Blockly.Constants.Text.QUOTE_IMAGE_MIXIN = {
    * @readonly
    */
   QUOTE_IMAGE_LEFT_DATAURI:
-    'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAKCAQAAAAqJXdxAAAAn0lEQVQI1z3OMa5BURSF4f/cQhAKjUQhuQmFNwGJEUi0RKN5rU7FHKhpjEH3TEMtkdBSCY1EIv8r7nFX9e29V7EBAOvu7RPjwmWGH/VuF8CyN9/OAdvqIXYLvtRaNjx9mMTDyo+NjAN1HNcl9ZQ5oQMM3dgDUqDo1l8DzvwmtZN7mnD+PkmLa+4mhrxVA9fRowBWmVBhFy5gYEjKMfz9AylsaRRgGzvZAAAAAElFTkSuQmCC',
+    'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADUAAAA1CAYAAADh5qNwAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAekQAAHpEBdVwB8AAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAAMdEVYdFRpdGxlAHJlcGVhdKAAkKQAAAHkSURBVGiB7ZfNShxBEMf/1TOKIBIFwbuvkHfZo+AtJ3MK5Ogz5AG85THyEiEgoofg56w74now4LrdlYO7Rmaqav3sMVC/21R1zfSf+ugewPk/oFwf+r62to4YVzT/qCwvNqvqtxi7uvrRevfF8vKvrYODm+lz+exdPhGO8QsTfdL8czF+A/BZ8iWiHwA+aLFLdb0C4F5UeME+nwQTHc1Ycmb4Tg3f9eZwOHxoeDeiEtGJHsyWqOOmIZsopHRouQORvnFLsODLJqooCjtT47Eqiq3yY+4uU3P9/jGApPkXUrJKTO03ArrLVA8YAThX3H96l5dXWmwwMpW6FDVBK0G9ZwCw0W8cQoeD4g5tWFilh3EIqp9i7DZTrGXKmnwAFqvq9C68TSTqNlPELItKySy/ST/Wgut2cTAYNI15M6UfwNZtYko7m0RnPSA2zVlFhRBEUeY59I/2GuGMAjKLKmIUB0Uxo6cmtNZIZxSQWdReXVcgGjXt6TGZEoSzMCSAzKK2gUTC5ZRDeExPtdaQMmByn1PSWB9u9PvXMwMFAdJtAuhCVGMCErM5zu/j5Oknll+2P98pgWiHmX9On1n4H5JYiHH/piy/PrTx/Pzua+/PcRzHcRzHcRzHcRzHcRzHcRzHeVP+AuZ4r4GDNg/KAAAAAElFTkSuQmCC',
   /**
    * Image data URI of an LTR closing double quote (same as RTL opening couble quote).
    * @readonly
    */
   QUOTE_IMAGE_RIGHT_DATAURI:
-    'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAKCAQAAAAqJXdxAAAAqUlEQVQI1z3KvUpCcRiA8ef9E4JNHhI0aFEacm1o0BsI0Slx8wa8gLauoDnoBhq7DcfWhggONDmJJgqCPA7neJ7p934EOOKOnM8Q7PDElo/4x4lFb2DmuUjcUzS3URnGib9qaPNbuXvBO3sGPHJDRG6fGVdMSeWDP2q99FQdFrz26Gu5Tq7dFMzUvbXy8KXeAj57cOklgA+u1B5AoslLtGIHQMaCVnwDnADZIFIrXsoXrgAAAABJRU5ErkJggg==',
+    'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADUAAAA1CAYAAADh5qNwAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAekQAAHpEBdVwB8AAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAAMdEVYdFRpdGxlAHJlcGVhdKAAkKQAAAHrSURBVGiB7ZexjtNAEIa/WfukS0GXZ6DlXShSnWh5BRpECiQegCfgQRAPQAEt0AEJd5D4pAiEcol3KAjoZO+sk+iwQczXZcZjz78zO7sB599AmoZn4/HtEm5ZARrjxVlVfWzaX0A5H4/v5D72brF4NYV4VKYHUDYNhciTCHetAC2Kh8Djpv0LhCjyksRC7Vg/gtH02EwPIDQNEd53BMxT9glcActM6FxAD0vvOFqiRPVDLkANUTtyvlbL/ilaolQkK0pCmGXcOVG5uBulJSqEkBVVl+VxiasOV6mirnN7an1vNqtMr4gpWIas1JvF4hyRK+P5rs3+yXJEkeFETSGKqrXiudYjZiqlIsO1H4BCcl9Jh6hiu7Xbb7MZrlJgT8COcU5t++P3y0uzNW+apChUrWGRTWy0XJ4DdcJ1cR82h6V2PElRwapUZs8ATH4K+pxw9dZ6YIiKMSZFhQ5RO9rP9HhGgSGqMCoVM4PgGq1npMdxDoaok/U6uaeCandyiWrGv6H9JqtVBXxtmL+dVdWq64USY7uaPZ5RYE0/QNu36r1WOzn263r4SgFI+wDeZz8lJ2SftwlI/PP9nYjqUxF5/uu3iLzd54Unqq+3Ig+u20anp9mbv+M4juM4juM4juM4juM4juM4jvPf8AObsamHMreT9QAAAABJRU5ErkJggg==',
   /**
    * Pixel width of QUOTE_IMAGE_LEFT_DATAURI and QUOTE_IMAGE_RIGHT_DATAURI.
    * @readonly
@@ -666,52 +667,52 @@ Blockly.Constants.Text.TEXT_JOIN_MUTATOR_MIXIN = {
     this.itemCount_ = parseInt(xmlElement.getAttribute('items'), 10);
     this.updateShape_();
   },
-  /**
-   * Populate the mutator's dialog with this block's components.
-   * @param {!Blockly.Workspace} workspace Mutator's workspace.
-   * @return {!Blockly.Block} Root block in mutator.
-   * @this Blockly.Block
-   */
-  decompose: function(workspace) {
-    var containerBlock = workspace.newBlock('text_create_join_container');
-    containerBlock.initSvg();
-    var connection = containerBlock.getInput('STACK').connection;
-    for (var i = 0; i < this.itemCount_; i++) {
-      var itemBlock = workspace.newBlock('text_create_join_item');
-      itemBlock.initSvg();
-      connection.connect(itemBlock.previousConnection);
-      connection = itemBlock.nextConnection;
-    }
-    return containerBlock;
-  },
-  /**
-   * Reconfigure this block based on the mutator dialog's components.
-   * @param {!Blockly.Block} containerBlock Root block in mutator.
-   * @this Blockly.Block
-   */
-  compose: function(containerBlock) {
-    var itemBlock = containerBlock.getInputTargetBlock('STACK');
-    // Count number of inputs.
-    var connections = [];
-    while (itemBlock) {
-      connections.push(itemBlock.valueConnection_);
-      itemBlock = itemBlock.nextConnection &&
-          itemBlock.nextConnection.targetBlock();
-    }
-    // Disconnect any children that don't belong.
-    for (var i = 0; i < this.itemCount_; i++) {
-      var connection = this.getInput('ADD' + i).connection.targetConnection;
-      if (connection && connections.indexOf(connection) == -1) {
-        connection.disconnect();
-      }
-    }
-    this.itemCount_ = connections.length;
-    this.updateShape_();
-    // Reconnect any child blocks.
-    for (var i = 0; i < this.itemCount_; i++) {
-      Blockly.Mutator.reconnect(connections[i], this, 'ADD' + i);
-    }
-  },
+  // /**
+  //  * Populate the mutator's dialog with this block's components.
+  //  * @param {!Blockly.Workspace} workspace Mutator's workspace.
+  //  * @return {!Blockly.Block} Root block in mutator.
+  //  * @this Blockly.Block
+  //  */
+  // decompose: function(workspace) {
+  //   var containerBlock = workspace.newBlock('text_create_join_container');
+  //   containerBlock.initSvg();
+  //   var connection = containerBlock.getInput('STACK').connection;
+  //   for (var i = 0; i < this.itemCount_; i++) {
+  //     var itemBlock = workspace.newBlock('text_create_join_item');
+  //     itemBlock.initSvg();
+  //     connection.connect(itemBlock.previousConnection);
+  //     connection = itemBlock.nextConnection;
+  //   }
+  //   return containerBlock;
+  // },
+  // /**
+  //  * Reconfigure this block based on the mutator dialog's components.
+  //  * @param {!Blockly.Block} containerBlock Root block in mutator.
+  //  * @this Blockly.Block
+  //  */
+  // compose: function(containerBlock) {
+  //   var itemBlock = containerBlock.getInputTargetBlock('STACK');
+  //   // Count number of inputs.
+  //   var connections = [];
+  //   while (itemBlock) {
+  //     connections.push(itemBlock.valueConnection_);
+  //     itemBlock = itemBlock.nextConnection &&
+  //         itemBlock.nextConnection.targetBlock();
+  //   }
+  //   // Disconnect any children that don't belong.
+  //   for (var i = 0; i < this.itemCount_; i++) {
+  //     var connection = this.getInput('ADD' + i).connection.targetConnection;
+  //     if (connection && connections.indexOf(connection) == -1) {
+  //       connection.disconnect();
+  //     }
+  //   }
+  //   this.itemCount_ = connections.length;
+  //   this.updateShape_();
+  //   // Reconnect any child blocks.
+  //   for (var i = 0; i < this.itemCount_; i++) {
+  //     Blockly.Mutator.reconnect(connections[i], this, 'ADD' + i);
+  //   }
+  // },
   /**
    * Store pointers to any connected child blocks.
    * @param {!Blockly.Block} containerBlock Root block in mutator.
@@ -748,7 +749,7 @@ Blockly.Constants.Text.TEXT_JOIN_MUTATOR_MIXIN = {
         if (i == 0) {
           input.appendField(Blockly.Msg.TEXT_JOIN_TITLE_CREATEWITH);
         } else {
-          input.setAlign(Blockly.ALIGN_RIGHT);
+          input.setAlign(Blockly.ALIGN_LEFT);
         }
       }
     }
@@ -768,7 +769,7 @@ Blockly.Constants.Text.TEXT_JOIN_EXTENSION = function() {
   this.itemCount_ = 2;
   this.updateShape_();
   // Configure the mutator ui
-  this.setMutator(new Blockly.Mutator(['text_create_join_item']));
+  //this.setMutator(new Blockly.Mutator(['text_create_join_item']));
 };
 
 Blockly.Constants.Text.TEXT_APPEND_TOOLTIP_EXTENSION = function() {

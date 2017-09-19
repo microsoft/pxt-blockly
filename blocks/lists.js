@@ -318,7 +318,7 @@ Blockly.Blocks['lists_create_with'] = {
         this.appendDummyInput('TITLE')
             .appendField(Blockly.Msg.LISTS_CREATE_WITH_INPUT_WITH)
             .appendField(
-          new Blockly.FieldImage(Blockly.mainWorkspace.options.pathToMedia + "add.svg", 24, 24, "*", add));
+          new Blockly.FieldImage(Blockly.mainWorkspace.options.pathToMedia + "add.svg", 24, 24, false, "*", add));
       }
     } else {
       if (this.getInput('TITLE')) this.removeInput('TITLE');
@@ -326,7 +326,7 @@ Blockly.Blocks['lists_create_with'] = {
         this.appendDummyInput('EMPTY')
             .appendField(Blockly.Msg.LISTS_CREATE_EMPTY_TITLE)
             .appendField(
-          new Blockly.FieldImage(Blockly.mainWorkspace.options.pathToMedia + "add.svg", 24, 24, "*", add));
+          new Blockly.FieldImage(Blockly.mainWorkspace.options.pathToMedia + "add.svg", 24, 24, false, "*", add));
       }
     }
     // Add new inputs.
@@ -338,7 +338,7 @@ Blockly.Blocks['lists_create_with'] = {
             that.removeItem_(arg);
           }
         }(i);
-        input.appendField(new Blockly.FieldImage(Blockly.mainWorkspace.options.pathToMedia + "remove.svg", 24, 24, "*", removeItem));
+        input.appendField(new Blockly.FieldImage(Blockly.mainWorkspace.options.pathToMedia + "remove.svg", 24, 24, false, "*", removeItem));
       }
     }
     // Remove deleted inputs.

@@ -1366,6 +1366,9 @@ Blockly.Block.prototype.interpolate_ = function(message, args, lastDummyAlign) {
             case 'field_input':
               field = Blockly.Block.newFieldTextInputFromJson_(element);
               break;
+            case 'field_string':
+              field = Blockly.Block.newFieldStringFromJson_(element);
+              break;
             case 'field_textdropdown':
               field = new Blockly.FieldTextDropdown(element['text'], element['options']);
               if (typeof element['spellcheck'] == 'boolean') {
@@ -1481,6 +1484,23 @@ Blockly.Block.newFieldLabelFromJson_ = function(options) {
 Blockly.Block.newFieldTextInputFromJson_ = function(options) {
   var text = Blockly.utils.replaceMessageReferences(options['text']);
   var field = new Blockly.FieldTextInput(text, options['class']);
+  if (typeof options['spellcheck'] == 'boolean') {
+    field.setSpellcheck(options['spellcheck']);
+  }
+  return field;
+};
+
+/**
+ * Helper function to construct a FieldString from a JSON arg object,
+ * dereferencing any string table references.
+ * @param {!Object} options A JSON object with options (text, class, and
+ *                          spellcheck).
+ * @returns {!Blockly.FieldString} The new text input.
+ * @private
+ */
+Blockly.Block.newFieldStringFromJson_ = function(options) {
+  var text = Blockly.utils.replaceMessageReferences(options['text']);
+  var field = new Blockly.FieldString(text, options['class']);
   if (typeof options['spellcheck'] == 'boolean') {
     field.setSpellcheck(options['spellcheck']);
   }

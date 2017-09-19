@@ -51,6 +51,7 @@ goog.require('Blockly.FieldNumber');
 goog.require('Blockly.FieldNumberDropdown');
 goog.require('Blockly.FieldVariable');
 goog.require('Blockly.FieldSlider');
+goog.require('Blockly.FieldString');
 goog.require('Blockly.Generator');
 goog.require('Blockly.Msg');
 goog.require('Blockly.Procedures');
@@ -413,13 +414,17 @@ Blockly.defineBlocksWithJsonArray = function(jsonArray) {
  * @param {Object} thisObject The value of 'this' in the function.
  * @param {!Function} func Function to call when event is triggered.
  * @param {boolean} opt_noCaptureIdentifier True if triggering on this event
+ * @param {boolean} opt_noPreventDefault True if triggering on this event
+ *     should prevent the default handler.  False by default.  If
+ *     opt_noPreventDefault is provided, opt_noCaptureIdentifier must also be
+ *     provided.
  *     should not block execution of other event handlers on this touch or other
  *     simultaneous touches.
  * @return {!Array.<!Array>} Opaque data that can be passed to unbindEvent_.
  * @private
  */
 Blockly.bindEventWithChecks_ = function(node, name, thisObject, func,
-    opt_noCaptureIdentifier, opt_noPreventDefault) { // pxtblockly: add option to remove calls to preventDefault()
+    opt_noCaptureIdentifier, opt_noPreventDefault) {
   var handled = false;
   var wrapFunc = function(e) {
     var captureIdentifier = !opt_noCaptureIdentifier;
@@ -447,7 +452,8 @@ Blockly.bindEventWithChecks_ = function(node, name, thisObject, func,
   if (name in Blockly.Touch.TOUCH_MAP) {
     var touchWrapFunc = function(e) {
       wrapFunc(e);
-      // Stop the browser from scrolling/zooming the page.
+      // Calling preventDefault stops the browser from scrolling/zooming the
+      // page.
       var preventDef = !opt_noPreventDefault;
       if (handled && preventDef) {
         e.preventDefault();

@@ -172,7 +172,7 @@ Blockly.Toolbox.prototype.init = function() {
           Blockly.hideChaff(true);
         }
         Blockly.Touch.clearTouchIdentifier();  // Don't block future drags.
-      }, /*opt_noPreventDefault*/ false, /*opt_noPreventDefault*/ true);
+      }, /*opt_noCaptureIdentifier*/ false, /*opt_noPreventDefault*/ true);
 
   // pxtblockly: Right clicking on the toolbox doesn't show the browser context menu
   Blockly.bindEventWithChecks_(this.HtmlDiv, 'contextmenu', this, Blockly.utils.noEvent);
@@ -530,7 +530,6 @@ Blockly.Toolbox.TreeControl.prototype.enterDocument = function() {
   // Add touch handler.
   if (goog.events.BrowserFeature.TOUCH_ENABLED) {
     var el = this.getElement();
-    // pxtblockly: change TOUCHSTART for TOUCHEND for better touch scrolling of the toolbox
     Blockly.bindEventWithChecks_(el, goog.events.EventType.TOUCHEND, this,
       this.handleTouchEvent_);
   }
@@ -553,7 +552,7 @@ Blockly.Toolbox.TreeControl.prototype.handleTouchEvent_ = function(e) {
     // Fire asynchronously since onMouseDown takes long enough that the browser
     // would fire the default mouse event before this method returns.
     setTimeout(function() {
-      node.onMouseDown(e);  // Same behaviour for click and touch.
+      node.onClick_(e);  // Same behaviour for click and touch.
     }, 1);
   }
 };
@@ -659,7 +658,7 @@ Blockly.Toolbox.TreeNode.prototype.getExpandIconSafeHtml = function() {
  * @param {!goog.events.BrowserEvent} e The browser event.
  * @override
  */
-Blockly.Toolbox.TreeNode.prototype.onMouseDown = function(e) {
+Blockly.Toolbox.TreeNode.prototype.onClick_ = function(e) {
   // Expand icon.
   if (this.hasChildren() && this.isUserCollapsible_) {
     this.toggle();
@@ -670,6 +669,16 @@ Blockly.Toolbox.TreeNode.prototype.onMouseDown = function(e) {
     this.select();
   }
   this.updateRow();
+};
+
+/**
+ * Suppress the inherited mouse down behaviour.
+ * @param {!goog.events.BrowserEvent} e The browser event.
+ * @override
+ * @private
+ */
+Blockly.Toolbox.TreeNode.prototype.onMouseDown = function(e) {
+  // NOPE.
 };
 
 /**

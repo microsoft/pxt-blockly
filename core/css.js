@@ -563,7 +563,7 @@ Blockly.Css.CONTENT = [
     'width: 100%;',
     'text-align: center;',
     'color: $colour_text;',
-    'font-weight: 500;',
+    'font-weight: bold;',
   '}',
 
   '.blocklyMainBackground {',

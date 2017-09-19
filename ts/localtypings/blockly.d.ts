@@ -343,6 +343,7 @@ declare namespace Blockly {
     class utils {
         static addClass(element: Element, className: string): boolean;
         static wrap(tip: string, limit: number): string;
+        static createSvgElement(tag: string, options: any, fg?: any): any;        
     }
 
     class FieldImage {
@@ -364,8 +365,9 @@ declare namespace Blockly {
     class Field {
         name: string;
         EDITABLE: boolean;
-        borderRect_: any;
+        box_?: any;
         sourceBlock_: Block;
+        textElement_: any;
         init(block: Block): void;
         static superClass_: Field;
         constructor(text: string, opt_validator?: Function);
@@ -379,6 +381,7 @@ declare namespace Blockly {
         getScaledBBox_(): goog.math.Size;
         setValue(newValue: string): void;
         getValue(): string;
+        updateTextNode_(): void;
     }
 
     class FieldVariable extends Field {
@@ -392,7 +395,7 @@ declare namespace Blockly {
 
     class FieldTextInput extends Field {
         text_: string;
-        constructor(text: string, validator: any);
+        constructor(text: string, opt_validator?: any, opt_restrictor?: any);
         static numberValidator: any;
         static htmlInput_: HTMLInputElement;
 
@@ -453,6 +456,7 @@ declare namespace Blockly {
         parentBlock_: Block;
         inputList: Input[];
         disabled: boolean;
+        rendered: boolean;
         comment: string | Comment;
 
         appendDummyInput(opt_name?: string): Input;
@@ -485,6 +489,8 @@ declare namespace Blockly {
         setTooltip(newTip: string | (() => void)): void;
         // Passing null will delete current text
         setWarningText(text: string): void;
+        render(): void;
+        bumpNeighbours_(): void;
     }
 
     class Comment extends Icon {
@@ -690,8 +696,6 @@ declare namespace Blockly {
     interface callbackHandler { }
 
     function inject(elt: Element, options?: Options): Workspace;
-
-    function createSvgElement(tag: string, options: any, fg: any): any;
 
     namespace Names {
         function equals(old: string, n: any): boolean;

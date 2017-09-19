@@ -357,7 +357,8 @@ Blockly.Field.prototype.render_ = function() {
     this.updateWidth();
 
     // Update text centering, based on newly calculated width.
-    var centerTextX = (this.size_.width - this.arrowWidth_) / 2;
+    var leftMargin = this.leftMargin_ || 0;
+    var centerTextX = (this.size_.width + leftMargin - this.arrowWidth_) / 2;
     if (this.sourceBlock_.RTL) {
       centerTextX += this.arrowWidth_;
     }
@@ -404,6 +405,13 @@ Blockly.Field.prototype.updateWidth = function() {
   // Add padding to left and right of text.
   if (this.EDITABLE) {
     width += Blockly.BlockSvg.EDITABLE_FIELD_PADDING;
+  }
+
+  // Adjust width for left margin
+  this.leftMargin_ = 0;
+  if (this.positionLeft) {
+    this.leftMargin_ = this.positionLeft(width);
+    width += this.leftMargin_;
   }
 
   // Adjust width for drop-down arrows.
