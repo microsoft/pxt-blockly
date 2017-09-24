@@ -34,6 +34,7 @@ goog.provide('Blockly.Constants.Lists');
 
 goog.require('Blockly.Blocks');
 
+goog.require('Blockly.PXTBlockly.Extensions');
 
 /**
  * Common HSV hue for all blocks in this category.
@@ -149,6 +150,7 @@ Blockly.Blocks['lists_create_with'] = {
     this.setOutputShape(Blockly.OUTPUT_SHAPE_SQUARE);
     this.setInputsInline(false);
     //this.setMutator(new Blockly.Mutator(['lists_create_with_item']));
+    Blockly.Extensions.apply('inline-svgs', this, false);
     this.setTooltip(Blockly.Msg.LISTS_CREATE_WITH_TOOLTIP);
   },
   /**
@@ -318,7 +320,7 @@ Blockly.Blocks['lists_create_with'] = {
         this.appendDummyInput('TITLE')
             .appendField(Blockly.Msg.LISTS_CREATE_WITH_INPUT_WITH)
             .appendField(
-          new Blockly.FieldImage(Blockly.mainWorkspace.options.pathToMedia + "add.svg", 24, 24, false, "*", add));
+          new Blockly.FieldImage(this.ADD_IMAGE_DATAURI, 24, 24, false, "*", add));
       }
     } else {
       if (this.getInput('TITLE')) this.removeInput('TITLE');
@@ -326,7 +328,7 @@ Blockly.Blocks['lists_create_with'] = {
         this.appendDummyInput('EMPTY')
             .appendField(Blockly.Msg.LISTS_CREATE_EMPTY_TITLE)
             .appendField(
-          new Blockly.FieldImage(Blockly.mainWorkspace.options.pathToMedia + "add.svg", 24, 24, false, "*", add));
+          new Blockly.FieldImage(this.ADD_IMAGE_DATAURI, 24, 24, false, "*", add));
       }
     }
     // Add new inputs.
@@ -338,7 +340,7 @@ Blockly.Blocks['lists_create_with'] = {
             that.removeItem_(arg);
           }
         }(i);
-        input.appendField(new Blockly.FieldImage(Blockly.mainWorkspace.options.pathToMedia + "remove.svg", 24, 24, false, "*", removeItem));
+        input.appendField(new Blockly.FieldImage(this.REMOVE_IMAGE_DATAURI, 24, 24, false, "*", removeItem));
       }
     }
     // Remove deleted inputs.
