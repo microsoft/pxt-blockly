@@ -833,7 +833,7 @@ Blockly.WorkspaceSvg.prototype.highlightBlock = function(id, opt_state) {
   if (opt_state === undefined) {
     // Unhighlight all blocks.
     for (var i = 0, block; block = this.highlightedBlocks_[i]; i++) {
-      block.setGlowStack(false);
+      block.setHighlightBlock(false);
     }
     this.highlightedBlocks_.length = 0;
   }
@@ -847,7 +847,7 @@ Blockly.WorkspaceSvg.prototype.highlightBlock = function(id, opt_state) {
     } else if (this.highlightedBlocks_.indexOf(block) == -1) {
       this.highlightedBlocks_.push(block);
     }
-    block.setGlowStack(state);
+    block.setHighlightBlock(state);
   }
 };
 
