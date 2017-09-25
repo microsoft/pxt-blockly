@@ -129,6 +129,13 @@ Blockly.BlockSvg.prototype.isGlowingBlock_ = false;
 Blockly.BlockSvg.prototype.isGlowingStack_ = false;
 
 /**
+ * Whether the block's highlighting as if running.
+ * @type {boolean}
+ * @private
+ */
+Blockly.BlockSvg.prototype.isHighlightingBlock_ = false;
+
+/**
  * Constant for identifying rows that are to be rendered inline.
  * Don't collide with Blockly.INPUT_VALUE and friends.
  * @const
@@ -260,6 +267,25 @@ Blockly.BlockSvg.prototype.setGlowStack = function(isGlowingStack) {
   if (this.isGlowingStack_ && !svg.hasAttribute('filter')) {
     svg.setAttribute('filter', 'url(#blocklyStackGlowFilter)');
   } else if (!this.isGlowingStack_ && svg.hasAttribute('filter')) {
+    svg.removeAttribute('filter');
+  }
+};
+
+/**
+ * Glow only this particular block, to highlight it visually as if it's running.
+ * @param {boolean} isHighlightingBlock Whether this block should glow as if running.
+ */
+Blockly.BlockSvg.prototype.setHighlightBlock = function(isHighlightingBlock) {
+  //pxtblockly: Sanity check that the block is rendered before setting the highlight
+  if (!this.rendered) {
+    return;
+  }
+  this.isHighlightingBlock_ = isHighlightingBlock;
+  // Update the applied SVG filter if the property has changed
+  var svg = this.svgPath_;
+  if (this.isHighlightingBlock_ && !svg.hasAttribute('filter')) {
+    svg.setAttribute('filter', 'url(#blocklyStackGlowFilter)');
+  } else if (!this.isHighlightingBlock_ && svg.hasAttribute('filter')) {
     svg.removeAttribute('filter');
   }
 };
