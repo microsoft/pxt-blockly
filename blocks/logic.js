@@ -34,6 +34,7 @@ goog.provide('Blockly.Constants.Logic');
 
 goog.require('Blockly.Blocks');
 
+goog.require('Blockly.PXTBlockly.Extensions');
 
 /**
  * Common HSV hue for all blocks in this category.
@@ -65,6 +66,7 @@ Blockly.Blocks['controls_if'] = {
     this.setColour(Blockly.Constants.Logic.HUE);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
+    Blockly.Extensions.apply('inline-svgs', this, false);
     Blockly.Constants.Logic.CONTROLS_IF_TOOLTIP_EXTENSION.call(this);
   },
   /**
@@ -223,7 +225,7 @@ Blockly.Blocks['controls_if'] = {
     }();
     this.appendDummyInput('ADDBUTTON')
         .appendField(
-      new Blockly.FieldImage(Blockly.mainWorkspace.options.pathToMedia + "add.svg", 24, 24, false, "*", addElseIf))
+      new Blockly.FieldImage(this.ADD_IMAGE_DATAURI, 24, 24, false, "*", addElseIf))
   }
 };
 

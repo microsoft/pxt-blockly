@@ -21,40 +21,40 @@ function compileTask() {
 		gulp.src('lib/*.js', { base: '.' }),
 		gulp.src("ts/**/*.ts").pipe(compilation())
 	)
-	.pipe(gulp.dest('./core/'));
+		.pipe(gulp.dest('./'));
 }
 
 // Default task
 gulp.task("default", ["compile"]);
 
-gulp.task('clean-out', function(cb) { rimraf('out', { maxBusyTries: 1 }, cb); });
+gulp.task('clean-out', function (cb) { rimraf('out', { maxBusyTries: 1 }, cb); });
 gulp.task('compile', ['clean-out'], compileTask);
 gulp.task('compile-without-clean', compileTask);
-gulp.task('watch', ['compile'], function() {
+gulp.task('watch', ['compile'], function () {
 	gulp.watch('ts/**/*.ts', ['compile-without-clean']);
 });
 
-gulp.task("python-build-core", function(cb){
+gulp.task("python-build-core", function (cb) {
 	console.info('Starting python build');
-	var python = spawn('python', ['build.py', 'core'], {stdio: 'inherit'});
+	var python = spawn('python', ['build.py', 'core'], { stdio: 'inherit' });
 	python.on('close', function (code) {
 		console.log('python exited with code ' + code);
 		cb(code);
 	});
 });
 
-gulp.task("python-build", function(cb){
+gulp.task("python-build", function (cb) {
 	console.info('Starting python build');
-	var python = spawn('python', ['build.py', 'core'], {stdio: 'inherit'});
+	var python = spawn('python', ['build.py', 'core'], { stdio: 'inherit' });
 	python.on('close', function (code) {
 		console.log('python exited with code ' + code);
 		cb(code);
 	});
 });
 
-gulp.task("python-build-all", function(cb){
+gulp.task("python-build-all", function (cb) {
 	console.info('Starting python build all');
-	var python = spawn('python', ['build.py'], {stdio: 'inherit'});
+	var python = spawn('python', ['build.py'], { stdio: 'inherit' });
 	python.on('close', function (code) {
 		console.log('python exited with code ' + code);
 		cb(code);
@@ -74,7 +74,7 @@ function pxtPublishTask() {
 }
 
 gulp.task('build', ['compile', 'python-build-core'], function (cb) {
-	cb(0);	
+	cb(0);
 });
 
 gulp.task('publish', ['compile', 'python-build-core'], pxtPublishTask);
@@ -83,8 +83,8 @@ gulp.task('release', ['compile', 'python-build-all'], function (done) {
 	spawn('npm', ['publish'], { stdio: 'inherit' }).on('close', done);
 });
 
-gulp.task('bump', function(){
-  gulp.src('./package.json')
-  .pipe(bump({key: "version"}))
-  .pipe(gulp.dest('./'));
+gulp.task('bump', function () {
+	gulp.src('./package.json')
+		.pipe(bump({ key: "version" }))
+		.pipe(gulp.dest('./'));
 });
