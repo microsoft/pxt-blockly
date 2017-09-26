@@ -51,6 +51,7 @@ Blockly.Blocks['controls_if'] = {
    * @this Blockly.Block
    */
   init: function() {
+    Blockly.Extensions.apply('inline-svgs', this, false);
     this.elseifCount_ = 0;
     this.elseCount_ = 0;
     this.setHelpUrl(Blockly.Msg.CONTROLS_IF_HELPURL);
@@ -66,7 +67,6 @@ Blockly.Blocks['controls_if'] = {
     this.setColour(Blockly.Constants.Logic.HUE);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
-    Blockly.Extensions.apply('inline-svgs', this, false);
     Blockly.Constants.Logic.CONTROLS_IF_TOOLTIP_EXTENSION.call(this);
   },
   /**

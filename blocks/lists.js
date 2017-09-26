@@ -142,6 +142,7 @@ Blockly.Blocks['lists_create_with'] = {
    * @this Blockly.Block
    */
   init: function() {
+    Blockly.Extensions.apply('inline-svgs', this, false);
     this.setHelpUrl(Blockly.Msg.LISTS_CREATE_WITH_HELPURL);
     this.setColour(Blockly.Blocks.lists.HUE);
     this.itemCount_ = 3;
@@ -150,7 +151,6 @@ Blockly.Blocks['lists_create_with'] = {
     this.setOutputShape(Blockly.OUTPUT_SHAPE_SQUARE);
     this.setInputsInline(false);
     //this.setMutator(new Blockly.Mutator(['lists_create_with_item']));
-    Blockly.Extensions.apply('inline-svgs', this, false);
     this.setTooltip(Blockly.Msg.LISTS_CREATE_WITH_TOOLTIP);
   },
   /**
