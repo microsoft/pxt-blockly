@@ -199,12 +199,18 @@ namespace pxtblocky {
         
         updateDom_() {
             if (this.slider_ && this.readout_) {
-                if (this.sourceBlock_.isShadow() && this.sourceBlock_.parentBlock_) {
-                    (this.slider_.getElement() as HTMLElement).style.background = this.sourceBlock_.parentBlock_.getColourTertiary();
-                }
+                // Update the slider background
+                this.setBackground_(this.slider_.getElement());
                 this.readout_.innerHTML = this.getValue();
             }
         };
+
+        setBackground_(slider: Element) {
+            if (this.sliderColor_)
+                goog.style.setStyle(slider, 'background', this.sliderColor_);
+            else if (this.sourceBlock_.isShadow() && this.sourceBlock_.parentBlock_)
+                goog.style.setStyle(slider, 'background', this.sourceBlock_.parentBlock_.getColourTertiary());
+        }
 
         updateSliderHandles_() {
             if (this.slider_) {

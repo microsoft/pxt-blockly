@@ -617,6 +617,7 @@ declare namespace Blockly {
         slider_: goog.ui.Slider;
         constructor(value_: any, opt_min?: string, opt_max?: string, opt_precision?: string, opt_step?: string, opt_labelText?: string, opt_validator?: () => void);
         updateDom_(): void;
+        setBackground_(slider: Element): void;
     }
 
     class Block {
