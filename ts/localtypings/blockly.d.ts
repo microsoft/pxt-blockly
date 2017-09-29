@@ -588,6 +588,7 @@ declare namespace Blockly {
         arrowY_: number;
         imageElement_: Element;
         imageJson_: any;
+        menuGenerator_: any;
         constructor(val: ({ src: string; alt: string; width: number; height: number; } | string)[][] | (() => ({ src: string; alt: string; width: number; height: number; } | string)[][]), opt_validator?: Function);
 
         static CHECKMARK_OVERHANG: number;
@@ -605,15 +606,18 @@ declare namespace Blockly {
         position_(): void;
     }
 
-    class FieldTextDropdown extends FieldDropdown {
+    class FieldTextDropdown extends FieldTextInput {
         constructor(text: string, menuGenerator: ({ src: string; alt: string; width: number; height: number; } | string)[][], opt_validator?: Function, opt_restrictor?: any);
     }
 
-    class FieldNumberDropdown extends FieldDropdown {
+    class FieldNumberDropdown extends FieldTextDropdown {
         constructor(value: string | number, menuGenerator: ({ src: string; alt: string; width: number; height: number; } | string)[][], opt_min?: any, opt_max?: any, opt_precision?: any, opt_validator?: Function);
     }
 
     class FieldSlider extends FieldNumber {
+        min_: number;
+        max_: number;
+        labelText_: string;
         slider_: goog.ui.Slider;
         constructor(value_: any, opt_min?: string, opt_max?: string, opt_precision?: string, opt_step?: string, opt_labelText?: string, opt_validator?: () => void);
         updateDom_(): void;

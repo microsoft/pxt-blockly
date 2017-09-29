@@ -275,6 +275,11 @@ Blockly.FieldTextInput.prototype.showEditor_ = function(
   // The animated properties themselves
   htmlInput.style.fontSize = Blockly.BlockSvg.FIELD_TEXTINPUT_FONTSIZE_FINAL + 'pt';
   div.style.boxShadow = '0px 0px 0px 4px ' + Blockly.Colours.fieldShadow;
+  if (opt_arrowCallback) {
+    opt_arrowCallback.call(this);
+    htmlInput.focus();
+    htmlInput.select();
+  }
 };
 
 /**
