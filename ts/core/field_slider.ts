@@ -37,8 +37,8 @@ namespace pxtblocky {
         private precision_: number;
 
         private step_: number;
-
         private labelText_: string;
+        private sliderColor_: string;
 
         private slider_: goog.ui.Slider;
 
@@ -80,6 +80,10 @@ namespace pxtblocky {
 
         setLabel(labelText: string) {
             if (labelText != undefined) this.labelText_ = labelText;
+        }
+
+        setColor(color: string) {
+            if (color != undefined) this.sliderColor_ = color;
         }
 
         init() {
