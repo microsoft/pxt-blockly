@@ -44,8 +44,8 @@ namespace pxtblocky {
 
         private readout_: any;
 
-        private changeEventKey_: any;
-        private focusEventKey_: any;
+        private static changeEventKey_: any;
+        private static focusEventKey_: any;
 
         public static SLIDER_WIDTH = 168;
 
@@ -84,6 +84,7 @@ namespace pxtblocky {
 
         init() {
             Blockly.FieldTextInput.superClass_.init.call(this);
+            this.setValue(this.getValue());
         }
 
         /**
@@ -97,6 +98,8 @@ namespace pxtblocky {
             }
 
             this.showSlider_();
+
+            this.setValue(this.getValue());
         }
 
         /**
@@ -132,7 +135,7 @@ namespace pxtblocky {
                 this.readout_ = elements[1];
             }
             this.slider_ = new goog.ui.Slider();
-            this.slider_.setMoveToPointEnabled(true);
+            this.slider_.setMoveToPointEnabled(false);
             this.slider_.setMinimum(this.min_);
             this.slider_.setMaximum(this.max_);
             if (this.step_) this.slider_.setUnitIncrement(this.step_);
@@ -146,7 +149,7 @@ namespace pxtblocky {
 
             // Configure event handler.
             var thisField = this;
-            this.changeEventKey_ = goog.events.listen(this.slider_ as any,
+            FieldSlider.changeEventKey_ = goog.events.listen(this.slider_ as any,
                 goog.ui.Component.EventType.CHANGE,
                 function (event) {
                     var val = event.target.getValue() || 0;
@@ -162,7 +165,7 @@ namespace pxtblocky {
                     }
                 });
 
-            this.focusEventKey_ = goog.events.listen(this.slider_.getElement() as any,
+            FieldSlider.focusEventKey_ = goog.events.listen(this.slider_.getElement() as any,
                 goog.ui.Component.EventType.FOCUS,
                 (event: any) => {
                     // Switch focus to the HTML input field
@@ -186,8 +189,22 @@ namespace pxtblocky {
 
         setValue(value: string) {
             super.setValue(value);
+            this.updateSliderHandles_();
+            this.updateDom_();
+        }
+        
+        updateDom_() {
             if (this.slider_ && this.readout_) {
+                if (this.sourceBlock_.isShadow() && this.sourceBlock_.parentBlock_) {
+                    (this.slider_.getElement() as HTMLElement).style.background = this.sourceBlock_.parentBlock_.getColourTertiary();
+                }
                 this.readout_.innerHTML = this.getValue();
+            }
+        };
+
+        updateSliderHandles_() {
+            if (this.slider_) {
+                this.slider_.setValue(parseFloat(this.getValue()));
             }
         }
 
@@ -202,7 +219,13 @@ namespace pxtblocky {
          * Close the slider if this input is being deleted.
          */
         public dispose() {
-            Blockly.DropDownDiv.hideIfOwner(this);
+            if (FieldSlider.changeEventKey_) {
+                goog.events.unlistenByKey(FieldSlider.changeEventKey_);
+            }
+            if (FieldSlider.focusEventKey_) {
+                goog.events.unlistenByKey(FieldSlider.focusEventKey_);
+            }
+            Blockly.Events.setGroup(false);
             super.dispose();
         }
     }
