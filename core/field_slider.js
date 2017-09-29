@@ -61,8 +61,13 @@ var pxtblocky;
             if (labelText != undefined)
                 this.labelText_ = labelText;
         };
+        FieldSlider.prototype.setColor = function (color) {
+            if (color != undefined)
+                this.sliderColor_ = color;
+        };
         FieldSlider.prototype.init = function () {
             Blockly.FieldTextInput.superClass_.init.call(this);
+            this.setValue(this.getValue());
         };
         /**
          * Show the inline free-text editor on top of the text.
@@ -74,6 +79,7 @@ var pxtblocky;
                 return;
             }
             this.showSlider_();
+            this.setValue(this.getValue());
         };
         /**
          * Show the slider.
@@ -104,7 +110,7 @@ var pxtblocky;
                 this.readout_ = elements[1];
             }
             this.slider_ = new goog.ui.Slider();
-            this.slider_.setMoveToPointEnabled(true);
+            this.slider_.setMoveToPointEnabled(false);
             this.slider_.setMinimum(this.min_);
             this.slider_.setMaximum(this.max_);
             if (this.step_)
@@ -116,7 +122,7 @@ var pxtblocky;
             this.slider_.render(contentDiv);
             // Configure event handler.
             var thisField = this;
-            this.changeEventKey_ = goog.events.listen(this.slider_, goog.ui.Component.EventType.CHANGE, function (event) {
+            FieldSlider.changeEventKey_ = goog.events.listen(this.slider_, goog.ui.Component.EventType.CHANGE, function (event) {
                 var val = event.target.getValue() || 0;
                 if (thisField.sourceBlock_) {
                     // Call any validation function, and allow it to override.
@@ -129,7 +135,7 @@ var pxtblocky;
                     htmlInput.focus();
                 }
             });
-            this.focusEventKey_ = goog.events.listen(this.slider_.getElement(), goog.ui.Component.EventType.FOCUS, function (event) {
+            FieldSlider.focusEventKey_ = goog.events.listen(this.slider_.getElement(), goog.ui.Component.EventType.FOCUS, function (event) {
                 // Switch focus to the HTML input field
                 var htmlInput = Blockly.FieldTextInput.htmlInput_;
                 htmlInput.focus();
@@ -149,8 +155,26 @@ var pxtblocky;
         };
         FieldSlider.prototype.setValue = function (value) {
             _super.prototype.setValue.call(this, value);
+            this.updateSliderHandles_();
+            this.updateDom_();
+        };
+        FieldSlider.prototype.updateDom_ = function () {
             if (this.slider_ && this.readout_) {
+                // Update the slider background
+                this.setBackground_(this.slider_.getElement());
                 this.readout_.innerHTML = this.getValue();
+            }
+        };
+        ;
+        FieldSlider.prototype.setBackground_ = function (slider) {
+            if (this.sliderColor_)
+                goog.style.setStyle(slider, 'background', this.sliderColor_);
+            else if (this.sourceBlock_.isShadow() && this.sourceBlock_.parentBlock_)
+                goog.style.setStyle(slider, 'background', this.sourceBlock_.parentBlock_.getColourTertiary());
+        };
+        FieldSlider.prototype.updateSliderHandles_ = function () {
+            if (this.slider_) {
+                this.slider_.setValue(parseFloat(this.getValue()));
             }
         };
         FieldSlider.prototype.onHtmlInputChange_ = function (e) {
@@ -163,7 +187,13 @@ var pxtblocky;
          * Close the slider if this input is being deleted.
          */
         FieldSlider.prototype.dispose = function () {
-            Blockly.DropDownDiv.hideIfOwner(this);
+            if (FieldSlider.changeEventKey_) {
+                goog.events.unlistenByKey(FieldSlider.changeEventKey_);
+            }
+            if (FieldSlider.focusEventKey_) {
+                goog.events.unlistenByKey(FieldSlider.focusEventKey_);
+            }
+            Blockly.Events.setGroup(false);
             _super.prototype.dispose.call(this);
         };
         return FieldSlider;
