@@ -189,7 +189,7 @@ Blockly.FieldColour.prototype.showEditor_ = function() {
   this.colorPicker_.setColors(this.colours_ || Blockly.FieldColour.COLOURS);
 
   this.colorPicker_.render(div);
-  this.colorPicker_.setSelectedColor(this.getValue());
+  this.colorPicker_.setSelectedColor(this.getValue(true));
 
   Blockly.DropDownDiv.setColour('#ffffff', '#dddddd');
   if (this.sourceBlock_.parentBlock_) Blockly.DropDownDiv.setCategory(this.sourceBlock_.parentBlock_.getCategory());
