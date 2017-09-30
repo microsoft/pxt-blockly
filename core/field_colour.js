@@ -65,6 +65,13 @@ Blockly.FieldColour.prototype.colours_ = null;
 Blockly.FieldColour.prototype.columns_ = 0;
 
 /**
+ * The color picker.
+ * @type {goog.ui.ColorPicker}
+ * @private
+ */
+Blockly.FieldColour.prototype.colorPicker_ = null;
+
+/**
  * Install this field on a block.
  * @param {!Blockly.Block} block The block containing this field.
  */
@@ -172,51 +179,27 @@ Blockly.FieldColour.prototype.setColumns = function(columns) {
  * @private
  */
 Blockly.FieldColour.prototype.showEditor_ = function() {
-  Blockly.WidgetDiv.show(this, this.sourceBlock_.RTL,
-      Blockly.FieldColour.widgetDispose_);
+  Blockly.DropDownDiv.hideWithoutAnimation();
+  Blockly.DropDownDiv.clearContent();
+  var div = Blockly.DropDownDiv.getContentDiv();
+
   // Create the palette using Closure.
-  var picker = new goog.ui.ColorPicker();
-  picker.setSize(this.columns_ || Blockly.FieldColour.COLUMNS);
-  picker.setColors(this.colours_ || Blockly.FieldColour.COLOURS);
+  this.colorPicker_ = new goog.ui.ColorPicker();
+  this.colorPicker_.setSize(this.columns_ || Blockly.FieldColour.COLUMNS);
+  this.colorPicker_.setColors(this.colours_ || Blockly.FieldColour.COLOURS);
 
-  // Position the palette to line up with the field.
-  // Record windowSize and scrollOffset before adding the palette.
-  var windowSize = goog.dom.getViewportSize();
-  var scrollOffset = goog.style.getViewportPageOffset(document);
-  var xy = this.getAbsoluteXY_();
-  var borderBBox = this.getScaledBBox_();
-  var div = Blockly.WidgetDiv.DIV;
-  picker.render(div);
-  picker.setSelectedColor(this.getValue());
-  // Record paletteSize after adding the palette.
-  var paletteSize = goog.style.getSize(picker.getElement());
+  this.colorPicker_.render(div);
+  this.colorPicker_.setSelectedColor(this.getValue(true));
 
-  // Flip the palette vertically if off the bottom.
-  if (xy.y + paletteSize.height + borderBBox.height >=
-      windowSize.height + scrollOffset.y) {
-    xy.y -= paletteSize.height - 1;
-  } else {
-    xy.y += borderBBox.height - 1;
-  }
-  if (this.sourceBlock_.RTL) {
-    xy.x += borderBBox.width;
-    xy.x -= paletteSize.width;
-    // Don't go offscreen left.
-    if (xy.x < scrollOffset.x) {
-      xy.x = scrollOffset.x;
-    }
-  } else {
-    // Don't go offscreen right.
-    if (xy.x > windowSize.width + scrollOffset.x - paletteSize.width) {
-      xy.x = windowSize.width + scrollOffset.x - paletteSize.width;
-    }
-  }
-  Blockly.WidgetDiv.position(xy.x, xy.y, windowSize, scrollOffset,
-                             this.sourceBlock_.RTL);
+  Blockly.DropDownDiv.setColour('#ffffff', '#dddddd');
+  if (this.sourceBlock_.parentBlock_) Blockly.DropDownDiv.setCategory(this.sourceBlock_.parentBlock_.getCategory());
+  Blockly.DropDownDiv.showPositionedByBlock(this, this.sourceBlock_);
+
+  this.setValue(this.getValue());
 
   // Configure event handler.
   var thisField = this;
-  Blockly.FieldColour.changeEventKey_ = goog.events.listen(picker,
+  Blockly.FieldColour.changeEventKey_ = goog.events.listen(this.colorPicker_,
       goog.ui.ColorPicker.EventType.CHANGE,
       function(event) {
         var colour = event.target.getSelectedColor() || '#000000';
@@ -235,9 +218,10 @@ Blockly.FieldColour.prototype.showEditor_ = function() {
  * Hide the colour palette.
  * @private
  */
-Blockly.FieldColour.widgetDispose_ = function() {
+Blockly.FieldColour.prototype.dispose = function() {
   if (Blockly.FieldColour.changeEventKey_) {
     goog.events.unlistenByKey(Blockly.FieldColour.changeEventKey_);
   }
   Blockly.Events.setGroup(false);
+  Blockly.FieldColour.superClass_.dispose.call(this);
 };
