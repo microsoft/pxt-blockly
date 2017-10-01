@@ -808,8 +808,8 @@ Blockly.Css.CONTENT = [
   '}',
 
   '.blocklyDropDownDiv .goog-palette-cell {',
-    'height: 30px;',
-    'width: 30px;',
+    'height: 22px;',
+    'width: 22px;',
     'margin: 0;',
     'padding: 2px;',
     'border: 0;',
@@ -820,8 +820,8 @@ Blockly.Css.CONTENT = [
 
   '.blocklyDropDownDiv .goog-palette-colorswatch {',
     'position: relative;',
-    'height: 30px;',
-    'width: 30px;',
+    'height: 22px;',
+    'width: 22px;',
     'border-radius: 4px;',
     'border: 2px solid rgba(0,0,0,.1);',
   '}',
