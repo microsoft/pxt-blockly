@@ -162,7 +162,7 @@ var pxtblocky;
             if (this.slider_ && this.readout_) {
                 // Update the slider background
                 this.setBackground_(this.slider_.getElement());
-                this.readout_.innerHTML = this.getValue();
+                this.setReadout_(this.readout_, this.getValue());
             }
         };
         ;
@@ -171,6 +171,9 @@ var pxtblocky;
                 goog.style.setStyle(slider, 'background', this.sliderColor_);
             else if (this.sourceBlock_.isShadow() && this.sourceBlock_.parentBlock_)
                 goog.style.setStyle(slider, 'background', this.sourceBlock_.parentBlock_.getColourTertiary());
+        };
+        FieldSlider.prototype.setReadout_ = function (readout, value) {
+            readout.innerHTML = value;
         };
         FieldSlider.prototype.updateSliderHandles_ = function () {
             if (this.slider_) {
