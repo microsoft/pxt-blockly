@@ -683,6 +683,7 @@ Blockly.Css.CONTENT = [
     'position: absolute;',
     'font-family: "Helvetica Neue", "Segoe UI", Helvetica, sans-serif;',
     'z-index: 40;', /* so blocks go over toolbox when dragging */
+    '-webkit-tap-highlight-color: transparent;', /* Remove Webkit IOS tap color */
   '}',
 
   '.blocklyTreeRoot {',
