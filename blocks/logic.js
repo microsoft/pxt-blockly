@@ -123,6 +123,14 @@ Blockly.Blocks['controls_if'] = {
     }
     Blockly.Mutator.reconnect(this.elseStatementConnection_, this, 'ELSE');
   },
+  addElse_: function () {
+    this.storeConnections_();
+    var update = function () {
+      this.elseCount_++;
+    }
+    this.update_(update);
+    this.restoreConnections_();
+  },
   addElseIf_: function () {
     this.storeConnections_();
     var update = function () {
@@ -219,8 +227,12 @@ Blockly.Blocks['controls_if'] = {
     var that = this;
     var addElseIf = function () {
       return function () {
-        if (!that.elseifCount_) that.elseifCount_ = 0;
-        that.addElseIf_();
+        if (that.elseCount_ == 0) {
+          that.addElse_();
+        } else {
+          if (!that.elseifCount_) that.elseifCount_ = 0;
+          that.addElseIf_();
+        }
       }
     }();
     this.appendDummyInput('ADDBUTTON')
