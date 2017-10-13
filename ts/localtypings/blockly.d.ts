@@ -64,6 +64,12 @@ declare namespace goog {
         function clamp(n: number, min: number, max: number): void;
     }
 
+    namespace color {
+        function darken(rgb: number[], factor: number): number[];
+        function rgbArrayToHex(rgb: number[]): string;
+        function hexToRgb(hex: string): number[];
+    }
+
     namespace ui {
         class Control extends Component {
             getChildCount(): number;
@@ -556,6 +562,8 @@ declare namespace Blockly {
         static getCachedWidth(textElement: Element): number;
         addArgType(argType: string): void;
         updateTextNode_(): void;
+        getSize(): goog.math.Size;
+        getSvgRoot(): Element;
     }
 
     class FieldVariable extends Field {
@@ -723,6 +731,8 @@ declare namespace Blockly {
         bumpNeighbours_(): void;
         select(): void;
         getRelativeToSurfaceXY(): goog.math.Coordinate;
+        getOutputShape(): number;
+        getSvgRoot(): Element;
     }
 
     class Comment extends Icon {
