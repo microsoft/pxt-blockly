@@ -62,6 +62,8 @@ rm -rf blockly_compressed_horizontal.js
 rm -rf blockly_uncompressed_horizontal.js
 rm -rf blockly_compressed_vertical.js
 rm -rf blockly_uncompressed_vertical.js
+rm -rf blocks_compressed_horizontal.js
+rm -rf blocks_compressed_vertical.js
 rm -rf core/block_render_svg_horizontal.js
 rm -rf core/data_category.js
 rm -rf tests/horizontal_playground.html

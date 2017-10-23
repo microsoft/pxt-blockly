@@ -213,7 +213,7 @@ Blockly.Variables.createVariableDom_ = function(variableModel) {
   //   variablename
   // </field>
   var field = goog.dom.createDom('field', null, variableModel.name);
-  field.setAttribute('name', 'VARIABLE');
+  field.setAttribute('name', 'VAR');
   field.setAttribute('variableType', variableModel.type);
   field.setAttribute('id', variableModel.getId());
   return field;
@@ -496,7 +496,7 @@ Blockly.Variables.generateVariableFieldXml_ = function(variableModel, opt_name) 
   // The variable name may be user input, so it may contain characters that need
   // to be escaped to create valid XML.
   var element = goog.dom.createDom('field');
-  element.setAttribute('name', opt_name || 'VARIABLE');
+  element.setAttribute('name', opt_name || 'VAR');
   element.setAttribute('variableType', variableModel.type);
   element.setAttribute('id', variableModel.getId());
   element.textContent = variableModel.name;
