@@ -237,9 +237,8 @@ Blockly.Extensions.checkMutatorDialog_ = function(object, errorPrefix) {
  */
 Blockly.Extensions.checkBlockHasMutatorProperties_ = function(errorPrefix,
     block) {
-  if (typeof block.domToMutation != 'function') {
-    throw new Error(errorPrefix +
-                    'Applying a mutator didn\'t add "domToMutation"');
+  if (typeof block.domToMutation !== 'function') {
+    throw new Error(errorPrefix + 'Applying a mutator didn\'t add "domToMutation"');
   }
   if (typeof block.mutationToDom != 'function') {
     throw new Error(errorPrefix +

@@ -418,7 +418,7 @@ Blockly.FieldDropdown.prototype.setValue = function(newValue) {
       var content = options[i][0];
       if (typeof content == 'object') {
         this.imageJson_ = content;
-        this.text_ = content.alt;        
+        this.text_ = content.alt;
       } else {
         this.imageJson_ = null;
         this.text_ = content;

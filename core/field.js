@@ -185,7 +185,7 @@ Blockly.Field.prototype.init = function() {
   this.textElement_ = Blockly.utils.createSvgElement('text',
       {'class': this.className_,
        'x': fieldX,
-       'dy': '0.6ex',
+       'dy': '0.7ex',
        'y': size.height / 2},
       this.fieldGroup_);
 

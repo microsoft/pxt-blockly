@@ -45,7 +45,11 @@ goog.require('goog.userAgent');
  * accessed through the exact name that was exported. Note, that all the exports
  * are happening as the last thing in the generated js files, so they won't be
  * accessible before JavaScript loads!
+<<<<<<< HEAD
  * @return {!Object<string, string>} The message array.
+=======
+ * @return {!Object<string, string>} The message array
+>>>>>>> 36682a49128008483f75eb135550d0b2f59a509e
  * @private
  */
 Blockly.utils.getMessageArray_ = function() {
@@ -944,6 +948,43 @@ Blockly.utils.runAfterPageLoad = function(fn) {
 Blockly.utils.setCssTransform = function(node, transform) {
   node.style['transform'] = transform;
   node.style['-webkit-transform'] = transform;
+};
+
+/**
+ * Re-assign obscured shadow blocks new IDs to prevent collisions
+ * Scratch specific to help the VM handle deleting obscured shadows.
+ * @param {Blockly.Block} block the root block to be processed.
+ */
+Blockly.utils.changeObscuredShadowIds = function(block) {
+  var blocks = block.getDescendants();
+  for (var i = blocks.length - 1; i >= 0; i--) {
+    var descendant = blocks[i];
+    for (var j = 0; j < descendant.inputList.length; j++) {
+      var connection = descendant.inputList[j].connection;
+      if (connection) {
+        var shadowDom = connection.getShadowDom();
+        if (shadowDom) {
+          shadowDom.setAttribute('id', Blockly.utils.genUid());
+          connection.setShadowDom(shadowDom);
+        }
+      }
+    }
+  }
+};
+
+/**
+ * Whether a block is both a shadow block and an argument reporter.  These
+ * blocks have special behaviour in scratch-blocks: they're duplicated when
+ * dragged, and they are rendered slightly differently from normal shadow
+ * blocks.
+ * @param {!Blockly.BlockSvg} block The block that should be used to make this
+ *     decision.
+ * @return {boolean} True if the block should be duplicated on drag.
+ * @package
+ */
+Blockly.utils.isShadowArgumentReporter = function(block) {
+  return (block.isShadow() && (block.type == 'argument_reporter_boolean' ||
+      block.type == 'argument_reporter_string_number'));
 };
 
 /**

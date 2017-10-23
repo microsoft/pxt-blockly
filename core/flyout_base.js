@@ -425,7 +425,7 @@ Blockly.Flyout.prototype.hide = function() {
  *     Variables and procedures have a custom set of blocks.
  */
 Blockly.Flyout.prototype.show = function(xmlList) {
-  this.workspace_.setResizesEnabled(false);
+  this.workspace_.setBulkUpdate(true);
   this.hide();
   this.clearOldBlocks_();
 
@@ -505,7 +505,7 @@ Blockly.Flyout.prototype.show = function(xmlList) {
   } else {
     this.width_ = 0;
   }
-  this.workspace_.setResizesEnabled(true);
+  this.workspace_.setBulkUpdate(false);
   this.reflow();
 
   this.filterForCapacity_();
@@ -604,7 +604,7 @@ Blockly.Flyout.prototype.onMouseDown_ = function(e) {
 Blockly.Flyout.prototype.createBlock = function(originalBlock) {
   var newBlock = null;
   Blockly.Events.disable();
-  this.targetWorkspace_.setResizesEnabled(false);
+  this.targetWorkspace_.setBulkUpdate(true);
   try {
     newBlock = this.placeNewBlock_(originalBlock);
     // Close the flyout.

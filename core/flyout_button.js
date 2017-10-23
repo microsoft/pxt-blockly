@@ -173,7 +173,6 @@ Blockly.FlyoutButton.prototype.createDom = function() {
   svgText.textContent = this.text_;
 
   this.width = Blockly.Field.getCachedWidth(svgText);
-  this.height = 20;  // Can't compute it :(
 
   if (this.icon_ || this.iconClass_) {
     var svgIcon = Blockly.utils.createSvgElement('text',
@@ -218,8 +217,6 @@ Blockly.FlyoutButton.prototype.createDom = function() {
   svgText.setAttribute('x', this.width / 2);
   svgText.setAttribute('y', this.height / 2);
 
-  this.updateTransform_();
-
   this.mouseUpWrapper_ = Blockly.bindEventWithChecks_(this.svgGroup_, 'mouseup',
       this, this.onMouseUp_);
   return this.svgGroup_;
@@ -260,6 +257,24 @@ Blockly.FlyoutButton.prototype.moveTo = function(x, y) {
  */
 Blockly.FlyoutButton.prototype.getTargetWorkspace = function() {
   return this.targetWorkspace_;
+};
+
+/**
+ * Get the text of this button.
+ * @return {string} The text on the button.
+ * @package
+ */
+Blockly.FlyoutButton.prototype.getText = function() {
+  return this.text_;
+};
+
+/**
+ * Get the position of this button.
+ * @return {!goog.math.Coordinate} The button position.
+ * @package
+ */
+Blockly.FlyoutButton.prototype.getPosition = function() {
+  return this.position_;
 };
 
 /**

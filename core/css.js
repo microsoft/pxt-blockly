@@ -504,7 +504,10 @@ Blockly.Css.CONTENT = [
   '}',
 
   '.blocklyFlyoutLabelText {',
-    'fill: #000;',
+    'font-family: "Helvetica Neue", "Segoe UI", Helvetica, sans-serif;',
+    'font-size: 14pt;',
+    'fill: #575E75;',
+    'font-weight: bold;',
   '}',
 
   /*
@@ -637,26 +640,41 @@ Blockly.Css.CONTENT = [
     'background: #faa;',
   '}',
 
-  '.blocklyAngleCircle {',
-    'stroke: #444;',
+  // '.blocklyAngleCircle {',
+  //   'stroke: ' + Blockly.Colours.motion.tertiary + ';',
+  //   'stroke-width: 1;',
+  //   'fill: ' + Blockly.Colours.motion.secondary + ';',
+  // '}',
+
+  '.blocklyAngleCenterPoint {',
+    'stroke: #fff;',
     'stroke-width: 1;',
-    'fill: #ddd;',
-    'fill-opacity: .8;',
+    'fill: #fff;',
   '}',
 
+  '.blocklyAngleDragHandle {',
+    'stroke: #fff;',
+    'stroke-width: 5;',
+    'stroke-opacity: 0.25;',
+    'fill: #fff;',
+    'cursor: pointer;',
+  '}',
+
+
   '.blocklyAngleMarks {',
-    'stroke: #444;',
+    'stroke: #fff;',
     'stroke-width: 1;',
+    'stroke-opacity: 0.5;',
   '}',
 
   '.blocklyAngleGauge {',
-    'fill: #f88;',
-    'fill-opacity: .8;',
+    'fill: #fff;',
+    'fill-opacity: 0.20;',
   '}',
 
   '.blocklyAngleLine {',
-    'stroke: #f00;',
-    'stroke-width: 2;',
+    'stroke: #fff;',
+    'stroke-width: 1;',
     'stroke-linecap: round;',
     'pointer-events: none;',
   '}',
@@ -807,7 +825,8 @@ Blockly.Css.CONTENT = [
   */
   '.blocklyDropDownDiv .goog-palette {',
     'outline: none;',
-    'cursor: default;',
+    'border-radius: 11px;',
+    'margin-bottom: 20px;',
   '}',
 
   '.blocklyDropDownDiv .goog-palette-table {',
@@ -821,8 +840,9 @@ Blockly.Css.CONTENT = [
     'padding: 2px;',
     'border: 0;',
     'text-align: center;',
-    'vertical-align: middle;',
-    'font-size: 1px;',
+    'border-top: 1px solid #ddd;',
+    'padding-top: 5px;',
+    'cursor: pointer;',
   '}',
 
   '.blocklyDropDownDiv .goog-palette-colorswatch {',

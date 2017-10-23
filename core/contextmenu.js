@@ -257,10 +257,16 @@ Blockly.ContextMenu.blockHelpOption = function(block) {
  * @package
  */
 Blockly.ContextMenu.blockDuplicateOption = function(block) {
+  var enabled = true;
+  if (block.getDescendants().length > block.workspace.remainingCapacity()) {
+    enabled = false;
+  }
   var duplicateOption = {
     text: Blockly.Msg.DUPLICATE_BLOCK,
-    enabled: true,
-    callback: block.duplicateAndDragCallback_()
+    enabled: enabled,
+    callback: function () {
+      Blockly.duplicate_(block);
+    } 
   };
   return duplicateOption;
 };

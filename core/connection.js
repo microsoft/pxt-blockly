@@ -66,6 +66,8 @@ Blockly.Connection.REASON_TARGET_NULL = 3;
 Blockly.Connection.REASON_CHECKS_FAILED = 4;
 Blockly.Connection.REASON_DIFFERENT_WORKSPACES = 5;
 Blockly.Connection.REASON_SHADOW_PARENT = 6;
+// Fixes #1127, but may be the wrong solution.
+Blockly.Connection.REASON_CUSTOM_PROCEDURE = 7;
 
 /**
  * Connection this connection connects to.  Null if not connected.
@@ -311,9 +313,11 @@ Blockly.Connection.prototype.canConnectWithReason_ = function(target) {
   if (this.isSuperior()) {
     var blockA = this.sourceBlock_;
     var blockB = target.getSourceBlock();
+    var superiorConn = this;
   } else {
     var blockB = this.sourceBlock_;
     var blockA = target.getSourceBlock();
+    var superiorConn = target;
   }
   if (blockA && blockA == blockB) {
     return Blockly.Connection.REASON_SELF_CONNECTION;
@@ -323,11 +327,19 @@ Blockly.Connection.prototype.canConnectWithReason_ = function(target) {
     return Blockly.Connection.REASON_DIFFERENT_WORKSPACES;
   } else if (!this.checkType_(target)) {
     return Blockly.Connection.REASON_CHECKS_FAILED;
-  }
+  // } else if (blockA.isShadow() && !blockB.isShadow()) {
+  //   return Blockly.Connection.REASON_SHADOW_PARENT;
+  // } else if (blockA.type == 'procedures_defnoreturn' &&
+  //     blockB.type != 'procedures_callnoreturn_internal' &&
+  //     superiorConn == blockA.getInput('custom_block').connection ) {
+  //   // Hack to fix #1127: Fail attempts to connect to the custom_block input
+  //   // on a defnoreturn block, unless the connecting block is a specific type.
+  //   return Blockly.Connection.REASON_CUSTOM_PROCEDURE;
+  // }
   // pxtblockly: disabled to support nested shadow blocks
   // else if (blockA.isShadow() && !blockB.isShadow()) {
   //   return Blockly.Connection.REASON_SHADOW_PARENT;
-  // }
+  }
   return Blockly.Connection.CAN_CONNECT;
 };
 
@@ -357,6 +369,8 @@ Blockly.Connection.prototype.checkConnection_ = function(target) {
       throw msg;
     case Blockly.Connection.REASON_SHADOW_PARENT:
       throw 'Connecting non-shadow to shadow block.';
+    case Blockly.Connection.REASON_CUSTOM_PROCEDURE:
+      throw 'Trying to replace a shadow on a custom procedure definition.';
     default:
       throw 'Unknown connection failure: this should never happen!';
   }

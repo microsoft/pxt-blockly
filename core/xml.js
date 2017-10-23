@@ -107,7 +107,7 @@ Blockly.Xml.blockToDom = function(block, opt_noId) {
     }
   }
   function fieldToDom(field) {
-    if (field.name && field.EDITABLE) {
+    if (field.name && field.SERIALIZABLE) {
       var container = goog.dom.createDom('field', null, field.getValue());
       container.setAttribute('name', field.name);
       if (field instanceof Blockly.FieldVariable) {
@@ -330,8 +330,8 @@ Blockly.Xml.domToWorkspace = function(xml, workspace) {
   }
 
   // Disable workspace resizes as an optimization.
-  if (workspace.setResizesEnabled) {
-    workspace.setResizesEnabled(false);
+  if (workspace.setBulkUpdate) {
+    workspace.setBulkUpdate(true);
   }
   var variablesFirst = true;
   try {
@@ -375,8 +375,8 @@ Blockly.Xml.domToWorkspace = function(xml, workspace) {
   }
   workspace.updateVariableStore(false);
   // Re-enable workspace resizing.
-  if (workspace.setResizesEnabled) {
-    workspace.setResizesEnabled(true);
+  if (workspace.setBulkUpdate) {
+    workspace.setBulkUpdate(false);
   }
   return newBlockIds;
 };
@@ -472,25 +472,8 @@ Blockly.Xml.domToBlock = function(xmlBlock, workspace) {
         setTimeout(function() {
           if (topBlock.workspace) {  // Check that the block hasn't been deleted.
             topBlock.setConnectionsHidden(false);
-            /*
-            // Force a render on IE and Edge to get around the issue described in
-            // Blockly.Field.getCachedWidth
-            if (goog.userAgent.IE || goog.userAgent.EDGE) {
-              topBlock.render();
-            }*/
           }
         }, 1);
-      } else {
-        /*
-        setTimeout(function() {
-          if (topBlock.workspace) {  // Check that the block hasn't been deleted.
-            // Force a render on IE and Edge to get around the issue described in
-            // Blockly.Field.getCachedWidth
-            if (goog.userAgent.IE || goog.userAgent.EDGE) {
-              topBlock.render();
-            }
-          }
-        }, 1);*/
       }
       topBlock.updateDisabled();
       // Allow the scrollbars to resize and move based on the new contents.

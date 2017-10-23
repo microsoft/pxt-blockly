@@ -204,7 +204,7 @@ Blockly.FieldVariable.dropdownCreate = function() {
   options.push([Blockly.Msg.RENAME_VARIABLE, Blockly.RENAME_VARIABLE_ID]);
   if (Blockly.Msg.DELETE_VARIABLE) {
     options.push([Blockly.Msg.DELETE_VARIABLE.replace('%1', name),
-      Blockly.DELETE_VARIABLE_ID]);
+        Blockly.DELETE_VARIABLE_ID]);
   }
   return options;
 };
@@ -254,5 +254,6 @@ Blockly.FieldVariable.prototype.onItemSelected = function(menu, menuItem) {
  * @private
  */
 Blockly.FieldVariable.prototype.shouldShowRect_ = function () {
+  //pxtblockly: don't show a rect around the variable dropdown when in a shadow block
   return !this.sourceBlock_.isShadow() && this.sourceBlock_.type != 'variables_get';
 }

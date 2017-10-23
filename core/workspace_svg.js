@@ -1014,7 +1014,7 @@ Blockly.WorkspaceSvg.prototype.paste = function(xmlBlock) {
  */
 Blockly.WorkspaceSvg.prototype.refreshToolboxSelection_ = function() {
   if (this.toolbox_ && this.toolbox_.flyout_ && !this.currentGesture_ &&
-      !this.isBulkUpdating_) {
+     !this.isBulkUpdating_) {
     this.toolbox_.refreshSelection();
   }
 };
@@ -2044,11 +2044,11 @@ Blockly.WorkspaceSvg.prototype.cancelCurrentGesture = function() {
  * @package
  */
 Blockly.WorkspaceSvg.prototype.startDragWithFakeEvent = function(fakeEvent,
-  block) {
-Blockly.Touch.clearTouchIdentifier();
-Blockly.Touch.checkTouchIdentifier(fakeEvent);
-var gesture = block.workspace.getGesture(fakeEvent);
-gesture.forceStartBlockDrag(fakeEvent, block);
+    block) {
+  Blockly.Touch.clearTouchIdentifier();
+  Blockly.Touch.checkTouchIdentifier(fakeEvent);
+  var gesture = block.workspace.getGesture(fakeEvent);
+  gesture.forceStartBlockDrag(fakeEvent, block);
 };
 
 /**
