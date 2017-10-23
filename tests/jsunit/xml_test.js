@@ -67,22 +67,7 @@ function xmlTest_setUpWithMockBlocks() {
         'name': 'VAR',
         'variable': 'item'
       }
-    ]
-  },
-  {
-    'type': 'field_serializable_test_block',
-    'message0': '%1 %2',
-    'args0': [
-      {
-        'type': 'field_label_serializable',
-        'name': 'FIELD'
-      },
-      {
-        "type": "field_input",
-        "name": "TEXTINPUT",
-        "text": "default"
-      }
-    ]
+    ],
   }]);
 }
 
@@ -311,17 +296,14 @@ function test_blockToDom_fieldToDom_trivial() {
 
 function test_blockToDom_fieldToDom_defaultCase() {
   xmlTest_setUpWithMockBlocks();
-  try {
-    setUpMockMethod(mockControl_, Blockly.utils, 'genUid', null, ['1', '1']);
-    workspace.createVariable('name1');
-    var block = new Blockly.Block(workspace, 'field_variable_test_block');
-    block.inputList[0].fieldRow[0].setValue('name1');
-    var resultFieldDom = Blockly.Xml.blockToDom(block).childNodes[0];
-    // Expect type is '' and id is '1' since we don't specify type and id.
-    xmlTest_checkVariableFieldDomValues(resultFieldDom, 'VAR', '', '1', 'name1');
-  } finally {
-    xmlTest_tearDownWithMockBlocks();
-  }
+  setUpMockMethod(mockControl_, Blockly.utils, 'genUid', null, ['1', '1']);
+  workspace.createVariable('name1');
+  var block = new Blockly.Block(workspace, 'field_variable_test_block');
+  block.inputList[0].fieldRow[0].setValue('name1');
+  var resultFieldDom = Blockly.Xml.blockToDom(block).childNodes[0];
+  // Expect type is '' and id is '1' since we don't specify type and id.
+  xmlTest_checkVariableFieldDomValues(resultFieldDom, 'VAR', '', '1', 'name1');
+  xmlTest_tearDownWithMockBlocks();
 }
 
 function test_blockToDom_fieldToDom_notAFieldVariable() {
@@ -381,29 +363,4 @@ function test_variablesToDom_noVariables() {
   var resultDom = Blockly.Xml.variablesToDom(workspace.getAllVariables());
   assertEquals(1, resultDom.children.length);
   xmlTest_tearDown();
-}
-
-function test_fieldIsSerialized() {
-  xmlTest_setUpWithMockBlocks();
-  var block = new Blockly.Block(workspace, 'field_serializable_test_block');
-  block.getField('FIELD').setValue('serialized');
-
-  var resultDom = Blockly.Xml.blockToDom(block).childNodes[0];
-  assertEquals('serialized', resultDom.textContent);
-  assertEquals('FIELD', resultDom.getAttribute('name'));
-
-  xmlTest_tearDownWithMockBlocks();
-}
-
-function test_fieldIsNotSerialized() {
-  xmlTest_setUpWithMockBlocks();
-  var block = new Blockly.Block(workspace, 'field_serializable_test_block');
-  block.getField('FIELD').SERIALIZABLE = false;
-  block.getField('FIELD').setValue('serialized');
-
-  var resultDom = Blockly.Xml.blockToDom(block).childNodes[0];
-  assertEquals('default', resultDom.textContent);
-  assertEquals('TEXTINPUT', resultDom.getAttribute('name'));
-
-  xmlTest_tearDownWithMockBlocks();
 }
