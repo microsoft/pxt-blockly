@@ -283,10 +283,14 @@ Blockly.BlockSvg.prototype.setHighlightBlock = function(isHighlightingBlock) {
   this.isHighlightingBlock_ = isHighlightingBlock;
   // Update the applied SVG filter if the property has changed
   var svg = this.svgPath_;
-  if (this.isHighlightingBlock_ && !svg.hasAttribute('filter')) {
-    svg.setAttribute('filter', 'url(#blocklyStackGlowFilter)');
-  } else if (!this.isHighlightingBlock_ && svg.hasAttribute('filter')) {
-    svg.removeAttribute('filter');
+  if (this.isHighlightingBlock_ && !this.svgPathHighlight_) {
+    this.svgPathHighlight_ = this.svgPath_.cloneNode(true);
+    this.svgPathHighlight_.setAttribute('fill', 'transparent');
+    this.svgPathHighlight_.setAttribute('filter', 'url(#blocklyHighlightGlowFilter)');
+    this.getSvgRoot().appendChild(this.svgPathHighlight_);
+  } else if (!this.isHighlightingBlock_ && this.svgPathHighlight_) {
+    this.getSvgRoot().removeChild(this.svgPathHighlight_);
+    this.svgPathHighlight_ = null;
   }
 };
 

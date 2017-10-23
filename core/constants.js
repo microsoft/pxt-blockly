@@ -259,6 +259,13 @@ Blockly.STACK_GLOW_RADIUS = 1.3;
 Blockly.REPLACEMENT_GLOW_RADIUS = 2;
 
 /**
+ * Radius of highlight glow, in px.
+ * @type {number}
+ * @const
+ */
+Blockly.HIGHLIGHT_GLOW_RADIUS = .7;
+
+/**
  * ENUM representing that an event is not in any delete areas.
  * Null for backwards compatibility reasons.
  * @const
