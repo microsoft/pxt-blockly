@@ -33,6 +33,7 @@ goog.provide('Blockly.Blocks.logic');  // Deprecated
 goog.provide('Blockly.Constants.Logic');
 
 goog.require('Blockly.Blocks');
+goog.require('Blockly');
 
 goog.require('Blockly.PXTBlockly.Extensions');
 
@@ -498,8 +499,8 @@ Blockly.Constants.Logic.TOOLTIPS_BY_OP = {
 };
 
 Blockly.Extensions.register('logic_op_tooltip',
-  Blockly.Extensions.buildTooltipForDropdown(
-    'OP', Blockly.Constants.Logic.TOOLTIPS_BY_OP));
+    Blockly.Extensions.buildTooltipForDropdown(
+        'OP', Blockly.Constants.Logic.TOOLTIPS_BY_OP));
 
 /**
  * "controls_if" extension function. Adds mutator, shape updating methods, and
@@ -524,7 +525,7 @@ Blockly.Constants.Logic.CONTROLS_IF_TOOLTIP_EXTENSION = function() {
 };
 
 Blockly.Extensions.register('controls_if_tooltip',
-  Blockly.Constants.Logic.CONTROLS_IF_TOOLTIP_EXTENSION);
+    Blockly.Constants.Logic.CONTROLS_IF_TOOLTIP_EXTENSION);
 
 /**
  * Corrects the logic_compare dropdown label with respect to language direction.
@@ -612,7 +613,7 @@ Blockly.Constants.Logic.LOGIC_COMPARE_EXTENSION = function() {
 };
 
 Blockly.Extensions.register('logic_compare',
-  Blockly.Constants.Logic.LOGIC_COMPARE_EXTENSION);
+    Blockly.Constants.Logic.LOGIC_COMPARE_EXTENSION);
 
 /**
  * Adds type coordination between inputs and output.
@@ -657,4 +658,4 @@ Blockly.Constants.Logic.LOGIC_TERNARY_ONCHANGE_MIXIN = {
 };
 
 Blockly.Extensions.registerMixin('logic_ternary',
-  Blockly.Constants.Logic.LOGIC_TERNARY_ONCHANGE_MIXIN);
+    Blockly.Constants.Logic.LOGIC_TERNARY_ONCHANGE_MIXIN);

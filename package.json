@@ -18,7 +18,7 @@
     "deploy": "gh-pages -t -d gh-pages -m \"Build for $(git log --pretty=format:%H -n1)\"",
     "prepublish": "node_modules/.bin/gulp build && webpack",
     "lint": "jshint .",
-    "pretest": "scripts/test_setup.sh",
+    "pretest": "tests/scripts/test_setup.sh",
     "test": "node tests/jsunit/test_runner.js",
     "watch": "node_modules/.bin/gulp watch",
     "publish": "node_modules/.bin/gulp release"

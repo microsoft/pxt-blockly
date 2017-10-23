@@ -30,6 +30,7 @@ goog.require('Blockly.Block');
 goog.require('Blockly.ContextMenu');
 goog.require('Blockly.Grid');
 goog.require('Blockly.RenderedConnection');
+goog.require('Blockly.Tooltip');
 goog.require('Blockly.Touch');
 goog.require('Blockly.utils');
 goog.require('goog.Timer');
@@ -134,6 +135,14 @@ Blockly.BlockSvg.prototype.isGlowingStack_ = false;
  * @private
  */
 Blockly.BlockSvg.prototype.isHighlightingBlock_ = false;
+
+/**
+ * Map from IDs for warnings text to PIDs of functions to apply them.
+ * Used to be able to maintain multiple warnings.
+ * @type {Object<string, number>}
+ * @private
+ */
+Blockly.BlockSvg.prototype.warningTextDb_ = null;
 
 /**
  * Constant for identifying rows that are to be rendered inline.
@@ -629,24 +638,8 @@ Blockly.BlockSvg.prototype.setCollapsed = function(collapsed) {
  * @param {boolean} forward If true go forward, otherwise backward.
  */
 Blockly.BlockSvg.prototype.tab = function(start, forward) {
-  // This function need not be efficient since it runs once on a keypress.
-  // Create an ordered list of all text fields and connected inputs.
-  var list = [];
-  for (var i = 0, input; input = this.inputList[i]; i++) {
-    for (var j = 0, field; field = input.fieldRow[j]; j++) {
-      if (field instanceof Blockly.FieldTextInput) {
-        // TODO: Also support dropdown fields.
-        list.push(field);
-      }
-    }
-    if (input.connection) {
-      var block = input.connection.targetBlock();
-      if (block) {
-        list.push(block);
-      }
-    }
-  }
-  i = list.indexOf(start);
+  var list = this.createTabList_();
+  var i = list.indexOf(start);
   if (i == -1) {
     // No start location, start at the beginning or end.
     i = forward ? -1 : list.length;
@@ -663,6 +656,31 @@ Blockly.BlockSvg.prototype.tab = function(start, forward) {
   } else {
     target.tab(null, forward);
   }
+};
+
+/**
+ * Create an ordered list of all text fields and connected inputs.
+ * @return {!Array<!Blockly.FieldTextInput|!Blockly.Input>} The ordered list.
+ * @private
+ */
+Blockly.BlockSvg.prototype.createTabList_ = function() {
+  // This function need not be efficient since it runs once on a keypress.
+  var list = [];
+  for (var i = 0, input; input = this.inputList[i]; i++) {
+    for (var j = 0, field; field = input.fieldRow[j]; j++) {
+      if (field instanceof Blockly.FieldTextInput) {
+        // TODO(# 1276): Also support dropdown fields.
+        list.push(field);
+      }
+    }
+    if (input.connection) {
+      var block = input.connection.targetBlock();
+      if (block) {
+        list.push(block);
+      }
+    }
+  }
+  return list;
 };
 
 /**
@@ -781,7 +799,7 @@ Blockly.BlockSvg.prototype.showContextMenu_ = function(e) {
   menuOptions.push(helpOption);
 
   // Allow the block to add or modify menuOptions.
-  if (this.customContextMenu && !block.isInFlyout) {
+  if (this.customContextMenu) {
     this.customContextMenu(menuOptions);
   }
 
@@ -940,6 +958,14 @@ Blockly.BlockSvg.prototype.dispose = function(healStack, animate) {
   // Stop rerendering.
   this.rendered = false;
 
+  // Clear pending warnings.
+  if (this.warningTextDb_) {
+    for (var n in this.warningTextDb_) {
+      clearTimeout(this.warningTextDb_[n]);
+    }
+    this.warningTextDb_ = null;
+  }
+
   Blockly.Events.disable();
   try {
     var icons = this.getIcons();
@@ -1008,10 +1034,8 @@ Blockly.BlockSvg.disposeUiStep_ = function(clone, rtl, start, workspaceScale) {
     var scale = (1 - percent) * workspaceScale;
     clone.setAttribute('transform', 'translate(' + x + ',' + y + ')' +
         ' scale(' + scale + ')');
-    var closure = function() {
-      Blockly.BlockSvg.disposeUiStep_(clone, rtl, start, workspaceScale);
-    };
-    setTimeout(closure, 10);
+    setTimeout(Blockly.BlockSvg.disposeUiStep_, 10, clone, rtl, start,
+               workspaceScale);
   }
 };
 
@@ -1056,10 +1080,8 @@ Blockly.BlockSvg.connectionUiStep_ = function(ripple, start, workspaceScale) {
   } else {
     ripple.setAttribute('r', percent * 25 * workspaceScale);
     ripple.style.opacity = 1 - percent;
-    var closure = function() {
-      Blockly.BlockSvg.connectionUiStep_(ripple, start, workspaceScale);
-    };
-    Blockly.BlockSvg.disconnectUiStop_.pid_ = setTimeout(closure, 10);
+    Blockly.BlockSvg.disconnectUiStop_.pid_ = setTimeout(
+        Blockly.BlockSvg.connectionUiStep_, 10, ripple, start, workspaceScale);
   }
 };
 
@@ -1103,11 +1125,10 @@ Blockly.BlockSvg.disconnectUiStep_ = function(group, magnitude, start) {
     var skew = Math.round(Math.sin(percent * Math.PI * WIGGLES) *
         (1 - percent) * magnitude);
     group.skew_ = 'skewX(' + skew + ')';
-    var closure = function() {
-      Blockly.BlockSvg.disconnectUiStep_(group, magnitude, start);
-    };
     Blockly.BlockSvg.disconnectUiStop_.group = group;
-    Blockly.BlockSvg.disconnectUiStop_.pid = setTimeout(closure, 10);
+    Blockly.BlockSvg.disconnectUiStop_.pid =
+        setTimeout(Blockly.BlockSvg.disconnectUiStep_, 10, group, magnitude,
+                   start);
   }
   if (!group.translate_) group.translate_ = '';
   group.setAttribute('transform', group.translate_ + group.skew_);
@@ -1206,30 +1227,30 @@ Blockly.BlockSvg.prototype.setCommentText = function(text) {
  *     maintain multiple warnings.
  */
 Blockly.BlockSvg.prototype.setWarningText = function(text, opt_id) {
-  if (!this.setWarningText.pid_) {
+  if (!this.warningTextDb_) {
     // Create a database of warning PIDs.
     // Only runs once per block (and only those with warnings).
-    this.setWarningText.pid_ = Object.create(null);
+    this.warningTextDb_ = Object.create(null);
   }
   var id = opt_id || '';
   if (!id) {
     // Kill all previous pending processes, this edit supersedes them all.
-    for (var n in this.setWarningText.pid_) {
-      clearTimeout(this.setWarningText.pid_[n]);
-      delete this.setWarningText.pid_[n];
+    for (var n in this.warningTextDb_) {
+      clearTimeout(this.warningTextDb_[n]);
+      delete this.warningTextDb_[n];
     }
-  } else if (this.setWarningText.pid_[id]) {
+  } else if (this.warningTextDb_[id]) {
     // Only queue up the latest change.  Kill any earlier pending process.
-    clearTimeout(this.setWarningText.pid_[id]);
-    delete this.setWarningText.pid_[id];
+    clearTimeout(this.warningTextDb_[id]);
+    delete this.warningTextDb_[id];
   }
   if (this.workspace.isDragging()) {
     // Don't change the warning text during a drag.
     // Wait until the drag finishes.
     var thisBlock = this;
-    this.setWarningText.pid_[id] = setTimeout(function() {
+    this.warningTextDb_[id] = setTimeout(function() {
       if (thisBlock.workspace) {  // Check block wasn't deleted.
-        delete thisBlock.setWarningText.pid_[id];
+        delete thisBlock.warningTextDb_[id];
         thisBlock.setWarningText(text, id);
       }
     }, 100);

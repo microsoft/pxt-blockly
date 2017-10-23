@@ -84,6 +84,13 @@ Blockly.Field.cacheReference_ = 0;
 Blockly.Field.prototype.name = undefined;
 
 /**
+ * CSS class name for the text element.
+ * @type {string}
+ * @package
+ */
+Blockly.Field.prototype.className_ = 'blocklyText';
+
+/**
  * Visible text to display.
  * @type {string}
  * @private
@@ -125,9 +132,19 @@ Blockly.Field.prototype.validator_ = null;
 Blockly.Field.NBSP = '\u00A0';
 
 /**
- * Editable fields are saved by the XML renderer, non-editable fields are not.
+ * Editable fields usually show some sort of UI for the user to change them.
+ * @type {boolean}
+ * @public
  */
 Blockly.Field.prototype.EDITABLE = true;
+
+/**
+ * Serializable fields are saved by the XML renderer, non-serializable fields
+ * are not.  Editable fields should be serialized.
+ * @type {boolean}
+ * @public
+ */
+Blockly.Field.prototype.SERIALIZABLE = true;
 
 /**
  * Attach this field to a block.
@@ -166,7 +183,7 @@ Blockly.Field.prototype.init = function() {
   var fieldX = (this.sourceBlock_.RTL) ? -size.width / 2 : size.width / 2;
   /** @type {!Element} */
   this.textElement_ = Blockly.utils.createSvgElement('text',
-      {'class': 'blocklyText',
+      {'class': this.className_,
        'x': fieldX,
        'dy': '0.6ex',
        'y': size.height / 2},
@@ -503,16 +520,23 @@ Blockly.Field.prototype.getSize = function() {
 };
 
 /**
- * Returns the height and width of the field,
- * accounting for the workspace scaling.
- * @return {!goog.math.Size} Height and width.
+ * Returns the bounding box of the rendered field, accounting for workspace
+ * scaling.
+ * @return {!Object} An object with top, bottom, left, and right in pixels
+ *     relative to the top left corner of the page (window coordinates).
  * @private
  */
 Blockly.Field.prototype.getScaledBBox_ = function() {
   var size = this.getSize();
-  // Create new object, so as to not return an uneditable SVGRect in IE.
-  return new goog.math.Size(size.width * this.sourceBlock_.workspace.scale,
-                            size.height * this.sourceBlock_.workspace.scale);
+  var scaledHeight = size.height * this.sourceBlock_.workspace.scale;
+  var scaledWidth = size.width * this.sourceBlock_.workspace.scale;
+  var xy = this.getAbsoluteXY_();
+  return {
+    top: xy.y,
+    bottom: xy.y + scaledHeight,
+    left: xy.x,
+    right: xy.x + scaledWidth
+  };
 };
 
 /**
@@ -563,6 +587,17 @@ Blockly.Field.prototype.setText = function(newText) {
     return;
   }
   this.text_ = newText;
+  this.forceRerender();
+};
+
+/**
+ * Force a rerender of the block that this field is installed on, which will
+ * rerender this field and adjust for any sizing changes.
+ * Other fields on the same block will not rerender, because their sizes have
+ * already been recorded.
+ * @package
+ */
+Blockly.Field.prototype.forceRerender = function() {
   // Set width to 0 to force a rerender of this field.
   this.size_.width = 0;
 
@@ -586,9 +621,9 @@ Blockly.Field.prototype.updateTextNode_ = function() {
     // Truncate displayed string and add an ellipsis ('...').
     text = text.substring(0, this.maxDisplayLength - 2) + '\u2026';
     // Add special class for sizing font when truncated
-    this.textElement_.setAttribute('class', 'blocklyText blocklyTextTruncated');
+    this.textElement_.setAttribute('class', this.className_ + ' blocklyTextTruncated');
   } else {
-    this.textElement_.setAttribute('class', 'blocklyText');
+    this.textElement_.setAttribute('class', this.className_);
   }
   // Empty the text element.
   goog.dom.removeChildren(/** @type {!Element} */ (this.textElement_));
