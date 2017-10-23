@@ -157,6 +157,8 @@ Blockly.Procedures.rename = function(name) {
       }
     }
   }
+  //pxtblockly: ensure no empty procedure name is set
+  if (!legalName) return oldName;
   return legalName;
 };
 
