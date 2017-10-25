@@ -119,7 +119,7 @@ Blockly.FieldAngle.CENTER_RADIUS = 2;
 /**
  * Path to the arrow svg icon.
  */
-Blockly.FieldAngle.ARROW_SVG_PATH = 'icons/arrow.svg';
+Blockly.FieldAngle.ARROW_SVG_PATH = 'arrow.svg';
 
 /**
  * Clean up this FieldAngle, as well as the inherited FieldTextInput.
