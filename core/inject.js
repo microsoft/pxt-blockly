@@ -170,6 +170,27 @@ Blockly.createDom_ = function(container, options) {
        'operator': 'in', 'result': 'outGlow'}, replacementGlowFilter);
   Blockly.utils.createSvgElement('feComposite',
       {'in': 'SourceGraphic', 'in2': 'outGlow', 'operator': 'over'}, replacementGlowFilter);
+
+
+  // Using a dilate distorts the block shape.
+  // Instead use a gaussian blur, and then set all alpha to 1 with a transfer.
+  var highlightGlowFilter = Blockly.utils.createSvgElement('filter',
+    {'id': 'blocklyHighlightGlowFilter',
+      'height': '160%', 'width': '180%', y: '-30%', x: '-40%'}, defs);
+  options.stackGlowBlur = Blockly.utils.createSvgElement('feGaussianBlur',
+    {'in': 'SourceGraphic',
+    'stdDeviation': Blockly.HIGHLIGHT_GLOW_RADIUS}, highlightGlowFilter);
+  // Set all gaussian blur pixels to 1 opacity before applying flood
+  var componentTransfer = Blockly.utils.createSvgElement('feComponentTransfer', {'result': 'outBlur'}, highlightGlowFilter);
+  Blockly.utils.createSvgElement('feFuncA',
+    {'type': 'table', 'tableValues': '0' + goog.string.repeat(' 1', 16)}, componentTransfer);
+  // Color the highlight
+  Blockly.utils.createSvgElement('feFlood',
+    {'flood-color': Blockly.Colours.stackGlow,
+    'flood-opacity': Blockly.Colours.stackGlowOpacity, 'result': 'outColor'}, highlightGlowFilter);
+  Blockly.utils.createSvgElement('feComposite',
+    {'in': 'outColor', 'in2': 'outBlur',
+    'operator': 'in', 'result': 'outGlow'}, highlightGlowFilter);
   /*
     <filter id="blocklyEmbossFilter837493">
       <feGaussianBlur in="SourceAlpha" stdDeviation="1" result="blur" />
