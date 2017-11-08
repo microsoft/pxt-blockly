@@ -153,7 +153,8 @@ Blockly.BlockSvg.prototype.initSvg = function() {
     for (var i = 0, input; input = this.inputList[i]; i++) {
       input.init();
       if (input.type === Blockly.INPUT_VALUE) {
-        this.initInputShape(input);
+        this.
+        (input);
       }
     }
     var icons = this.getIcons();
@@ -189,7 +190,8 @@ Blockly.BlockSvg.prototype.initInputShape = function(input) {
     'path',
     {
       'class': 'blocklyPath',
-      'style': 'visibility: hidden' // Hide by default - shown when not connected.
+      'style': 'visibility: hidden', // Hide by default - shown when not connected.
+      'd': '' // IE doesn't like paths without the data definition, set an empty default
     },
     this.svgGroup_
   );
