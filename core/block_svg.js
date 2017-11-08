@@ -189,7 +189,8 @@ Blockly.BlockSvg.prototype.initInputShape = function(input) {
     'path',
     {
       'class': 'blocklyPath',
-      'style': 'visibility: hidden' // Hide by default - shown when not connected.
+      'style': 'visibility: hidden', // Hide by default - shown when not connected.
+      'd': '' // IE doesn't like paths without the data definition, set an empty default
     },
     this.svgGroup_
   );
