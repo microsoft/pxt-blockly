@@ -286,7 +286,7 @@ Blockly.BlockSvg.prototype.setHighlightBlock = function(isHighlightingBlock) {
   var svg = this.svgPath_;
   if (this.isHighlightingBlock_ && !this.svgPathHighlight_) {
     this.svgPathHighlight_ = this.svgPath_.cloneNode(true);
-    this.svgPathHighlight_.setAttribute('fill', 'transparent');
+    this.svgPathHighlight_.setAttribute('fill', 'none');
     this.svgPathHighlight_.setAttribute('filter', 'url(#blocklyHighlightGlowFilter)');
     this.getSvgRoot().appendChild(this.svgPathHighlight_);
   } else if (!this.isHighlightingBlock_ && this.svgPathHighlight_) {
