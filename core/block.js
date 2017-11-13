@@ -1635,14 +1635,6 @@ Blockly.Block.prototype.removeInput = function(name, opt_quiet) {
           block.unplug();
         }
       }
-      // Remove the input shape, if it exists
-      if (this.inputShapes_ && this.inputShapes_[input.name]) {
-        var inputShape = this.inputShapes_[input.name];
-        if (inputShape) {
-          this.inputShapes_[input.name].setAttribute('style', 'visibility: hidden');
-          delete this.inputShapes_[input.name];
-        }
-      }
       input.dispose();
       this.inputList.splice(i, 1);
       return;
