@@ -958,6 +958,8 @@ declare namespace Blockly {
         };
         enableRealTime?: boolean;
         rtl?: boolean;
+        // PXT specific: 
+        toolboxOptions?: ToolboxOptions;
     }
 
     class Options {
@@ -973,10 +975,6 @@ declare namespace Blockly {
         inverted?: boolean;
         invertedMultiplier?: number;
         disabledOpacity?: number;
-    }
-
-    interface ExtendedOptions extends Options {
-        toolboxOptions?: ToolboxOptions;
     }
 
     // tslint:disable-next-line

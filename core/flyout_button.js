@@ -182,15 +182,12 @@ Blockly.FlyoutButton.prototype.createDom = function() {
     if (this.icon_) svgIcon.textContent = this.icon_;
     if (this.iconColor_) svgIcon.setAttribute('style', 'fill: ' + this.iconColor_);
 
-    this.width += svgIcon.getComputedTextLength();
+    this.width += svgIcon.getComputedTextLength() + 2 * Blockly.FlyoutButton.MARGIN;
 
     svgIcon.setAttribute('text-anchor', 'end');
     svgIcon.setAttribute('alignment-baseline', 'central');
     svgIcon.setAttribute('x', Blockly.FlyoutButton.MARGIN);
     svgIcon.setAttribute('y', this.height / 2);
-  } else if (this.isLabel_) {
-    this.width = svgText.getComputedTextLength() +
-    2 * Blockly.BlockSvg.TAB_WIDTH;
   }
 
   if (this.line_) {

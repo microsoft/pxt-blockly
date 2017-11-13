@@ -39,7 +39,6 @@ goog.require('Blockly.Events');
 goog.require('Blockly.Gesture');
 goog.require('Blockly.Grid');
 goog.require('Blockly.Options');
-goog.require('Blockly.PXTOptions')
 goog.require('Blockly.ScrollbarPair');
 goog.require('Blockly.Touch');
 goog.require('Blockly.Trashcan');

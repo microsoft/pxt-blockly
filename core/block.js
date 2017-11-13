@@ -778,7 +778,7 @@ Blockly.Block.prototype.setColour = function(colour, colourSecondary, colourTert
   } else {
     this.colourTertiary_ = goog.color.rgbArrayToHex(
         goog.color.darken(goog.color.hexToRgb(this.colour_),
-        0.2));
+        0.3));
   }
   if (this.rendered) {
     this.updateColour();

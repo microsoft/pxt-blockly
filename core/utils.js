@@ -45,11 +45,7 @@ goog.require('goog.userAgent');
  * accessed through the exact name that was exported. Note, that all the exports
  * are happening as the last thing in the generated js files, so they won't be
  * accessible before JavaScript loads!
-<<<<<<< HEAD
- * @return {!Object<string, string>} The message array.
-=======
  * @return {!Object<string, string>} The message array
->>>>>>> 36682a49128008483f75eb135550d0b2f59a509e
  * @private
  */
 Blockly.utils.getMessageArray_ = function() {

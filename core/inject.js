@@ -33,7 +33,6 @@ goog.require('Blockly.constants');
 goog.require('Blockly.DropDownDiv');
 goog.require('Blockly.Grid');
 goog.require('Blockly.Options');
-goog.require('Blockly.PXTOptions');
 goog.require('Blockly.WorkspaceSvg');
 goog.require('Blockly.WorkspaceDragSurfaceSvg');
 goog.require('goog.dom');

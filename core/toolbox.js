@@ -43,6 +43,7 @@ goog.require('goog.math.Rect');
 goog.require('goog.style');
 goog.require('goog.ui.tree.TreeControl');
 goog.require('goog.ui.tree.TreeNode');
+goog.require('Blockly.PXTUtils');
 
 /**
  * Class for a Toolbox.
@@ -402,31 +403,73 @@ Blockly.Toolbox.prototype.syncTrees_ = function(treeIn, treeOut, pathToMedia) {
   return openNode;
 };
 
+Blockly.Toolbox.prototype.isInverted_ = function() {
+  return this.workspace_.options.toolboxOptions && this.workspace_.options.toolboxOptions.inverted;
+}
+
 /**
  * Recursively add colours to this toolbox.
  * @param {Blockly.Toolbox.TreeNode} opt_tree Starting point of tree.
  *     Defaults to the root node.
  * @private
  */
+// pxtblockly specific: (support inverted toolbox, and coloured toolbox)
 Blockly.Toolbox.prototype.addColour_ = function(opt_tree) {
-  var tree = opt_tree || this.tree_;
-  var children = tree.getChildren();
-  for (var i = 0, child; child = children[i]; i++) {
-    var element = child.getRowElement();
-    if (element) {
-      if (this.hasColours_) {
-        var border = '8px solid ' + (child.hexColour || '#ddd');
-      } else {
-        var border = 'none';
-      }
-      if (this.workspace_.RTL) {
-        element.style.borderRight = border;
-      } else {
-        element.style.borderLeft = border;
-      }
+    var options = this.workspace_.options;
+    var tree = opt_tree || this.tree_;
+    var children = tree.getChildren();
+    for (var i = 0, child; child = children[i]; i++) {
+        var element = child.getRowElement();
+        if (element) {
+            // Support for inverted and coloured toolboxes
+            var toolboxOptions = options.toolboxOptions;
+            if (toolboxOptions.inverted) {
+                if (this.hasColours_) {
+                    element.style.color = '#fff';
+                    element.style.background = (child.hexColour || '#ddd');
+                    var invertedMultiplier = toolboxOptions.invertedMultiplier;
+                    if (!child.disabled) {
+                        // Hovering over toolbox category fades.
+                        Blockly.bindEvent_(child.getRowElement(), 'mouseenter', child,
+                            function(e) {
+                            if (!this.isSelected()) {
+                                this.getRowElement().style.background = Blockly.PXTUtils.fadeColour(this.hexColour || '#ddd', invertedMultiplier, false);
+                            }
+                            });
+                        Blockly.bindEvent_(child.getRowElement(), 'mouseleave', child,
+                            function(e) {
+                            if (!this.isSelected()) {
+                                this.getRowElement().style.background = (this.hexColour || '#ddd');
+                            }
+                            });
+                    }
+                }
+            } else {
+                if (toolboxOptions.border) {
+                    // Only show if the toolbox type is not noborder
+                    if (this.hasColours_) {
+                        var border = '8px solid ' + (child.hexColour || '#ddd');
+                    } else {
+                        var border = 'none';
+                    }
+                    if (this.workspace_.RTL) {
+                        element.style.borderRight = border;
+                    } else {
+                        element.style.borderLeft = border;
+                    }
+                }
+                // support for a coloured toolbox
+                if (toolboxOptions.colour && this.hasColours_) {
+                    element.style.color = (child.hexColour || '#000');
+                }
+            }
+            // if disabled, show disabled opacity
+            if (child.disabled) {
+                element.style.opacity = toolboxOptions.disabledOpacity;
+            }
+        }
+        this.addColour_(child);
     }
-    this.addColour_(child);
-  }
 };
 
 /**
@@ -590,7 +633,7 @@ Blockly.Toolbox.TreeControl.prototype.setSelectedItem = function(node) {
     return;
   }
   // pxtblockly: don't reset the toolbox category background color for inverted toolboxes
-  if (toolbox.lastCategory_ && !toolbox.isInverted()) {
+  if (toolbox.lastCategory_ && !toolbox.isInverted_()) {
     toolbox.lastCategory_.getRowElement().style.backgroundColor = '';
   }
   if (node) {

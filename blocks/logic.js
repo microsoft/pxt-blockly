@@ -102,7 +102,8 @@ Blockly.Blocks['controls_if'] = {
   /**
    * Store pointers to any connected child blocks.
    */
-  storeConnections_: function(arg = 0) {
+  storeConnections_: function(arg) {
+    if (!arg) arg = 0;
     this.valueConnections_ = [null];
     this.statementConnections_ = [null];
     this.elseStatementConnection_ = null;
@@ -216,7 +217,7 @@ Blockly.Blocks['controls_if'] = {
           .appendField(Blockly.Msg.CONTROLS_IF_MSG_THEN);
       this.appendDummyInput('IFBUTTONS' + i)
           .appendField(
-        new Blockly.FieldImage(Blockly.mainWorkspace.options.pathToMedia + "remove.svg", 24, 24, false, "*", removeElseIf));
+        new Blockly.FieldImage(this.REMOVE_IMAGE_DATAURI, 24, 24, false, "*", removeElseIf));
       this.appendStatementInput('DO' + i)
     }
     if (this.elseCount_) {
