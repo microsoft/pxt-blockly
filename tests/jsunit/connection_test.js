@@ -262,11 +262,11 @@ function test_isConnectionAllowed_Distance() {
       Blockly.OUTPUT_VALUE, null, true);
   two.sourceBlock_ = helper_makeSourceBlock(sharedWorkspace);
 
-  assertTrue(one.isConnectionAllowed(two, 20.0));
+  assertTrue(two.isConnectionAllowed(one, 20.0));
   // Move connections farther apart.
   two.x_ = 100;
   two.y_ = 100;
-  assertFalse(one.isConnectionAllowed(two, 20.0));
+  assertFalse(two.isConnectionAllowed(one, 20.0));
 }
 
 function test_isConnectionAllowed_Unrendered() {
@@ -276,12 +276,14 @@ function test_isConnectionAllowed_Unrendered() {
       Blockly.INPUT_VALUE);
   one.sourceBlock_ = helper_makeSourceBlock(sharedWorkspace);
 
-  // Don't offer to connect an already connected left (male) value plug to
+  // Don't offer to connect a left (male) value plug to
   // an available right (female) value plug.
+  // Unlike in Blockly, you can't do this even if the left value plug isn't
+  // already connected.
   var two = helper_createConnection(0, 0, Blockly.OUTPUT_VALUE);
   two.sourceBlock_ = helper_makeSourceBlock(sharedWorkspace);
 
-  assertTrue(one.isConnectionAllowed(two));
+  assertFalse(one.isConnectionAllowed(two));
   var three = helper_createConnection(0, 0, Blockly.INPUT_VALUE);
   three.sourceBlock_ = helper_makeSourceBlock(sharedWorkspace);
 
@@ -301,6 +303,7 @@ function test_isConnectionAllowed_NoNext() {
 
   var two = helper_createConnection(0, 0, Blockly.PREVIOUS_STATEMENT);
   two.sourceBlock_ = helper_makeSourceBlock(sharedWorkspace);
+  two.sourceBlock_.previousConnection = two;
 
   assertTrue(two.isConnectionAllowed(one));
 
@@ -311,6 +314,24 @@ function test_isConnectionAllowed_NoNext() {
 
   // A terminal block is allowed to replace another terminal block.
   assertTrue(two.isConnectionAllowed(one));
+}
+
+function test_isConnectionAllowed_InsertionMarker() {
+  var sharedWorkspace = {};
+  // Two connections of opposite types near each other.
+  var one = helper_createConnection(5 /* x */, 10 /* y */,
+      Blockly.INPUT_VALUE);
+  one.sourceBlock_ = helper_makeSourceBlock(sharedWorkspace);
+
+  // The second one is an insertion marker.
+  var two = helper_createConnection(10 /* x */, 15 /* y */,
+      Blockly.OUTPUT_VALUE);
+  two.sourceBlock_ = helper_makeSourceBlock(sharedWorkspace);
+  two.sourceBlock_.isInsertionMarker = function() {
+      return true;
+    };
+
+  assertFalse(one.isConnectionAllowed(two, 20.0));
 }
 
 function testCheckConnection_Okay() {

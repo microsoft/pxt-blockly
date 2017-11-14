@@ -26,3 +26,5 @@ tests/compile/*compiler*.jar
 /gh-pages/Gemfile.lock
 /gh-pages/closure-library
 /gh-pages/_site
+
+/chromedriver
