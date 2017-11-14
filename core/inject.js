@@ -33,7 +33,6 @@ goog.require('Blockly.constants');
 goog.require('Blockly.DropDownDiv');
 goog.require('Blockly.Grid');
 goog.require('Blockly.Options');
-goog.require('Blockly.PXTOptions');
 goog.require('Blockly.WorkspaceSvg');
 goog.require('Blockly.WorkspaceDragSurfaceSvg');
 goog.require('goog.dom');
@@ -59,6 +58,10 @@ Blockly.inject = function(container, opt_options) {
   var options = new Blockly.Options(opt_options || {});
   var subContainer = goog.dom.createDom('div', 'injectionDiv');
   container.appendChild(subContainer);
+
+  // Open the Field text cache and leave it open. See this issue for more information
+  // https://github.com/LLK/scratch-blocks/issues/1004
+  Blockly.Field.startCache();
 
   var svg = Blockly.createDom_(subContainer, options);
 

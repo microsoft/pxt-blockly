@@ -138,8 +138,9 @@ Blockly.Flyout.prototype.CORNER_RADIUS = 8;
  */
 Blockly.Flyout.prototype.MARGIN = Blockly.Flyout.prototype.CORNER_RADIUS;
 
+// TODO: Move GAP_X and GAP_Y to their appropriate files.
+
 /**
- * TODO: Move GAP_X and GAP_Y to their appropriate files.
  * Gap between items in horizontal flyouts. Can be overridden with the "sep"
  * element.
  * @const {number}
@@ -606,15 +607,6 @@ Blockly.Flyout.prototype.createBlock = function(originalBlock) {
   this.targetWorkspace_.setResizesEnabled(false);
   try {
     newBlock = this.placeNewBlock_(originalBlock);
-    /*
-    //Force a render on IE and Edge to get around the issue described in
-    //Blockly.Field.getCachedWidth
-    if (goog.userAgent.IE || goog.userAgent.EDGE) {
-      var blocks = newBlock.getDescendants();
-      for (var i = blocks.length - 1; i >= 0; i--) {
-        blocks[i].render(false);
-      }
-    }*/
     // Close the flyout.
     Blockly.hideChaff();
   } finally {
@@ -753,4 +745,63 @@ Blockly.Flyout.prototype.reflow = function() {
  */
 Blockly.Flyout.prototype.isScrollable = function() {
   return this.scrollbar_ ? this.scrollbar_.isVisible() : false;
+};
+
+/**
+ * Copy a block from the flyout to the workspace and position it correctly.
+ * @param {!Blockly.Block} oldBlock The flyout block to copy.
+ * @return {!Blockly.Block} The new block in the main workspace.
+ * @private
+ */
+Blockly.Flyout.prototype.placeNewBlock_ = function(oldBlock) {
+  var targetWorkspace = this.targetWorkspace_;
+  var svgRootOld = oldBlock.getSvgRoot();
+  if (!svgRootOld) {
+    throw 'oldBlock is not rendered.';
+  }
+
+  // Create the new block by cloning the block in the flyout (via XML).
+  var xml = Blockly.Xml.blockToDom(oldBlock);
+  // The target workspace would normally resize during domToBlock, which will
+  // lead to weird jumps.  Save it for terminateDrag.
+  targetWorkspace.setResizesEnabled(false);
+
+  // Using domToBlock instead of domToWorkspace means that the new block will be
+  // placed at position (0, 0) in main workspace units.
+  var block = Blockly.Xml.domToBlock(xml, targetWorkspace);
+  var svgRootNew = block.getSvgRoot();
+  if (!svgRootNew) {
+    throw 'block is not rendered.';
+  }
+
+  // The offset in pixels between the main workspace's origin and the upper left
+  // corner of the injection div.
+  var mainOffsetPixels = targetWorkspace.getOriginOffsetInPixels();
+
+  // The offset in pixels between the flyout workspace's origin and the upper
+  // left corner of the injection div.
+  var flyoutOffsetPixels = this.workspace_.getOriginOffsetInPixels();
+
+  // The position of the old block in flyout workspace coordinates.
+  var oldBlockPosWs = oldBlock.getRelativeToSurfaceXY();
+
+  // The position of the old block in pixels relative to the flyout
+  // workspace's origin.
+  var oldBlockPosPixels = oldBlockPosWs.scale(this.workspace_.scale);
+
+  // The position of the old block in pixels relative to the upper left corner
+  // of the injection div.
+  var oldBlockOffsetPixels = goog.math.Coordinate.sum(flyoutOffsetPixels,
+      oldBlockPosPixels);
+
+  // The position of the old block in pixels relative to the origin of the
+  // main workspace.
+  var finalOffsetPixels = goog.math.Coordinate.difference(oldBlockOffsetPixels,
+      mainOffsetPixels);
+
+  // The position of the old block in main workspace coordinates.
+  var finalOffsetMainWs = finalOffsetPixels.scale(1 / targetWorkspace.scale);
+
+  block.moveBy(finalOffsetMainWs.x, finalOffsetMainWs.y);
+  return block;
 };

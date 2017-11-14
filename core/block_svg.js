@@ -30,6 +30,7 @@ goog.require('Blockly.Block');
 goog.require('Blockly.ContextMenu');
 goog.require('Blockly.Grid');
 goog.require('Blockly.RenderedConnection');
+goog.require('Blockly.Tooltip');
 goog.require('Blockly.Touch');
 goog.require('Blockly.utils');
 goog.require('goog.Timer');
@@ -64,9 +65,6 @@ Blockly.BlockSvg = function(workspace, prototypeName, opt_id) {
 
   /** @type {boolean} */
   this.rendered = false;
-
-  /** @type {Object.<string,Element>} */
-  this.inputShapes_ = {};
 
   /**
    * Whether to move the block to the drag surface when it is dragged.
@@ -136,6 +134,14 @@ Blockly.BlockSvg.prototype.isGlowingStack_ = false;
 Blockly.BlockSvg.prototype.isHighlightingBlock_ = false;
 
 /**
+ * Map from IDs for warnings text to PIDs of functions to apply them.
+ * Used to be able to maintain multiple warnings.
+ * @type {Object<string, number>}
+ * @private
+ */
+Blockly.BlockSvg.prototype.warningTextDb_ = null;
+
+/**
  * Constant for identifying rows that are to be rendered inline.
  * Don't collide with Blockly.INPUT_VALUE and friends.
  * @const
@@ -152,9 +158,7 @@ Blockly.BlockSvg.prototype.initSvg = function() {
     // Input shapes are empty holes drawn when a value input is not connected.
     for (var i = 0, input; input = this.inputList[i]; i++) {
       input.init();
-      if (input.type === Blockly.INPUT_VALUE) {
-        this.initInputShape(input);
-      }
+      input.initOutlinePath(this.svgGroup_);
     }
     var icons = this.getIcons();
     for (i = 0; i < icons.length; i++) {
@@ -172,28 +176,6 @@ Blockly.BlockSvg.prototype.initSvg = function() {
   if (!this.getSvgRoot().parentNode) {
     this.workspace.getCanvas().appendChild(this.getSvgRoot());
   }
-};
-
-/**
- * Create and initialize the SVG element for an input shape.
- * May be called more than once for an input.
- * @param {!Blockly.Input} input Value input to add a shape SVG element for.
- */
-Blockly.BlockSvg.prototype.initInputShape = function(input) {
-  if (this.inputShapes_[input.name] || input.connection.getShadowDom()) {
-    // Only create the shape elements once, and don't bother creating them if
-    // there's a shadow block that will always cover the input shape.
-    return;
-  }
-  this.inputShapes_[input.name] = Blockly.utils.createSvgElement(
-    'path',
-    {
-      'class': 'blocklyPath',
-      'style': 'visibility: hidden', // Hide by default - shown when not connected.
-      'd': '' // IE doesn't like paths without the data definition, set an empty default
-    },
-    this.svgGroup_
-  );
 };
 
 /**
@@ -634,13 +616,44 @@ Blockly.BlockSvg.prototype.setCollapsed = function(collapsed) {
  * @param {boolean} forward If true go forward, otherwise backward.
  */
 Blockly.BlockSvg.prototype.tab = function(start, forward) {
+  var list = this.createTabList_();
+  var i = list.indexOf(start);
+  if (i == -1) {
+    // No start location, start at the beginning or end.
+    i = forward ? -1 : list.length;
+  }
+  var target = list[forward ? i + 1 : i - 1];
+  if (!target) {
+    // Ran off of list.
+    // If there is an output, tab up to that block.
+    var outputBlock = this.outputConnection && this.outputConnection.targetBlock();
+    if (outputBlock) {
+      outputBlock.tab(this, forward);
+    } else { // Otherwise, go to next / previous block, depending on value of `forward`
+      var block = forward ? this.getNextBlock() : this.getPreviousBlock();
+      if (block) {
+        block.tab(this, forward);
+      }
+    }
+  } else if (target instanceof Blockly.Field) {
+    target.showEditor_();
+  } else {
+    target.tab(null, forward);
+  }
+};
+
+/**
+ * Create an ordered list of all text fields and connected inputs.
+ * @return {!Array<!Blockly.FieldTextInput|!Blockly.Input>} The ordered list.
+ * @private
+ */
+Blockly.BlockSvg.prototype.createTabList_ = function() {
   // This function need not be efficient since it runs once on a keypress.
-  // Create an ordered list of all text fields and connected inputs.
   var list = [];
   for (var i = 0, input; input = this.inputList[i]; i++) {
     for (var j = 0, field; field = input.fieldRow[j]; j++) {
       if (field instanceof Blockly.FieldTextInput) {
-        // TODO: Also support dropdown fields.
+        // TODO(# 1276): Also support dropdown fields.
         list.push(field);
       }
     }
@@ -651,23 +664,7 @@ Blockly.BlockSvg.prototype.tab = function(start, forward) {
       }
     }
   }
-  i = list.indexOf(start);
-  if (i == -1) {
-    // No start location, start at the beginning or end.
-    i = forward ? -1 : list.length;
-  }
-  var target = list[forward ? i + 1 : i - 1];
-  if (!target) {
-    // Ran off of list.
-    var parent = this.getParent();
-    if (parent) {
-      parent.tab(this, forward);
-    }
-  } else if (target instanceof Blockly.Field) {
-    target.showEditor_();
-  } else {
-    target.tab(null, forward);
-  }
+  return list;
 };
 
 /**
@@ -708,88 +705,22 @@ Blockly.BlockSvg.prototype.showContextMenu_ = function(e) {
   var menuOptions = [];
 
   if (this.isDeletable() && this.isMovable() && !block.isInFlyout) {
-    // Option to duplicate this block.
-    var duplicateOption = {
-      text: Blockly.Msg.DUPLICATE_BLOCK,
-      enabled: true,
-      callback: function() {
-        Blockly.duplicate_(block);
-      }
-    };
-    if (this.getDescendants().length > this.workspace.remainingCapacity()) {
-      duplicateOption.enabled = false;
+    menuOptions.push(Blockly.ContextMenu.blockDuplicateOption(block));
+    if (this.isEditable() && this.workspace.options.comments) {
+      menuOptions.push(Blockly.ContextMenu.blockCommentOption(block));
     }
-    menuOptions.push(duplicateOption);
-
-    if (this.isEditable() && !this.collapsed_ &&
-        this.workspace.options.comments) {
-      // Option to add/remove a comment.
-      var commentOption = {enabled: !goog.userAgent.IE};
-      if (this.comment) {
-        commentOption.text = Blockly.Msg.REMOVE_COMMENT;
-        commentOption.callback = function() {
-          block.setCommentText(null);
-        };
-      } else {
-        commentOption.text = Blockly.Msg.ADD_COMMENT;
-        commentOption.callback = function() {
-          block.setCommentText('');
-        };
-      }
-      menuOptions.push(commentOption);
-    }
-
-    if (this.workspace.options.disable) {
-      // Option to disable/enable block.
-      var disableOption = {
-        text: this.disabled ?
-            Blockly.Msg.ENABLE_BLOCK : Blockly.Msg.DISABLE_BLOCK,
-        enabled: !this.getInheritedDisabled(),
-        callback: function() {
-          block.setDisabled(!block.disabled);
-        }
-      };
-      menuOptions.push(disableOption);
-    }
-
-    // Option to delete this block.
-    // Count the number of blocks that are nested in this block.
-    var descendantCount = this.getDescendants(true).length;
-    var nextBlock = this.getNextBlock();
-    if (nextBlock) {
-      // Blocks in the current stack would survive this block's deletion.
-      descendantCount -= nextBlock.getDescendants(true).length;
-    }
-    var deleteOption = {
-      text: descendantCount == 1 ? Blockly.Msg.DELETE_BLOCK :
-          Blockly.Msg.DELETE_X_BLOCKS.replace('%1', String(descendantCount)),
-      enabled: true,
-      callback: function() {
-        Blockly.Events.setGroup(true);
-        block.dispose(true, true);
-        Blockly.Events.setGroup(false);
-      }
-    };
-    menuOptions.push(deleteOption);
+    menuOptions.push(Blockly.ContextMenu.blockDeleteOption(block));
   } else if (this.parentBlock_ && this.isShadow_) {
     this.parentBlock_.showContextMenu_(e);
     return;
   }
 
-  // Option to get help.
-  var url = goog.isFunction(this.helpUrl) ? this.helpUrl() : this.helpUrl;
-  var helpOption = {enabled: !!url};
-  helpOption.text = Blockly.Msg.HELP;
-  helpOption.callback = function() {
-    block.showHelp_();
-  };
-  menuOptions.push(helpOption);
+  menuOptions.push(Blockly.ContextMenu.blockHelpOption(block));
 
   // Allow the block to add or modify menuOptions.
-  if (this.customContextMenu && !block.isInFlyout) {
+  if (this.customContextMenu) {
     this.customContextMenu(menuOptions);
   }
-
   Blockly.ContextMenu.show(e, menuOptions, this.RTL);
   Blockly.ContextMenu.currentBlock = this;
 };
@@ -945,6 +876,14 @@ Blockly.BlockSvg.prototype.dispose = function(healStack, animate) {
   // Stop rerendering.
   this.rendered = false;
 
+  // Clear pending warnings.
+  if (this.warningTextDb_) {
+    for (var n in this.warningTextDb_) {
+      clearTimeout(this.warningTextDb_[n]);
+    }
+    this.warningTextDb_ = null;
+  }
+
   Blockly.Events.disable();
   try {
     var icons = this.getIcons();
@@ -1013,10 +952,8 @@ Blockly.BlockSvg.disposeUiStep_ = function(clone, rtl, start, workspaceScale) {
     var scale = (1 - percent) * workspaceScale;
     clone.setAttribute('transform', 'translate(' + x + ',' + y + ')' +
         ' scale(' + scale + ')');
-    var closure = function() {
-      Blockly.BlockSvg.disposeUiStep_(clone, rtl, start, workspaceScale);
-    };
-    setTimeout(closure, 10);
+    setTimeout(Blockly.BlockSvg.disposeUiStep_, 10, clone, rtl, start,
+               workspaceScale);
   }
 };
 
@@ -1061,10 +998,8 @@ Blockly.BlockSvg.connectionUiStep_ = function(ripple, start, workspaceScale) {
   } else {
     ripple.setAttribute('r', percent * 25 * workspaceScale);
     ripple.style.opacity = 1 - percent;
-    var closure = function() {
-      Blockly.BlockSvg.connectionUiStep_(ripple, start, workspaceScale);
-    };
-    Blockly.BlockSvg.disconnectUiStop_.pid_ = setTimeout(closure, 10);
+    Blockly.BlockSvg.disconnectUiStop_.pid_ = setTimeout(
+        Blockly.BlockSvg.connectionUiStep_, 10, ripple, start, workspaceScale);
   }
 };
 
@@ -1108,11 +1043,10 @@ Blockly.BlockSvg.disconnectUiStep_ = function(group, magnitude, start) {
     var skew = Math.round(Math.sin(percent * Math.PI * WIGGLES) *
         (1 - percent) * magnitude);
     group.skew_ = 'skewX(' + skew + ')';
-    var closure = function() {
-      Blockly.BlockSvg.disconnectUiStep_(group, magnitude, start);
-    };
     Blockly.BlockSvg.disconnectUiStop_.group = group;
-    Blockly.BlockSvg.disconnectUiStop_.pid = setTimeout(closure, 10);
+    Blockly.BlockSvg.disconnectUiStop_.pid =
+        setTimeout(Blockly.BlockSvg.disconnectUiStep_, 10, group, magnitude,
+                   start);
   }
   if (!group.translate_) group.translate_ = '';
   group.setAttribute('transform', group.translate_ + group.skew_);
@@ -1211,30 +1145,30 @@ Blockly.BlockSvg.prototype.setCommentText = function(text) {
  *     maintain multiple warnings.
  */
 Blockly.BlockSvg.prototype.setWarningText = function(text, opt_id) {
-  if (!this.setWarningText.pid_) {
+  if (!this.warningTextDb_) {
     // Create a database of warning PIDs.
     // Only runs once per block (and only those with warnings).
-    this.setWarningText.pid_ = Object.create(null);
+    this.warningTextDb_ = Object.create(null);
   }
   var id = opt_id || '';
   if (!id) {
     // Kill all previous pending processes, this edit supersedes them all.
-    for (var n in this.setWarningText.pid_) {
-      clearTimeout(this.setWarningText.pid_[n]);
-      delete this.setWarningText.pid_[n];
+    for (var n in this.warningTextDb_) {
+      clearTimeout(this.warningTextDb_[n]);
+      delete this.warningTextDb_[n];
     }
-  } else if (this.setWarningText.pid_[id]) {
+  } else if (this.warningTextDb_[id]) {
     // Only queue up the latest change.  Kill any earlier pending process.
-    clearTimeout(this.setWarningText.pid_[id]);
-    delete this.setWarningText.pid_[id];
+    clearTimeout(this.warningTextDb_[id]);
+    delete this.warningTextDb_[id];
   }
   if (this.workspace.isDragging()) {
     // Don't change the warning text during a drag.
     // Wait until the drag finishes.
     var thisBlock = this;
-    this.setWarningText.pid_[id] = setTimeout(function() {
+    this.warningTextDb_[id] = setTimeout(function() {
       if (thisBlock.workspace) {  // Check block wasn't deleted.
-        delete thisBlock.setWarningText.pid_[id];
+        delete thisBlock.warningTextDb_[id];
         thisBlock.setWarningText(text, id);
       }
     }, 100);

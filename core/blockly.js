@@ -57,7 +57,6 @@ goog.require('Blockly.Generator');
 goog.require('Blockly.Msg');
 goog.require('Blockly.Procedures');
 goog.require('Blockly.Toolbox');
-goog.require('Blockly.PXTToolbox');
 goog.require('Blockly.Touch');
 goog.require('Blockly.WidgetDiv');
 goog.require('Blockly.WorkspaceSvg');
@@ -421,6 +420,10 @@ Blockly.defineBlocksWithJsonArray = function(jsonArray) {
  *     provided.
  *     should not block execution of other event handlers on this touch or other
  *     simultaneous touches.
+ * @param {boolean} opt_noPreventDefault True if triggering on this event
+ *     should prevent the default handler.  False by default.  If
+ *     opt_noPreventDefault is provided, opt_noCaptureIdentifier must also be
+ *     provided.
  * @return {!Array.<!Array>} Opaque data that can be passed to unbindEvent_.
  * @private
  */

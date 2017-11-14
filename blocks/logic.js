@@ -33,6 +33,7 @@ goog.provide('Blockly.Blocks.logic');  // Deprecated
 goog.provide('Blockly.Constants.Logic');
 
 goog.require('Blockly.Blocks');
+goog.require('Blockly');
 
 goog.require('Blockly.PXTBlockly.Extensions');
 
@@ -101,7 +102,8 @@ Blockly.Blocks['controls_if'] = {
   /**
    * Store pointers to any connected child blocks.
    */
-  storeConnections_: function(arg = 0) {
+  storeConnections_: function(arg) {
+    if (!arg) arg = 0;
     this.valueConnections_ = [null];
     this.statementConnections_ = [null];
     this.elseStatementConnection_ = null;
@@ -215,7 +217,7 @@ Blockly.Blocks['controls_if'] = {
           .appendField(Blockly.Msg.CONTROLS_IF_MSG_THEN);
       this.appendDummyInput('IFBUTTONS' + i)
           .appendField(
-        new Blockly.FieldImage(Blockly.mainWorkspace.options.pathToMedia + "remove.svg", 24, 24, false, "*", removeElseIf));
+        new Blockly.FieldImage(this.REMOVE_IMAGE_DATAURI, 24, 24, false, "*", removeElseIf));
       this.appendStatementInput('DO' + i)
     }
     if (this.elseCount_) {
@@ -498,8 +500,8 @@ Blockly.Constants.Logic.TOOLTIPS_BY_OP = {
 };
 
 Blockly.Extensions.register('logic_op_tooltip',
-  Blockly.Extensions.buildTooltipForDropdown(
-    'OP', Blockly.Constants.Logic.TOOLTIPS_BY_OP));
+    Blockly.Extensions.buildTooltipForDropdown(
+        'OP', Blockly.Constants.Logic.TOOLTIPS_BY_OP));
 
 /**
  * "controls_if" extension function. Adds mutator, shape updating methods, and
@@ -524,7 +526,7 @@ Blockly.Constants.Logic.CONTROLS_IF_TOOLTIP_EXTENSION = function() {
 };
 
 Blockly.Extensions.register('controls_if_tooltip',
-  Blockly.Constants.Logic.CONTROLS_IF_TOOLTIP_EXTENSION);
+    Blockly.Constants.Logic.CONTROLS_IF_TOOLTIP_EXTENSION);
 
 /**
  * Corrects the logic_compare dropdown label with respect to language direction.
@@ -612,7 +614,7 @@ Blockly.Constants.Logic.LOGIC_COMPARE_EXTENSION = function() {
 };
 
 Blockly.Extensions.register('logic_compare',
-  Blockly.Constants.Logic.LOGIC_COMPARE_EXTENSION);
+    Blockly.Constants.Logic.LOGIC_COMPARE_EXTENSION);
 
 /**
  * Adds type coordination between inputs and output.
@@ -657,4 +659,4 @@ Blockly.Constants.Logic.LOGIC_TERNARY_ONCHANGE_MIXIN = {
 };
 
 Blockly.Extensions.registerMixin('logic_ternary',
-  Blockly.Constants.Logic.LOGIC_TERNARY_ONCHANGE_MIXIN);
+    Blockly.Constants.Logic.LOGIC_TERNARY_ONCHANGE_MIXIN);

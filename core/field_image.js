@@ -39,7 +39,8 @@ goog.require('goog.userAgent');
  * @param {number} height Height of the image.
  * @param {boolean} flip_rtl Whether to flip the icon in RTL
  * @param {string=} opt_alt Optional alt text for when block is collapsed.
- * @param {Function=} opt_onClick Optional function to be called when image is clicked
+ * @param {Function=} opt_onClick Optional function to be called when the image
+ *     is clicked.  If opt_onClick is defined, opt_alt must also be defined.
  * @extends {Blockly.Field}
  * @constructor
  */
@@ -54,7 +55,7 @@ Blockly.FieldImage = function(src, width, height, flip_rtl, opt_alt, opt_onClick
   this.flipRTL_ = flip_rtl;
   this.setValue(src);
 
-  if (typeof opt_onClick === "function") {
+  if (typeof opt_onClick == 'function') {
     this.clickHandler_ = opt_onClick;
     this.EDITABLE = true;
   }
@@ -198,8 +199,8 @@ Blockly.FieldImage.prototype.updateWidth = function() {
  * If field click is called, and click handler defined,
  * call the handler.
  */
- Blockly.FieldImage.prototype.showEditor_ = function() {
-   if (this.clickHandler_){
-     this.clickHandler_(this);
-   }
- };
+Blockly.FieldImage.prototype.showEditor_ = function() {
+  if (this.clickHandler_){
+    this.clickHandler_(this);
+  }
+};

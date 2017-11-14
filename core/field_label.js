@@ -47,9 +47,19 @@ Blockly.FieldLabel = function(text, opt_class) {
 goog.inherits(Blockly.FieldLabel, Blockly.Field);
 
 /**
- * Editable fields are saved by the XML renderer, non-editable fields are not.
+ * Editable fields usually show some sort of UI for the user to change them.
+ * @type {boolean}
+ * @public
  */
 Blockly.FieldLabel.prototype.EDITABLE = false;
+
+/**
+ * Serializable fields are saved by the XML renderer, non-serializable fields
+ * are not.  Editable fields should be serialized.
+ * @type {boolean}
+ * @public
+ */
+Blockly.FieldLabel.prototype.SERIALIZABLE = false;
 
 /**
  * Install this text on a block.
@@ -61,8 +71,8 @@ Blockly.FieldLabel.prototype.init = function() {
   }
   // Build the DOM.
   this.textElement_ = Blockly.utils.createSvgElement('text',
-      {'class': 'blocklyText',
-      'dy': '0.6ex'
+      {'class': this.className_,
+      'dy': '0.7ex'
     }, null);
   if (this.class_) {
     Blockly.utils.addClass(this.textElement_, this.class_);

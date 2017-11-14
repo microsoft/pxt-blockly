@@ -10,3 +10,6 @@ git checkout --ours dart_compressed.js
 git checkout --ours lua_compressed.js
 git checkout --ours javascript_compressed.js
 git checkout --ours python_compressed.js
+
+rm -rf accessible/*
+rm -rf demos/*

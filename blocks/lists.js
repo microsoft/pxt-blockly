@@ -33,6 +33,7 @@ goog.provide('Blockly.Blocks.lists');  // Deprecated
 goog.provide('Blockly.Constants.Lists');
 
 goog.require('Blockly.Blocks');
+goog.require('Blockly');
 
 goog.require('Blockly.PXTBlockly.Extensions');
 
@@ -331,8 +332,14 @@ Blockly.Blocks['lists_create_with'] = {
           new Blockly.FieldImage(this.ADD_IMAGE_DATAURI, 24, 24, false, "*", add));
       }
     }
+    var i = 0;
+    // Remove deleted inputs.
+    while (this.getInput('ADD' + i)) {
+      this.removeInput('ADD' + i);
+      i++;
+    }
     // Add new inputs.
-    for (var i = 0; i < this.itemCount_; i++) {
+    for (i = 0; i < this.itemCount_; i++) {
       if (!this.getInput('ADD' + i)) {
         var input = this.appendValueInput('ADD' + i)
         var removeItem = function (arg) {
@@ -342,11 +349,6 @@ Blockly.Blocks['lists_create_with'] = {
         }(i);
         input.appendField(new Blockly.FieldImage(this.REMOVE_IMAGE_DATAURI, 24, 24, false, "*", removeItem));
       }
-    }
-    // Remove deleted inputs.
-    while (this.getInput('ADD' + i)) {
-      this.removeInput('ADD' + i);
-      i++;
     }
   }
 };
