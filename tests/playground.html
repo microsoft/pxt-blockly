@@ -50,6 +50,7 @@
 <script src="../generators/dart/variables.js"></script>
 <script src="../generators/dart/procedures.js"></script>
 <script src="../msg/messages.js"></script>
+<script src="../blocks/extensions.js"></script>
 <script src="../blocks/logic.js"></script>
 <script src="../blocks/loops.js"></script>
 <script src="../blocks/math.js"></script>
@@ -100,7 +101,11 @@ function start() {
               startScale: 0.75,
               maxScale: 4,
               minScale: 0.25,
-              scaleSpeed: 1.1}
+              scaleSpeed: 1.1},
+            colours: {
+              fieldShadow: 'rgba(255, 255, 255, 0.3)',
+              dragShadowOpacity: 0.6
+            }
           });
   // Restore previously displayed text.
   if (sessionStorage) {
@@ -480,6 +485,9 @@ h1 {
   <xml id="toolbox-categories" style="display: none">
     <category name="Logic" colour="210" iconclass="blocklyTreeIconCustom">
       <block type="controls_if"></block>
+      <block type="controls_if">
+        <mutation else="1"></mutation>
+      </block>
       <block type="logic_compare"></block>
       <block type="logic_operation"></block>
       <block type="logic_negate"></block>
@@ -519,7 +527,9 @@ h1 {
     </category>
     <category name="Math" disabled="true" colour="230" iconclass="blocklyTreeIconCustom">
       <block type="math_number" gap="32"></block>
-      <block type="math_number_minmax" gap="32"></block>
+      <block type="math_number_minmax" gap="32">
+        <mutation min="0" max="100"></mutation>
+      </block>
       <block type="math_arithmetic">
         <value name="A">
           <shadow type="math_number">

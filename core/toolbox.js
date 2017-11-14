@@ -43,6 +43,7 @@ goog.require('goog.math.Rect');
 goog.require('goog.style');
 goog.require('goog.ui.tree.TreeControl');
 goog.require('goog.ui.tree.TreeNode');
+goog.require('Blockly.PXTUtils');
 
 /**
  * Class for a Toolbox.
@@ -172,10 +173,7 @@ Blockly.Toolbox.prototype.init = function() {
           Blockly.hideChaff(true);
         }
         Blockly.Touch.clearTouchIdentifier();  // Don't block future drags.
-      }, /*opt_noPreventDefault*/ false, /*opt_noPreventDefault*/ true);
-
-  // pxtblockly: Right clicking on the toolbox doesn't show the browser context menu
-  Blockly.bindEventWithChecks_(this.HtmlDiv, 'contextmenu', this, Blockly.utils.noEvent);
+      }, /*opt_noCaptureIdentifier*/ false, /*opt_noPreventDefault*/ true);
   var workspaceOptions = {
     disabledPatternId: workspace.options.disabledPatternId,
     parentWorkspace: workspace,
@@ -405,31 +403,73 @@ Blockly.Toolbox.prototype.syncTrees_ = function(treeIn, treeOut, pathToMedia) {
   return openNode;
 };
 
+Blockly.Toolbox.prototype.isInverted_ = function() {
+  return this.workspace_.options.toolboxOptions && this.workspace_.options.toolboxOptions.inverted;
+}
+
 /**
  * Recursively add colours to this toolbox.
  * @param {Blockly.Toolbox.TreeNode} opt_tree Starting point of tree.
  *     Defaults to the root node.
  * @private
  */
+// pxtblockly specific: (support inverted toolbox, and coloured toolbox)
 Blockly.Toolbox.prototype.addColour_ = function(opt_tree) {
-  var tree = opt_tree || this.tree_;
-  var children = tree.getChildren();
-  for (var i = 0, child; child = children[i]; i++) {
-    var element = child.getRowElement();
-    if (element) {
-      if (this.hasColours_) {
-        var border = '8px solid ' + (child.hexColour || '#ddd');
-      } else {
-        var border = 'none';
-      }
-      if (this.workspace_.RTL) {
-        element.style.borderRight = border;
-      } else {
-        element.style.borderLeft = border;
-      }
+    var options = this.workspace_.options;
+    var tree = opt_tree || this.tree_;
+    var children = tree.getChildren();
+    for (var i = 0, child; child = children[i]; i++) {
+        var element = child.getRowElement();
+        if (element) {
+            // Support for inverted and coloured toolboxes
+            var toolboxOptions = options.toolboxOptions;
+            if (toolboxOptions.inverted) {
+                if (this.hasColours_) {
+                    element.style.color = '#fff';
+                    element.style.background = (child.hexColour || '#ddd');
+                    var invertedMultiplier = toolboxOptions.invertedMultiplier;
+                    if (!child.disabled) {
+                        // Hovering over toolbox category fades.
+                        Blockly.bindEvent_(child.getRowElement(), 'mouseenter', child,
+                            function(e) {
+                            if (!this.isSelected()) {
+                                this.getRowElement().style.background = Blockly.PXTUtils.fadeColour(this.hexColour || '#ddd', invertedMultiplier, false);
+                            }
+                            });
+                        Blockly.bindEvent_(child.getRowElement(), 'mouseleave', child,
+                            function(e) {
+                            if (!this.isSelected()) {
+                                this.getRowElement().style.background = (this.hexColour || '#ddd');
+                            }
+                            });
+                    }
+                }
+            } else {
+                if (toolboxOptions.border) {
+                    // Only show if the toolbox type is not noborder
+                    if (this.hasColours_) {
+                        var border = '8px solid ' + (child.hexColour || '#ddd');
+                    } else {
+                        var border = 'none';
+                    }
+                    if (this.workspace_.RTL) {
+                        element.style.borderRight = border;
+                    } else {
+                        element.style.borderLeft = border;
+                    }
+                }
+                // support for a coloured toolbox
+                if (toolboxOptions.colour && this.hasColours_) {
+                    element.style.color = (child.hexColour || '#000');
+                }
+            }
+            // if disabled, show disabled opacity
+            if (child.disabled) {
+                element.style.opacity = toolboxOptions.disabledOpacity;
+            }
+        }
+        this.addColour_(child);
     }
-    this.addColour_(child);
-  }
 };
 
 /**
@@ -530,9 +570,8 @@ Blockly.Toolbox.TreeControl.prototype.enterDocument = function() {
   // Add touch handler.
   if (goog.events.BrowserFeature.TOUCH_ENABLED) {
     var el = this.getElement();
-    // pxtblockly: change TOUCHSTART for TOUCHEND for better touch scrolling of the toolbox
     Blockly.bindEventWithChecks_(el, goog.events.EventType.TOUCHEND, this,
-      this.handleTouchEvent_);
+        this.handleTouchEvent_);
   }
 
   // pxtblockly: Handle right click.
@@ -546,14 +585,12 @@ Blockly.Toolbox.TreeControl.prototype.enterDocument = function() {
  * @private
  */
 Blockly.Toolbox.TreeControl.prototype.handleTouchEvent_ = function(e) {
-  // pxtblockly: Remove preventDefaut() to allow scrolling toolbox with touch
-  // e.preventDefault();
   var node = this.getNodeFromEvent_(e);
   if (node && e.type === goog.events.EventType.TOUCHEND) {
     // Fire asynchronously since onMouseDown takes long enough that the browser
     // would fire the default mouse event before this method returns.
     setTimeout(function() {
-      node.onMouseDown(e);  // Same behaviour for click and touch.
+      node.onClick_(e);  // Same behaviour for click and touch.
     }, 1);
   }
 };
@@ -596,7 +633,7 @@ Blockly.Toolbox.TreeControl.prototype.setSelectedItem = function(node) {
     return;
   }
   // pxtblockly: don't reset the toolbox category background color for inverted toolboxes
-  if (toolbox.lastCategory_ && !toolbox.isInverted()) {
+  if (toolbox.lastCategory_ && !toolbox.isInverted_()) {
     toolbox.lastCategory_.getRowElement().style.backgroundColor = '';
   }
   if (node) {
@@ -659,7 +696,7 @@ Blockly.Toolbox.TreeNode.prototype.getExpandIconSafeHtml = function() {
  * @param {!goog.events.BrowserEvent} e The browser event.
  * @override
  */
-Blockly.Toolbox.TreeNode.prototype.onMouseDown = function(e) {
+Blockly.Toolbox.TreeNode.prototype.onClick_ = function(e) {
   // Expand icon.
   if (this.hasChildren() && this.isUserCollapsible_) {
     this.toggle();
@@ -670,6 +707,16 @@ Blockly.Toolbox.TreeNode.prototype.onMouseDown = function(e) {
     this.select();
   }
   this.updateRow();
+};
+
+/**
+ * Suppress the inherited mouse down behaviour.
+ * @param {!goog.events.BrowserEvent} e The browser event.
+ * @override
+ * @private
+ */
+Blockly.Toolbox.TreeNode.prototype.onMouseDown = function(e) {
+  // NOPE.
 };
 
 /**

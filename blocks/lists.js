@@ -33,7 +33,9 @@ goog.provide('Blockly.Blocks.lists');  // Deprecated
 goog.provide('Blockly.Constants.Lists');
 
 goog.require('Blockly.Blocks');
+goog.require('Blockly');
 
+goog.require('Blockly.PXTBlockly.Extensions');
 
 /**
  * Common HSV hue for all blocks in this category.
@@ -55,7 +57,7 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
     "type": "lists_create_empty",
     "message0": "%{BKY_LISTS_CREATE_EMPTY_TITLE}",
     "output": "Array",
-    "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
+    "outputShape": Blockly.OUTPUT_SHAPE_SQUARE,
     "colour": "%{BKY_LISTS_HUE}",
     "tooltip": "%{BKY_LISTS_CREATE_EMPTY_TOOLTIP}",
     "helpUrl": "%{BKY_LISTS_CREATE_EMPTY_HELPURL}"
@@ -76,7 +78,7 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
       }
     ],
     "output": "Array",
-    "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
+    "outputShape": Blockly.OUTPUT_SHAPE_SQUARE,
     "colour": "%{BKY_LISTS_HUE}",
     "tooltip": "%{BKY_LISTS_REPEAT_TOOLTIP}",
     "helpUrl": "%{BKY_LISTS_REPEAT_HELPURL}"
@@ -93,7 +95,7 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
       }
     ],
     "output": "Array",
-    "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
+    "outputShape": Blockly.OUTPUT_SHAPE_SQUARE,
     "inputsInline": true,
     "colour": "%{BKY_LISTS_HUE}",
     "tooltip": "%{BKY_LISTS_REVERSE_TOOLTIP}",
@@ -141,13 +143,15 @@ Blockly.Blocks['lists_create_with'] = {
    * @this Blockly.Block
    */
   init: function() {
+    Blockly.Extensions.apply('inline-svgs', this, false);
     this.setHelpUrl(Blockly.Msg.LISTS_CREATE_WITH_HELPURL);
     this.setColour(Blockly.Blocks.lists.HUE);
     this.itemCount_ = 3;
     this.updateShape_();
     this.setOutput(true, 'Array');
-    this.setOutputShape(Blockly.OUTPUT_SHAPE_ROUND);
-    this.setMutator(new Blockly.Mutator(['lists_create_with_item']));
+    this.setOutputShape(Blockly.OUTPUT_SHAPE_SQUARE);
+    this.setInputsInline(false);
+    //this.setMutator(new Blockly.Mutator(['lists_create_with_item']));
     this.setTooltip(Blockly.Msg.LISTS_CREATE_WITH_TOOLTIP);
   },
   /**
@@ -175,61 +179,131 @@ Blockly.Blocks['lists_create_with'] = {
    * @return {!Blockly.Block} Root block in mutator.
    * @this Blockly.Block
    */
-  decompose: function(workspace) {
-    var containerBlock = workspace.newBlock('lists_create_with_container');
-    containerBlock.initSvg();
-    var connection = containerBlock.getInput('STACK').connection;
-    for (var i = 0; i < this.itemCount_; i++) {
-      var itemBlock = workspace.newBlock('lists_create_with_item');
-      itemBlock.initSvg();
-      connection.connect(itemBlock.previousConnection);
-      connection = itemBlock.nextConnection;
-    }
-    return containerBlock;
-  },
+  // pxtblockly: Removing the cogwheel for array with
+  // decompose: function(workspace) {
+  //   var containerBlock = workspace.newBlock('lists_create_with_container');
+  //   containerBlock.initSvg();
+  //   var connection = containerBlock.getInput('STACK').connection;
+  //   for (var i = 0; i < this.itemCount_; i++) {
+  //     var itemBlock = workspace.newBlock('lists_create_with_item');
+  //     itemBlock.initSvg();
+  //     connection.connect(itemBlock.previousConnection);
+  //     connection = itemBlock.nextConnection;
+  //   }
+  //   return containerBlock;
+  // },
   /**
    * Reconfigure this block based on the mutator dialog's components.
    * @param {!Blockly.Block} containerBlock Root block in mutator.
    * @this Blockly.Block
    */
-  compose: function(containerBlock) {
-    var itemBlock = containerBlock.getInputTargetBlock('STACK');
-    // Count number of inputs.
-    var connections = [];
-    while (itemBlock) {
-      connections.push(itemBlock.valueConnection_);
-      itemBlock = itemBlock.nextConnection &&
-          itemBlock.nextConnection.targetBlock();
-    }
-    // Disconnect any children that don't belong.
-    for (var i = 0; i < this.itemCount_; i++) {
-      var connection = this.getInput('ADD' + i).connection.targetConnection;
-      if (connection && connections.indexOf(connection) == -1) {
-        connection.disconnect();
-      }
-    }
-    this.itemCount_ = connections.length;
-    this.updateShape_();
-    // Reconnect any child blocks.
-    for (var i = 0; i < this.itemCount_; i++) {
-      Blockly.Mutator.reconnect(connections[i], this, 'ADD' + i);
-    }
-  },
+  // pxtblockly: Removing the cogwheel for array with
+  // compose: function(containerBlock) {
+  //   var itemBlock = containerBlock.getInputTargetBlock('STACK');
+  //   // Count number of inputs.
+  //   var connections = [];
+  //   while (itemBlock) {
+  //     connections.push(itemBlock.valueConnection_);
+  //     itemBlock = itemBlock.nextConnection &&
+  //         itemBlock.nextConnection.targetBlock();
+  //   }
+  //   // Disconnect any children that don't belong.
+  //   for (var i = 0; i < this.itemCount_; i++) {
+  //     var connection = this.getInput('ADD' + i).connection.targetConnection;
+  //     if (connection && connections.indexOf(connection) == -1) {
+  //       connection.disconnect();
+  //     }
+  //   }
+  //   this.itemCount_ = connections.length;
+  //   this.updateShape_();
+  //   // Reconnect any child blocks.
+  //   for (var i = 0; i < this.itemCount_; i++) {
+  //     Blockly.Mutator.reconnect(connections[i], this, 'ADD' + i);
+  //   }
+  // },
   /**
    * Store pointers to any connected child blocks.
    * @param {!Blockly.Block} containerBlock Root block in mutator.
    * @this Blockly.Block
    */
-  saveConnections: function(containerBlock) {
-    var itemBlock = containerBlock.getInputTargetBlock('STACK');
-    var i = 0;
-    while (itemBlock) {
-      var input = this.getInput('ADD' + i);
-      itemBlock.valueConnection_ = input && input.connection.targetConnection;
-      i++;
-      itemBlock = itemBlock.nextConnection &&
-          itemBlock.nextConnection.targetBlock();
+  // saveConnections: function(containerBlock) {
+  //   var itemBlock = containerBlock.getInputTargetBlock('STACK');
+  //   var i = 0;
+  //   while (itemBlock) {
+  //     var input = this.getInput('ADD' + i);
+  //     itemBlock.valueConnection_ = input && input.connection.targetConnection;
+  //     i++;
+  //     itemBlock = itemBlock.nextConnection &&
+  //         itemBlock.nextConnection.targetBlock();
+  //   }
+  // },
+  /**
+   * Store pointers to any connected child blocks.
+   */
+  storeConnections_: function (arg) {
+    this.valueConnections_ = [];
+    for (var i = 0; i < this.itemCount_; i++) {
+      if (arg != i) {
+        this.valueConnections_.push(this.getInput('ADD' + i).connection.targetConnection);
+      } else {
+        if (this.getInput('ADD' + i).connection.targetConnection) this.getInput('ADD' + i).connection.disconnect();
+      }
     }
+  },
+  restoreConnections_: function () {
+    for (var i = 0; i < this.itemCount_; i++) {
+       Blockly.Mutator.reconnect(this.valueConnections_[i], this, 'ADD' + i);
+    }
+  },
+  addItem_: function () {
+    this.storeConnections_();
+    var update = function () {
+      this.itemCount_++;
+    }
+    this.update_(update);
+    this.restoreConnections_();
+  },
+  removeItem_: function (item) {
+    this.storeConnections_(item);
+    var update = function () {
+      this.itemCount_--;
+    }
+    this.update_(update);
+    this.restoreConnections_();
+  },
+  update_: function (update) {
+    Blockly.Events.setGroup(true);
+    var block = this;
+    var oldMutationDom = block.mutationToDom();
+    var oldMutation = oldMutationDom && Blockly.Xml.domToText(oldMutationDom);
+    // Switch off rendering while the source block is rebuilt.
+    var savedRendered = block.rendered;
+    block.rendered = false;
+    // Update the mutation 
+    if (update) update.call(this)
+    // Allow the source block to rebuild itself.
+    this.updateShape_();
+    // Restore rendering and show the changes.
+    block.rendered = savedRendered;
+    // Mutation may have added some elements that need initializing.
+    block.initSvg();
+    // Ensure that any bump is part of this mutation's event group.
+    var group = Blockly.Events.getGroup();
+    var newMutationDom = block.mutationToDom();
+    var newMutation = newMutationDom && Blockly.Xml.domToText(newMutationDom);
+    if (oldMutation != newMutation) {
+      Blockly.Events.fire(new Blockly.Events.BlockChange(
+          block, 'mutation', null, oldMutation, newMutation));
+      setTimeout(function() {
+        Blockly.Events.setGroup(group);
+        block.bumpNeighbours_();
+        Blockly.Events.setGroup(false);
+      }, Blockly.BUMP_DELAY);
+    }
+    if (block.rendered) {
+      block.render();
+    }
+    Blockly.Events.setGroup(false);
   },
   /**
    * Modify this block to have the correct number of inputs.
@@ -237,25 +311,44 @@ Blockly.Blocks['lists_create_with'] = {
    * @this Blockly.Block
    */
   updateShape_: function() {
-    if (this.itemCount_ && this.getInput('EMPTY')) {
-      this.removeInput('EMPTY');
-    } else if (!this.itemCount_ && !this.getInput('EMPTY')) {
-      this.appendDummyInput('EMPTY')
-          .appendField(Blockly.Msg.LISTS_CREATE_EMPTY_TITLE);
+    var that = this;
+    var add = function() {
+      that.addItem_();
     }
-    // Add new inputs.
-    for (var i = 0; i < this.itemCount_; i++) {
-      if (!this.getInput('ADD' + i)) {
-        var input = this.appendValueInput('ADD' + i);
-        if (i == 0) {
-          input.appendField(Blockly.Msg.LISTS_CREATE_WITH_INPUT_WITH);
-        }
+    if (this.itemCount_) {
+      if (this.getInput('EMPTY')) this.removeInput('EMPTY');
+      if (!this.getInput('TITLE')) {
+        this.appendDummyInput('TITLE')
+            .appendField(Blockly.Msg.LISTS_CREATE_WITH_INPUT_WITH)
+            .appendField(
+          new Blockly.FieldImage(this.ADD_IMAGE_DATAURI, 24, 24, false, "*", add));
+      }
+    } else {
+      if (this.getInput('TITLE')) this.removeInput('TITLE');
+      if (!this.getInput('EMPTY')) {
+        this.appendDummyInput('EMPTY')
+            .appendField(Blockly.Msg.LISTS_CREATE_EMPTY_TITLE)
+            .appendField(
+          new Blockly.FieldImage(this.ADD_IMAGE_DATAURI, 24, 24, false, "*", add));
       }
     }
+    var i = 0;
     // Remove deleted inputs.
     while (this.getInput('ADD' + i)) {
       this.removeInput('ADD' + i);
       i++;
+    }
+    // Add new inputs.
+    for (i = 0; i < this.itemCount_; i++) {
+      if (!this.getInput('ADD' + i)) {
+        var input = this.appendValueInput('ADD' + i)
+        var removeItem = function (arg) {
+          return function () {
+            that.removeItem_(arg);
+          }
+        }(i);
+        input.appendField(new Blockly.FieldImage(this.REMOVE_IMAGE_DATAURI, 24, 24, false, "*", removeItem));
+      }
     }
   }
 };
@@ -663,7 +756,7 @@ Blockly.Blocks['lists_getSublist'] = {
     }
     this.setInputsInline(true);
     this.setOutput(true, 'Array');
-    this.setOutputShape(Blockly.OUTPUT_SHAPE_ROUND);
+    this.setOutputShape(Blockly.OUTPUT_SHAPE_SQUARE);
     this.updateAt_(1, true);
     this.updateAt_(2, true);
     this.setTooltip(Blockly.Msg.LISTS_GET_SUBLIST_TOOLTIP);
@@ -777,7 +870,7 @@ Blockly.Blocks['lists_sort'] = {
         }
       ],
       "output": "Array",
-      "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
+      "outputShape": Blockly.OUTPUT_SHAPE_SQUARE,
       "colour": Blockly.Blocks.lists.HUE,
       "tooltip": Blockly.Msg.LISTS_SORT_TOOLTIP,
       "helpUrl": Blockly.Msg.LISTS_SORT_HELPURL
@@ -809,7 +902,7 @@ Blockly.Blocks['lists_split'] = {
         .appendField(Blockly.Msg.LISTS_SPLIT_WITH_DELIMITER);
     this.setInputsInline(true);
     this.setOutput(true, 'Array');
-    this.setOutputShape(Blockly.OUTPUT_SHAPE_ROUND);
+    this.setOutputShape(Blockly.OUTPUT_SHAPE_SQUARE);
     this.setTooltip(function() {
       var mode = thisBlock.getFieldValue('MODE');
       if (mode == 'SPLIT') {

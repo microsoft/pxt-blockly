@@ -394,6 +394,7 @@ Blockly.Msg.VARIABLES_SET_CREATE_GET = "Crea 'prendi %1'";
 Blockly.Msg.VARIABLES_SET_HELPURL = "https://github.com/google/blockly/wiki/Variables#set";  // untranslated
 Blockly.Msg.VARIABLES_SET_TOOLTIP = "Imposta questa variabile ad essere pari all'input.";
 Blockly.Msg.VARIABLE_ALREADY_EXISTS = "Una variabile denominata '%1' esiste già.";
+Blockly.Msg.VARIABLE_ALREADY_EXISTS_FOR_ANOTHER_TYPE = "Una variabile nominata \"%1\" esiste già per un'altra variabile del tipo \"%2\".";
 Blockly.Msg.PROCEDURES_DEFRETURN_TITLE = Blockly.Msg.PROCEDURES_DEFNORETURN_TITLE;
 Blockly.Msg.CONTROLS_IF_IF_TITLE_IF = Blockly.Msg.CONTROLS_IF_MSG_IF;
 Blockly.Msg.CONTROLS_WHILEUNTIL_INPUT_DO = Blockly.Msg.CONTROLS_REPEAT_INPUT_DO;

@@ -205,6 +205,9 @@ Blockly.InsertionMarkerManager.prototype.applyConnections = function() {
       var inferiorConnection = this.localConnection_.isSuperior() ?
           this.closestConnection_ : this.localConnection_;
       inferiorConnection.getSourceBlock().connectionUiEffect();
+      // Bring the just-edited stack to the front.
+      var rootBlock = this.topBlock_.getRootBlock();
+      rootBlock.bringToFront();
     }
   }
 };
@@ -230,6 +233,26 @@ Blockly.InsertionMarkerManager.prototype.update = function(dxy, deleteArea) {
     this.maybeHidePreview_(candidate);
     this.maybeShowPreview_(candidate);
     Blockly.Events.enable();
+  }
+};
+
+/**
+ * Remove highlighting from the currently highlighted connection, if it exists.
+ * @private
+ */
+Blockly.InsertionMarkerManager.prototype.removeHighlighting_ = function() {
+  if (this.closestConnection_) {
+    this.closestConnection_.unhighlight();
+  }
+};
+
+/**
+ * Add highlighting to the closest connection, if it exists.
+ * @private
+ */
+Blockly.InsertionMarkerManager.prototype.addHighlighting_ = function() {
+  if (this.closestConnection_) {
+    this.closestConnection_.highlight();
   }
 };
 
@@ -625,6 +648,7 @@ Blockly.InsertionMarkerManager.prototype.disconnectMarker_ = function() {
 
   this.markerConnection_ = null;
   imBlock.getSvgRoot().setAttribute('visibility', 'hidden');
+  this.removeHighlighting_();
 };
 
 /**
@@ -655,6 +679,8 @@ Blockly.InsertionMarkerManager.prototype.connectMarker_ = function() {
   // Connect() also renders the insertion marker.
   imConn.connect(closest);
   this.markerConnection_ = imConn;
+
+  this.addHighlighting_();
 };
 
 /**** End insertion marker display functions ****/

@@ -69,6 +69,14 @@ Blockly.FieldTextInput.ANIMATION_TIME = 0.25;
 Blockly.FieldTextInput.TEXT_MEASURE_PADDING_MAGIC = 45;
 
 /**
+ * The HTML input element for the user to type, or null if no FieldTextInput
+ * editor is currently open.
+ * @type {HTMLInputElement}
+ * @private
+ */
+Blockly.FieldTextInput.htmlInput_ = null;
+
+/**
  * Mouse cursor style when over the hotspot that initiates the editor.
  */
 Blockly.FieldTextInput.prototype.CURSOR = 'text';
@@ -85,8 +93,10 @@ Blockly.FieldTextInput.prototype.spellcheck_ = true;
 Blockly.FieldTextInput.prototype.init = function() {
 
   Blockly.FieldTextInput.superClass_.init.call(this);
-  // If not in a shadow block, draw a box.
-  if (!this.sourceBlock_.isShadow()) {
+  // If not in a shadow block, draw a box
+  // pxtblockly: and has more than one input.
+  if (!this.sourceBlock_.isShadow()
+    && (this.sourceBlock_.inputList && this.sourceBlock_.inputList.length > 1)) {
     this.box_ = Blockly.utils.createSvgElement('rect', {
       'rx': Blockly.BlockSvg.CORNER_RADIUS,
       'ry': Blockly.BlockSvg.CORNER_RADIUS,
@@ -240,6 +250,36 @@ Blockly.FieldTextInput.prototype.showEditor_ = function(
     htmlInput.setSelectionRange(0, 99999);
   }
 
+  this.bindEvents_(htmlInput);
+
+  // Add animation transition properties
+  var transitionProperties = 'box-shadow ' + Blockly.FieldTextInput.ANIMATION_TIME + 's';
+  if (Blockly.BlockSvg.FIELD_TEXTINPUT_ANIMATE_POSITIONING) {
+    div.style.transition += ',padding ' + Blockly.FieldTextInput.ANIMATION_TIME + 's,' +
+      'width ' + Blockly.FieldTextInput.ANIMATION_TIME + 's,' +
+      'height ' + Blockly.FieldTextInput.ANIMATION_TIME + 's,' +
+      'margin-left ' + Blockly.FieldTextInput.ANIMATION_TIME + 's';
+  }
+  div.style.transition = transitionProperties;
+  htmlInput.style.transition = 'font-size ' + Blockly.FieldTextInput.ANIMATION_TIME + 's';
+  // The animated properties themselves
+  htmlInput.style.fontSize = Blockly.BlockSvg.FIELD_TEXTINPUT_FONTSIZE_FINAL + 'pt';
+  div.style.boxShadow = '0px 0px 0px 4px ' + Blockly.Colours.fieldShadow;
+  // pxtblockly: execute the arrow callback when the editor is opened as well
+  if (opt_arrowCallback) {
+    opt_arrowCallback.call(this);
+    htmlInput.focus();
+    htmlInput.select();
+  }
+};
+
+/**
+ * Bind handlers for user input on this field and size changes on the workspace.
+ * @param {!HTMLInputElement} htmlInput The htmlInput created in showEditor, to
+ *     which event handlers will be bound.
+ * @private
+ */
+Blockly.FieldTextInput.prototype.bindEvents_ = function(htmlInput) {
   // Bind to keydown -- trap Enter without IME and Esc to hide.
   htmlInput.onKeyDownWrapper_ =
       Blockly.bindEventWithChecks_(htmlInput, 'keydown', this,
@@ -260,20 +300,20 @@ Blockly.FieldTextInput.prototype.showEditor_ = function(
       Blockly.bindEvent_(htmlInput, 'input', this, this.onHtmlInputChange_);
   htmlInput.onWorkspaceChangeWrapper_ = this.resizeEditor_.bind(this);
   this.workspace_.addChangeListener(htmlInput.onWorkspaceChangeWrapper_);
+};
 
-  // Add animation transition properties
-  var transitionProperties = 'box-shadow ' + Blockly.FieldTextInput.ANIMATION_TIME + 's';
-  if (Blockly.BlockSvg.FIELD_TEXTINPUT_ANIMATE_POSITIONING) {
-    div.style.transition += ',padding ' + Blockly.FieldTextInput.ANIMATION_TIME + 's,' +
-      'width ' + Blockly.FieldTextInput.ANIMATION_TIME + 's,' +
-      'height ' + Blockly.FieldTextInput.ANIMATION_TIME + 's,' +
-      'margin-left ' + Blockly.FieldTextInput.ANIMATION_TIME + 's';
-  }
-  div.style.transition = transitionProperties;
-  htmlInput.style.transition = 'font-size ' + Blockly.FieldTextInput.ANIMATION_TIME + 's';
-  // The animated properties themselves
-  htmlInput.style.fontSize = Blockly.BlockSvg.FIELD_TEXTINPUT_FONTSIZE_FINAL + 'pt';
-  div.style.boxShadow = '0px 0px 0px 4px ' + Blockly.Colours.fieldShadow;
+/**
+ * Unbind handlers for user input and workspace size changes.
+ * @param {!HTMLInputElement} htmlInput The html for this text input.
+ * @private
+ */
+Blockly.FieldTextInput.prototype.unbindEvents_ = function(htmlInput) {
+  Blockly.unbindEvent_(htmlInput.onKeyDownWrapper_);
+  Blockly.unbindEvent_(htmlInput.onKeyUpWrapper_);
+  Blockly.unbindEvent_(htmlInput.onKeyPressWrapper_);
+  Blockly.unbindEvent_(htmlInput.onInputWrapper_);
+  this.workspace_.removeChangeListener(
+      htmlInput.onWorkspaceChangeWrapper_);
 };
 
 /**
@@ -286,11 +326,14 @@ Blockly.FieldTextInput.prototype.onHtmlInputKeyDown_ = function(e) {
   var tabKey = 9, enterKey = 13, escKey = 27;
   if (e.keyCode == enterKey) {
     Blockly.WidgetDiv.hide();
+    Blockly.DropDownDiv.hideWithoutAnimation();
   } else if (e.keyCode == escKey) {
     htmlInput.value = htmlInput.defaultValue;
     Blockly.WidgetDiv.hide();
+    Blockly.DropDownDiv.hideWithoutAnimation();
   } else if (e.keyCode == tabKey) {
     Blockly.WidgetDiv.hide();
+    Blockly.DropDownDiv.hideWithoutAnimation();
     this.sourceBlock_.tab(this, !e.shiftKey);
     e.preventDefault();
   }
@@ -348,6 +391,7 @@ Blockly.FieldTextInput.prototype.onHtmlInputChange_ = function(e) {
   if (text !== htmlInput.oldValue_) {
     htmlInput.oldValue_ = text;
     this.setValue(text);
+    //pxtblockly: this.setValue(text);
     this.validate_();
   } else if (goog.userAgent.WEBKIT) {
     // Cursor key.  Render the source block to show the caret moving.
@@ -474,31 +518,12 @@ Blockly.FieldTextInput.prototype.widgetDispose_ = function() {
     var div = Blockly.WidgetDiv.DIV;
     var htmlInput = Blockly.FieldTextInput.htmlInput_;
     // Save the edit (if it validates).
-    var text = htmlInput.value;
-    if (thisField.sourceBlock_) {
-      var text1 = thisField.callValidator(text);
-      if (text1 === null) {
-        // Invalid edit.
-        text = htmlInput.defaultValue;
-      } else {
-        // Validation function has changed the text.
-        text = text1;
-        if (thisField.onFinishEditing_) {
-          thisField.onFinishEditing_(text);
-        }
-      }
-    }
-    thisField.setText(text);
-    thisField.sourceBlock_.rendered && thisField.sourceBlock_.render();
-    Blockly.unbindEvent_(htmlInput.onKeyDownWrapper_);
-    Blockly.unbindEvent_(htmlInput.onKeyUpWrapper_);
-    Blockly.unbindEvent_(htmlInput.onKeyPressWrapper_);
-    Blockly.unbindEvent_(htmlInput.onInputWrapper_);
+    thisField.maybeSaveEdit_();
+
+    thisField.unbindEvents_(htmlInput);
     if (htmlInput.dropDownArrowMouseWrapper_) {
       Blockly.unbindEvent_(htmlInput.dropDownArrowMouseWrapper_);
     }
-    thisField.workspace_.removeChangeListener(
-        htmlInput.onWorkspaceChangeWrapper_);
     Blockly.Events.setGroup(false);
 
     // Animation of disposal
@@ -533,6 +558,27 @@ Blockly.FieldTextInput.prototype.widgetDisposeAnimationFinished_ = function() {
     Blockly.FieldTextInput.htmlInput_.style.transition = '';
     Blockly.FieldTextInput.htmlInput_ = null;
   };
+};
+
+Blockly.FieldTextInput.prototype.maybeSaveEdit_ = function() {
+  var htmlInput = Blockly.FieldTextInput.htmlInput_;
+  // Save the edit (if it validates).
+  var text = htmlInput.value;
+  if (this.sourceBlock_) {
+    var text1 = this.callValidator(text);
+    if (text1 === null) {
+      // Invalid edit.
+      text = htmlInput.defaultValue;
+    } else {
+      // Validation function has changed the text.
+      text = text1;
+      if (this.onFinishEditing_) {
+        this.onFinishEditing_(text);
+      }
+    }
+  }
+  this.setText(text);
+  this.sourceBlock_.rendered && this.sourceBlock_.render();
 };
 
 /**

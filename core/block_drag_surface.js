@@ -255,9 +255,9 @@ Blockly.BlockDragSurfaceSvg.prototype.getCurrentBlock = function() {
 Blockly.BlockDragSurfaceSvg.prototype.clearAndHide = function(opt_newSurface) {
   if (opt_newSurface) {
     // appendChild removes the node from this.dragGroup_
-    opt_newSurface.appendChild(this.getCurrentBlock());
+    if (this.getCurrentBlock()) opt_newSurface.appendChild(this.getCurrentBlock());
   } else {
-    this.dragGroup_.removeChild(this.getCurrentBlock());
+    if (this.getCurrentBlock()) this.dragGroup_.removeChild(this.getCurrentBlock());
   }
   this.SVG_.style.display = 'none';
   goog.asserts.assert(this.dragGroup_.childNodes.length == 0,

@@ -1,0 +1,1 @@
+module.exports = require('imports?Blockly=../shim/blocks_compressed,goog=../shim/blockly_compressed.goog!exports?Blockly!../msg/messages');

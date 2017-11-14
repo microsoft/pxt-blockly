@@ -175,16 +175,21 @@ Blockly.Css.CONTENT = [
   '.blocklyNonSelectable {',
     'user-select: none;',
     '-moz-user-select: none;',
-    '-webkit-user-select: none;',
     '-ms-user-select: none;',
+    '-webkit-user-select: none;',
   '}',
 
   '.blocklyWsDragSurface {',
     'display: none;',
     'position: absolute;',
-    'overflow: visible;',
     'top: 0;',
     'left: 0;',
+  '}',
+  /* Added as a separate rule with multiple classes to make it more specific
+     than a bootstrap rule that selects svg:root. See issue #1275 for context.
+  */
+  '.blocklyWsDragSurface.blocklyOverflowVisible {',
+    'overflow: visible;',
   '}',
 
   '.blocklyBlockDragSurface {',
@@ -204,9 +209,9 @@ Blockly.Css.CONTENT = [
     'box-shadow: 4px 4px 20px 1px rgba(0,0,0,.15);',
     'color: #000;',
     'display: none;',
-    'font-family: "Helvetica Neue", Helvetica, sans-serif;',
+    'font-family: "Helvetica Neue", "Segoe UI", Helvetica, sans-serif;',
     'font-size: 9pt;',
-    'opacity: 0.9;',
+    'opacity: .9;',
     'padding: 2px;',
     'position: absolute;',
     'z-index: 100000;', /* big value for bootstrap3 compatibility */
@@ -288,7 +293,7 @@ Blockly.Css.CONTENT = [
     'border: 1px solid $colour_numPadBorder;',
     'cursor: pointer;',
     'font-weight: 600;',
-    'font-family: "Helvetica Neue", Helvetica, sans-serif;',
+    'font-family: "Helvetica Neue", "Segoe UI", Helvetica, sans-serif;',
     'font-size: 12pt;',
     '-webkit-tap-highlight-color: rgba(0,0,0,0);',
   '}',
@@ -325,7 +330,7 @@ Blockly.Css.CONTENT = [
     'overflow: auto;',
     'word-wrap: break-word;',
     'text-align: center;',
-    'font-family: "Helvetica Neue", Helvetica, sans-serif;',
+    'font-family: "Helvetica Neue", "Segoe UI", Helvetica, sans-serif;',
     'font-size: .8em;',
   '}',
 
@@ -368,7 +373,6 @@ Blockly.Css.CONTENT = [
     'cursor: url("<<<PATH>>>/handopen.cur"), auto;',
     'cursor: grab;',
     'cursor: -webkit-grab;',
-    'cursor: -moz-grab;',
   '}',
 
    '.blocklyDragging {',
@@ -376,7 +380,6 @@ Blockly.Css.CONTENT = [
     'cursor: url("<<<PATH>>>/handclosed.cur"), auto;',
     'cursor: grabbing;',
     'cursor: -webkit-grabbing;',
-    'cursor: -moz-grabbing;',
   '}',
   /* Changes cursor on mouse down. Not effective in Firefox because of
     https://bugzilla.mozilla.org/show_bug.cgi?id=771241 */
@@ -385,7 +388,6 @@ Blockly.Css.CONTENT = [
     'cursor: url("<<<PATH>>>/handclosed.cur"), auto;',
     'cursor: grabbing;',
     'cursor: -webkit-grabbing;',
-    'cursor: -moz-grabbing;',
   '}',
   /* Change the cursor on the whole drag surface in case the mouse gets
      ahead of block during a drag. This way the cursor is still a closed hand.
@@ -395,7 +397,6 @@ Blockly.Css.CONTENT = [
     'cursor: url("<<<PATH>>>/handclosed.cur"), auto;',
     'cursor: grabbing;',
     'cursor: -webkit-grabbing;',
-    'cursor: -moz-grabbing;',
   '}',
 
   '.blocklyDragging.blocklyDraggingDelete {',
@@ -427,11 +428,16 @@ Blockly.Css.CONTENT = [
     'stroke: none;',
   '}',
 
+  '.blocklyInsertionMarker>.blocklyIconGroup {',
+    'display: none;',
+  '}',
+
   '.blocklyText {',
+    'cursor: default;',
     'fill: #fff;',
-    'font-family: "Helvetica Neue", Helvetica, sans-serif;',
+    'font-family: "Helvetica Neue", "Segoe UI", Helvetica, sans-serif;',
     'font-size: 12pt;',
-    'font-weight: 500;',
+    'font-weight: bold;',
   '}',
 
   '.blocklyTextTruncated {',
@@ -494,7 +500,10 @@ Blockly.Css.CONTENT = [
   '}',
 
   '.blocklyFlyoutLabelText {',
-    'fill: #000;',
+    'font-family: "Helvetica Neue", "Segoe UI", Helvetica, sans-serif;',
+    'font-size: 14pt;',
+    'fill: #575E75;',
+    'font-weight: bold;',
   '}',
 
   /*
@@ -504,6 +513,7 @@ Blockly.Css.CONTENT = [
   '.blocklySvg text, .blocklyBlockDragSurface text, .blocklyFlyout text, .blocklyToolboxDiv text {',
     'user-select: none;',
     '-moz-user-select: none;',
+    '-ms-user-select: none;',
     '-webkit-user-select: none;',
     'cursor: inherit;',
   '}',
@@ -550,7 +560,7 @@ Blockly.Css.CONTENT = [
 
   '.blocklyHtmlInput {',
     'border: none;',
-    'font-family: "Helvetica Neue", Helvetica, sans-serif;',
+    'font-family: "Helvetica Neue", "Segoe UI", Helvetica, sans-serif;',
     'font-size: 12pt;',
     'height: 100%;',
     'margin: 0;',
@@ -559,7 +569,7 @@ Blockly.Css.CONTENT = [
     'width: 100%;',
     'text-align: center;',
     'color: $colour_text;',
-    'font-weight: 500;',
+    'font-weight: bold;',
   '}',
 
   '.blocklyMainBackground {',
@@ -627,26 +637,41 @@ Blockly.Css.CONTENT = [
     'background: #faa;',
   '}',
 
-  '.blocklyAngleCircle {',
-    'stroke: #444;',
+  // '.blocklyAngleCircle {',
+  //   'stroke: ' + Blockly.Colours.motion.tertiary + ';',
+  //   'stroke-width: 1;',
+  //   'fill: ' + Blockly.Colours.motion.secondary + ';',
+  // '}',
+
+  '.blocklyAngleCenterPoint {',
+    'stroke: #fff;',
     'stroke-width: 1;',
-    'fill: #ddd;',
-    'fill-opacity: .8;',
+    'fill: #fff;',
   '}',
 
+  '.blocklyAngleDragHandle {',
+    'stroke: #fff;',
+    'stroke-width: 5;',
+    'stroke-opacity: 0.25;',
+    'fill: #fff;',
+    'cursor: pointer;',
+  '}',
+
+
   '.blocklyAngleMarks {',
-    'stroke: #444;',
+    'stroke: #fff;',
     'stroke-width: 1;',
+    'stroke-opacity: 0.5;',
   '}',
 
   '.blocklyAngleGauge {',
-    'fill: #f88;',
-    'fill-opacity: .8;',
+    'fill: #fff;',
+    'fill-opacity: 0.20;',
   '}',
 
   '.blocklyAngleLine {',
-    'stroke: #f00;',
-    'stroke-width: 2;',
+    'stroke: #fff;',
+    'stroke-width: 1;',
     'stroke-linecap: round;',
     'pointer-events: none;',
   '}',
@@ -676,8 +701,14 @@ Blockly.Css.CONTENT = [
     'overflow-x: visible;',
     'overflow-y: auto;',
     'position: absolute;',
-    'font-family: "Helvetica Neue", Helvetica, sans-serif;',
+    'font-family: "Helvetica Neue", "Segoe UI", Helvetica, sans-serif;',
+    'user-select: none;',
+    '-moz-user-select: none;',
+    '-ms-user-select: none;',
+    '-webkit-user-select: none;',
     'z-index: 40;', /* so blocks go over toolbox when dragging */
+    //'z-index: 70;', /* so blocks go under toolbox when dragging */
+    '-webkit-tap-highlight-color: transparent;', /* issue #1345 */
   '}',
 
   '.blocklyTreeRoot {',
@@ -739,7 +770,7 @@ Blockly.Css.CONTENT = [
   '}',
 
   '.blocklyTreeIconClosedRtl {',
-    'background-position: 0px -1px;',
+    'background-position: 0 -1px;',
   '}',
 
   '.blocklyTreeIconOpen {',
@@ -751,7 +782,7 @@ Blockly.Css.CONTENT = [
   '}',
 
   '.blocklyTreeSelected>.blocklyTreeIconClosedRtl {',
-    'background-position: 0px -17px;',
+    'background-position: 0 -17px;',
   '}',
 
   '.blocklyTreeSelected>.blocklyTreeIconOpen {',
@@ -765,7 +796,7 @@ Blockly.Css.CONTENT = [
 
   '.blocklyTreeLabel {',
     'cursor: default;',
-    'font-family: "Helvetica Neue", Helvetica, sans-serif;',
+    'font-family: "Helvetica Neue", "Segoe UI", Helvetica, sans-serif;',
     'font-size: 16px;',
     'padding: 0 3px;',
     'vertical-align: middle;',
@@ -793,37 +824,42 @@ Blockly.Css.CONTENT = [
     Styles to make the colorpicker look like the old gmail color picker
     NOTE: without CSS scoping this will override styles defined in palette.css
   */
-  '.blocklyWidgetDiv .goog-palette {',
+  '.blocklyDropDownDiv .goog-palette {',
     'outline: none;',
-    'cursor: default;',
+    'border-radius: 11px;',
+    'margin-bottom: 20px;',
   '}',
 
-  '.blocklyWidgetDiv .goog-palette-table {',
+  '.blocklyDropDownDiv .goog-palette-table {',
     'border-collapse: collapse;',
   '}',
 
-  '.blocklyWidgetDiv .goog-palette-cell {',
-    'height: 13px;',
-    'width: 15px;',
+  '.blocklyDropDownDiv .goog-palette-cell {',
+    'height: 22px;',
+    'width: 22px;',
     'margin: 0;',
+    'padding: 2px;',
     'border: 0;',
     'text-align: center;',
-    'vertical-align: middle;',
-    'font-size: 1px;',
+    'border-top: 1px solid #ddd;',
+    'padding-top: 5px;',
+    'cursor: pointer;',
   '}',
 
-  '.blocklyWidgetDiv .goog-palette-colorswatch {',
+  '.blocklyDropDownDiv .goog-palette-colorswatch {',
     'position: relative;',
-    'height: 13px;',
-    'width: 15px;',
+    'height: 22px;',
+    'width: 22px;',
+    'border-radius: 4px;',
+    'border: 2px solid rgba(0,0,0,.1);',
   '}',
 
-  '.blocklyWidgetDiv .goog-palette-cell-hover .goog-palette-colorswatch {',
+  '.blocklyDropDownDiv .goog-palette-cell-hover .goog-palette-colorswatch {',
     'border: 1px solid #FFF;',
     'box-sizing: border-box;',
   '}',
 
-  '.blocklyWidgetDiv .goog-palette-cell-selected .goog-palette-colorswatch {',
+  '.blocklyDropDownDiv .goog-palette-cell-selected .goog-palette-colorswatch {',
     'border: 1px solid #000;',
     'box-sizing: border-box;',
     'color: #fff;',
@@ -845,9 +881,6 @@ Blockly.Css.CONTENT = [
 
   '.blocklyWidgetDiv .goog-menu {',
     'background: #fff;',
-    'border-color: #ccc #666 #666 #ccc;',
-    'border-style: solid;',
-    'border-width: 1px;',
     'cursor: default;',
     'font: normal 13px "Helvetica Neue", Helvetica, sans-serif;',
     'margin: 0;',
@@ -857,6 +890,7 @@ Blockly.Css.CONTENT = [
     'overflow-y: auto;',
     'overflow-x: hidden;',
     'z-index: 20000;',  /* Arbitrary, but some apps depend on it... */
+    'box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);',
   '}',
 
   '.blocklyDropDownDiv .goog-menu {',
@@ -901,7 +935,7 @@ Blockly.Css.CONTENT = [
     'list-style: none;',
     'margin: 0;',
      /* 28px on the left for icon or checkbox; 7em on the right for shortcut. */
-    'padding: 4px 7em 4px 28px;',
+    'padding: 5px 7em 5px 28px;',
     'white-space: nowrap;',
   '}',
 
@@ -912,7 +946,7 @@ Blockly.Css.CONTENT = [
     'list-style: none;',
     'margin: 0;',
      /* 28px on the left for icon or checkbox; 7em on the right for shortcut. */
-    'padding: 4px 7em 4px 28px;',
+    'padding: 5px 7em 5px 28px;',
     'white-space: nowrap;',
   '}',
 
@@ -959,7 +993,6 @@ Blockly.Css.CONTENT = [
   '.blocklyWidgetDiv .goog-menuitem-disabled .goog-menuitem-icon, ',
   '.blocklyDropDownDiv .goog-menuitem-disabled .goog-menuitem-icon {',
     'opacity: 0.3;',
-    '-moz-opacity: 0.3;',
     'filter: alpha(opacity=30);',
   '}',
 
@@ -972,8 +1005,8 @@ Blockly.Css.CONTENT = [
     'border-color: #d6e9f8;',
     'border-style: dotted;',
     'border-width: 1px 0;',
-    'padding-bottom: 3px;',
-    'padding-top: 3px;',
+    'padding-bottom: 4px;',
+    'padding-top: 4px;',
   '}',
 
   '.blocklyDropDownDiv .goog-menuitem-highlight,',
@@ -1076,35 +1109,38 @@ Blockly.Css.CONTENT = [
   '}',
 
   /* pxtblockly: Field slider. */
-  '.blocklyDropDownDiv .goog-slider-vertical,',
   '.blocklyDropDownDiv .goog-slider-horizontal {',
-    'background-color: ThreeDFace;',
+    'margin: 8px;',
+    'height: 22px;',
+    'width: 150px;',
     'position: relative;',
-    'overflow: hidden;',
     'outline: none;',
-  '}',
-  '.blocklyDropDownDiv .goog-slider-vertical {',
-    'height: 168px;',
-    'width: 20px;',
-  '}',
-  '.blocklyDropDownDiv .goog-slider-horizontal {',
-    'height: 20px;',
-    'width: 168px;',
-  '}',
-  '.blocklyDropDownDiv .goog-slider-thumb {',
-    'position: absolute;',
-    'background-color: ThreeDShadow;',
-    'overflow: hidden;',
-  '}',
-  '.blocklyDropDownDiv .goog-slider-vertical .goog-slider-thumb {',
-    'left: 0;',
-    'height: 15px;',
-    'width: 100%;',
+    'border-radius: 11px;',
+    'margin-bottom: 20px;',
+    'background: #547AB2',
   '}',
   '.blocklyDropDownDiv .goog-slider-horizontal .goog-slider-thumb {',
-    'top: 0;',
-    'width: 15px;',
-    'height: 100%;',
+     'width: 26px;',
+     'height: 26px;',
+     'margin-top: -1px;',
+     'position: absolute;',
+     'background-color: white;',
+     'border-radius: 100%;',
+     '-webkit-box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.15);',
+     '-moz-box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.15);',
+     'box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.15);',
+  '}',
+  '.blocklyFieldSliderLabel {',
+    'font-family: "Helvetica Neue", "Segoe UI", Helvetica, sans-serif;',
+    'font-size: 0.65rem;',
+    'color: $colour_toolboxText;',
+    'margin: 8px;',
+  '}',
+  '.blocklyFieldSliderLabelText {',
+    'font-weight: bold;',
+  '}',
+  '.blocklyFieldSliderReadout {',
+    'margin-left: 10px;',
   '}',
 
   // pxtblockly: Adding blocklyHighlighted CSS classes for outlining blocks

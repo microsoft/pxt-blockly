@@ -3,8 +3,7 @@ var path = require('path');
 
 module.exports = [{
   entry: {
-    horizontal: './shim/horizontal.js',
-    vertical: './shim/vertical.js'
+    horizontal: './shim/vertical.js'
   },
   output: {
     library: 'PXTBlockly',

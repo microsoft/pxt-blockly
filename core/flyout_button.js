@@ -80,7 +80,7 @@ Blockly.FlyoutButton = function(workspace, targetWorkspace, xml, isLabel) {
    */
   this.callback_ = null;
 
-  var callbackKey = xml.getAttribute('callbackKey');
+  var callbackKey = xml.getAttribute('callbackkey');
   if (this.isLabel_ && callbackKey) {
     console.warn('Labels should not have callbacks. Label text: ' + this.text_);
   } else if (!this.isLabel_ &&
@@ -172,8 +172,7 @@ Blockly.FlyoutButton.prototype.createDom = function() {
       this.svgGroup_);
   svgText.textContent = this.text_;
 
-  this.width = svgText.getComputedTextLength() +
-      2 * Blockly.FlyoutButton.MARGIN;
+  this.width = Blockly.Field.getCachedWidth(svgText);
 
   if (this.icon_ || this.iconClass_) {
     var svgIcon = Blockly.utils.createSvgElement('text',
@@ -183,15 +182,12 @@ Blockly.FlyoutButton.prototype.createDom = function() {
     if (this.icon_) svgIcon.textContent = this.icon_;
     if (this.iconColor_) svgIcon.setAttribute('style', 'fill: ' + this.iconColor_);
 
-    this.width += svgIcon.getComputedTextLength();
+    this.width += svgIcon.getComputedTextLength() + 2 * Blockly.FlyoutButton.MARGIN;
 
     svgIcon.setAttribute('text-anchor', 'end');
     svgIcon.setAttribute('alignment-baseline', 'central');
     svgIcon.setAttribute('x', Blockly.FlyoutButton.MARGIN);
     svgIcon.setAttribute('y', this.height / 2);
-  } else if (this.isLabel_) {
-    this.width = svgText.getComputedTextLength() +
-    2 * Blockly.BlockSvg.TAB_WIDTH;
   }
 
   if (this.line_) {
@@ -206,6 +202,7 @@ Blockly.FlyoutButton.prototype.createDom = function() {
   }
 
   if (!this.isLabel_) {
+    this.width += 2 * Blockly.FlyoutButton.MARGIN;
     shadow.setAttribute('width', this.width);
     shadow.setAttribute('height', this.height);
   }
@@ -216,8 +213,6 @@ Blockly.FlyoutButton.prototype.createDom = function() {
   svgText.setAttribute('alignment-baseline', 'central');
   svgText.setAttribute('x', this.width / 2);
   svgText.setAttribute('y', this.height / 2);
-
-  this.updateTransform_();
 
   this.mouseUpWrapper_ = Blockly.bindEventWithChecks_(this.svgGroup_, 'mouseup',
       this, this.onMouseUp_);
@@ -259,6 +254,24 @@ Blockly.FlyoutButton.prototype.moveTo = function(x, y) {
  */
 Blockly.FlyoutButton.prototype.getTargetWorkspace = function() {
   return this.targetWorkspace_;
+};
+
+/**
+ * Get the text of this button.
+ * @return {string} The text on the button.
+ * @package
+ */
+Blockly.FlyoutButton.prototype.getText = function() {
+  return this.text_;
+};
+
+/**
+ * Get the position of this button.
+ * @return {!goog.math.Coordinate} The button position.
+ * @package
+ */
+Blockly.FlyoutButton.prototype.getPosition = function() {
+  return this.position_;
 };
 
 /**

@@ -35,6 +35,7 @@ goog.provide('Blockly.Constants.Math');
 goog.require('Blockly.Blocks');
 goog.require('Blockly.Colours');
 goog.require('Blockly.constants');
+goog.require('Blockly');
 
 
 /**
@@ -65,6 +66,61 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
     "tooltip": "%{BKY_MATH_NUMBER_TOOLTIP}",
     "extensions": ["parent_tooltip_when_inline"]
   },
+  // Block for integer numeric value.
+  {
+    "type": "math_integer",
+    "message0": "%1",
+    "args0": [{
+      "type": "field_number",
+      "name": "NUM",
+      "precision": 1
+    }],
+    "output": "Number",
+    "colour": Blockly.Colours.textField,
+    "colourSecondary": Blockly.Colours.textField,
+    "colourTertiary": Blockly.Colours.textField,
+    "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
+    "helpUrl": "%{BKY_MATH_NUMBER_HELPURL}",
+    "tooltip": "%{BKY_MATH_NUMBER_TOOLTIP}",
+    "extensions": ["parent_tooltip_when_inline"]
+  },
+  // Block for whole numeric value.
+  {
+    "type": "math_whole_number",
+    "message0": "%1",
+    "args0": [{
+      "type": "field_number",
+      "name": "NUM",
+      "min": 0,
+      "precision": 1
+    }],
+    "output": "Number",
+    "colour": Blockly.Colours.textField,
+    "colourSecondary": Blockly.Colours.textField,
+    "colourTertiary": Blockly.Colours.textField,
+    "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
+    "helpUrl": "%{BKY_MATH_NUMBER_HELPURL}",
+    "tooltip": "%{BKY_MATH_NUMBER_TOOLTIP}",
+    "extensions": ["parent_tooltip_when_inline"]
+  },
+  // Block for positive numeric value.
+  {
+    "type": "math_positive_number",
+    "message0": "%1",
+    "args0": [{
+      "type": "field_number",
+      "name": "NUM",
+      "min": 0
+    }],
+    "output": "Number",
+    "colour": Blockly.Colours.textField,
+    "colourSecondary": Blockly.Colours.textField,
+    "colourTertiary": Blockly.Colours.textField,
+    "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
+    "helpUrl": "%{BKY_MATH_NUMBER_HELPURL}",
+    "tooltip": "%{BKY_MATH_NUMBER_TOOLTIP}",
+    "extensions": ["parent_tooltip_when_inline"]
+  },
   // Block for numeric value with min and max.
   {
     "type": "math_number_minmax",
@@ -73,8 +129,8 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
       "type": "field_slider",
       "name": "SLIDER",
       "value": 0,
-      "min": 0,
-      "max": 100
+      "step": 1,
+      "labelText": "Number"
     }],
     "output": "Number",
     "colour": Blockly.Colours.textField,
@@ -458,8 +514,8 @@ Blockly.Constants.Math.TOOLTIPS_BY_OP = {
 };
 
 Blockly.Extensions.register('math_op_tooltip',
-  Blockly.Extensions.buildTooltipForDropdown(
-    'OP', Blockly.Constants.Math.TOOLTIPS_BY_OP));
+    Blockly.Extensions.buildTooltipForDropdown(
+        'OP', Blockly.Constants.Math.TOOLTIPS_BY_OP));
 
 
 /**
@@ -525,8 +581,8 @@ Blockly.Constants.Math.IS_DIVISIBLE_MUTATOR_EXTENSION = function() {
 };
 
 Blockly.Extensions.registerMutator('math_is_divisibleby_mutator',
-  Blockly.Constants.Math.IS_DIVISIBLEBY_MUTATOR_MIXIN,
-  Blockly.Constants.Math.IS_DIVISIBLE_MUTATOR_EXTENSION);
+    Blockly.Constants.Math.IS_DIVISIBLEBY_MUTATOR_MIXIN,
+    Blockly.Constants.Math.IS_DIVISIBLE_MUTATOR_EXTENSION);
 
 /**
  * Update the tooltip of 'math_change' block to reference the variable.
@@ -541,8 +597,8 @@ Blockly.Constants.Math.CHANGE_TOOLTIP_EXTENSION = function() {
 };
 
 Blockly.Extensions.register('math_change_tooltip',
-  Blockly.Extensions.buildTooltipWithFieldValue(
-    Blockly.Msg.MATH_CHANGE_TOOLTIP, 'VAR'));
+    Blockly.Extensions.buildTooltipWithFieldValue(
+        Blockly.Msg.MATH_CHANGE_TOOLTIP, 'VAR'));
 
 /**
  * Mixin with mutator methods to support alternate output based if the
@@ -599,9 +655,8 @@ Blockly.Constants.Math.LIST_MODES_MUTATOR_EXTENSION = function() {
 };
 
 Blockly.Extensions.registerMutator('math_modes_of_list_mutator',
-  Blockly.Constants.Math.LIST_MODES_MUTATOR_MIXIN,
-  Blockly.Constants.Math.LIST_MODES_MUTATOR_EXTENSION);
-
+    Blockly.Constants.Math.LIST_MODES_MUTATOR_MIXIN,
+    Blockly.Constants.Math.LIST_MODES_MUTATOR_EXTENSION);
 
 // pxtblockly: Mutator for the math number minmax
 Blockly.Constants.Math.MATH_NUMBER_MINMAX_MIXIN = {
@@ -612,8 +667,11 @@ Blockly.Constants.Math.MATH_NUMBER_MINMAX_MIXIN = {
    */
   mutationToDom: function() {
     var container = document.createElement('mutation');
-    var min = container.setAttribute('min', this.inputList[0].fieldRow[0].min_);
-    var max = container.setAttribute('max', this.inputList[0].fieldRow[0].max_);
+    if (this.inputList[0].fieldRow[0].min_ != undefined) var min = container.setAttribute('min', this.inputList[0].fieldRow[0].min_);
+    if (this.inputList[0].fieldRow[0].max_ != undefined) var max = container.setAttribute('max', this.inputList[0].fieldRow[0].max_);
+    if (this.inputList[0].fieldRow[0].labelText_ != undefined) var label = container.setAttribute('label', this.inputList[0].fieldRow[0].labelText_);
+    if (this.inputList[0].fieldRow[0].step_ != undefined) var step = container.setAttribute('step', this.inputList[0].fieldRow[0].step_);
+    if (this.inputList[0].fieldRow[0].sliderColor_ != undefined) var step = container.setAttribute('color', this.inputList[0].fieldRow[0].sliderColor_);
     return container;
   },
   /**
@@ -624,7 +682,12 @@ Blockly.Constants.Math.MATH_NUMBER_MINMAX_MIXIN = {
   domToMutation: function(xmlElement) {
     var min = (xmlElement.getAttribute('min'));
     var max = (xmlElement.getAttribute('max'));
-    this.inputList[0].fieldRow[0].setConstraints_(min, max);
+    var step = (xmlElement.getAttribute('step'));
+    var label = (xmlElement.getAttribute('label'));
+    var color = (xmlElement.getAttribute('color'));
+    this.inputList[0].fieldRow[0].setLabel(label);
+    this.inputList[0].fieldRow[0].setMinMax(min, max, step);
+    this.inputList[0].fieldRow[0].setColor(color);
   }
 };
 

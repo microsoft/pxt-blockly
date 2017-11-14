@@ -59,3 +59,11 @@ Blockly.FieldNumberDropdown = function(value, menuGenerator, opt_min, opt_max,
 };
 
 goog.inherits(Blockly.FieldNumberDropdown, Blockly.FieldTextDropdown);
+
+
+/**
+ * Ensure that only a number in the correct range may be entered.
+ * @param {string} text The user's text.
+ * @return {?string} A string representing a valid number, or null if invalid.
+ */
+Blockly.FieldNumberDropdown.prototype.classValidator = Blockly.FieldNumber.prototype.classValidator;

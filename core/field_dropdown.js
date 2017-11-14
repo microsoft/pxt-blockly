@@ -100,6 +100,9 @@ Blockly.FieldDropdown.prototype.imageElement_ = null;
  */
 Blockly.FieldDropdown.prototype.imageJson_ = null;
 
+
+Blockly.FieldDropdown.DROPDOWN_SVG_DATAURI = 'data:image/svg+xml;base64,PHN2ZyBpZD0iTGF5ZXJfMSIgZGF0YS1uYW1lPSJMYXllciAxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMi43MSIgaGVpZ2h0PSI4Ljc5IiB2aWV3Qm94PSIwIDAgMTIuNzEgOC43OSI+PHRpdGxlPmRyb3Bkb3duLWFycm93PC90aXRsZT48ZyBvcGFjaXR5PSIwLjEiPjxwYXRoIGQ9Ik0xMi43MSwyLjQ0QTIuNDEsMi40MSwwLDAsMSwxMiw0LjE2TDguMDgsOC4wOGEyLjQ1LDIuNDUsMCwwLDEtMy40NSwwTDAuNzIsNC4xNkEyLjQyLDIuNDIsMCwwLDEsMCwyLjQ0LDIuNDgsMi40OCwwLDAsMSwuNzEuNzFDMSwwLjQ3LDEuNDMsMCw2LjM2LDBTMTEuNzUsMC40NiwxMiwuNzFBMi40NCwyLjQ0LDAsMCwxLDEyLjcxLDIuNDRaIiBmaWxsPSIjMjMxZjIwIi8+PC9nPjxwYXRoIGQ9Ik02LjM2LDcuNzlhMS40MywxLjQzLDAsMCwxLTEtLjQyTDEuNDIsMy40NWExLjQ0LDEuNDQsMCwwLDEsMC0yYzAuNTYtLjU2LDkuMzEtMC41Niw5Ljg3LDBhMS40NCwxLjQ0LDAsMCwxLDAsMkw3LjM3LDcuMzdBMS40MywxLjQzLDAsMCwxLDYuMzYsNy43OVoiIGZpbGw9IiNmZmYiLz48L3N2Zz4=';
+
 /**
  * Install this dropdown on a block.
  */
@@ -121,11 +124,12 @@ Blockly.FieldDropdown.prototype.init = function() {
     'width': this.arrowSize_ + 'px'
   });
   this.arrow_.setAttributeNS('http://www.w3.org/1999/xlink',
-      'xlink:href', Blockly.mainWorkspace.options.pathToMedia + 'dropdown-arrow.svg');
+      'xlink:href', Blockly.FieldDropdown.DROPDOWN_SVG_DATAURI);
+  this.className_ += ' blocklyDropdownText';
 
   Blockly.FieldDropdown.superClass_.init.call(this);
   // If not in a shadow block, draw a box.
-  if (!this.sourceBlock_.isShadow()) {
+  if (this.shouldShowRect_()) {
     this.box_ = Blockly.utils.createSvgElement('rect', {
       'rx': Blockly.BlockSvg.CORNER_RADIUS,
       'ry': Blockly.BlockSvg.CORNER_RADIUS,
@@ -145,6 +149,15 @@ Blockly.FieldDropdown.prototype.init = function() {
   this.text_ = null;
   this.setText(text);
 };
+
+/**
+ * Whether or not to show a box around the dropdown menu.
+ * @return {boolean} True if we should show a box (rect) around the dropdown menu. Otherwise false.
+ * @private
+ */
+Blockly.FieldDropdown.prototype.shouldShowRect_ = function() {
+    return !this.sourceBlock_.isShadow();
+}
 
 /**
  * Create a dropdown menu under the text.
@@ -405,17 +418,20 @@ Blockly.FieldDropdown.prototype.setValue = function(newValue) {
       var content = options[i][0];
       if (typeof content == 'object') {
         this.imageJson_ = content;
-        this.setText(content.alt);
+        this.text_ = content.alt;
       } else {
         this.imageJson_ = null;
-        this.setText(content);
+        this.text_ = content;
       }
+      // Always rerender if either the value or the text has changed.
+      this.forceRerender();
       return;
     }
   }
   // Value not found.  Add it, maybe it will become valid once set
   // (like variable names).
-  this.setText(newValue);
+  this.text_ = newValue;
+  this.forceRerender();
 };
 
 /**
@@ -431,11 +447,6 @@ Blockly.FieldDropdown.prototype.setText = function(text) {
   this.updateTextNode_();
 
   if (this.textElement_) {
-    // Update class for dropdown text.
-    // This class is reset every time updateTextNode_ is called.
-    this.textElement_.setAttribute('class',
-        this.textElement_.getAttribute('class') + ' blocklyDropdownText'
-    );
     this.textElement_.parentNode.appendChild(this.arrow_);
   }
   if (this.sourceBlock_ && this.sourceBlock_.rendered) {

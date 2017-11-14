@@ -107,7 +107,7 @@ Blockly.Xml.blockToDom = function(block, opt_noId) {
     }
   }
   function fieldToDom(field) {
-    if (field.name && field.EDITABLE) {
+    if (field.name && field.SERIALIZABLE) {
       var container = goog.dom.createDom('field', null, field.getValue());
       container.setAttribute('name', field.name);
       if (field instanceof Blockly.FieldVariable) {
@@ -396,7 +396,7 @@ Blockly.Xml.appendDomToWorkspace = function(xml, workspace) {
     var savetab = Blockly.BlockSvg.TAB_WIDTH;
     try {
       Blockly.BlockSvg.TAB_WIDTH = 0;
-      var bbox = workspace.getBlocksBoundingBox();
+      bbox = workspace.getBlocksBoundingBox();
     } finally {
       Blockly.BlockSvg.TAB_WIDTH = savetab;
     }
@@ -472,21 +472,6 @@ Blockly.Xml.domToBlock = function(xmlBlock, workspace) {
         setTimeout(function() {
           if (topBlock.workspace) {  // Check that the block hasn't been deleted.
             topBlock.setConnectionsHidden(false);
-            // Force a render on IE and Edge to get around the issue described in
-            // Blockly.Field.getCachedWidth
-            if (goog.userAgent.IE || goog.userAgent.EDGE) {
-              topBlock.render();
-            }
-          }
-        }, 1);
-      } else {
-        setTimeout(function() {
-          if (topBlock.workspace) {  // Check that the block hasn't been deleted.
-            // Force a render on IE and Edge to get around the issue described in
-            // Blockly.Field.getCachedWidth
-            if (goog.userAgent.IE || goog.userAgent.EDGE) {
-              topBlock.render();
-            }
           }
         }, 1);
       }
@@ -609,7 +594,7 @@ Blockly.Xml.domToBlockHeadless_ = function(xmlBlock, workspace) {
           // TODO (marisaleung): When we change setValue and getValue to
           // interact with id's instead of names, update this so that we get
           // the variable based on id instead of textContent.
-          var type = xmlChild.getAttribute('variabletype') || '';
+          var type = xmlChild.getAttribute('variableType') || '';
           var variable = workspace.getVariable(text);
           if (!variable) {
             variable = workspace.createVariable(text, type,
@@ -625,8 +610,8 @@ Blockly.Xml.domToBlockHeadless_ = function(xmlBlock, workspace) {
           }
         }
         if (!field) {
-          console.warn('Ignoring non-existent field ' + name + ' in block ' +
-                       prototypeName);
+          //console.warn('Ignoring non-existent field ' + name + ' in block ' +
+          //             prototypeName);
           break;
         }
         field.setValue(text);
@@ -635,8 +620,8 @@ Blockly.Xml.domToBlockHeadless_ = function(xmlBlock, workspace) {
       case 'statement':
         input = block.getInput(name);
         if (!input) {
-          console.warn('Ignoring non-existent input ' + name + ' in block ' +
-                       prototypeName);
+          //console.warn('Ignoring non-existent input ' + name + ' in block ' +
+          //             prototypeName);
           break;
         }
         if (childShadowNode) {

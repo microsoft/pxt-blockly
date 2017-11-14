@@ -30,6 +30,7 @@ goog.require('Blockly.Block');
 goog.require('Blockly.ContextMenu');
 goog.require('Blockly.Grid');
 goog.require('Blockly.RenderedConnection');
+goog.require('Blockly.Tooltip');
 goog.require('Blockly.Touch');
 goog.require('Blockly.utils');
 goog.require('goog.Timer');
@@ -64,9 +65,6 @@ Blockly.BlockSvg = function(workspace, prototypeName, opt_id) {
 
   /** @type {boolean} */
   this.rendered = false;
-
-  /** @type {Object.<string,Element>} */
-  this.inputShapes_ = {};
 
   /**
    * Whether to move the block to the drag surface when it is dragged.
@@ -129,6 +127,21 @@ Blockly.BlockSvg.prototype.isGlowingBlock_ = false;
 Blockly.BlockSvg.prototype.isGlowingStack_ = false;
 
 /**
+ * Whether the block's highlighting as if running.
+ * @type {boolean}
+ * @private
+ */
+Blockly.BlockSvg.prototype.isHighlightingBlock_ = false;
+
+/**
+ * Map from IDs for warnings text to PIDs of functions to apply them.
+ * Used to be able to maintain multiple warnings.
+ * @type {Object<string, number>}
+ * @private
+ */
+Blockly.BlockSvg.prototype.warningTextDb_ = null;
+
+/**
  * Constant for identifying rows that are to be rendered inline.
  * Don't collide with Blockly.INPUT_VALUE and friends.
  * @const
@@ -145,9 +158,7 @@ Blockly.BlockSvg.prototype.initSvg = function() {
     // Input shapes are empty holes drawn when a value input is not connected.
     for (var i = 0, input; input = this.inputList[i]; i++) {
       input.init();
-      if (input.type === Blockly.INPUT_VALUE) {
-        this.initInputShape(input);
-      }
+      input.initOutlinePath(this.svgGroup_);
     }
     var icons = this.getIcons();
     for (i = 0; i < icons.length; i++) {
@@ -165,27 +176,6 @@ Blockly.BlockSvg.prototype.initSvg = function() {
   if (!this.getSvgRoot().parentNode) {
     this.workspace.getCanvas().appendChild(this.getSvgRoot());
   }
-};
-
-/**
- * Create and initialize the SVG element for an input shape.
- * May be called more than once for an input.
- * @param {!Blockly.Input} input Value input to add a shape SVG element for.
- */
-Blockly.BlockSvg.prototype.initInputShape = function(input) {
-  if (this.inputShapes_[input.name] || input.connection.getShadowDom()) {
-    // Only create the shape elements once, and don't bother creating them if
-    // there's a shadow block that will always cover the input shape.
-    return;
-  }
-  this.inputShapes_[input.name] = Blockly.utils.createSvgElement(
-    'path',
-    {
-      'class': 'blocklyPath',
-      'style': 'visibility: hidden' // Hide by default - shown when not connected.
-    },
-    this.svgGroup_
-  );
 };
 
 /**
@@ -237,6 +227,10 @@ Blockly.BlockSvg.prototype.unselect = function() {
  * @param {boolean} isGlowingBlock Whether the block should glow.
  */
 Blockly.BlockSvg.prototype.setGlowBlock = function(isGlowingBlock) {
+  //pxtblockly: Sanity check that the block is rendered before setting the highlight
+  if (!this.rendered) {
+    return;
+  }
   this.isGlowingBlock_ = isGlowingBlock;
   this.updateColour();
 };
@@ -246,6 +240,10 @@ Blockly.BlockSvg.prototype.setGlowBlock = function(isGlowingBlock) {
  * @param {boolean} isGlowingStack Whether the stack starting with this block should glow.
  */
 Blockly.BlockSvg.prototype.setGlowStack = function(isGlowingStack) {
+  //pxtblockly: Sanity check that the block is rendered before setting the highlight
+  if (!this.rendered) {
+    return;
+  }
   this.isGlowingStack_ = isGlowingStack;
   // Update the applied SVG filter if the property has changed
   var svg = this.getSvgRoot();
@@ -253,6 +251,29 @@ Blockly.BlockSvg.prototype.setGlowStack = function(isGlowingStack) {
     svg.setAttribute('filter', 'url(#blocklyStackGlowFilter)');
   } else if (!this.isGlowingStack_ && svg.hasAttribute('filter')) {
     svg.removeAttribute('filter');
+  }
+};
+
+/**
+ * Glow only this particular block, to highlight it visually as if it's running.
+ * @param {boolean} isHighlightingBlock Whether this block should glow as if running.
+ */
+Blockly.BlockSvg.prototype.setHighlightBlock = function(isHighlightingBlock) {
+  //pxtblockly: Sanity check that the block is rendered before setting the highlight
+  if (!this.rendered) {
+    return;
+  }
+  this.isHighlightingBlock_ = isHighlightingBlock;
+  // Update the applied SVG filter if the property has changed
+  var svg = this.svgPath_;
+  if (this.isHighlightingBlock_ && !this.svgPathHighlight_) {
+    this.svgPathHighlight_ = this.svgPath_.cloneNode(true);
+    this.svgPathHighlight_.setAttribute('fill', 'none');
+    this.svgPathHighlight_.setAttribute('filter', 'url(#blocklyHighlightGlowFilter)');
+    this.getSvgRoot().appendChild(this.svgPathHighlight_);
+  } else if (!this.isHighlightingBlock_ && this.svgPathHighlight_) {
+    this.getSvgRoot().removeChild(this.svgPathHighlight_);
+    this.svgPathHighlight_ = null;
   }
 };
 
@@ -595,13 +616,44 @@ Blockly.BlockSvg.prototype.setCollapsed = function(collapsed) {
  * @param {boolean} forward If true go forward, otherwise backward.
  */
 Blockly.BlockSvg.prototype.tab = function(start, forward) {
+  var list = this.createTabList_();
+  var i = list.indexOf(start);
+  if (i == -1) {
+    // No start location, start at the beginning or end.
+    i = forward ? -1 : list.length;
+  }
+  var target = list[forward ? i + 1 : i - 1];
+  if (!target) {
+    // Ran off of list.
+    // If there is an output, tab up to that block.
+    var outputBlock = this.outputConnection && this.outputConnection.targetBlock();
+    if (outputBlock) {
+      outputBlock.tab(this, forward);
+    } else { // Otherwise, go to next / previous block, depending on value of `forward`
+      var block = forward ? this.getNextBlock() : this.getPreviousBlock();
+      if (block) {
+        block.tab(this, forward);
+      }
+    }
+  } else if (target instanceof Blockly.Field) {
+    target.showEditor_();
+  } else {
+    target.tab(null, forward);
+  }
+};
+
+/**
+ * Create an ordered list of all text fields and connected inputs.
+ * @return {!Array<!Blockly.FieldTextInput|!Blockly.Input>} The ordered list.
+ * @private
+ */
+Blockly.BlockSvg.prototype.createTabList_ = function() {
   // This function need not be efficient since it runs once on a keypress.
-  // Create an ordered list of all text fields and connected inputs.
   var list = [];
   for (var i = 0, input; input = this.inputList[i]; i++) {
     for (var j = 0, field; field = input.fieldRow[j]; j++) {
       if (field instanceof Blockly.FieldTextInput) {
-        // TODO: Also support dropdown fields.
+        // TODO(# 1276): Also support dropdown fields.
         list.push(field);
       }
     }
@@ -612,23 +664,7 @@ Blockly.BlockSvg.prototype.tab = function(start, forward) {
       }
     }
   }
-  i = list.indexOf(start);
-  if (i == -1) {
-    // No start location, start at the beginning or end.
-    i = forward ? -1 : list.length;
-  }
-  var target = list[forward ? i + 1 : i - 1];
-  if (!target) {
-    // Ran off of list.
-    var parent = this.getParent();
-    if (parent) {
-      parent.tab(this, forward);
-    }
-  } else if (target instanceof Blockly.Field) {
-    target.showEditor_();
-  } else {
-    target.tab(null, forward);
-  }
+  return list;
 };
 
 /**
@@ -656,88 +692,6 @@ Blockly.BlockSvg.prototype.showHelp_ = function() {
 };
 
 /**
- * Creates a callback function for a click on the "duplicate" context menu
- * option in Scratch Blocks.  The block is duplicated and attached to the mouse,
- * which acts as though it were pressed and mid-drag.  Clicking the mouse
- * releases the new dragging block.
- * @return {Function} A callback function that duplicates the block and starts a
- *     drag.
- * @private
- */
-Blockly.BlockSvg.prototype.duplicateAndDragCallback_ = function() {
-  var oldBlock = this;
-  return function(e) {
-    // Give the context menu a chance to close.
-    setTimeout(function() {
-      var ws = oldBlock.workspace;
-      var svgRootOld = oldBlock.getSvgRoot();
-      if (!svgRootOld) {
-        throw new Error('oldBlock is not rendered.');
-      }
-
-      // Create the new block by cloning the block in the flyout (via XML).
-      var xml = Blockly.Xml.blockToDom(oldBlock);
-      // The target workspace would normally resize during domToBlock, which
-      // will lead to weird jumps.
-      // Resizing will be enabled when the drag ends.
-      ws.setResizesEnabled(false);
-
-      // Using domToBlock instead of domToWorkspace means that the new block
-      // will be placed at position (0, 0) in main workspace units.
-      var newBlock = Blockly.Xml.domToBlock(xml, ws);
-      var svgRootNew = newBlock.getSvgRoot();
-      if (!svgRootNew) {
-        throw new Error('newBlock is not rendered.');
-      }
-
-      // The position of the old block in workspace coordinates.
-      var oldBlockPosWs = oldBlock.getRelativeToSurfaceXY();
-
-      // Place the new block as the same position as the old block.
-      // TODO: Offset by the difference between the mouse position and the upper
-      // left corner of the block.
-      newBlock.moveBy(oldBlockPosWs.x, oldBlockPosWs.y);
-
-      // The position of the old block in pixels relative to the main
-      // workspace's origin.
-      var oldBlockPosPixels = oldBlockPosWs.scale(ws.scale);
-
-      // The offset in pixels between the main workspace's origin and the upper left
-      // corner of the injection div.
-      var mainOffsetPixels = ws.getOriginOffsetInPixels();
-
-      // The position of the old block in pixels relative to the upper left corner
-      // of the injection div.
-      var finalOffsetPixels = goog.math.Coordinate.sum(mainOffsetPixels,
-          oldBlockPosPixels);
-
-      var injectionDiv = ws.getInjectionDiv();
-      // Bounding rect coordinates are in client coordinates, meaning that they
-      // are in pixels relative to the upper left corner of the visible browser
-      // window.  These coordinates change when you scroll the browser window.
-      var boundingRect = injectionDiv.getBoundingClientRect();
-
-      // e is not a real mouseEvent/touchEvent/pointerEvent.  It's an event
-      // created by the context menu and doesn't have the correct coordinates.
-      // But it does have some information that we need.
-      var fakeEvent = {
-        clientX: finalOffsetPixels.x + boundingRect.left,
-        clientY: finalOffsetPixels.y + boundingRect.top,
-        type: 'mousedown',
-        preventDefault: function() {
-          e.preventDefault();
-        },
-        stopPropagation: function() {
-          e.stopPropagation();
-        },
-        target: e.target
-      };
-      ws.startDragWithFakeEvent(fakeEvent, newBlock);
-    }, 0);
-  };
-};
-
-/**
  * Show the context menu for this block.
  * @param {!Event} e Mouse event.
  * @private
@@ -751,86 +705,22 @@ Blockly.BlockSvg.prototype.showContextMenu_ = function(e) {
   var menuOptions = [];
 
   if (this.isDeletable() && this.isMovable() && !block.isInFlyout) {
-    // Option to duplicate this block.
-    var duplicateOption = {
-      text: Blockly.Msg.DUPLICATE_BLOCK,
-      enabled: true,
-      callback: block.duplicateAndDragCallback_()
-    };
-    if (this.getDescendants().length > this.workspace.remainingCapacity()) {
-      duplicateOption.enabled = false;
+    menuOptions.push(Blockly.ContextMenu.blockDuplicateOption(block));
+    if (this.isEditable() && this.workspace.options.comments) {
+      menuOptions.push(Blockly.ContextMenu.blockCommentOption(block));
     }
-    menuOptions.push(duplicateOption);
-
-    if (this.isEditable() && !this.collapsed_ &&
-        this.workspace.options.comments) {
-      // Option to add/remove a comment.
-      var commentOption = {enabled: !goog.userAgent.IE};
-      if (this.comment) {
-        commentOption.text = Blockly.Msg.REMOVE_COMMENT;
-        commentOption.callback = function() {
-          block.setCommentText(null);
-        };
-      } else {
-        commentOption.text = Blockly.Msg.ADD_COMMENT;
-        commentOption.callback = function() {
-          block.setCommentText('');
-        };
-      }
-      menuOptions.push(commentOption);
-    }
-
-    if (this.workspace.options.disable) {
-      // Option to disable/enable block.
-      var disableOption = {
-        text: this.disabled ?
-            Blockly.Msg.ENABLE_BLOCK : Blockly.Msg.DISABLE_BLOCK,
-        enabled: !this.getInheritedDisabled(),
-        callback: function() {
-          block.setDisabled(!block.disabled);
-        }
-      };
-      menuOptions.push(disableOption);
-    }
-
-    // Option to delete this block.
-    // Count the number of blocks that are nested in this block.
-    var descendantCount = this.getDescendants(true).length;
-    var nextBlock = this.getNextBlock();
-    if (nextBlock) {
-      // Blocks in the current stack would survive this block's deletion.
-      descendantCount -= nextBlock.getDescendants(true).length;
-    }
-    var deleteOption = {
-      text: descendantCount == 1 ? Blockly.Msg.DELETE_BLOCK :
-          Blockly.Msg.DELETE_X_BLOCKS.replace('%1', String(descendantCount)),
-      enabled: true,
-      callback: function() {
-        Blockly.Events.setGroup(true);
-        block.dispose(true, true);
-        Blockly.Events.setGroup(false);
-      }
-    };
-    menuOptions.push(deleteOption);
+    menuOptions.push(Blockly.ContextMenu.blockDeleteOption(block));
   } else if (this.parentBlock_ && this.isShadow_) {
     this.parentBlock_.showContextMenu_(e);
     return;
   }
 
-  // Option to get help.
-  var url = goog.isFunction(this.helpUrl) ? this.helpUrl() : this.helpUrl;
-  var helpOption = {enabled: !!url};
-  helpOption.text = Blockly.Msg.HELP;
-  helpOption.callback = function() {
-    block.showHelp_();
-  };
-  menuOptions.push(helpOption);
+  menuOptions.push(Blockly.ContextMenu.blockHelpOption(block));
 
   // Allow the block to add or modify menuOptions.
-  if (this.customContextMenu && !block.isInFlyout) {
+  if (this.customContextMenu) {
     this.customContextMenu(menuOptions);
   }
-
   Blockly.ContextMenu.show(e, menuOptions, this.RTL);
   Blockly.ContextMenu.currentBlock = this;
 };
@@ -986,6 +876,14 @@ Blockly.BlockSvg.prototype.dispose = function(healStack, animate) {
   // Stop rerendering.
   this.rendered = false;
 
+  // Clear pending warnings.
+  if (this.warningTextDb_) {
+    for (var n in this.warningTextDb_) {
+      clearTimeout(this.warningTextDb_[n]);
+    }
+    this.warningTextDb_ = null;
+  }
+
   Blockly.Events.disable();
   try {
     var icons = this.getIcons();
@@ -1054,10 +952,8 @@ Blockly.BlockSvg.disposeUiStep_ = function(clone, rtl, start, workspaceScale) {
     var scale = (1 - percent) * workspaceScale;
     clone.setAttribute('transform', 'translate(' + x + ',' + y + ')' +
         ' scale(' + scale + ')');
-    var closure = function() {
-      Blockly.BlockSvg.disposeUiStep_(clone, rtl, start, workspaceScale);
-    };
-    setTimeout(closure, 10);
+    setTimeout(Blockly.BlockSvg.disposeUiStep_, 10, clone, rtl, start,
+               workspaceScale);
   }
 };
 
@@ -1102,10 +998,8 @@ Blockly.BlockSvg.connectionUiStep_ = function(ripple, start, workspaceScale) {
   } else {
     ripple.setAttribute('r', percent * 25 * workspaceScale);
     ripple.style.opacity = 1 - percent;
-    var closure = function() {
-      Blockly.BlockSvg.connectionUiStep_(ripple, start, workspaceScale);
-    };
-    Blockly.BlockSvg.disconnectUiStop_.pid_ = setTimeout(closure, 10);
+    Blockly.BlockSvg.disconnectUiStop_.pid_ = setTimeout(
+        Blockly.BlockSvg.connectionUiStep_, 10, ripple, start, workspaceScale);
   }
 };
 
@@ -1149,12 +1043,12 @@ Blockly.BlockSvg.disconnectUiStep_ = function(group, magnitude, start) {
     var skew = Math.round(Math.sin(percent * Math.PI * WIGGLES) *
         (1 - percent) * magnitude);
     group.skew_ = 'skewX(' + skew + ')';
-    var closure = function() {
-      Blockly.BlockSvg.disconnectUiStep_(group, magnitude, start);
-    };
     Blockly.BlockSvg.disconnectUiStop_.group = group;
-    Blockly.BlockSvg.disconnectUiStop_.pid = setTimeout(closure, 10);
+    Blockly.BlockSvg.disconnectUiStop_.pid =
+        setTimeout(Blockly.BlockSvg.disconnectUiStep_, 10, group, magnitude,
+                   start);
   }
+  if (!group.translate_) group.translate_ = '';
   group.setAttribute('transform', group.translate_ + group.skew_);
 };
 
@@ -1251,30 +1145,30 @@ Blockly.BlockSvg.prototype.setCommentText = function(text) {
  *     maintain multiple warnings.
  */
 Blockly.BlockSvg.prototype.setWarningText = function(text, opt_id) {
-  if (!this.setWarningText.pid_) {
+  if (!this.warningTextDb_) {
     // Create a database of warning PIDs.
     // Only runs once per block (and only those with warnings).
-    this.setWarningText.pid_ = Object.create(null);
+    this.warningTextDb_ = Object.create(null);
   }
   var id = opt_id || '';
   if (!id) {
     // Kill all previous pending processes, this edit supersedes them all.
-    for (var n in this.setWarningText.pid_) {
-      clearTimeout(this.setWarningText.pid_[n]);
-      delete this.setWarningText.pid_[n];
+    for (var n in this.warningTextDb_) {
+      clearTimeout(this.warningTextDb_[n]);
+      delete this.warningTextDb_[n];
     }
-  } else if (this.setWarningText.pid_[id]) {
+  } else if (this.warningTextDb_[id]) {
     // Only queue up the latest change.  Kill any earlier pending process.
-    clearTimeout(this.setWarningText.pid_[id]);
-    delete this.setWarningText.pid_[id];
+    clearTimeout(this.warningTextDb_[id]);
+    delete this.warningTextDb_[id];
   }
   if (this.workspace.isDragging()) {
     // Don't change the warning text during a drag.
     // Wait until the drag finishes.
     var thisBlock = this;
-    this.setWarningText.pid_[id] = setTimeout(function() {
+    this.warningTextDb_[id] = setTimeout(function() {
       if (thisBlock.workspace) {  // Check block wasn't deleted.
-        delete thisBlock.setWarningText.pid_[id];
+        delete thisBlock.warningTextDb_[id];
         thisBlock.setWarningText(text, id);
       }
     }, 100);
@@ -1609,7 +1503,7 @@ Blockly.BlockSvg.prototype.bumpNeighbours_ = function() {
   if (!this.workspace) {
     return;  // Deleted block.
   }
-  if (Blockly.dragMode_ != Blockly.DRAG_NONE) {
+  if (Blockly.dragMode_ != undefined && Blockly.dragMode_ != Blockly.DRAG_NONE) {
     return;  // Don't bump blocks during a drag.
   }
   var rootBlock = this.getRootBlock();

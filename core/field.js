@@ -84,6 +84,13 @@ Blockly.Field.cacheReference_ = 0;
 Blockly.Field.prototype.name = undefined;
 
 /**
+ * CSS class name for the text element.
+ * @type {string}
+ * @package
+ */
+Blockly.Field.prototype.className_ = 'blocklyText';
+
+/**
  * Visible text to display.
  * @type {string}
  * @private
@@ -125,9 +132,19 @@ Blockly.Field.prototype.validator_ = null;
 Blockly.Field.NBSP = '\u00A0';
 
 /**
- * Editable fields are saved by the XML renderer, non-editable fields are not.
+ * Editable fields usually show some sort of UI for the user to change them.
+ * @type {boolean}
+ * @public
  */
 Blockly.Field.prototype.EDITABLE = true;
+
+/**
+ * Serializable fields are saved by the XML renderer, non-serializable fields
+ * are not.  Editable fields should be serialized.
+ * @type {boolean}
+ * @public
+ */
+Blockly.Field.prototype.SERIALIZABLE = true;
 
 /**
  * Attach this field to a block.
@@ -166,11 +183,10 @@ Blockly.Field.prototype.init = function() {
   var fieldX = (this.sourceBlock_.RTL) ? -size.width / 2 : size.width / 2;
   /** @type {!Element} */
   this.textElement_ = Blockly.utils.createSvgElement('text',
-      {'class': 'blocklyText',
+      {'class': this.className_,
        'x': fieldX,
-       'y': size.height / 2 + Blockly.BlockSvg.FIELD_TOP_PADDING,
-       'dominant-baseline': 'middle',
-       'text-anchor': 'middle'},
+       'dy': '0.7ex',
+       'y': size.height / 2},
       this.fieldGroup_);
 
   this.updateEditable();
@@ -357,7 +373,8 @@ Blockly.Field.prototype.render_ = function() {
     this.updateWidth();
 
     // Update text centering, based on newly calculated width.
-    var centerTextX = (this.size_.width - this.arrowWidth_) / 2;
+    var leftMargin = this.leftMargin_ || 0;
+    var centerTextX = (this.size_.width + leftMargin - this.arrowWidth_) / 2;
     if (this.sourceBlock_.RTL) {
       centerTextX += this.arrowWidth_;
     }
@@ -382,7 +399,9 @@ Blockly.Field.prototype.render_ = function() {
     }
 
     // Apply new text element x position.
-    this.textElement_.setAttribute('x', centerTextX);
+    var width = Blockly.Field.getCachedWidth(this.textElement_);
+    var newX = centerTextX - width / 2;
+    this.textElement_.setAttribute('x', newX);
   }
 
   // Update any drawn box to the correct width and height.
@@ -404,6 +423,13 @@ Blockly.Field.prototype.updateWidth = function() {
   // Add padding to left and right of text.
   if (this.EDITABLE) {
     width += Blockly.BlockSvg.EDITABLE_FIELD_PADDING;
+  }
+
+  // Adjust width for left margin
+  this.leftMargin_ = 0;
+  if (this.positionLeft) {
+    this.leftMargin_ = this.positionLeft(width);
+    width += this.leftMargin_;
   }
 
   // Adjust width for drop-down arrows.
@@ -441,16 +467,18 @@ Blockly.Field.getCachedWidth = function(textElement) {
 
   // Attempt to compute fetch the width of the SVG text element.
   try {
-    width = textElement.getComputedTextLength();
+    if (goog.userAgent.IE || goog.userAgent.EDGE) {
+      width = textElement.getBBox().width;
+    } else {
+      width = textElement.getComputedTextLength();
+    }
   } catch (e) {
-    // MSIE 11 and Edge are known to throw "Unexpected call to method or
-    // property access." if the block is hidden. Instead, use an
+    // In other cases where we fail to get the computed text. Instead, use an
     // approximation and do not cache the result. At some later point in time
     // when the block is inserted into the visible DOM, this method will be
     // called again and, at that point in time, will not throw an exception.
-    return textElement.textContent.length * 8;
+    return textElement.textContent.length * 8;    
   }
-
   // Cache the computed width and return.
   if (Blockly.Field.cacheWidths_) {
     Blockly.Field.cacheWidths_[key] = width;
@@ -492,16 +520,23 @@ Blockly.Field.prototype.getSize = function() {
 };
 
 /**
- * Returns the height and width of the field,
- * accounting for the workspace scaling.
- * @return {!goog.math.Size} Height and width.
+ * Returns the bounding box of the rendered field, accounting for workspace
+ * scaling.
+ * @return {!Object} An object with top, bottom, left, and right in pixels
+ *     relative to the top left corner of the page (window coordinates).
  * @private
  */
 Blockly.Field.prototype.getScaledBBox_ = function() {
   var size = this.getSize();
-  // Create new object, so as to not return an uneditable SVGRect in IE.
-  return new goog.math.Size(size.width * this.sourceBlock_.workspace.scale,
-                            size.height * this.sourceBlock_.workspace.scale);
+  var scaledHeight = size.height * this.sourceBlock_.workspace.scale;
+  var scaledWidth = size.width * this.sourceBlock_.workspace.scale;
+  var xy = this.getAbsoluteXY_();
+  return {
+    top: xy.y,
+    bottom: xy.y + scaledHeight,
+    left: xy.x,
+    right: xy.x + scaledWidth
+  };
 };
 
 /**
@@ -552,6 +587,17 @@ Blockly.Field.prototype.setText = function(newText) {
     return;
   }
   this.text_ = newText;
+  this.forceRerender();
+};
+
+/**
+ * Force a rerender of the block that this field is installed on, which will
+ * rerender this field and adjust for any sizing changes.
+ * Other fields on the same block will not rerender, because their sizes have
+ * already been recorded.
+ * @package
+ */
+Blockly.Field.prototype.forceRerender = function() {
   // Set width to 0 to force a rerender of this field.
   this.size_.width = 0;
 
@@ -575,9 +621,9 @@ Blockly.Field.prototype.updateTextNode_ = function() {
     // Truncate displayed string and add an ellipsis ('...').
     text = text.substring(0, this.maxDisplayLength - 2) + '\u2026';
     // Add special class for sizing font when truncated
-    this.textElement_.setAttribute('class', 'blocklyText blocklyTextTruncated');
+    this.textElement_.setAttribute('class', this.className_ + ' blocklyTextTruncated');
   } else {
-    this.textElement_.setAttribute('class', 'blocklyText');
+    this.textElement_.setAttribute('class', this.className_);
   }
   // Empty the text element.
   goog.dom.removeChildren(/** @type {!Element} */ (this.textElement_));

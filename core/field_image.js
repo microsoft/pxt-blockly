@@ -37,12 +37,14 @@ goog.require('goog.userAgent');
  * @param {string} src The URL of the image.
  * @param {number} width Width of the image.
  * @param {number} height Height of the image.
- * @param {string=} opt_alt Optional alt text for when block is collapsed.
  * @param {boolean} flip_rtl Whether to flip the icon in RTL
+ * @param {string=} opt_alt Optional alt text for when block is collapsed.
+ * @param {Function=} opt_onClick Optional function to be called when the image
+ *     is clicked.  If opt_onClick is defined, opt_alt must also be defined.
  * @extends {Blockly.Field}
  * @constructor
  */
-Blockly.FieldImage = function(src, width, height, opt_alt, flip_rtl) {
+Blockly.FieldImage = function(src, width, height, flip_rtl, opt_alt, opt_onClick) {
   this.sourceBlock_ = null;
 
   // Ensure height and width are numbers.  Strings are bad at math.
@@ -53,8 +55,9 @@ Blockly.FieldImage = function(src, width, height, opt_alt, flip_rtl) {
   this.flipRTL_ = flip_rtl;
   this.setValue(src);
 
-  if (typeof opt_onClick === "function") {
+  if (typeof opt_onClick == 'function') {
     this.clickHandler_ = opt_onClick;
+    this.EDITABLE = true;
   }
 };
 goog.inherits(Blockly.FieldImage, Blockly.Field);
@@ -92,6 +95,8 @@ Blockly.FieldImage.prototype.init = function() {
   // Configure the field to be transparent with respect to tooltips.
   this.setTooltip(this.sourceBlock_);
   Blockly.Tooltip.bindMouseEvents(this.imageElement_);
+
+  this.maybeAddClickHandler_();
 };
 
 /**
@@ -101,6 +106,21 @@ Blockly.FieldImage.prototype.dispose = function() {
   goog.dom.removeNode(this.fieldGroup_);
   this.fieldGroup_ = null;
   this.imageElement_ = null;
+};
+
+/**
+ * Bind events for a mouse down on the image, but only if a click handler has
+ * been defined.
+ * @private
+ */
+Blockly.FieldImage.prototype.maybeAddClickHandler_ = function() {
+  if (this.clickHandler_) {
+    this.mouseDownWrapper_ =
+        Blockly.bindEventWithChecks_(this.fieldGroup_, 'mousedown', this,
+        this.onMouseDown_);
+    //pxtblockly: if a click handler is attached to the image, change the cursor to a pointer
+    if (this.imageElement_) this.imageElement_.style.cursor = 'pointer';
+  }
 };
 
 /**
@@ -179,8 +199,8 @@ Blockly.FieldImage.prototype.updateWidth = function() {
  * If field click is called, and click handler defined,
  * call the handler.
  */
- Blockly.FieldImage.prototype.showEditor = function() {
-   if (this.clickHandler_){
-     this.clickHandler_(this);
-   }
- };
+Blockly.FieldImage.prototype.showEditor_ = function() {
+  if (this.clickHandler_){
+    this.clickHandler_(this);
+  }
+};

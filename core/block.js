@@ -34,6 +34,7 @@ goog.require('Blockly.Colours');
 goog.require('Blockly.Comment');
 goog.require('Blockly.Connection');
 goog.require('Blockly.Extensions');
+goog.require('Blockly.FieldLabelSerializable');
 goog.require('Blockly.Input');
 goog.require('Blockly.Mutator');
 goog.require('Blockly.Warning');
@@ -73,6 +74,8 @@ Blockly.Block = function(workspace, prototypeName, opt_id) {
   this.inputList = [];
   /** @type {boolean|undefined} */
   this.inputsInline = true;
+  /** @type {boolean|undefined} */
+  this.startHat = false;
   /** @type {boolean} */
   this.disabled = false;
   /** @type {string|!Function} */
@@ -999,6 +1002,24 @@ Blockly.Block.prototype.getInputsInline = function() {
 };
 
 /**
+ * Set whether value statements have a start hat or not.
+ * @param {boolean} newBoolean True if statement should have a start hat.
+ */
+Blockly.Block.prototype.setStartHat = function(newBoolean) {
+  if (this.startHat != newBoolean) {
+    this.startHat = newBoolean;
+  }
+};
+
+/**
+ * Get whether value inputs are arranged horizontally or vertically.
+ * @return {boolean} True if inputs are horizontal.
+ */
+Blockly.Block.prototype.getStartHat = function() {
+  return this.startHat;
+}
+
+/**
  * Set whether the block is disabled or not.
  * @param {boolean} disabled True if disabled.
  */
@@ -1145,6 +1166,9 @@ Blockly.Block.prototype.jsonInit = function(json) {
 
   if (json['inputsInline'] !== undefined) {
     this.setInputsInline(json['inputsInline']);
+  }
+  if (json['startHat'] !== undefined) {
+    this.setStartHat(json['startHat']);
   }
   // Set output and previous/next connections.
   if (json['output'] !== undefined) {
@@ -1340,8 +1364,14 @@ Blockly.Block.prototype.interpolate_ = function(message, args, lastDummyAlign) {
             case 'field_label':
               field = Blockly.Block.newFieldLabelFromJson_(element);
               break;
+            case 'field_label_serializable':
+              field = Blockly.Block.newFieldLabelSerializableFromJson_(element);
+              break;
             case 'field_input':
               field = Blockly.Block.newFieldTextInputFromJson_(element);
+              break;
+            case 'field_string':
+              field = Blockly.Block.newFieldStringFromJson_(element);
               break;
             case 'field_textdropdown':
               field = new Blockly.FieldTextDropdown(element['text'], element['options']);
@@ -1365,6 +1395,9 @@ Blockly.Block.prototype.interpolate_ = function(message, args, lastDummyAlign) {
             case 'field_colour':
               field = new Blockly.FieldColour(element['colour']);
               break;
+            case 'field_colour_slider':
+              field = new Blockly.FieldColourSlider(element['colour']);
+              break;
             case 'field_variable':
               field = Blockly.Block.newFieldVariableFromJson_(element);
               break;
@@ -1383,7 +1416,7 @@ Blockly.Block.prototype.interpolate_ = function(message, args, lastDummyAlign) {
               break;
             case 'field_slider':
               field = new Blockly.FieldSlider(element['value'],
-                  element['min'], element['max'], element['precision']);
+                  element['min'], element['max'], element['precision'], element['step'], element['labelText']);
               break;
             case 'field_date':
               if (Blockly.FieldDate) {
@@ -1448,6 +1481,18 @@ Blockly.Block.newFieldLabelFromJson_ = function(options) {
 };
 
 /**
+ * Helper function to construct a FieldLabelSerializable from a JSON arg object,
+ * dereferencing any string table references.
+ * @param {!Object} options A JSON object with options (text, and class).
+ * @returns {!Blockly.FieldLabelSerializable} The new label.
+ * @private
+ */
+Blockly.Block.newFieldLabelSerializableFromJson_ = function(options) {
+  var text = Blockly.utils.replaceMessageReferences(options['text']);
+  return new Blockly.FieldLabelSerializable(text, options['class']);
+};
+
+/**
  * Helper function to construct a FieldTextInput from a JSON arg object,
  * dereferencing any string table references.
  * @param {!Object} options A JSON object with options (text, class, and
@@ -1465,6 +1510,23 @@ Blockly.Block.newFieldTextInputFromJson_ = function(options) {
 };
 
 /**
+ * Helper function to construct a FieldString from a JSON arg object,
+ * dereferencing any string table references.
+ * @param {!Object} options A JSON object with options (text, class, and
+ *                          spellcheck).
+ * @returns {!Blockly.FieldString} The new text input.
+ * @private
+ */
+Blockly.Block.newFieldStringFromJson_ = function(options) {
+  var text = Blockly.utils.replaceMessageReferences(options['text']);
+  var field = new Blockly.FieldString(text, options['class']);
+  if (typeof options['spellcheck'] == 'boolean') {
+    field.setSpellcheck(options['spellcheck']);
+  }
+  return field;
+};
+
+/**
  * Helper function to construct a FieldVariable from a JSON arg object,
  * dereferencing any string table references.
  * @param {!Object} options A JSON object with options (variable).
@@ -1473,9 +1535,9 @@ Blockly.Block.newFieldTextInputFromJson_ = function(options) {
  */
 Blockly.Block.newFieldVariableFromJson_ = function(options) {
   var varname = Blockly.utils.replaceMessageReferences(options['variable']);
-  return new Blockly.FieldVariable(varname);
+  var variableTypes = options['variableTypes'];
+  return new Blockly.FieldVariable(varname, null, variableTypes);
 };
-
 
 /**
  * Add a value input, statement input or local variable to this block.
@@ -1644,7 +1706,7 @@ Blockly.Block.prototype.setOutputShape = function(outputShape) {
  * @return {?number} Value representing output shape (see constants.js).
  */
 Blockly.Block.prototype.getOutputShape = function() {
-  return this.outputShape_;
+  return this.outputShape_ || Blockly.OUTPUT_SHAPE_ROUND;
 };
 
 /**

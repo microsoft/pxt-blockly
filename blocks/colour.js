@@ -35,6 +35,8 @@ goog.provide('Blockly.Constants.Colour');
 goog.require('Blockly.Blocks');
 goog.require('Blockly.Colours');
 goog.require('Blockly.constants');
+goog.require('Blockly');
+
 
 /**
  * Common HSV hue for all blocks in this category.
