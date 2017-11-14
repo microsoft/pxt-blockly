@@ -4,6 +4,7 @@ var path = require('path');
 module.exports = [{
   entry: {
     horizontal: './shim/vertical.js'
+  },
   output: {
     library: 'PXTBlockly',
     libraryTarget: 'commonjs2',
