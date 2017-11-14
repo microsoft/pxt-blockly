@@ -471,26 +471,6 @@ Blockly.BlockSvg.SHAPE_IN_SHAPE_PADDING = {
 };
 
 /**
- * SVG path for drawing the rounded top-left corner.
- * @const
- */
-Blockly.BlockSvg.TOP_LEFT_CORNER_DEFINE_HAT =
-    'a ' + Blockly.BlockSvg.DEFINE_HAT_CORNER_RADIUS + ',' +
-    Blockly.BlockSvg.DEFINE_HAT_CORNER_RADIUS + ' 0 0,1 ' +
-    Blockly.BlockSvg.DEFINE_HAT_CORNER_RADIUS + ',-' +
-    Blockly.BlockSvg.DEFINE_HAT_CORNER_RADIUS;
-
-/**
- * SVG path for drawing the rounded top-left corner.
- * @const
- */
-Blockly.BlockSvg.TOP_RIGHT_CORNER_DEFINE_HAT =
-    'a ' + Blockly.BlockSvg.DEFINE_HAT_CORNER_RADIUS + ',' +
-    Blockly.BlockSvg.DEFINE_HAT_CORNER_RADIUS + ' 0 0,1 ' +
-    Blockly.BlockSvg.DEFINE_HAT_CORNER_RADIUS + ',' +
-    Blockly.BlockSvg.DEFINE_HAT_CORNER_RADIUS;
-
-/**
  * Change the colour of a block.
  */
 Blockly.BlockSvg.prototype.updateColour = function() {
@@ -833,6 +813,12 @@ Blockly.BlockSvg.prototype.renderCompute_ = function(iconWidth) {
     }
     previousRow = row;
   }
+  
+  // Bottom edge is sum of row heights (pxtblockly: do this before computing the padding, used for calculating padding of multi-line blocks)
+  for (var i = 0; i < inputRows.length; i++) {
+    inputRows.bottomEdge += inputRows[i].height;
+  }
+
   // Compute padding for output blocks.
   // Data is attached to the row.
   this.computeOutputPadding_(inputRows);
@@ -844,11 +830,6 @@ Blockly.BlockSvg.prototype.renderCompute_ = function(iconWidth) {
   // Compute the preferred right edge.
   inputRows.rightEdge = this.computeRightEdge_(inputRows.rightEdge,
       hasStatement);
-
-  // Bottom edge is sum of row heights
-  for (var i = 0; i < inputRows.length; i++) {
-    inputRows.bottomEdge += inputRows[i].height;
-  }
 
   inputRows.hasValue = hasValue;
   inputRows.hasStatement = hasStatement;
@@ -1047,7 +1028,7 @@ Blockly.BlockSvg.prototype.computeOutputPadding_ = function(inputRows) {
     }
     // pxtblockly: custom padding end to support multi-line blocks
     row.paddingEnd += Blockly.BlockSvg.SHAPE_IN_SHAPE_PADDING[shape][otherShape];
-    if (shape == Blockly.OUTPUT_SHAPE_ROUND && inputRows.length > 1) {
+    if (shape == Blockly.OUTPUT_SHAPE_ROUND && inputRows.length > 1 && inputRows.bottomEdge > 0) {
       // Multi-line reporter blocks need extra padding
       // assumes the edge of the circle clamps 2 units vertically at the start of the block
       var radius = inputRows.bottomEdge / 2;
@@ -1217,6 +1198,7 @@ Blockly.BlockSvg.prototype.renderDrawRight_ = function(steps,
   // pxtblockly: we assume that a block maybe a sequence of INLINE blocks, followed by a sequence of statement blocks
   // any kind of mixed bag of those 2 kind of entries is not supported
   var rowHeight = 0;
+  var prevCursorX = 0;
   var this_ = this;
 
   // pxtblockly: align all row right edges together
@@ -1224,12 +1206,17 @@ Blockly.BlockSvg.prototype.renderDrawRight_ = function(steps,
     // rowHeight will be positive if inline blocks have been rendered, render a single line on the right
     if (rowHeight > 0) {
       if (!this_.edgeShape_) {
-        // Include corner radius in drawing the horizontal line.		          
-        steps.push('H', this_.width - Blockly.BlockSvg.CORNER_RADIUS - this_.edgeShapeWidth_);
+        // Include corner radius in drawing the horizontal line.
+        steps.push('H', prevCursorX - Blockly.BlockSvg.CORNER_RADIUS - this_.edgeShapeWidth_);
         steps.push(Blockly.BlockSvg.TOP_RIGHT_CORNER);
-        steps.push('v', rowHeight - Blockly.BlockSvg.CORNER_RADIUS * 2);
       } else {
-        steps.push('H', this_.width - this_.edgeShapeWidth_);      
+        // Don't include corner radius - no corner (edge shape drawn).
+        steps.push('H', prevCursorX - this_.edgeShapeWidth_);
+      }
+      // Subtract CORNER_RADIUS * 2 to account for the top right corner
+      // and also the bottom right corner. Only move vertically the non-corner length.
+      if (!this_.edgeShape_) {
+        steps.push('v', rowHeight - Blockly.BlockSvg.CORNER_RADIUS * 2);
       }
       rowHeight = 0;
     }          
@@ -1240,7 +1227,6 @@ Blockly.BlockSvg.prototype.renderDrawRight_ = function(steps,
     if (y == 0) {
       cursorX += this.RTL ? -iconWidth : iconWidth;
     }
-
     if (row.type == Blockly.BlockSvg.INLINE) {
       // Inline inputs.
       for (var x = 0, input; input = row[x]; x++) {
@@ -1278,24 +1264,12 @@ Blockly.BlockSvg.prototype.renderDrawRight_ = function(steps,
       // Move to the right edge
       cursorX = Math.max(cursorX, inputRows.rightEdge);
       this.width = Math.max(this.width, cursorX);
-      if (!this.edgeShape_) {
-        // Include corner radius in drawing the horizontal line.
-        steps.push('H', cursorX - Blockly.BlockSvg.CORNER_RADIUS - this.edgeShapeWidth_);
-        steps.push(Blockly.BlockSvg.TOP_RIGHT_CORNER);
-      } else {
-        // Don't include corner radius - no corner (edge shape drawn).
-        steps.push('H', cursorX - this.edgeShapeWidth_);
-      }
-      // Subtract CORNER_RADIUS * 2 to account for the top right corner
-      // and also the bottom right corner. Only move vertically the non-corner length.
-      if (!this.edgeShape_) {
-        steps.push('v', row.height - Blockly.BlockSvg.CORNER_RADIUS * 2);
-      }
       // pxtblockly: keep track of row height
       rowHeight += row.height;
+      prevCursorX = cursorX;
     } else if (row.type == Blockly.NEXT_STATEMENT) {
       // pxtblockly:
-      //flushRows();
+      flushRows();
       // Nested statement.
       var input = row[0];
       var fieldX = cursorX;
@@ -1317,9 +1291,8 @@ Blockly.BlockSvg.prototype.renderDrawRight_ = function(steps,
         this.width = Math.max(this.width, inputRows.statementEdge +
           input.connection.targetBlock().getHeightWidth().width);
       }
-      if (this.type != Blockly.BlockSvg.DEFINE_BLOCK_TYPE &&
-        (y == inputRows.length - 1 ||
-          inputRows[y + 1].type == Blockly.NEXT_STATEMENT)) {
+      if (y == inputRows.length - 1 ||
+          inputRows[y + 1].type == Blockly.NEXT_STATEMENT) {
         // If the final input is a statement stack, add a small row underneath.
         // Consecutive statement stacks are also separated by a small divider.
         steps.push(Blockly.BlockSvg.TOP_RIGHT_CORNER);
@@ -1330,7 +1303,7 @@ Blockly.BlockSvg.prototype.renderDrawRight_ = function(steps,
     cursorY += row.height;
   }
   // pxtblockly:
-  //flushRows();
+  flushRows();
   this.drawEdgeShapeRight_(steps);
   if (!inputRows.length) {
     cursorY = Blockly.BlockSvg.MIN_BLOCK_Y;
