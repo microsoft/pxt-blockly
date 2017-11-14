@@ -66,6 +66,61 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
     "tooltip": "%{BKY_MATH_NUMBER_TOOLTIP}",
     "extensions": ["parent_tooltip_when_inline"]
   },
+  // Block for integer numeric value.
+  {
+    "type": "math_integer",
+    "message0": "%1",
+    "args0": [{
+      "type": "field_number",
+      "name": "NUM",
+      "precision": 1
+    }],
+    "output": "Number",
+    "colour": Blockly.Colours.textField,
+    "colourSecondary": Blockly.Colours.textField,
+    "colourTertiary": Blockly.Colours.textField,
+    "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
+    "helpUrl": "%{BKY_MATH_NUMBER_HELPURL}",
+    "tooltip": "%{BKY_MATH_NUMBER_TOOLTIP}",
+    "extensions": ["parent_tooltip_when_inline"]
+  },
+  // Block for whole numeric value.
+  {
+    "type": "math_whole_number",
+    "message0": "%1",
+    "args0": [{
+      "type": "field_number",
+      "name": "NUM",
+      "min": 0,
+      "precision": 1
+    }],
+    "output": "Number",
+    "colour": Blockly.Colours.textField,
+    "colourSecondary": Blockly.Colours.textField,
+    "colourTertiary": Blockly.Colours.textField,
+    "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
+    "helpUrl": "%{BKY_MATH_NUMBER_HELPURL}",
+    "tooltip": "%{BKY_MATH_NUMBER_TOOLTIP}",
+    "extensions": ["parent_tooltip_when_inline"]
+  },
+  // Block for positive numeric value.
+  {
+    "type": "math_positive_number",
+    "message0": "%1",
+    "args0": [{
+      "type": "field_number",
+      "name": "NUM",
+      "min": 0
+    }],
+    "output": "Number",
+    "colour": Blockly.Colours.textField,
+    "colourSecondary": Blockly.Colours.textField,
+    "colourTertiary": Blockly.Colours.textField,
+    "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
+    "helpUrl": "%{BKY_MATH_NUMBER_HELPURL}",
+    "tooltip": "%{BKY_MATH_NUMBER_TOOLTIP}",
+    "extensions": ["parent_tooltip_when_inline"]
+  },
   // Block for numeric value with min and max.
   {
     "type": "math_number_minmax",

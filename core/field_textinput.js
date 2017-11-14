@@ -265,6 +265,12 @@ Blockly.FieldTextInput.prototype.showEditor_ = function(
   // The animated properties themselves
   htmlInput.style.fontSize = Blockly.BlockSvg.FIELD_TEXTINPUT_FONTSIZE_FINAL + 'pt';
   div.style.boxShadow = '0px 0px 0px 4px ' + Blockly.Colours.fieldShadow;
+  // pxtblockly: execute the arrow callback when the editor is opened as well
+  if (opt_arrowCallback) {
+    opt_arrowCallback.call(this);
+    htmlInput.focus();
+    htmlInput.select();
+  }
 };
 
 /**
@@ -384,7 +390,7 @@ Blockly.FieldTextInput.prototype.onHtmlInputChange_ = function(e) {
   var text = htmlInput.value;
   if (text !== htmlInput.oldValue_) {
     htmlInput.oldValue_ = text;
-    this.setText(text);
+    this.setValue(text);
     //pxtblockly: this.setValue(text);
     this.validate_();
   } else if (goog.userAgent.WEBKIT) {

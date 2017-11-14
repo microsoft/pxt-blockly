@@ -1276,7 +1276,7 @@ Blockly.BlockSvg.prototype.renderDrawRight_ = function(steps,
       // Align fields vertically within the row.
       // In renderFields_, the field is further centered by its own height.
       var fieldY = cursorY;
-      fieldY += Blockly.BlockSvg.MIN_STATEMENT_INPUT_HEIGHT;
+      fieldY += Blockly.BlockSvg.MIN_STATEMENT_INPUT_HEIGHT / 2;
       this.renderFields_(input.fieldRow, fieldX, fieldY, y);
       // Move to the start of the notch.
       cursorX = inputRows.statementEdge + Blockly.BlockSvg.NOTCH_WIDTH;
