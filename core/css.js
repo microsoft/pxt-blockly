@@ -395,6 +395,7 @@ Blockly.Css.CONTENT = [
     'height: 100%;',
     'margin: 0;',
     'outline: none;',
+    'position: absolute;',
     'padding: 0 1px;',
     'width: 100%',
   '}',
