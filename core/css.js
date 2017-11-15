@@ -378,6 +378,7 @@ Blockly.Css.CONTENT = [
   '.blocklyMinimalBody {',
     'margin: 0;',
     'padding: 0;',
+    'position: fixed;', // Fix comment disappearing as it gets resized in Chrome. pxt#1854
   '}',
 
   '.blocklyCommentTextarea {',
