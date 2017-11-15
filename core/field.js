@@ -28,6 +28,8 @@
 
 goog.provide('Blockly.Field');
 
+goog.require('Blockly.Gesture');
+
 goog.require('goog.asserts');
 goog.require('goog.dom');
 goog.require('goog.math.Size');
@@ -144,7 +146,7 @@ Blockly.Field.prototype.init = function() {
        'ry': 4,
        'x': -Blockly.BlockSvg.SEP_SPACE_X / 2,
        'y': 0,
-       'height': 16}, this.fieldGroup_, this.sourceBlock_.workspace);
+       'height': 16}, this.fieldGroup_);
   /** @type {!Element} */
   this.textElement_ = Blockly.utils.createSvgElement('text',
       {'class': 'blocklyText', 'y': this.size_.height - 12.5},
@@ -152,9 +154,9 @@ Blockly.Field.prototype.init = function() {
 
   this.updateEditable();
   this.sourceBlock_.getSvgRoot().appendChild(this.fieldGroup_);
-  this.mouseUpWrapper_ =
-      Blockly.bindEventWithChecks_(this.fieldGroup_, 'mouseup', this,
-      this.onMouseUp_);
+  this.mouseDownWrapper_ =
+      Blockly.bindEventWithChecks_(this.fieldGroup_, 'mousedown', this,
+      this.onMouseDown_);
   // Force a render.
   this.render_();
 };
@@ -170,9 +172,9 @@ Blockly.Field.prototype.initModel = function() {
  * Dispose of all DOM objects belonging to this editable field.
  */
 Blockly.Field.prototype.dispose = function() {
-  if (this.mouseUpWrapper_) {
-    Blockly.unbindEvent_(this.mouseUpWrapper_);
-    this.mouseUpWrapper_ = null;
+  if (this.mouseDownWrapper_) {
+    Blockly.unbindEvent_(this.mouseDownWrapper_);
+    this.mouseDownWrapper_ = null;
   }
   this.sourceBlock_ = null;
   goog.dom.removeNode(this.fieldGroup_);
@@ -349,10 +351,13 @@ Blockly.Field.getCachedWidth = function(textElement) {
 
   // Attempt to compute fetch the width of the SVG text element.
   try {
-    width = textElement.getComputedTextLength();
+    if (goog.userAgent.IE || goog.userAgent.EDGE) {
+      width = textElement.getBBox().width;
+    } else {
+      width = textElement.getComputedTextLength();
+    }
   } catch (e) {
-    // MSIE 11 and Edge are known to throw "Unexpected call to method or
-    // property access." if the block is hidden. Instead, use an
+    // In other cases where we fail to geth the computed text. Instead, use an
     // approximation and do not cache the result. At some later point in time
     // when the block is inserted into the visible DOM, this method will be
     // called again and, at that point in time, will not throw an exception.
@@ -400,16 +405,23 @@ Blockly.Field.prototype.getSize = function() {
 };
 
 /**
- * Returns the height and width of the field,
- * accounting for the workspace scaling.
- * @return {!goog.math.Size} Height and width.
+ * Returns the bounding box of the rendered field, accounting for workspace
+ * scaling.
+ * @return {!Object} An object with top, bottom, left, and right in pixels
+ *     relative to the top left corner of the page (window coordinates).
  * @private
  */
 Blockly.Field.prototype.getScaledBBox_ = function() {
   var bBox = this.borderRect_.getBBox();
-  // Create new object, as getBBox can return an uneditable SVGRect in IE.
-  return new goog.math.Size(bBox.width * this.sourceBlock_.workspace.scale,
-                            bBox.height * this.sourceBlock_.workspace.scale);
+  var scaledHeight = bBox.height * this.sourceBlock_.workspace.scale;
+  var scaledWidth = bBox.width * this.sourceBlock_.workspace.scale;
+  var xy = this.getAbsoluteXY_();
+  return {
+    top: xy.y,
+    bottom: xy.y + scaledHeight,
+    left: xy.x,
+    right: xy.x + scaledWidth
+  };
 };
 
 /**
@@ -460,6 +472,17 @@ Blockly.Field.prototype.setText = function(newText) {
     return;
   }
   this.text_ = newText;
+  this.forceRerender();
+};
+
+/**
+ * Force a rerender of the block that this field is installed on, which will
+ * rerender this field and adjust for any sizing changes.
+ * Other fields on the same block will not rerender, because their sizes have
+ * already been recorded.
+ * @package
+ */
+Blockly.Field.prototype.forceRerender = function() {
   // Set width to 0 to force a rerender of this field.
   this.size_.width = 0;
 
@@ -493,36 +516,25 @@ Blockly.Field.prototype.setValue = function(newValue) {
     return;
   }
   if (this.sourceBlock_ && Blockly.Events.isEnabled()) {
-    Blockly.Events.fire(new Blockly.Events.Change(
+    Blockly.Events.fire(new Blockly.Events.BlockChange(
         this.sourceBlock_, 'field', this.name, oldValue, newValue));
   }
   this.setText(newValue);
 };
 
 /**
- * Handle a mouse up event on an editable field.
- * @param {!Event} e Mouse up event.
+ * Handle a mouse down event on a field.
+ * @param {!Event} e Mouse down event.
  * @private
  */
-Blockly.Field.prototype.onMouseUp_ = function(e) {
-  if ((goog.userAgent.IPHONE || goog.userAgent.IPAD) &&
-      !goog.userAgent.isVersionOrHigher('537.51.2') &&
-      e.layerX !== 0 && e.layerY !== 0) {
-    // Old iOS spawns a bogus event on the next touch after a 'prompt()' edit.
-    // Unlike the real events, these have a layerX and layerY set.
+Blockly.Field.prototype.onMouseDown_ = function(
+    /* eslint-disable no-unused-vars */ e /* eslint-enable no-unused-vars */) {
+  if (!this.sourceBlock_ || !this.sourceBlock_.workspace) {
     return;
-  } else if (Blockly.utils.isRightButton(e)) {
-    // Right-click.
-    return;
-  } else if (this.sourceBlock_.workspace.isDragging()) {
-    // Drag operation is concluding.  Don't open the editor.
-    return;
-  } else if (this.sourceBlock_.isEditable()) {
-    // Non-abstract sub-classes must define a showEditor_ method.
-    this.showEditor_();
-    // The field is handling the touch, but we also want the blockSvg onMouseUp
-    // handler to fire, so we will leave the touch identifier as it is.
-    // The next onMouseUp is responsible for nulling it out.
+  }
+  var gesture = this.sourceBlock_.workspace.getGesture(e);
+  if (gesture) {
+    gesture.setStartField(this);
   }
 };
 
@@ -531,7 +543,9 @@ Blockly.Field.prototype.onMouseUp_ = function(e) {
  * @param {string|!Element} newTip Text for tooltip or a parent element to
  *     link to for its tooltip.
  */
-Blockly.Field.prototype.setTooltip = function(newTip) {
+Blockly.Field.prototype.setTooltip = function(
+    /* eslint-disable no-unused-vars */ newTip
+    /* eslint-enable no-unused-vars */) {
   // Non-abstract sub-classes may wish to implement this.  See FieldLabel.
 };
 

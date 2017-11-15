@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>Blockly Playground</title>
+<title>PXT-Blockly Playground</title>
 <script src="../blockly_uncompressed.js"></script>
 <script src="../generators/javascript.js"></script>
 <script src="../generators/javascript/logic.js"></script>
@@ -245,8 +245,8 @@ function fakeDrag(id, dx, dy, opt_workspace) {
           blockToDrag.onMouseUp_(mouseUpEvent);
 
           setTimeout(fakeDragWrapper(), 100);
-        }, 30);
-    }, 30);
+        }, 100);
+    }, 100);
 };
 
 function fakeDragWrapper() {
@@ -359,7 +359,7 @@ h1 {
 
   <div id="blocklyDiv"></div>
 
-  <h1>Blockly Playground</h1>
+  <h1>PXT-Blockly Playground</h1>
 
   <p><a href="javascript:void(workspace.setVisible(true))">Show</a>
    - <a href="javascript:void(workspace.setVisible(false))">Hide</a></p>
@@ -472,7 +472,9 @@ h1 {
     </category>
     <category name="Math" disabled="true" colour="230" iconclass="blocklyTreeIconCustom">
       <block type="math_number" gap="32"></block>
-      <block type="math_number_minmax" gap="32"></block>
+      <block type="math_number_minmax" gap="32">
+        <mutation min="0" max="100"></mutation>
+      </block>
       <block type="math_arithmetic">
         <value name="A">
           <shadow type="math_number">

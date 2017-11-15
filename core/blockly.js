@@ -51,7 +51,6 @@ goog.require('Blockly.Generator');
 goog.require('Blockly.Msg');
 goog.require('Blockly.Procedures');
 goog.require('Blockly.Toolbox');
-goog.require('Blockly.PXTToolbox');
 goog.require('Blockly.Touch');
 goog.require('Blockly.WidgetDiv');
 goog.require('Blockly.WorkspaceSvg');
@@ -63,7 +62,10 @@ goog.require('goog.userAgent');
 
 
 // Turn off debugging when compiled.
+// Unused within the Blockly library, but used in Closure.
+/* eslint-disable no-unused-vars */
 var CLOSURE_DEFINES = {'goog.DEBUG': false};
+/* eslint-enable no-unused-vars */
 
 /**
  * The main workspace most recently used.
@@ -77,20 +79,6 @@ Blockly.mainWorkspace = null;
  * @type {Blockly.Block}
  */
 Blockly.selected = null;
-
-/**
- * Currently highlighted connection (during a drag).
- * @type {Blockly.Connection}
- * @private
- */
-Blockly.highlightedConnection_ = null;
-
-/**
- * Connection on dragged block that matches the highlighted connection.
- * @type {Blockly.Connection}
- * @private
- */
-Blockly.localConnection_ = null;
 
 /**
  * All of the connections on blocks that are currently being dragged.
@@ -112,15 +100,6 @@ Blockly.clipboardXml_ = null;
  * @private
  */
 Blockly.clipboardSource_ = null;
-
-/**
- * Is the mouse dragging a block?
- * DRAG_NONE - No drag operation.
- * DRAG_STICKY - Still inside the sticky DRAG_RADIUS.
- * DRAG_FREE - Freely draggable.
- * @private
- */
-Blockly.dragMode_ = Blockly.DRAG_NONE;
 
 /**
  * Cached value for whether 3D is supported.
@@ -211,10 +190,18 @@ Blockly.onKeyDown_ = function(e) {
     // Do this first to prevent an error in the delete code from resulting in
     // data loss.
     e.preventDefault();
+    // Don't delete while dragging.  Jeez.
+    if (Blockly.mainWorkspace.isDragging()) {
+      return;
+    }
     if (Blockly.selected && Blockly.selected.isDeletable()) {
       deleteBlock = true;
     }
   } else if (e.altKey || e.ctrlKey || e.metaKey) {
+    // Don't use meta keys during drags.
+    if (Blockly.mainWorkspace.isDragging()) {
+      return;
+    }
     if (Blockly.selected &&
         Blockly.selected.isDeletable() && Blockly.selected.isMovable()) {
       if (e.keyCode == 67) {
@@ -244,23 +231,9 @@ Blockly.onKeyDown_ = function(e) {
     // Common code for delete and cut.
     Blockly.Events.setGroup(true);
     Blockly.hideChaff();
-    var heal = Blockly.dragMode_ != Blockly.DRAG_FREE;
-    Blockly.selected.dispose(heal, true);
-    if (Blockly.highlightedConnection_) {
-      Blockly.highlightedConnection_.unhighlight();
-      Blockly.highlightedConnection_ = null;
-    }
+    Blockly.selected.dispose(/* heal */ true, true);
     Blockly.Events.setGroup(false);
   }
-};
-
-/**
- * Stop binding to the global mouseup and mousemove events.
- * @private
- */
-Blockly.terminateDrag_ = function() {
-  Blockly.BlockSvg.terminateDrag();
-  Blockly.Flyout.terminateDrag_();
 };
 
 /**
@@ -270,9 +243,8 @@ Blockly.terminateDrag_ = function() {
  */
 Blockly.copy_ = function(block) {
   var xmlBlock = Blockly.Xml.blockToDom(block);
-  if (Blockly.dragMode_ != Blockly.DRAG_FREE) {
-    Blockly.Xml.deleteNext(xmlBlock);
-  }
+  // Copy only the selected block and internal blocks.
+  Blockly.Xml.deleteNext(xmlBlock);
   // Encode start position in XML.
   var xy = block.getRelativeToSurfaceXY();
   xmlBlock.setAttribute('x', block.RTL ? -xy.x : xy.x);
@@ -430,18 +402,22 @@ Blockly.defineBlocksWithJsonArray = function(jsonArray) {
  * Bind an event to a function call.  When calling the function, verifies that
  * it belongs to the touch stream that is currently being processed, and splits
  * multitouch events into multiple events as needed.
- * @param {!Node} node Node upon which to listen.
+ * @param {!EventTarget} node Node upon which to listen.
  * @param {string} name Event name to listen to (e.g. 'mousedown').
  * @param {Object} thisObject The value of 'this' in the function.
  * @param {!Function} func Function to call when event is triggered.
- * @param {boolean} opt_noCaptureIdentifier True if triggering on this event
+ * @param {boolean=} opt_noCaptureIdentifier True if triggering on this event
  *     should not block execution of other event handlers on this touch or other
  *     simultaneous touches.
+ * @param {boolean=} opt_noPreventDefault True if triggering on this event
+ *     should prevent the default handler.  False by default.  If
+ *     opt_noPreventDefault is provided, opt_noCaptureIdentifier must also be
+ *     provided.
  * @return {!Array.<!Array>} Opaque data that can be passed to unbindEvent_.
  * @private
  */
 Blockly.bindEventWithChecks_ = function(node, name, thisObject, func,
-    opt_noCaptureIdentifier, opt_noPreventDefault) { // pxtblockly: add option to remove calls to preventDefault()
+    opt_noCaptureIdentifier, opt_noPreventDefault) {
   var handled = false;
   var wrapFunc = function(e) {
     var captureIdentifier = !opt_noCaptureIdentifier;
@@ -469,7 +445,8 @@ Blockly.bindEventWithChecks_ = function(node, name, thisObject, func,
   if (name in Blockly.Touch.TOUCH_MAP) {
     var touchWrapFunc = function(e) {
       wrapFunc(e);
-      // Stop the browser from scrolling/zooming the page.
+      // Calling preventDefault stops the browser from scrolling/zooming the
+      // page.
       var preventDef = !opt_noPreventDefault;
       if (handled && preventDef) {
         e.preventDefault();
@@ -491,7 +468,7 @@ Blockly.bindEventWithChecks_ = function(node, name, thisObject, func,
  * simultaneous event processing.
  * @deprecated in favor of bindEventWithChecks_, but preserved for external
  * users.
- * @param {!Node} node Node upon which to listen.
+ * @param {!EventTarget} node Node upon which to listen.
  * @param {string} name Event name to listen to (e.g. 'mousedown').
  * @param {Object} thisObject The value of 'this' in the function.
  * @param {!Function} func Function to call when event is triggered.
@@ -558,7 +535,7 @@ Blockly.unbindEvent_ = function(bindData) {
  * @return {boolean} True if number, false otherwise.
  */
 Blockly.isNumber = function(str) {
-  return !!str.match(/^\s*-?\d+(\.\d+)?\s*$/);
+  return /^\s*-?\d+(\.\d+)?\s*$/.test(str);
 };
 
 // IE9 does not have a console.  Create a stub to stop errors.

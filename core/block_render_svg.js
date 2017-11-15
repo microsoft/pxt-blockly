@@ -256,6 +256,28 @@ Blockly.BlockSvg.INNER_BOTTOM_LEFT_CORNER_HIGHLIGHT_LTR =
     (Blockly.BlockSvg.DISTANCE_45_OUTSIDE + 0.5);
 
 /**
+ * Returns a bounding box describing the dimensions of this block
+ * and any blocks stacked below it.
+ * @return {!{height: number, width: number}} Object with height and width
+ *    properties in workspace units.
+ */
+Blockly.BlockSvg.prototype.getHeightWidth = function() {
+  var height = this.height;
+  var width = this.width;
+  // Recursively add size of subsequent blocks.
+  var nextBlock = this.getNextBlock();
+  if (nextBlock) {
+    var nextHeightWidth = nextBlock.getHeightWidth();
+    height += nextHeightWidth.height - 4;  // Height of tab.
+    width = Math.max(width, nextHeightWidth.width);
+  } else if (!this.nextConnection && !this.outputConnection) {
+    // Add a bit of margin under blocks with no bottom tab.
+    height += 2;
+  }
+  return {height: height, width: width};
+};
+
+/**
  * Render the block.
  * Lays out and reflows a block based on its contents and settings.
  * @param {boolean=} opt_bubble If false, just render this block.
@@ -304,9 +326,8 @@ Blockly.BlockSvg.prototype.render = function(opt_bubble) {
  * @return {number} X-coordinate of the end of the field row (plus a gap).
  * @private
  */
-Blockly.BlockSvg.prototype.renderFields_ =
-    function(fieldList, cursorX, cursorY) {
-  /* eslint-disable indent */
+Blockly.BlockSvg.prototype.renderFields_ = function(fieldList,
+    cursorX, cursorY) {
   cursorY += Blockly.BlockSvg.INLINE_PADDING_Y;
   if (this.RTL) {
     cursorX = -cursorX;
@@ -315,12 +336,6 @@ Blockly.BlockSvg.prototype.renderFields_ =
     var root = field.getSvgRoot();
     if (!root) {
       continue;
-    }
-
-    // Force a width re-calculation on IE and Edge to get around the issue
-    // described in Blockly.Field.getCachedWidth
-    if (goog.userAgent.IE || goog.userAgent.EDGE) {
-      field.updateWidth();
     }
 
     if (this.RTL) {
@@ -340,7 +355,7 @@ Blockly.BlockSvg.prototype.renderFields_ =
     }
   }
   return this.RTL ? -cursorX : cursorX;
-};  /* eslint-enable indent */
+};
 
 /**
  * Computes the height and widths for each row and field.
@@ -598,9 +613,8 @@ Blockly.BlockSvg.prototype.renderMoveConnections_ = function() {
  * @param {number} rightEdge Minimum width of block.
  * @private
  */
-Blockly.BlockSvg.prototype.renderDrawTop_ =
-    function(steps, highlightSteps, rightEdge) {
-  /* eslint-disable indent */
+Blockly.BlockSvg.prototype.renderDrawTop_ = function(steps,
+    highlightSteps, rightEdge) {
   // Position the cursor at the top-left starting point.
   if (this.squareTopLeftCorner_) {
     steps.push('m 0,0');
@@ -635,7 +649,7 @@ Blockly.BlockSvg.prototype.renderDrawTop_ =
   steps.push('H', rightEdge);
   highlightSteps.push('H', rightEdge - 0.5);
   this.width = rightEdge;
-};  /* eslint-enable indent */
+};
 
 /**
  * Render the right edge of the block.
@@ -900,9 +914,8 @@ Blockly.BlockSvg.prototype.renderDrawRight_ = function(steps, highlightSteps,
  * @param {number} cursorY Height of block.
  * @private
  */
-Blockly.BlockSvg.prototype.renderDrawBottom_ =
-    function(steps, highlightSteps, cursorY) {
-  /* eslint-disable indent */
+Blockly.BlockSvg.prototype.renderDrawBottom_ = function(steps,
+    highlightSteps, cursorY) {
   this.height += cursorY + 1;  // Add one for the shadow.
   if (this.nextConnection) {
     steps.push('H', (Blockly.BlockSvg.NOTCH_WIDTH + (this.RTL ? 0.5 : - 0.5)) +
@@ -938,7 +951,7 @@ Blockly.BlockSvg.prototype.renderDrawBottom_ =
           '0.5,' + (cursorY - Blockly.BlockSvg.CORNER_RADIUS));
     }
   }
-};  /* eslint-enable indent */
+};
 
 /**
  * Render the left edge of the block.

@@ -38,6 +38,20 @@ goog.require('goog.events.BrowserFeature');
 goog.require('goog.math.Coordinate');
 goog.require('goog.userAgent');
 
+
+/**
+ * To allow ADVANCED_OPTIMIZATIONS, combining variable.name and variable['name']
+ * is not possible. To access the exported Blockly.Msg.Something it needs to be
+ * accessed through the exact name that was exported. Note, that all the exports
+ * are happening as the last thing in the generated js files, so they won't be
+ * accessible before JavaScript loads!
+ * @return {!Object.<string, string>} The message array.
+ * @private
+ */
+Blockly.utils.getMessageArray_ = function() {
+  return goog.global['Blockly']['Msg'];
+};
+
 /**
  * Remove an attribute from a element even if it's in IE 10.
  * Similar to Element.removeAttribute() but it works on SVG elements in IE 10.
@@ -194,7 +208,6 @@ Blockly.utils.getRelativeXY = function(element) {
 Blockly.utils.getInjectionDivXY_ = function(element) {
   var x = 0;
   var y = 0;
-  var scale = 1;
   while (element) {
     var xy = Blockly.utils.getRelativeXY(element);
     var scale = Blockly.utils.getScale_(element);
@@ -272,11 +285,9 @@ Blockly.utils.getRelativeXY.XY_2D_REGEX_ =
  * @param {string} name Element's tag name.
  * @param {!Object} attrs Dictionary of attribute names and values.
  * @param {Element} parent Optional parent on which to append the element.
- * @param {Blockly.Workspace=} opt_workspace Optional workspace for access to
- *     context (scale...).
  * @return {!SVGElement} Newly created SVG element.
  */
-Blockly.utils.createSvgElement = function(name, attrs, parent /*, opt_workspace */) {
+Blockly.utils.createSvgElement = function(name, attrs, parent) {
   var e = /** @type {!SVGElement} */ (
       document.createElementNS(Blockly.SVG_NS, name));
   for (var key in attrs) {
@@ -314,7 +325,7 @@ Blockly.utils.isRightButton = function(e) {
  * @param {!Event} e Mouse event.
  * @param {!Element} svg SVG element.
  * @param {SVGMatrix} matrix Inverted screen CTM to use.
- * @return {!Object} Object with .x and .y properties.
+ * @return {!SVGPoint} Object with .x and .y properties.
  */
 Blockly.utils.mouseToSvg = function(e, svg, matrix) {
   var svgPoint = svg.createSVGPoint();
@@ -440,38 +451,45 @@ Blockly.utils.replaceMessageReferences = function(message) {
   var interpolatedResult = Blockly.utils.tokenizeInterpolation_(message, false);
   // When parseInterpolationTokens == false, interpolatedResult should be at
   // most length 1.
-  return interpolatedResult.length ? interpolatedResult[0] : "";
+  return interpolatedResult.length ? interpolatedResult[0] : '';
 };
 
 /**
- * Validates that any %{BKY_...} references in the message refer to keys of
+ * Validates that any %{MSG_KEY} references in the message refer to keys of
  * the Blockly.Msg string table.
  * @param {string} message Text which might contain string table references.
  * @return {boolean} True if all message references have matching values.
  *     Otherwise, false.
  */
 Blockly.utils.checkMessageReferences = function(message) {
-  var isValid = true; // True until a bad reference is found
+  var validSoFar = true;
 
-  var regex = /%{BKY_([a-zA-Z][a-zA-Z0-9_]*)}/g;
+  var msgTable = Blockly.utils.getMessageArray_();
+
+  // TODO(#1169): Implement support for other string tables, prefixes other than BKY_.
+  var regex = /%{(BKY_[A-Z][A-Z0-9_]*)}/gi;
   var match = regex.exec(message);
-  while (match != null) {
+  while (match) {
     var msgKey = match[1];
-    if (Blockly.Msg[msgKey] == null) {
-      console.log('WARNING: No message string for %{BKY_' + msgKey + '}.');
-      isValid = false;
+    msgKey = msgKey.toUpperCase();
+    if (msgKey.substr(0, 4) != 'BKY_') {
+      console.log('WARNING: Unsupported message table prefix in %{' + match[1] + '}.');
+      validSoFar = false;  // Continue to report other errors.
+    } else if (msgTable[msgKey.substr(4)] == undefined) {
+      console.log('WARNING: No message string for %{' + match[1] + '}.');
+      validSoFar = false;  // Continue to report other errors.
     }
 
-    // Re-run on remainder of sting.
+    // Re-run on remainder of string.
     message = message.substring(match.index + msgKey.length + 1);
     match = regex.exec(message);
   }
 
-  return isValid;
+  return validSoFar;
 };
 
 /**
- * Internal implemention of the message reference and interpolation token
+ * Internal implementation of the message reference and interpolation token
  * parsing used by tokenizeInterpolation() and replaceMessageReferences().
  * @param {string} message Text which might contain string table references and
  *     interpolation tokens.
@@ -480,7 +498,8 @@ Blockly.utils.checkMessageReferences = function(message) {
  * @return {!Array.<string|number>} Array of strings and numbers.
  * @private
  */
-Blockly.utils.tokenizeInterpolation_ = function(message, parseInterpolationTokens) {
+Blockly.utils.tokenizeInterpolation_ = function(message,
+    parseInterpolationTokens) {
   var tokens = [];
   var chars = message.split('');
   chars.push('');  // End marker.
@@ -488,7 +507,7 @@ Blockly.utils.tokenizeInterpolation_ = function(message, parseInterpolationToken
   // 0 - Base case.
   // 1 - % found.
   // 2 - Digit found.
-  // 3 - Message ref found
+  // 3 - Message ref found.
   var state = 0;
   var buffer = [];
   var number = null;
@@ -550,12 +569,13 @@ Blockly.utils.tokenizeInterpolation_ = function(message, parseInterpolationToken
           // are defined in ../msgs/ files.
           var bklyKey = goog.string.startsWith(keyUpper, 'BKY_') ?
               keyUpper.substring(4) : null;
-          if (bklyKey && bklyKey in Blockly.Msg) {
-            var rawValue = Blockly.Msg[bklyKey];
+          if (bklyKey && bklyKey in Blockly.utils.getMessageArray_()) {
+            var rawValue = Blockly.utils.getMessageArray_()[bklyKey];
             if (goog.isString(rawValue)) {
               // Attempt to dereference substrings, too, appending to the end.
               Array.prototype.push.apply(tokens,
-                Blockly.utils.tokenizeInterpolation(rawValue));
+                  Blockly.utils.tokenizeInterpolation_(
+                      rawValue, parseInterpolationTokens));
             } else if (parseInterpolationTokens) {
               // When parsing interpolation tokens, numbers are special
               // placeholders (%1, %2, etc). Make sure all other values are
@@ -626,7 +646,7 @@ Blockly.utils.genUid = function() {
  * Legal characters for the unique ID.  Should be all on a US keyboard.
  * No characters that conflict with XML or JSON.  Requests to remove additional
  * 'problematic' characters from this soup will be denied.  That's your failure
- * to properly escape in your own environment.  Issues #251, #625, #682.
+ * to properly escape in your own environment.  Issues #251, #625, #682, #1304.
  * @private
  */
 Blockly.utils.genUid.soup_ = '!#$%()*+,-./:;=?@[]^_`{|}~' +
@@ -902,4 +922,24 @@ Blockly.utils.runAfterPageLoad = function(fn) {
 Blockly.utils.setCssTransform = function(node, transform) {
   node.style['transform'] = transform;
   node.style['-webkit-transform'] = transform;
+};
+
+/**
+ * Get the position of the current viewport in window coordinates.  This takes
+ * scroll into account.
+ * @return {!Object} an object containing window width, height, and scroll
+ *     position in window coordinates.
+ * @package
+ */
+Blockly.utils.getViewportBBox = function() {
+  // Pixels.
+  var windowSize = goog.dom.getViewportSize();
+  // Pixels, in window coordinates.
+  var scrollOffset = goog.style.getViewportPageOffset(document);
+  return {
+    right: windowSize.width + scrollOffset.x,
+    bottom: windowSize.height + scrollOffset.y,
+    top: scrollOffset.y,
+    left: scrollOffset.x
+  };
 };
