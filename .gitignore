@@ -6,3 +6,8 @@ npm-debug.log
 *.pyc
 *.komodoproject
 /nbproject/private/
+
+/dist
+/compile
+/chromedriver
+/gh-pages
