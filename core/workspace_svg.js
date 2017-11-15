@@ -36,7 +36,7 @@ goog.require('Blockly.ConnectionDB');
 goog.require('Blockly.constants');
 goog.require('Blockly.DropDownDiv');
 goog.require('Blockly.Events');
-goog.require('Blockly.Gesture');
+goog.require('Blockly.TouchGesture');
 goog.require('Blockly.Grid');
 goog.require('Blockly.Options');
 goog.require('Blockly.ScrollbarPair');
@@ -203,7 +203,7 @@ Blockly.WorkspaceSvg.prototype.scrollbar = null;
 
 /**
  * The current gesture in progress on this workspace, if any.
- * @type {Blockly.Gesture}
+ * @type {Blockly.TouchGesture}
  * @private
  */
 Blockly.WorkspaceSvg.prototype.currentGesture_ = null;
@@ -1213,29 +1213,13 @@ Blockly.WorkspaceSvg.prototype.isDraggable = function() {
   return !!this.scrollbar;
 };
 
-Blockly.WorkspaceSvg.prototype.getTwoTouchPointData_ = function(e) {
-  var points = false, touches = e.touches;
-  if(touches.length === 2){
-    points = {
-      x1: touches[0].pageX,
-      y1: touches[0].pageY,
-      x2: touches[1].pageX,
-      y2: touches[1].pageY
-    }
-    points.centerX = (points.x1 + points.x2) / 2;
-    points.centerY = (points.y1 + points.y2) / 2;
-    return points;
-  }
-  return points;
-}
-
 /**
  * Handle a touch start on SVG drawing surface.
  * @param {!Event} e Touch start event.
  * @private
  */
 Blockly.WorkspaceSvg.prototype.onTouchStart_ = function(e) {
-  var points = this.getTwoTouchPointData_(e);
+  var points = this.currentGesture_.getTwoTouchPointData_(e);
   if (points) {
     if (this.currentGesture_) {
       this.currentGesture_.cancel();
@@ -1257,7 +1241,7 @@ Blockly.WorkspaceSvg.prototype.onTouchStart_ = function(e) {
  */
 Blockly.WorkspaceSvg.prototype.onTouchMove_ = function(e) {
   if(this.isTouchPinched_ && typeof window.ongesturechange != "object") {
-    var points = this.getTwoTouchPointData_(e);
+    var points = this.currentGesture_.getTwoTouchPointData_(e);
     if (points) {
       if (this.currentGesture_) {
         this.currentGesture_.cancel();
@@ -2225,7 +2209,7 @@ Blockly.WorkspaceSvg.prototype.removeToolboxCategoryCallback = function(key) {
  * Look up the gesture that is tracking this touch stream on this workspace.
  * May create a new gesture.
  * @param {!Event} e Mouse event or touch event
- * @return {Blockly.Gesture} The gesture that is tracking this touch stream,
+ * @return {Blockly.TouchGesture} The gesture that is tracking this touch stream,
  *     or null if no valid gesture exists.
  * @package
  */
@@ -2247,7 +2231,7 @@ Blockly.WorkspaceSvg.prototype.getGesture = function(e) {
   // No gesture existed on this workspace, but this looks like the start of a
   // new gesture.
   if (isStart) {
-    this.currentGesture_ = new Blockly.Gesture(e, this);
+    this.currentGesture_ = new Blockly.TouchGesture(e, this);
     return this.currentGesture_;
   }
   // No gesture existed and this event couldn't be the start of a new gesture.
