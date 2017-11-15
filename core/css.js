@@ -703,7 +703,7 @@ Blockly.Css.CONTENT = [
     'position: absolute;',
     'overflow-y: auto;',
     'overflow-x: hidden;',
-    'max-height: 100%;',
+    //'max-height: 100%;', //pxtblockly: commenting out as this was introducing a scrollbar in the context menu
     'z-index: 20000;',  /* Arbitrary, but some apps depend on it... */
   '}',
 
