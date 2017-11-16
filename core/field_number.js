@@ -34,6 +34,7 @@ goog.require('goog.style');
 
 goog.require('goog.ui.Slider');
 
+
 /**
  * Class for an editable number field.
  * @param {(string|number)=} opt_value The initial content of the field. The value

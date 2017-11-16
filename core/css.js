@@ -133,21 +133,27 @@ Blockly.Css.CONTENT = [
     'height: 100%;',
     'position: relative;',
     'overflow: hidden;', /* So blocks in drag surface disappear at edges */
+    'touch-action: none',
   '}',
 
   '.blocklyNonSelectable {',
     'user-select: none;',
     '-moz-user-select: none;',
-    '-webkit-user-select: none;',
     '-ms-user-select: none;',
+    '-webkit-user-select: none;',
   '}',
 
   '.blocklyWsDragSurface {',
     'display: none;',
     'position: absolute;',
-    'overflow: visible;',
     'top: 0;',
     'left: 0;',
+  '}',
+  /* Added as a separate rule with multiple classes to make it more specific
+     than a bootstrap rule that selects svg:root. See issue #1275 for context.
+  */
+  '.blocklyWsDragSurface.blocklyOverflowVisible {',
+    'overflow: visible;',
   '}',
 
   '.blocklyBlockDragSurface {',
@@ -169,7 +175,7 @@ Blockly.Css.CONTENT = [
     'display: none;',
     'font-family: sans-serif;',
     'font-size: 9pt;',
-    'opacity: 0.9;',
+    'opacity: .9;',
     'padding: 2px;',
     'position: absolute;',
     'z-index: 100000;', /* big value for bootstrap3 compatibility */
@@ -216,7 +222,6 @@ Blockly.Css.CONTENT = [
     'cursor: url("<<<PATH>>>/handopen.cur"), auto;',
     'cursor: grab;',
     'cursor: -webkit-grab;',
-    'cursor: -moz-grab;',
   '}',
 
    '.blocklyDragging {',
@@ -224,7 +229,6 @@ Blockly.Css.CONTENT = [
     'cursor: url("<<<PATH>>>/handclosed.cur"), auto;',
     'cursor: grabbing;',
     'cursor: -webkit-grabbing;',
-    'cursor: -moz-grabbing;',
   '}',
   /* Changes cursor on mouse down. Not effective in Firefox because of
     https://bugzilla.mozilla.org/show_bug.cgi?id=771241 */
@@ -233,7 +237,6 @@ Blockly.Css.CONTENT = [
     'cursor: url("<<<PATH>>>/handclosed.cur"), auto;',
     'cursor: grabbing;',
     'cursor: -webkit-grabbing;',
-    'cursor: -moz-grabbing;',
   '}',
   /* Change the cursor on the whole drag surface in case the mouse gets
      ahead of block during a drag. This way the cursor is still a closed hand.
@@ -243,7 +246,6 @@ Blockly.Css.CONTENT = [
     'cursor: url("<<<PATH>>>/handclosed.cur"), auto;',
     'cursor: grabbing;',
     'cursor: -webkit-grabbing;',
-    'cursor: -moz-grabbing;',
   '}',
 
   '.blocklyDragging.blocklyDraggingDelete {',
@@ -341,6 +343,7 @@ Blockly.Css.CONTENT = [
   '.blocklySvg text, .blocklyBlockDragSurface text {',
     'user-select: none;',
     '-moz-user-select: none;',
+    '-ms-user-select: none;',
     '-webkit-user-select: none;',
     'cursor: inherit;',
   '}',
@@ -375,6 +378,7 @@ Blockly.Css.CONTENT = [
   '.blocklyMinimalBody {',
     'margin: 0;',
     'padding: 0;',
+    'position: fixed;', // Fix comment disappearing as it gets resized in Chrome. pxt#1854
   '}',
 
   '.blocklyCommentTextarea {',
@@ -392,6 +396,7 @@ Blockly.Css.CONTENT = [
     'height: 100%;',
     'margin: 0;',
     'outline: none;',
+    'position: absolute;',
     'padding: 0 1px;',
     'width: 100%',
   '}',
@@ -410,6 +415,10 @@ Blockly.Css.CONTENT = [
   '.blocklyFlyoutBackground {',
     'fill: #ddd;',
     'fill-opacity: .8;',
+  '}',
+
+  '.blocklyTransparentBackground {',
+    'opacity: 0;',
   '}',
 
   '.blocklyMainWorkspaceScrollbar {',
@@ -509,7 +518,12 @@ Blockly.Css.CONTENT = [
     'overflow-x: visible;',
     'overflow-y: auto;',
     'position: absolute;',
+    'user-select: none;',
+    '-moz-user-select: none;',
+    '-ms-user-select: none;',
+    '-webkit-user-select: none;',
     'z-index: 70;', /* so blocks go under toolbox when dragging */
+    '-webkit-tap-highlight-color: transparent;', /* issue #1345 */
   '}',
 
   '.blocklyTreeRoot {',
@@ -572,7 +586,7 @@ Blockly.Css.CONTENT = [
   '}',
 
   '.blocklyTreeIconClosedRtl {',
-    'background-position: 0px -1px;',
+    'background-position: 0 -1px;',
   '}',
 
   '.blocklyTreeIconOpen {',
@@ -584,7 +598,7 @@ Blockly.Css.CONTENT = [
   '}',
 
   '.blocklyTreeSelected>.blocklyTreeIconClosedRtl {',
-    'background-position: 0px -17px;',
+    'background-position: 0 -17px;',
   '}',
 
   '.blocklyTreeSelected>.blocklyTreeIconOpen {',
@@ -602,6 +616,10 @@ Blockly.Css.CONTENT = [
     'font-size: 16px;',
     'padding: 0 3px;',
     'vertical-align: middle;',
+  '}',
+
+  '.blocklyToolboxDelete .blocklyTreeLabel {',
+    'cursor: url("<<<PATH>>>/handdelete.cur"), auto;',
   '}',
 
   '.blocklyTreeSelected .blocklyTreeLabel {',
@@ -686,7 +704,7 @@ Blockly.Css.CONTENT = [
     'position: absolute;',
     'overflow-y: auto;',
     'overflow-x: hidden;',
-    'max-height: 100%;',
+    //'max-height: 100%;', //pxtblockly: commenting out as this was introducing a scrollbar in the context menu
     'z-index: 20000;',  /* Arbitrary, but some apps depend on it... */
   '}',
 
@@ -764,7 +782,6 @@ Blockly.Css.CONTENT = [
 
   '.blocklyWidgetDiv .goog-menuitem-disabled .goog-menuitem-icon {',
     'opacity: 0.3;',
-    '-moz-opacity: 0.3;',
     'filter: alpha(opacity=30);',
   '}',
 

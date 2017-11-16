@@ -131,6 +131,30 @@ Blockly.Options = function(options) {
   this.gridOptions = Blockly.Options.parseGridOptions_(options);
   this.zoomOptions = Blockly.Options.parseZoomOptions_(options);
   this.toolboxPosition = toolboxPosition;
+
+  // PXT specific:
+  var toolboxOptions = options['toolboxOptions'] || {};
+  this.toolboxOptions = {};
+  if (toolboxOptions["border"] == undefined) {
+      toolboxOptions["border"] = true;
+  }
+  if (toolboxOptions["colour"] == undefined) {
+      toolboxOptions["colour"] = false;
+  }
+  if (toolboxOptions["inverted"] == undefined) {
+      toolboxOptions["inverted"] = false;
+  }
+  if (toolboxOptions["invertedMultiplier"] == undefined) {
+      toolboxOptions["invertedMultiplier"] = 0.3;
+  }
+  if (toolboxOptions["disabledOpacity"] == undefined) {
+      toolboxOptions["disabledOpacity"] = 0.4;
+  }
+  this.toolboxOptions.border = toolboxOptions["border"];
+  this.toolboxOptions.colour = toolboxOptions["colour"];
+  this.toolboxOptions.inverted = toolboxOptions["inverted"];
+  this.toolboxOptions.invertedMultiplier = toolboxOptions["invertedMultiplier"];
+  this.toolboxOptions.disabledOpacity = toolboxOptions["disabledOpacity"];
 };
 
 /**

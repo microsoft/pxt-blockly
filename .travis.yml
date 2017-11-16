@@ -1,30 +1,35 @@
 language: node_js
 node_js:
+- "4"
 - "stable"
-sudo: required
-dist: trusty
-addons:
- apt:
-   sources:
-     - google-chrome
-   packages:
-     - google-chrome-stable
+sudo: false
+cache:
+  directories:
+  - node_modules
 
 before_install:
 - npm install google-closure-library
+- npm install google-closure-compiler
+- npm install webdriverio
+- npm install typescript
+- npm install gulp
+- npm install gulp-tsb
+- npm install merge-stream
+- npm install gulp-bump
+- npm install rimraf
+- npm install webpack
+- npm install copy-webpack-plugin
 # Symlink closure library
 - ln -s $(npm root)/google-closure-library ../closure-library
 
 before_script:
-  - export CHROME_BIN=/usr/bin/google-chrome
   - export DISPLAY=:99.0
-  - sh -e /etc/init.d/xvfb start
+  - if [ "${TRAVIS_OS_NAME}" == "linux" ]; then ( tests/scripts/setup_linux_env.sh ) fi
+  - if [ "${TRAVIS_OS_NAME}" == "osx" ]; then ( tests/scripts/setup_osx_env.sh ) fi
+  - sleep 2
+
 script:
   - set -x
   - npm test
+  - cd tests/compile; compile.sh; cd ..
 
-cache:
-  directories:
-    - node_modules
-os:
-  - linux

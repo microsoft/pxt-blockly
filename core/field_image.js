@@ -38,10 +38,12 @@ goog.require('goog.userAgent');
  * @param {number} width Width of the image.
  * @param {number} height Height of the image.
  * @param {string=} opt_alt Optional alt text for when block is collapsed.
+ * @param {Function=} opt_onClick Optional function to be called when the image
+ *     is clicked.  If opt_onClick is defined, opt_alt must also be defined.
  * @extends {Blockly.Field}
  * @constructor
  */
-Blockly.FieldImage = function(src, width, height, opt_alt) {
+Blockly.FieldImage = function(src, width, height, opt_alt, opt_onClick) {
   this.sourceBlock_ = null;
 
   // Ensure height and width are numbers.  Strings are bad at math.
@@ -51,6 +53,10 @@ Blockly.FieldImage = function(src, width, height, opt_alt) {
       this.height_ + 2 * Blockly.BlockSvg.INLINE_PADDING_Y);
   this.text_ = opt_alt || '';
   this.setValue(src);
+
+  if (typeof opt_onClick == 'function') {
+    this.clickHandler_ = opt_onClick;
+  }
 };
 goog.inherits(Blockly.FieldImage, Blockly.Field);
 
@@ -87,6 +93,8 @@ Blockly.FieldImage.prototype.init = function() {
   // Configure the field to be transparent with respect to tooltips.
   this.setTooltip(this.sourceBlock_);
   Blockly.Tooltip.bindMouseEvents(this.imageElement_);
+
+  this.maybeAddClickHandler_();
 };
 
 /**
@@ -96,6 +104,19 @@ Blockly.FieldImage.prototype.dispose = function() {
   goog.dom.removeNode(this.fieldGroup_);
   this.fieldGroup_ = null;
   this.imageElement_ = null;
+};
+
+/**
+ * Bind events for a mouse down on the image, but only if a click handler has
+ * been defined.
+ * @private
+ */
+Blockly.FieldImage.prototype.maybeAddClickHandler_ = function() {
+  if (this.clickHandler_) {
+    this.mouseDownWrapper_ =
+        Blockly.bindEventWithChecks_(this.fieldGroup_, 'mousedown', this,
+        this.onMouseDown_);
+  }
 };
 
 /**
@@ -153,10 +174,21 @@ Blockly.FieldImage.prototype.setText = function(alt) {
 Blockly.FieldImage.prototype.render_ = function() {
   // NOP
 };
+
 /**
  * Images are fixed width, no need to update.
  * @private
  */
 Blockly.FieldImage.prototype.updateWidth = function() {
  // NOP
+};
+
+/**
+ * If field click is called, and click handler defined,
+ * call the handler.
+ */
+Blockly.FieldImage.prototype.showEditor_ = function() {
+  if (this.clickHandler_) {
+    this.clickHandler_(this);
+  }
 };
