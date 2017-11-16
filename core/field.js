@@ -377,6 +377,7 @@ Blockly.Field.prototype.render_ = function() {
     var centerTextX = (this.size_.width + leftMargin - this.arrowWidth_) / 2;
     if (this.sourceBlock_.RTL) {
       centerTextX += this.arrowWidth_;
+      centerTextX -= leftMargin;
     }
 
     // In a text-editing shadow block's field,
