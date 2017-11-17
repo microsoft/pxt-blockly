@@ -885,6 +885,7 @@ Blockly.Css.CONTENT = [
     'position: relative;',
     'overflow: hidden;',
     'outline: none;',
+    'top: 20px;',
   '}',
   '.blocklyWidgetDiv .goog-slider-vertical {',
     'height: 150px;',

@@ -50,15 +50,15 @@ goog.inherits(Blockly.FieldSlider, Blockly.FieldNumber);
  * Show the inline free-text editor on top of the text.
  * @private
  */
-Blockly.FieldSlider.prototype.showEditor_ = function () {
-  Blockly.FieldSlider.superClass_.showEditor_.call(this, true);
+Blockly.FieldSlider.prototype.showInlineEditor_ = function (opt_quietInput) {
+  Blockly.FieldSlider.superClass_.showInlineEditor_.call(this, true);
   if (this.max_ == Infinity || this.min_ == -Infinity) {
     return;
   }
   var slider = new goog.ui.Slider();
   /** @type {!HTMLInputElement} */
   this.slider_ = slider;
-  slider.setMoveToPointEnabled(true);
+  slider.setMoveToPointEnabled(false);
   slider.setMinimum(this.min_);
   slider.setMaximum(this.max_);
   slider.setRightToLeft(this.sourceBlock_.RTL);
@@ -70,9 +70,16 @@ Blockly.FieldSlider.prototype.showEditor_ = function () {
   var borderBBox = this.getScaledBBox_();
   var div = Blockly.WidgetDiv.DIV;
   slider.render(div);
+
   var value = parseFloat(this.getValue());
   value = isNaN(value) ? 0 : value;
   slider.setValue(value);
+
+  if (!opt_quietInput) {
+    var htmlInput = Blockly.FieldTextInput.htmlInput_;
+    htmlInput.focus();
+    htmlInput.select();
+  }
 
   // Configure event handler.
   var thisField = this;
@@ -116,4 +123,32 @@ Blockly.FieldSlider.prototype.dispose = function () {
   }
   Blockly.WidgetDiv.hideIfOwner(this);
   Blockly.FieldSlider.superClass_.dispose.call(this);
+};
+
+/**
+ * Ensure that only a number in the correct range may be entered.
+ * pxtblockly: Allow number inputs out of the min/max range.
+ * @param {string} text The user's text.
+ * @return {?string} A string representing a valid number, or null if invalid.
+ */
+Blockly.FieldNumber.prototype.classValidator = function(text) {
+  if (text === null) {
+    return null;
+  }
+  text = String(text);
+  // TODO: Handle cases like 'ten', '1.203,14', etc.
+  // 'O' is sometimes mistaken for '0' by inexperienced users.
+  text = text.replace(/O/ig, '0');
+  // Strip out thousands separators.
+  text = text.replace(/,/g, '');
+  var n = parseFloat(text || 0);
+  if (isNaN(n)) {
+    // Invalid number.
+    return null;
+  }
+  // Round to nearest multiple of precision.
+  if (this.precision_ && isFinite(n)) {
+    n = Math.round(n / this.precision_) * this.precision_;
+  }
+  return String(n);
 };
