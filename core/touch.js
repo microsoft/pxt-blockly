@@ -48,7 +48,13 @@ Blockly.Touch.touchIdentifier_ = null;
  * @type {Object}
  */
 Blockly.Touch.TOUCH_MAP = {};
-if (goog.events.BrowserFeature.TOUCH_ENABLED) {
+if (window.PointerEvent) {
+  Blockly.Touch.TOUCH_MAP = {
+    'mousedown': ['pointerdown'],
+    'mousemove': ['pointermove'],
+    'mouseup': ['pointerup', 'pointercancel']
+  };
+} else if (goog.events.BrowserFeature.TOUCH_ENABLED) {
   Blockly.Touch.TOUCH_MAP = {
     'mousedown': ['touchstart'],
     'mousemove': ['touchmove'],
@@ -163,7 +169,7 @@ Blockly.Touch.checkTouchIdentifier = function(e) {
     // source?
     return Blockly.Touch.touchIdentifier_ == identifier;
   }
-  if (e.type == 'mousedown' || e.type == 'touchstart') {
+  if (e.type == 'mousedown' || e.type == 'touchstart' || e.type == 'pointerdown') {
     // No identifier set yet, and this is the start of a drag.  Set it and
     // return.
     Blockly.Touch.touchIdentifier_ = identifier;
