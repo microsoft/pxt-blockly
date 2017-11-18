@@ -52,7 +52,7 @@ if (window.PointerEvent) {
   Blockly.Touch.TOUCH_MAP = {
     'mousedown': ['pointerdown'],
     'mousemove': ['pointermove'],
-    'mouseup': ['pointerup']
+    'mouseup': ['pointerup', 'pointercancel']
   };
 } else if (goog.events.BrowserFeature.TOUCH_ENABLED) {
   Blockly.Touch.TOUCH_MAP = {
