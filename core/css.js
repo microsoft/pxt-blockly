@@ -841,8 +841,6 @@ Blockly.Css.CONTENT = [
     'padding: 2px;',
     'border: 0;',
     'text-align: center;',
-    'border-top: 1px solid #ddd;',
-    'padding-top: 5px;',
     'cursor: pointer;',
   '}',
 

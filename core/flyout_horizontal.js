@@ -235,6 +235,7 @@ Blockly.HorizontalFlyout.prototype.wheel_ = function(e) {
     this.scrollbar_.set(pos);
     // When the flyout moves from a wheel event, hide WidgetDiv.
     Blockly.WidgetDiv.hide();
+    Blockly.DropDownDiv.hideWithoutAnimation();
   }
 
   // Don't scroll the page.
@@ -274,10 +275,9 @@ Blockly.HorizontalFlyout.prototype.layout_ = function(contents, gaps) {
 
       // Figure out where to place the block.
       var tab = block.outputConnection ? Blockly.BlockSvg.TAB_WIDTH : 0;
+      var moveX = cursorX
       if (this.RTL) {
-        var moveX = cursorX + blockHW.width;
-      } else {
-        var moveX = cursorX + tab;
+        moveX += blockHW.width;
       }
       block.moveBy(moveX, cursorY);
 
