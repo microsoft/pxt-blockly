@@ -221,10 +221,12 @@ Blockly.BlockDragger.prototype.endBlockDrag = function(e, currentDragDeltaXY) {
     this.fireMoveEvent_();
     this.draggingBlock_.scheduleSnapAndBump();
   }
-  this.workspace_.setResizesEnabled(true);
+  if (this.workspace_) {
+    this.workspace_.setResizesEnabled(true);
 
-  if (this.workspace_.toolbox_) {
-    this.workspace_.toolbox_.removeDeleteStyle();
+    if (this.workspace_.toolbox_) {
+      this.workspace_.toolbox_.removeDeleteStyle();
+    }
   }
   Blockly.Events.setGroup(false);
 };

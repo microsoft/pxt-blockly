@@ -44,18 +44,24 @@ gulp.task("python-build-all", function (cb) {
 function pxtPublishTask() {
 	if (fs.existsSync('../pxt')) {
 		pxtPublishTsTask();
-		gulp.src('./blocks_compressed.js').pipe(gulp.dest('../pxt/webapp/public/blockly/'));
-		gulp.src('./blockly_compressed.js').pipe(gulp.dest('../pxt/webapp/public/blockly/'));
-		gulp.src('./msg/js/en.js').pipe(gulp.dest('../pxt/webapp/public/blockly/msg/js/'));
-		gulp.src('./msg/json/en.json').pipe(gulp.dest('../pxt/webapp/public/blockly/msg/json/'));
-		gulp.src('./messages.js').pipe(gulp.dest('../pxt/webapp/public/blockly/'));
-		gulp.src('./media/').pipe(gulp.dest('../pxt/webapp/public/blockly/media/'));
+		copyToPxtTask();
 	}
 }
 
 function pxtPublishTsTask() {
 	if (fs.existsSync('../pxt')) {
 		gulp.src('./typings/blockly.d.ts').pipe(gulp.dest('../pxt/localtypings/'));
+	}
+}
+
+function copyToPxtTask(){
+	if (fs.existsSync('../pxt')) {
+		gulp.src('./blocks_compressed.js').pipe(gulp.dest('../pxt/webapp/public/blockly/'));
+		gulp.src('./blockly_compressed.js').pipe(gulp.dest('../pxt/webapp/public/blockly/'));
+		gulp.src('./msg/js/en.js').pipe(gulp.dest('../pxt/webapp/public/blockly/msg/js/'));
+		gulp.src('./msg/json/en.json').pipe(gulp.dest('../pxt/webapp/public/blockly/msg/json/'));
+		gulp.src('./messages.js').pipe(gulp.dest('../pxt/webapp/public/blockly/'));
+		gulp.src('./media/').pipe(gulp.dest('../pxt/webapp/public/blockly/media/'));
 	}
 }
 
@@ -66,6 +72,7 @@ gulp.task('build', ['python-build-core'], function (cb) {
 gulp.task('publish', ['python-build-core'], pxtPublishTask);
 
 gulp.task('publishall', ['python-build-all'], pxtPublishTask);
+gulp.task('copypxt', [], copyToPxtTask);
 
 gulp.task('publishts', [], pxtPublishTsTask);
 
