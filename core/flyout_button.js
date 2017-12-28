@@ -186,7 +186,7 @@ Blockly.FlyoutButton.prototype.createDom = function() {
 
     svgIcon.setAttribute('text-anchor', 'end');
     svgIcon.setAttribute('alignment-baseline', 'central');
-    svgIcon.setAttribute('x', Blockly.FlyoutButton.MARGIN);
+    svgIcon.setAttribute('x', this.targetWorkspace_.RTL ? this.width : Blockly.FlyoutButton.MARGIN);
     svgIcon.setAttribute('y', this.height / 2);
   }
 
@@ -245,6 +245,14 @@ Blockly.FlyoutButton.prototype.moveTo = function(x, y) {
   this.position_.x = x;
   this.position_.y = y;
   this.updateTransform_();
+};
+
+/**
+ * Location of the button.
+ * @return {!goog.math.Coordinate} x, y coordinates.
+ */
+Blockly.FlyoutButton.prototype.getPosition = function() {
+  return this.position_;
 };
 
 /**

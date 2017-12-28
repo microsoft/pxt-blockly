@@ -290,6 +290,27 @@ Blockly.FieldDropdown.prototype.onHide = function() {
 };
 
 /**
+ * Returns the coordinates of the anchor rectangle for the widget div.
+ * On a FieldDropdown we take the top-left corner of the field, then adjust for
+ * the size of the checkmark that is displayed next to the currently selected
+ * item. This means that the item text will be positioned directly under the
+ * field text, rather than offset slightly.
+ * @returns {!Object} The bounding rectangle of the anchor, in window
+ *     coordinates.
+ * @private
+ */
+Blockly.FieldDropdown.prototype.getAnchorDimensions_ = function() {
+  var boundingBox = this.getScaledBBox_();
+  if (this.sourceBlock_.RTL) {
+    boundingBox.right += Blockly.FieldDropdown.CHECKMARK_OVERHANG;
+  } else {
+    boundingBox.left -= Blockly.FieldDropdown.CHECKMARK_OVERHANG;
+  }
+
+  return boundingBox;
+};
+
+/**
  * Handle the selection of an item in the dropdown menu.
  * @param {!goog.ui.Menu} menu The Menu component clicked.
  * @param {!goog.ui.MenuItem} menuItem The MenuItem selected within menu.

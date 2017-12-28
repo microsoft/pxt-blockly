@@ -508,6 +508,7 @@ declare namespace Blockly {
         function addClass(element: Element, className: string): boolean;
         function removeClass(element: Element, className: string): boolean;
         function createSvgElement(tag: string, options: any, fg?: any): any;
+        function getViewportBBox(): goog.math.Box;
     }
 
     class FieldImage extends Field {
@@ -619,6 +620,7 @@ declare namespace Blockly {
         onItemSelected(menu: goog.ui.Menu, menuItem: goog.ui.MenuItem): void;
         positionArrow(x: number): number;
         shouldShowRect_(): boolean;
+        getAnchorDimensions_(): goog.math.Box;
     }
 
     class FieldNumber extends FieldTextInput {
@@ -933,6 +935,7 @@ declare namespace Blockly {
     interface Options {
         readOnly?: boolean;
         toolbox?: Element | string;
+        hasCategories?: boolean;
         trashcan?: boolean;
         collapse?: boolean;
         comments?: boolean;
@@ -941,6 +944,8 @@ declare namespace Blockly {
         sound?: boolean;
         css?: boolean;
         media?: string;
+        horizontalLayout?: boolean;
+        toolboxPosition?: string;
         grid?: {
             spacing?: number;
             length?: number;
@@ -1105,6 +1110,7 @@ declare namespace Blockly {
         function hide(): void;
         function position(anchorX: number, anchorY: number, windowSize: goog.math.Size,
             scrollOffset: goog.math.Coordinate, rtl: boolean): void;
+        function positionWithAnchor(viewportBBox: goog.math.Box, anchorBBox: goog.math.Box, widgetSize: goog.math.Size, rtl: boolean): void;
     }
 
     namespace DropDownDiv {

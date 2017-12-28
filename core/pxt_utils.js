@@ -37,11 +37,11 @@ Blockly.PXTUtils.fadeColour = function(hex, luminosity, lighten) {
       hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
 
   // tweak
-  let rgb = "#";
-  for (let i = 0; i < 3; i++) {
-      let c = parseInt(hex.substr(i * 2, 2), 16);
+  var rgb = "#";
+  for (var i = 0; i < 3; i++) {
+      var c = parseInt(hex.substr(i * 2, 2), 16);
       c = Math.round(Math.min(Math.max(0, lighten ? c + (c * luminosity) : c - (c * luminosity)), 255));
-      let cStr = c.toString(16);
+      var cStr = c.toString(16);
       rgb += ("00" + cStr).substr(cStr.length);
   }
 

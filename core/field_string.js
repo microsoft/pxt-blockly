@@ -85,10 +85,12 @@ Blockly.FieldString.prototype.init = function() {
         'height': this.quoteSize_ + 'px',
         'width': this.quoteSize_ + 'px'
     });
+    var quoteLeft = this.sourceBlock_.RTL ? Blockly.FieldString.QUOTE_1_DATA_URI : Blockly.FieldString.QUOTE_0_DATA_URI;
+    var quoteRight = this.sourceBlock_.RTL ? Blockly.FieldString.QUOTE_0_DATA_URI : Blockly.FieldString.QUOTE_1_DATA_URI;
     this.quoteLeft_.setAttributeNS('http://www.w3.org/1999/xlink',
-        'xlink:href', Blockly.FieldString.QUOTE_0_DATA_URI);
+        'xlink:href', quoteLeft);
     this.quoteRight_.setAttributeNS('http://www.w3.org/1999/xlink',
-        'xlink:href', Blockly.FieldString.QUOTE_1_DATA_URI);
+        'xlink:href', quoteRight);
 
     // Force a reset of the text to add the arrow.
     var text = this.text_;
@@ -120,24 +122,32 @@ Blockly.FieldString.prototype.positionLeft = function(x) {
     if (!this.quoteLeft_) {
       return 0;
     }
-    this.quoteLeftX_ = 0;
-    var addedWidth = this.quoteSize_;
+    var addedWidth = 0;
+    if (this.sourceBlock_.RTL) {
+      this.quoteLeftX_ = x + this.quoteSize_ + Blockly.FieldString.quotePadding * 2;
+      addedWidth = this.quoteSize_ + Blockly.FieldString.quotePadding;
+    } else {
+      this.quoteLeftX_ = 0;
+      addedWidth = this.quoteSize_ + Blockly.FieldString.quotePadding;
+    }
     this.quoteLeft_.setAttribute('transform',
         'translate(' + this.quoteLeftX_ + ',' + this.quoteY_ + ')'
     );
     return addedWidth;
 };
 
-// Position Right
+// // Position Right
 Blockly.FieldString.prototype.positionArrow = function(x) {
     if (!this.quoteRight_) {
       return 0;
     }
-    this.quoteRightX_ = x + Blockly.FieldString.quotePadding / 2;
-    var addedWidth = this.quoteSize_ + Blockly.FieldString.quotePadding;
-    if (this.box_) {
-      // Bump positioning to the right for a box-type drop-down.
-      this.quoteRightX_ += Blockly.BlockSvg.BOX_FIELD_PADDING;
+    var addedWidth = 0;
+    if (this.sourceBlock_.RTL) {
+      this.quoteRightX_ = Blockly.FieldString.quotePadding;
+      addedWidth = this.quoteSize_ + Blockly.FieldString.quotePadding;
+    } else {
+      this.quoteRightX_ = x + Blockly.FieldString.quotePadding;
+      addedWidth = this.quoteSize_ + Blockly.FieldString.quotePadding;
     }
     this.quoteRight_.setAttribute('transform',
       'translate(' + this.quoteRightX_ + ',' + this.quoteY_ + ')'
