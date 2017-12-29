@@ -80,14 +80,17 @@ Blockly.longPid_ = 0;
 Blockly.longStart_ = function(e, gesture) {
   Blockly.longStop_();
   // Punt on multitouch events.
-  if (e.changedTouches.length != 1) {
+  if (e.changedTouches && e.changedTouches.length != 1) {
     return;
   }
   Blockly.longPid_ = setTimeout(function() {
-    e.button = 2;  // Simulate a right button click.
-    // e was a touch event.  It needs to pretend to be a mouse event.
-    e.clientX = e.changedTouches[0].clientX;
-    e.clientY = e.changedTouches[0].clientY;
+    if (e.changedTouches) {
+      // TouchEvent
+      e.button = 2;  // Simulate a right button click.
+      // e was a touch event.  It needs to pretend to be a mouse event.
+      e.clientX = e.changedTouches[0].clientX;
+      e.clientY = e.changedTouches[0].clientY;
+    }
 
     // Let the gesture route the right-click correctly.
     if (gesture) {
