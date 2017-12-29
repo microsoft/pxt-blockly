@@ -76,7 +76,7 @@ Blockly.TouchGesture.prototype.doStart = function(e) {
 };
 
 /**
- * Bind start events
+ * Bind gesture events
  * @package
  */
 Blockly.TouchGesture.prototype.bindStartEvents = function() {
