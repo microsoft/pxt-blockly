@@ -166,6 +166,11 @@ Blockly.TouchGesture.prototype.dispose = function() {
   }
 };
 
+/**
+ * Handle a touch start or pointer down event and keep track of current pointers.
+ * @param {!Event} e A touch start, or pointer down event.
+ * @package
+ */
 Blockly.TouchGesture.prototype.handleTouchStart = function(e) {
   var pointerId = Blockly.Touch.getTouchIdentifierFromEvent(e);
   // store the pointerId in the current list of pointers
@@ -185,6 +190,11 @@ Blockly.TouchGesture.prototype.handleTouchStart = function(e) {
   }
 };
 
+/**
+ * Handle a touch move or pointer move event and zoom in/out if two pointers are on the screen.
+ * @param {!Event} e A touch move, or pointer move event.
+ * @package
+ */
 Blockly.TouchGesture.prototype.handleTouchMove = function(e) {
   var pointerId = Blockly.Touch.getTouchIdentifierFromEvent(e);
   // Update the cache
@@ -217,11 +227,10 @@ Blockly.TouchGesture.prototype.handleTouchMove = function(e) {
   }
 };
 
-
 /**
- * Handle a touch end or pointer end on SVG drawing surface.
- * @param {!Event} e touch end or pointer end event.
- * @private
+ * Handle a touch end or pointer end event and end the gesture.
+ * @param {!Event} e A touch end, or pointer end event.
+ * @package
  */
 Blockly.TouchGesture.prototype.handleTouchEnd = function(e) {
   var pointerId = Blockly.Touch.getTouchIdentifierFromEvent(e);
@@ -234,13 +243,19 @@ Blockly.TouchGesture.prototype.handleTouchEnd = function(e) {
   }
 };
 
+/**
+ * Helper function returning the current touch point coordinate.
+ * @param {!Event} e A touch or pointer event.
+ * @return {goog.math.Coordinate} the current touch point coordinate
+ * @package
+ */
 Blockly.TouchGesture.prototype.getTouchPoint = function(e) {
   if (!this.startWorkspace_) {
     return null;
   }
   var metrics = this.startWorkspace_.getMetrics();
-  return {
-    x: (e.pageX ? e.pageX : e.changedTouches[0].pageX) - metrics.absoluteLeft,
-    y: (e.pageY ? e.pageY : e.changedTouches[0].pageY) - metrics.absoluteTop
-  };
+  return new goog.math.Coordinate(
+    (e.pageX ? e.pageX : e.changedTouches[0].pageX) - metrics.absoluteLeft,
+    (e.pageY ? e.pageY : e.changedTouches[0].pageY) - metrics.absoluteTop
+  );
 };
