@@ -69,10 +69,10 @@ goog.inherits(Blockly.TouchGesture, Blockly.Gesture);
  * @package
  */
 Blockly.TouchGesture.prototype.doStart = function(e) {
+  Blockly.TouchGesture.superClass_.doStart.call(this, e);
   if (Blockly.Touch.isTouchEvent(e)) {
     this.handleTouchStart(e);
   }
-  Blockly.TouchGesture.superClass_.doStart.call(this, e);
 };
 
 /**
@@ -94,11 +94,12 @@ Blockly.TouchGesture.prototype.bindStartEvents = function() {
  * @package
  */
 Blockly.TouchGesture.prototype.handleStart = function(e) {
-  if (Blockly.Touch.isTouchEvent(e) && !this.isDraggingBlock_) {
+  if (Blockly.Touch.isTouchEvent(e) && !this.isDragging()) {
     this.handleTouchStart(e);
-  }
-  if (this.isMultiTouch()) {
-    Blockly.longStop_();
+
+    if (this.isMultiTouch()) {
+      Blockly.longStop_();
+    }
   }
 };
 
@@ -108,10 +109,10 @@ Blockly.TouchGesture.prototype.handleStart = function(e) {
  * @package
  */
 Blockly.TouchGesture.prototype.handleMove = function(e) {
-  if (Blockly.Touch.isTouchEvent(e) && !this.isDraggingBlock_) {
+  if (Blockly.Touch.isTouchEvent(e) && !this.isDragging()) {
     this.handleTouchMove(e);
   }
-  if (!this.isMultiTouch() && (this.isDraggingWorkspace_ || Blockly.Touch.shouldHandleEvent(e))) {
+  if (!this.isMultiTouch() && Blockly.Touch.shouldHandleEvent(e)) {
     Blockly.TouchGesture.superClass_.handleMove.call(this, e);
   }
 };
@@ -122,18 +123,13 @@ Blockly.TouchGesture.prototype.handleMove = function(e) {
  * @package
  */
 Blockly.TouchGesture.prototype.handleUp = function(e) {
-  if (!Blockly.Touch.shouldHandleEvent(e)) {
-    this.cancel();
-    return; 
-  }
-  console.log("handleUp");
-  console.log(this.isMultiTouch());
-  console.log(this.isDraggingBlock_);
-  console.log(this.isDraggingWorkspace_);
-  if (Blockly.Touch.isTouchEvent(e) && !this.isDraggingBlock_) {
+  if (Blockly.Touch.isTouchEvent(e) && !this.isDragging()) {
     this.handleTouchEnd(e);
   }
-  if (!this.isMultiTouch() || this.isDraggingWorkspace_) {
+  if (!this.isMultiTouch() || this.isDragging()) {
+    if (!Blockly.Touch.shouldHandleEvent(e)) {
+      return;
+    }
     Blockly.TouchGesture.superClass_.handleUp.call(this, e);
   } else {
     e.preventDefault();
@@ -239,6 +235,9 @@ Blockly.TouchGesture.prototype.handleTouchEnd = function(e) {
 };
 
 Blockly.TouchGesture.prototype.getTouchPoint = function(e) {
+  if (!this.startWorkspace_) {
+    return null;
+  }
   var metrics = this.startWorkspace_.getMetrics();
   return {
     x: (e.pageX ? e.pageX : e.changedTouches[0].pageX) - metrics.absoluteLeft,

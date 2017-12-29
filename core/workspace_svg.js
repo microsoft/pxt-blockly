@@ -1964,7 +1964,7 @@ Blockly.WorkspaceSvg.prototype.getGesture = function(e) {
 
   var gesture = this.currentGesture_;
   if (gesture) {
-    if (isStart && gesture.hasStarted() && !gesture.isMultiTouch()) {
+    if (isStart && gesture.hasStarted()) {
       console.warn('tried to start the same gesture twice');
       // That's funny.  We must have missed a mouse up.
       // Cancel it, rather than try to retrieve all of the state we need.
