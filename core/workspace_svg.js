@@ -281,31 +281,6 @@ Blockly.WorkspaceSvg.prototype.toolboxCategoryCallbacks_ = {};
 Blockly.WorkspaceSvg.prototype.inverseScreenCTM_ = null;
 
 /**
- * pxtblockly: Attributes used for detecting pinch gestures in touch events.
- * @type {boolean}
- * @private
- */
-Blockly.WorkspaceSvg.prototype.isTouchPinched_ = false;
-Blockly.WorkspaceSvg.prototype.touchStartPoint_ = null;
-Blockly.WorkspaceSvg.prototype.touchStartDistance_ = 0;
-Blockly.WorkspaceSvg.prototype.touchPreviousScale_ = null;
-Blockly.WorkspaceSvg.prototype.touchScale_ = null;
-
-/**
- * pxtblockly: Attributes used for detecting pinch gestures in pointer events.
- * @type {boolean}
- * @private
- */
-Blockly.WorkspaceSvg.prototype.cachedPoints = {};
-
-/**
- * pxtblockly: Attributes used for detecting pinch gestures in gesture events.
- * @type {boolean}
- * @private
- */
-Blockly.WorkspaceSvg.prototype.lastGestureScale_ = null;
-
-/**
  * Getter for the inverted screen CTM.
  * @return {SVGMatrix} The matrix to use in mouseToSvg
  */
@@ -452,29 +427,6 @@ Blockly.WorkspaceSvg.prototype.createDom = function(opt_backgroundClass) {
       // Mouse-wheel.
       Blockly.bindEventWithChecks_(this.svgGroup_, 'wheel', this,
           this.onMouseWheel_);
-      if (goog.events.BrowserFeature.TOUCH_ENABLED && typeof window.ongesturechange != "object") {
-        // Touch events
-        Blockly.bindEvent_(this.svgGroup_, goog.events.EventType.TOUCHSTART, this,
-            this.onTouchStart_);
-        Blockly.bindEvent_(this.svgGroup_, goog.events.EventType.TOUCHMOVE, this,
-            this.onTouchMove_);
-        Blockly.bindEvent_(this.svgGroup_, goog.events.EventType.TOUCHEND, this,
-            this.onTouchEnd_);
-      } else if (window.PointerEvent) {
-        // Edge pointer events
-        Blockly.bindEvent_(this.svgGroup_, goog.events.EventType.POINTERDOWN, this,
-            this.onPointerStart_);
-        Blockly.bindEvent_(this.svgGroup_, goog.events.EventType.POINTERMOVE, this,
-            this.onPointerMove_);
-        Blockly.bindEvent_(this.svgGroup_, goog.events.EventType.POINTERUP, this,
-            this.onPointerEnd_);
-      } else {
-        // iOS gesture events
-        Blockly.bindEventWithChecks_(this.svgGroup_, 'gesturechange', this,
-            this.onGestureChange_);
-        Blockly.bindEventWithChecks_(this.svgGroup_, 'gestureend', this,
-            this.onGestureEnd_);
-      }
     }
   }
 
@@ -1214,213 +1166,6 @@ Blockly.WorkspaceSvg.prototype.isDraggable = function() {
 };
 
 /**
- * Handle a touch start on SVG drawing surface.
- * @param {!Event} e Touch start event.
- * @private
- */
-Blockly.WorkspaceSvg.prototype.onTouchStart_ = function(e) {
-  var points = this.currentGesture_.getTwoTouchPointData_(e);
-  if (points) {
-    if (this.currentGesture_) {
-      this.currentGesture_.cancel();
-    }
-    this.isTouchPinched_ = true;
-    this.touchStartPoint_ = {
-      "x": points.centerX,
-      "y": points.centerY
-    }
-    this.touchStartDistance_ = Math.sqrt( Math.pow( (points.x2 - points.x1), 2 ) + Math.pow( (points.y2 - points.y1), 2 ) );
-    e.preventDefault();
-  }
-}
-
-/**
- * Handle a touch move on SVG drawing surface.
- * @param {!Event} e Touch move event.
- * @private
- */
-Blockly.WorkspaceSvg.prototype.onTouchMove_ = function(e) {
-  if(this.isTouchPinched_ && typeof window.ongesturechange != "object") {
-    var points = this.currentGesture_.getTwoTouchPointData_(e);
-    if (points) {
-      if (this.currentGesture_) {
-        this.currentGesture_.cancel();
-      }
-      var currentPoint = {
-        "x": points.centerX,
-        "y": points.centerY
-      }
-      var moveDistance = Math.sqrt( Math.pow( (points.x2 - points.x1), 2 ) + Math.pow( (points.y2 - points.y1), 2 ));
-      var previousScale = this.touchPreviousScale_ = this.touchScale_ || 1;
-      var startDistance = this.touchStartDistance_;
-      var scale = this.touchScale_ = moveDistance / startDistance;
-      var currentDistance = scale * startDistance;
-
-      if (this.lastGestureScale_ > 0) {
-        var gestureScale = scale - this.lastGestureScale_;
-        var delta = gestureScale > 0 ? gestureScale * 6 : gestureScale * 9;
-        e.clientX = currentPoint.x;
-        e.clientY = currentPoint.y;
-        var position = Blockly.utils.mouseToSvg(e, this.getParentSvg(),
-            this.getInverseScreenCTM());
-        this.zoom(position.x, position.y, delta);
-      }
-      this.lastGestureScale_ = scale;
-    }
-    e.preventDefault();
-  }
-}
-
-/**
- * Handle a touch end on SVG drawing surface.
- * @param {!Event} e Touch end event.
- * @private
- */
-Blockly.WorkspaceSvg.prototype.onTouchEnd_ = function(e) {
-  if(this.isTouchPinched_) {
-    this.isTouchPinched_ = false;
-    this.touchPreviousScale_ = null;
-    this.touchScale_ = null;
-    this.touchStartPoint_ = null;
-    this.touchStartDistance_ = 0;
-    this.lastGestureScale_ = 0;
-    e.preventDefault();
-  }
-}
-
-/**
- * Handle a pointer start on SVG drawing surface.
- * @param {!Event} e Pointer start event.
- * @private
- */
-Blockly.WorkspaceSvg.prototype.onPointerStart_ = function(e) {
-  if (e.pointerType == "touch") {
-    var pointerId = e.pointerId;
-    // store the pointerId in the current list of pointers
-    var metrics = this.getMetrics();
-    this.cachedPoints[pointerId] = {
-      x: e.pageX - metrics.absoluteLeft,
-      y: e.pageY - metrics.absoluteTop
-    };
-    var pointers = Object.keys(this.cachedPoints);
-    // If two pointers are down, check for pinch gestures
-    if (pointers.length == 2) {
-      if (this.currentGesture_) {
-        this.currentGesture_.cancel();
-      }
-      var points = {
-        x1: this.cachedPoints[pointers[0]].x,
-        x2: this.cachedPoints[pointers[1]].x,
-        y1: this.cachedPoints[pointers[0]].y,
-        y2: this.cachedPoints[pointers[1]].y,
-      }
-      this.touchStartDistance_ = Math.sqrt( Math.pow( (points.x2 - points.x1), 2 ) + Math.pow( (points.y2 - points.y1), 2 ) );
-      e.preventDefault();
-    }
-  }
-}
-
-/**
- * Handle a pointer move on SVG drawing surface.
- * @param {!Event} e Pointer move event.
- * @private
- */
-Blockly.WorkspaceSvg.prototype.onPointerMove_ = function(e) {
-  if (e.pointerType == "touch") {
-    var pointerId = e.pointerId;
-    // Update the cache
-    var metrics = this.getMetrics();
-    this.cachedPoints[pointerId] = {
-      x: e.pageX - metrics.absoluteLeft,
-      y: e.pageY - metrics.absoluteTop
-    };
-
-    var pointers = Object.keys(this.cachedPoints);
-    // If two pointers are down, check for pinch gestures
-    if (pointers.length == 2) {
-      if (this.currentGesture_) {
-        this.currentGesture_.cancel();
-      }
-      // Calculate the distance between the two pointers
-      var points = {
-        x1: this.cachedPoints[pointers[0]].x,
-        x2: this.cachedPoints[pointers[1]].x,
-        y1: this.cachedPoints[pointers[0]].y,
-        y2: this.cachedPoints[pointers[1]].y,
-      }
-      var currentPoint = {
-        x: (points.x1 + points.x2) / 2,
-        y: (points.y1 + points.y2) / 2
-      }
-      var moveDistance = Math.sqrt( Math.pow( (points.x2 - points.x1), 2 ) + Math.pow( (points.y2 - points.y1), 2 ));
-      var previousScale = this.touchPreviousScale_ = this.touchScale_ || 1;
-      var startDistance = this.touchStartDistance_;
-      var scale = this.touchScale_ = moveDistance / startDistance;
-      var currentDistance = scale * startDistance;
-
-      if (this.lastGestureScale_ > 0 && this.lastGestureScale_ < Infinity) {
-        var gestureScale = scale - this.lastGestureScale_;
-        var delta = gestureScale > 0 ? gestureScale * 5 : gestureScale * 5;
-        //e.clientX = currentPoint.x;
-        //e.clientY = currentPoint.y;
-        var position = Blockly.utils.mouseToSvg(e, this.getParentSvg(),
-            this.getInverseScreenCTM());
-        this.zoom(position.x, position.y, delta);
-      }
-      this.lastGestureScale_ = scale;
-      e.preventDefault();
-    }
-  }
-}
-
-/**
- * Handle a pointer end on SVG drawing surface.
- * @param {!Event} e Pointer end event.
- * @private
- */
-Blockly.WorkspaceSvg.prototype.onPointerEnd_ = function(e) {
-  if (e.pointerType == "touch") {
-    var pointerId = e.pointerId;
-    if (this.cachedPoints[pointerId]) delete this.cachedPoints[pointerId];
-    if (Object.keys(this.cachedPoints).length < 2) {
-      this.cachedPoints = {};
-      this.lastGestureScale_ = 0;
-    }
-  }
-}
-
-/**
- * Handle a gesture change on SVG drawing surface.
- * @param {!Event} e Gesture change event.
- * @private
- */
-Blockly.WorkspaceSvg.prototype.onGestureChange_ = function(e) {
-  if (this.currentGesture_) {
-    this.currentGesture_.cancel();
-  }
-  if (this.lastGestureScale_ > 0) {
-    var scale = e.scale - this.lastGestureScale_;
-    var delta = scale > 0 ? scale * 6 : scale * 9;
-    var position = Blockly.utils.mouseToSvg(e, this.getParentSvg(),
-        this.getInverseScreenCTM());
-    this.zoom(position.x, position.y, delta);
-  }
-  // save the last scale
-  this.lastGestureScale_ = e.scale;
-  e.preventDefault();
-}
-
-/**
- * Handle a gesture end on SVG drawing surface.
- * @param {!Event} e Gesture end event.
- * @private
- */
-Blockly.WorkspaceSvg.prototype.onGestureEnd_ = function(e) {
-  this.lastGestureScale_ = 0;
-  e.preventDefault();
-}
-
-/**
  * Handle a mouse-wheel on SVG drawing surface.
  * @param {!Event} e Mouse wheel event.
  * @private
@@ -1659,10 +1404,11 @@ Blockly.WorkspaceSvg.prototype.updateToolbox = function(tree) {
     this.options.languageTree = tree;
     // pxtblockly: open expanded node when updating toolbox
     var openNode = this.toolbox_.populate_(tree);
-    if (openNode)
-        this.toolbox_.tree_.setSelectedItem(openNode);
-    else
-        this.toolbox_.flyout_.hide();
+    if (openNode) {
+      this.toolbox_.tree_.setSelectedItem(openNode);
+    } else {
+      this.toolbox_.flyout_.hide();
+    }
     this.toolbox_.populate_(tree);
     //this.toolbox_.position();
     this.toolbox_.addColour_();
@@ -2214,11 +1960,11 @@ Blockly.WorkspaceSvg.prototype.removeToolboxCategoryCallback = function(key) {
  * @package
  */
 Blockly.WorkspaceSvg.prototype.getGesture = function(e) {
-  var isStart = (e.type == 'mousedown' || e.type == 'touchstart');
+  var isStart = (e.type == 'mousedown' || e.type == 'touchstart' || e.type == 'pointerdown');
 
   var gesture = this.currentGesture_;
   if (gesture) {
-    if (isStart && gesture.hasStarted()) {
+    if (isStart && gesture.hasStarted() && !gesture.isMultiTouch()) {
       console.warn('tried to start the same gesture twice');
       // That's funny.  We must have missed a mouse up.
       // Cancel it, rather than try to retrieve all of the state we need.

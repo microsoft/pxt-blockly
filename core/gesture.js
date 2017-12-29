@@ -451,13 +451,21 @@ Blockly.Gesture.prototype.doStart = function(e) {
 
   this.mouseDownXY_ = new goog.math.Coordinate(e.clientX, e.clientY);
 
-  this.onMoveWrapper_ = Blockly.bindEventWithChecks_(
-      document, 'mousemove', null, this.handleMove.bind(this));
-  this.onUpWrapper_ = Blockly.bindEventWithChecks_(
-      document, 'mouseup', null, this.handleUp.bind(this));
+  this.bindStartEvents();
 
   e.preventDefault();
   e.stopPropagation();
+};
+
+/**
+ * Bind start events
+ * @package
+ */
+Blockly.Gesture.prototype.bindStartEvents = function() {
+  this.onMoveWrapper_ = Blockly.bindEventWithChecks_(
+    document, 'mousemove', null, this.handleMove.bind(this));
+  this.onUpWrapper_ = Blockly.bindEventWithChecks_(
+      document, 'mouseup', null, this.handleUp.bind(this));
 };
 
 /**
