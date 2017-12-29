@@ -81,11 +81,11 @@ Blockly.TouchGesture.prototype.doStart = function(e) {
  */
 Blockly.TouchGesture.prototype.bindStartEvents = function() {
   this.onStartWrapper_ = Blockly.bindEventWithChecks_(
-    document, 'mousedown', null, this.handleStart.bind(this), true);
+    document, 'mousedown', null, this.handleStart.bind(this), /*opt_noCaptureIdentifier*/ true);
   this.onMoveWrapper_ = Blockly.bindEventWithChecks_(
-    document, 'mousemove', null, this.handleMove.bind(this), true);
+    document, 'mousemove', null, this.handleMove.bind(this), /*opt_noCaptureIdentifier*/ true);
   this.onUpWrapper_ = Blockly.bindEventWithChecks_(
-    document, 'mouseup', null, this.handleUp.bind(this), true);
+    document, 'mouseup', null, this.handleUp.bind(this), /*opt_noCaptureIdentifier*/ true);
 };
 
 /**
