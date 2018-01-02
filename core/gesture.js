@@ -452,7 +452,7 @@ Blockly.Gesture.prototype.doStart = function(e) {
 
   this.mouseDownXY_ = new goog.math.Coordinate(e.clientX, e.clientY);
 
-  this.bindStartEvents();
+  this.bindMouseEvents();
 
   e.preventDefault();
   e.stopPropagation();
@@ -462,7 +462,7 @@ Blockly.Gesture.prototype.doStart = function(e) {
  * Bind gesture events
  * @package
  */
-Blockly.Gesture.prototype.bindStartEvents = function() {
+Blockly.Gesture.prototype.bindMouseEvents = function() {
   this.onMoveWrapper_ = Blockly.bindEventWithChecks_(
     document, 'mousemove', null, this.handleMove.bind(this));
   this.onUpWrapper_ = Blockly.bindEventWithChecks_(

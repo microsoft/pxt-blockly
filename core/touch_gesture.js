@@ -79,7 +79,7 @@ Blockly.TouchGesture.prototype.doStart = function(e) {
  * Bind gesture events
  * @package
  */
-Blockly.TouchGesture.prototype.bindStartEvents = function() {
+Blockly.TouchGesture.prototype.bindMouseEvents = function() {
   this.onStartWrapper_ = Blockly.bindEventWithChecks_(
     document, 'mousedown', null, this.handleStart.bind(this), /*opt_noCaptureIdentifier*/ true);
   this.onMoveWrapper_ = Blockly.bindEventWithChecks_(
