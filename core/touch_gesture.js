@@ -48,17 +48,39 @@ Blockly.TouchGesture = function(e, creatorWorkspace) {
 
   /**
    * A map of cached points used for tracking multi-touch gestures.
-   * @type {boolean}
+   * @type {Object<number|string, goog.math.Coordinate>}
    * @private
    */
-  this.cachedPoints = {};
+  this.cachedPoints_ = {};
 
   /**
    * A scale value tracking the previous gesture scale.
    * @type {number}
    * @private
    */
-  this.previousGestureScale_ = 0;
+  this.previousScale_ = 0;
+
+  /**
+   * The starting distance between two touch points.
+   * @type {number}
+   * @private
+   */
+  this.startDistance_ = 0;
+
+  /**
+   * A handle to use to unbind the second touch start or pointer down listener
+   * at the end of a drag. Opaque data returned from Blockly.bindEventWithChecks_.
+   * @type {Array.<!Array>}
+   * @private
+   */
+  this.onStartWrapper_ = null;
+
+  /**
+   * A cache of workspace metrics containing size and position metrics of the workspace.
+   * @type {Object}
+   * @private
+   */
+  this.metrics_ = null;
 };
 goog.inherits(Blockly.TouchGesture, Blockly.Gesture);
 
@@ -76,16 +98,22 @@ Blockly.TouchGesture.prototype.doStart = function(e) {
 };
 
 /**
- * Bind gesture events
+ * Bind gesture events.
+ * Overriding the gesture definition of this function, binding the same
+ * functions for onMoveWrapper_ and onUpWrapper_ but passing opt_noCaptureIdentifier.
+ * In addition, binding a second mouse down event to detect multi-touch events.
+ * @param {!Event} e A mouse down or touch start event.
  * @package
  */
-Blockly.TouchGesture.prototype.bindMouseEvents = function() {
+Blockly.TouchGesture.prototype.bindMouseEvents = function(e) {
   this.onStartWrapper_ = Blockly.bindEventWithChecks_(
     document, 'mousedown', null, this.handleStart.bind(this), /*opt_noCaptureIdentifier*/ true);
   this.onMoveWrapper_ = Blockly.bindEventWithChecks_(
     document, 'mousemove', null, this.handleMove.bind(this), /*opt_noCaptureIdentifier*/ true);
   this.onUpWrapper_ = Blockly.bindEventWithChecks_(
     document, 'mouseup', null, this.handleUp.bind(this), /*opt_noCaptureIdentifier*/ true);
+
+  e.preventDefault();
 };
 
 /**
@@ -94,7 +122,11 @@ Blockly.TouchGesture.prototype.bindMouseEvents = function() {
  * @package
  */
 Blockly.TouchGesture.prototype.handleStart = function(e) {
-  if (Blockly.Touch.isTouchEvent(e) && !this.isDragging()) {
+  if (!this.isDragging) {
+    // A drag has already started, so this can no longer be a pinch-zoom.
+    return;
+  }
+  if (Blockly.Touch.isTouchEvent(e)) {
     this.handleTouchStart(e);
 
     if (this.isMultiTouch()) {
@@ -109,10 +141,19 @@ Blockly.TouchGesture.prototype.handleStart = function(e) {
  * @package
  */
 Blockly.TouchGesture.prototype.handleMove = function(e) {
-  if (Blockly.Touch.isTouchEvent(e) && !this.isDragging()) {
-    this.handleTouchMove(e);
+  if (this.isDragging()) {
+    // We are in the middle of a drag, only handle the relevant events
+    if (Blockly.Touch.shouldHandleEvent(e)) {
+      Blockly.TouchGesture.superClass_.handleMove.call(this, e);
+    }
+    return;
   }
-  if (!this.isMultiTouch() && Blockly.Touch.shouldHandleEvent(e)) {
+  if (this.isMultiTouch()) {
+    if (Blockly.Touch.isTouchEvent(e)) {
+      this.handleTouchMove(e);
+    }
+    Blockly.longStop_();
+  } else {
     Blockly.TouchGesture.superClass_.handleMove.call(this, e);
   }
 };
@@ -158,12 +199,6 @@ Blockly.TouchGesture.prototype.dispose = function() {
   if (this.onStartWrapper_) {
     Blockly.unbindEvent_(this.onStartWrapper_);
   }
-  if (this.onGestureChangeWrapper_) {
-    Blockly.unbindEvent_(this.onGestureChangeWrapper_);
-  }
-  if (this.onGestureEndWrapper_) {
-    Blockly.unbindEvent_(this.onGestureEndWrapper_);
-  }
 };
 
 /**
@@ -174,20 +209,16 @@ Blockly.TouchGesture.prototype.dispose = function() {
 Blockly.TouchGesture.prototype.handleTouchStart = function(e) {
   var pointerId = Blockly.Touch.getTouchIdentifierFromEvent(e);
   // store the pointerId in the current list of pointers
-  this.cachedPoints[pointerId] = this.getTouchPoint(e);
-  var pointers = Object.keys(this.cachedPoints);
+  this.cachedPoints_[pointerId] = this.getTouchPoint(e);
+  var pointers = Object.keys(this.cachedPoints_);
   // If two pointers are down, check for pinch gestures
   if (pointers.length == 2) {
-    var points = {
-      x1: this.cachedPoints[pointers[0]].x,
-      x2: this.cachedPoints[pointers[1]].x,
-      y1: this.cachedPoints[pointers[0]].y,
-      y2: this.cachedPoints[pointers[1]].y
-    };
-    this.touchStartDistance_ = Math.sqrt(Math.pow((points.x2 - points.x1), 2) + Math.pow((points.y2 - points.y1), 2 ));
-    e.preventDefault();
+    var point0 = this.cachedPoints_[pointers[0]];
+    var point1 = this.cachedPoints_[pointers[1]];
+    this.startDistance_ = goog.math.Coordinate.distance(point0, point1);
     this.isMultiTouch_ = true;
   }
+  e.preventDefault();
 };
 
 /**
@@ -198,33 +229,28 @@ Blockly.TouchGesture.prototype.handleTouchStart = function(e) {
 Blockly.TouchGesture.prototype.handleTouchMove = function(e) {
   var pointerId = Blockly.Touch.getTouchIdentifierFromEvent(e);
   // Update the cache
-  this.cachedPoints[pointerId] = this.getTouchPoint(e);
+  this.cachedPoints_[pointerId] = this.getTouchPoint(e);
 
-  var pointers = Object.keys(this.cachedPoints);
+  var pointers = Object.keys(this.cachedPoints_);
   // If two pointers are down, check for pinch gestures
   if (pointers.length == 2) {
     // Calculate the distance between the two pointers
-    var points = {
-      x1: this.cachedPoints[pointers[0]].x,
-      x2: this.cachedPoints[pointers[1]].x,
-      y1: this.cachedPoints[pointers[0]].y,
-      y2: this.cachedPoints[pointers[1]].y
-    };
-    var moveDistance = Math.sqrt( Math.pow( (points.x2 - points.x1), 2 ) + Math.pow( (points.y2 - points.y1), 2 ));
-    var startDistance = this.touchStartDistance_;
+    var point0 = this.cachedPoints_[pointers[0]];
+    var point1 = this.cachedPoints_[pointers[1]];
+    var moveDistance = goog.math.Coordinate.distance(point0, point1);
+    var startDistance = this.startDistance_;
     var scale = this.touchScale_ = moveDistance / startDistance;
     
-    if (this.previousGestureScale_ > 0 && this.previousGestureScale_ < Infinity) {
-      var gestureScale = scale - this.previousGestureScale_;
+    if (this.previousScale_ > 0 && this.previousScale_ < Infinity) {
+      var gestureScale = scale - this.previousScale_;
       var delta = gestureScale > 0 ? gestureScale * 5 : gestureScale * 6;
       var workspace = this.startWorkspace_;
       var position = Blockly.utils.mouseToSvg(e, workspace.getParentSvg(), workspace.getInverseScreenCTM());
       workspace.zoom(position.x, position.y, delta);
     }
-    this.previousGestureScale_ = scale;
-    e.preventDefault();
-    this.isMultiTouch_ = true;
+    this.previousScale_ = scale;
   }
+  e.preventDefault();
 };
 
 /**
@@ -234,12 +260,12 @@ Blockly.TouchGesture.prototype.handleTouchMove = function(e) {
  */
 Blockly.TouchGesture.prototype.handleTouchEnd = function(e) {
   var pointerId = Blockly.Touch.getTouchIdentifierFromEvent(e);
-  if (this.cachedPoints[pointerId]) {
-    delete this.cachedPoints[pointerId];
+  if (this.cachedPoints_[pointerId]) {
+    delete this.cachedPoints_[pointerId];
   }
-  if (Object.keys(this.cachedPoints).length < 2) {
-    this.cachedPoints = {};
-    this.previousGestureScale_ = 0;
+  if (Object.keys(this.cachedPoints_).length < 2) {
+    this.cachedPoints_ = {};
+    this.previousScale_ = 0;
   }
 };
 
@@ -253,7 +279,7 @@ Blockly.TouchGesture.prototype.getTouchPoint = function(e) {
   if (!this.startWorkspace_) {
     return null;
   }
-  var metrics = this.startWorkspace_.getMetrics();
+  var metrics = this.metrics_ || (this.metrics_ = this.startWorkspace_.getMetrics());
   return new goog.math.Coordinate(
     (e.pageX ? e.pageX : e.changedTouches[0].pageX) - metrics.absoluteLeft,
     (e.pageY ? e.pageY : e.changedTouches[0].pageY) - metrics.absoluteTop
