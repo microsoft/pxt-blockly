@@ -134,7 +134,7 @@ Blockly.Css.CONTENT = [
     'height: 100%;',
     'position: relative;',
     'overflow: hidden;', /* So blocks in drag surface disappear at edges */
-    'touch-action: none',
+    'touch-action: none;',
   '}',
 
   '.blocklyNonSelectable {',
@@ -149,7 +149,8 @@ Blockly.Css.CONTENT = [
     'position: absolute;',
     'top: 0;',
     'left: 0;',
-    'touch-action: none',
+    'touch-action: none;',
+    'cursor: move;',
   '}',
   /* Added as a separate rule with multiple classes to make it more specific
      than a bootstrap rule that selects svg:root. See issue #1275 for context.
@@ -232,6 +233,7 @@ Blockly.Css.CONTENT = [
     'cursor: url("<<<PATH>>>/handclosed.cur"), auto;',
     'cursor: grabbing;',
     'cursor: -webkit-grabbing;',
+    'touch-action: none;',
   '}',
   /* Changes cursor on mouse down. Not effective in Firefox because of
     https://bugzilla.mozilla.org/show_bug.cgi?id=771241 */
