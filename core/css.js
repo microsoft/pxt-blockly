@@ -1134,6 +1134,7 @@ Blockly.Css.CONTENT = [
      '-webkit-box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.15);',
      '-moz-box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.15);',
      'box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.15);',
+     'cursor: pointer',
   '}',
   '.blocklyFieldSliderLabel {',
     'font-family: "Helvetica Neue", "Segoe UI", Helvetica, sans-serif;',
