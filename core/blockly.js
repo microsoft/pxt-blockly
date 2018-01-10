@@ -414,10 +414,6 @@ Blockly.defineBlocksWithJsonArray = function(jsonArray) {
  * @param {Object} thisObject The value of 'this' in the function.
  * @param {!Function} func Function to call when event is triggered.
  * @param {boolean} opt_noCaptureIdentifier True if triggering on this event
- * @param {boolean} opt_noPreventDefault True if triggering on this event
- *     should prevent the default handler.  False by default.  If
- *     opt_noPreventDefault is provided, opt_noCaptureIdentifier must also be
- *     provided.
  *     should not block execution of other event handlers on this touch or other
  *     simultaneous touches.
  * @param {boolean} opt_noPreventDefault True if triggering on this event
@@ -502,7 +498,7 @@ Blockly.bindEvent_ = function(node, name, thisObject, func) {
   if (name in Blockly.Touch.TOUCH_MAP) {
     var touchWrapFunc = function(e) {
       // Punt on multitouch events.
-      if (e.changedTouches.length == 1) {
+      if (e.changedTouches && e.changedTouches.length == 1) {
         // Map the touch event's properties to the event.
         var touchPoint = e.changedTouches[0];
         e.clientX = touchPoint.clientX;

@@ -36,7 +36,7 @@ goog.require('Blockly.ConnectionDB');
 goog.require('Blockly.constants');
 goog.require('Blockly.DropDownDiv');
 goog.require('Blockly.Events');
-goog.require('Blockly.Gesture');
+goog.require('Blockly.TouchGesture');
 goog.require('Blockly.Grid');
 goog.require('Blockly.Options');
 goog.require('Blockly.ScrollbarPair');
@@ -203,7 +203,7 @@ Blockly.WorkspaceSvg.prototype.scrollbar = null;
 
 /**
  * The current gesture in progress on this workspace, if any.
- * @type {Blockly.Gesture}
+ * @type {Blockly.TouchGesture}
  * @private
  */
 Blockly.WorkspaceSvg.prototype.currentGesture_ = null;
@@ -1404,10 +1404,11 @@ Blockly.WorkspaceSvg.prototype.updateToolbox = function(tree) {
     this.options.languageTree = tree;
     // pxtblockly: open expanded node when updating toolbox
     var openNode = this.toolbox_.populate_(tree);
-    if (openNode)
-        this.toolbox_.tree_.setSelectedItem(openNode);
-    else
-        this.toolbox_.flyout_.hide();
+    if (openNode) {
+      this.toolbox_.tree_.setSelectedItem(openNode);
+    } else {
+      this.toolbox_.flyout_.hide();
+    }
     this.toolbox_.populate_(tree);
     //this.toolbox_.position();
     this.toolbox_.addColour_();
@@ -1954,12 +1955,12 @@ Blockly.WorkspaceSvg.prototype.removeToolboxCategoryCallback = function(key) {
  * Look up the gesture that is tracking this touch stream on this workspace.
  * May create a new gesture.
  * @param {!Event} e Mouse event or touch event
- * @return {Blockly.Gesture} The gesture that is tracking this touch stream,
+ * @return {Blockly.TouchGesture} The gesture that is tracking this touch stream,
  *     or null if no valid gesture exists.
  * @package
  */
 Blockly.WorkspaceSvg.prototype.getGesture = function(e) {
-  var isStart = (e.type == 'mousedown' || e.type == 'touchstart');
+  var isStart = (e.type == 'mousedown' || e.type == 'touchstart' || e.type == 'pointerdown');
 
   var gesture = this.currentGesture_;
   if (gesture) {
@@ -1976,7 +1977,7 @@ Blockly.WorkspaceSvg.prototype.getGesture = function(e) {
   // No gesture existed on this workspace, but this looks like the start of a
   // new gesture.
   if (isStart) {
-    this.currentGesture_ = new Blockly.Gesture(e, this);
+    this.currentGesture_ = new Blockly.TouchGesture(e, this);
     return this.currentGesture_;
   }
   // No gesture existed and this event couldn't be the start of a new gesture.
