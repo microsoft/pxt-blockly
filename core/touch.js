@@ -84,6 +84,7 @@ Blockly.longStart_ = function(e, gesture) {
     return;
   }
   Blockly.longPid_ = setTimeout(function() {
+    // Additional check to distinguish between touch events and pointer events
     if (e.changedTouches) {
       // TouchEvent
       e.button = 2;  // Simulate a right button click.
@@ -209,7 +210,7 @@ Blockly.Touch.isMouseOrTouchEvent = function(e) {
 };
 
 /**
- * Check whether a given event is a touch event.
+ * Check whether a given event is a touch event or a pointer event.
  * @param {!Event} e An event.
  * @return {boolean} true if it is a touch event; false otherwise.
  */

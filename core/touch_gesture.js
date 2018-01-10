@@ -33,6 +33,7 @@ goog.require('goog.math.Coordinate');
  * @param {!Event} e The event that kicked off this gesture.
  * @param {!Blockly.WorkspaceSvg} creatorWorkspace The workspace that created
  *     this gesture and has a reference to it.
+ * @extends {Blockly.Gesture}
  * @constructor
  */
 Blockly.TouchGesture = function(e, creatorWorkspace) {
@@ -54,7 +55,10 @@ Blockly.TouchGesture = function(e, creatorWorkspace) {
   this.cachedPoints_ = {};
 
   /**
-   * A scale value tracking the previous gesture scale.
+   * This is the ratio between the starting distance between the touch points
+   * and the most recent distance between the touch points.
+   * Scales between 0 and 1 mean the most recent zoom was a zoom out.
+   * Scales above 1.0 mean the most recent zoom was a zoom in.
    * @type {number}
    * @private
    */
@@ -74,15 +78,20 @@ Blockly.TouchGesture = function(e, creatorWorkspace) {
    * @private
    */
   this.onStartWrapper_ = null;
-
-  /**
-   * A cache of workspace metrics containing size and position metrics of the workspace.
-   * @type {Object}
-   * @private
-   */
-  this.metrics_ = null;
 };
 goog.inherits(Blockly.TouchGesture, Blockly.Gesture);
+
+/**
+ * A multiplier used to convert the gesture scale to a zoom in delta
+ * @const
+ */
+Blockly.TouchGesture.ZOOM_IN_MULTIPLIER = 5;
+
+/**
+ * A multiplier used to convert the gesture scale to a zoom out delta
+ * @const
+ */
+Blockly.TouchGesture.ZOOM_OUT_MULTIPLIER = 6;
 
 /**
  * Start a gesture: update the workspace to indicate that a gesture is in
@@ -117,8 +126,8 @@ Blockly.TouchGesture.prototype.bindMouseEvents = function(e) {
 };
 
 /**
- * Handle a mouse down, touch move, or pointer move event.
- * @param {!Event} e A mouse move, touch move, or pointer move event.
+ * Handle a mouse down, touch start, or pointer down event.
+ * @param {!Event} e A mouse down, touch start, or pointer down event.
  * @package
  */
 Blockly.TouchGesture.prototype.handleStart = function(e) {
@@ -181,8 +190,8 @@ Blockly.TouchGesture.prototype.handleUp = function(e) {
 };
 
 /**
- * Whether this gesture is part of a mulit-touch gesture.
- * @return {boolean} whether this gesture was a click on a workspace.
+ * Whether this gesture is part of a multi-touch gesture.
+ * @return {boolean} whether this gesture is part of a multi-touch gesture.
  * @package
  */
 Blockly.TouchGesture.prototype.isMultiTouch = function() {
@@ -243,7 +252,9 @@ Blockly.TouchGesture.prototype.handleTouchMove = function(e) {
     
     if (this.previousScale_ > 0 && this.previousScale_ < Infinity) {
       var gestureScale = scale - this.previousScale_;
-      var delta = gestureScale > 0 ? gestureScale * 5 : gestureScale * 6;
+      var delta = gestureScale > 0 ?
+        gestureScale * Blockly.TouchGesture.ZOOM_IN_MULTIPLIER :
+        gestureScale * Blockly.TouchGesture.ZOOM_OUT_MULTIPLIER;
       var workspace = this.startWorkspace_;
       var position = Blockly.utils.mouseToSvg(e, workspace.getParentSvg(), workspace.getInverseScreenCTM());
       workspace.zoom(position.x, position.y, delta);
@@ -279,9 +290,8 @@ Blockly.TouchGesture.prototype.getTouchPoint = function(e) {
   if (!this.startWorkspace_) {
     return null;
   }
-  var metrics = this.metrics_ || (this.metrics_ = this.startWorkspace_.getMetrics());
   return new goog.math.Coordinate(
-    (e.pageX ? e.pageX : e.changedTouches[0].pageX) - metrics.absoluteLeft,
-    (e.pageY ? e.pageY : e.changedTouches[0].pageY) - metrics.absoluteTop
+    (e.pageX ? e.pageX : e.changedTouches[0].pageX),
+    (e.pageY ? e.pageY : e.changedTouches[0].pageY)
   );
 };
