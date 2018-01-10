@@ -82,13 +82,13 @@ Blockly.TouchGesture = function(e, creatorWorkspace) {
 goog.inherits(Blockly.TouchGesture, Blockly.Gesture);
 
 /**
- * A multiplier used to convert the gesture scale to a zoom in delta
+ * A multiplier used to convert the gesture scale to a zoom in delta.
  * @const
  */
 Blockly.TouchGesture.ZOOM_IN_MULTIPLIER = 5;
 
 /**
- * A multiplier used to convert the gesture scale to a zoom out delta
+ * A multiplier used to convert the gesture scale to a zoom out delta.
  * @const
  */
 Blockly.TouchGesture.ZOOM_OUT_MULTIPLIER = 6;
