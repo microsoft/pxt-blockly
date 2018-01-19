@@ -168,11 +168,14 @@ Blockly.RenderedConnection.prototype.tighten_ = function() {
     if (!svgRoot) {
       throw 'block is not rendered.';
     }
-    // Workspace coordinates.
-    var xy = Blockly.utils.getRelativeXY(svgRoot);
-    block.getSvgRoot().setAttribute('transform',
-        'translate(' + (xy.x - dx) + ',' + (xy.y - dy) + ')');
-    block.moveConnections_(-dx, -dy);
+    // pxtblockly: only move blocks if they are visible
+    if (block.rendered) {
+      // Workspace coordinates.
+      var xy = Blockly.utils.getRelativeXY(svgRoot);
+      block.getSvgRoot().setAttribute('transform',
+          'translate(' + (xy.x - dx) + ',' + (xy.y - dy) + ')');
+      block.moveConnections_(-dx, -dy);
+    }
   }
 };
 

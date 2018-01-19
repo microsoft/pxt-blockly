@@ -182,6 +182,13 @@ Blockly.Input.prototype.setVisible = function(visible) {
   }
   this.visible_ = visible;
 
+  // pxtblockly: hidden inputs get filtered out of the block's
+  // render list so the input shapes don't get hidden. Hide them
+  // here instead
+  if (!visible && this.outlinePath) {
+    this.outlinePath.setAttribute('style', 'visibility: hidden');
+  }
+
   var display = visible ? 'block' : 'none';
   for (var y = 0, field; field = this.fieldRow[y]; y++) {
     field.setVisible(visible);
