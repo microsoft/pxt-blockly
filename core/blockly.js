@@ -445,7 +445,10 @@ Blockly.bindEventWithChecks_ = function(node, name, thisObject, func,
     }
   };
 
-  node.addEventListener(name, wrapFunc, false);
+  if (!window.PointerEvent) {
+    // pxtblockly: don't register a mouse event if pointer events are supported
+    node.addEventListener(name, wrapFunc, false);
+  }
   var bindData = [[node, name, wrapFunc]];
 
   // Add equivalent touch event.
@@ -491,7 +494,10 @@ Blockly.bindEvent_ = function(node, name, thisObject, func) {
     }
   };
 
-  node.addEventListener(name, wrapFunc, false);
+  if (!window.PointerEvent) {
+    // pxtblockly: don't register a mouse event if pointer events are supported
+    node.addEventListener(name, wrapFunc, false);
+  }
   var bindData = [[node, name, wrapFunc]];
 
   // Add equivalent touch event.
