@@ -445,11 +445,12 @@ Blockly.bindEventWithChecks_ = function(node, name, thisObject, func,
     }
   };
 
-  if (!window.PointerEvent) {
+  var bindData = [];
+  if (!window.PointerEvent || !(name in Blockly.Touch.TOUCH_MAP)) {
     // pxtblockly: don't register a mouse event if pointer events are supported
     node.addEventListener(name, wrapFunc, false);
+    bindData.push([node, name, wrapFunc]);
   }
-  var bindData = [[node, name, wrapFunc]];
 
   // Add equivalent touch event.
   if (name in Blockly.Touch.TOUCH_MAP) {
@@ -494,11 +495,12 @@ Blockly.bindEvent_ = function(node, name, thisObject, func) {
     }
   };
 
-  if (!window.PointerEvent) {
+  var bindData = [];
+  if (!window.PointerEvent || !(name in Blockly.Touch.TOUCH_MAP)) {
     // pxtblockly: don't register a mouse event if pointer events are supported
     node.addEventListener(name, wrapFunc, false);
+    bindData.push([node, name, wrapFunc]);
   }
-  var bindData = [[node, name, wrapFunc]];
 
   // Add equivalent touch event.
   if (name in Blockly.Touch.TOUCH_MAP) {
