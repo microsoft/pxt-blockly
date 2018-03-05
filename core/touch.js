@@ -222,7 +222,7 @@ Blockly.Touch.isMouseOrTouchEvent = function(e) {
  */
 Blockly.Touch.isTouchEvent = function(e) {
   return goog.string.startsWith(e.type, 'touch') ||
-      goog.string.startsWith(e.type, 'pointer');
+      (goog.string.startsWith(e.type, 'pointer') && e.pointerType != 'mouse');
 };
 
 /**

@@ -464,7 +464,7 @@ Blockly.Gesture.prototype.bindMouseEvents = function(e) {
   this.onMoveWrapper_ = Blockly.bindEventWithChecks_(
     document, 'mousemove', null, this.handleMove.bind(this));
   this.onUpWrapper_ = Blockly.bindEventWithChecks_(
-      document, 'mouseup', null, this.handleUp.bind(this));
+    document, 'mouseup', null, this.handleUp.bind(this));
 
   e.preventDefault();
   e.stopPropagation();
