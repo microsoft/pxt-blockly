@@ -160,7 +160,7 @@ Blockly.FieldNumber.prototype.showEditor_ = function() {
   Blockly.FieldNumber.superClass_.showEditor_.call(this, false, showNumPad);
 
   // Show a numeric keypad in the drop-down on touch
-  if (showNumPad) {
+  if (true) {
     this.showNumPad_();
   }
 };
@@ -266,7 +266,7 @@ Blockly.FieldNumber.prototype.addButtons_ = function(contentDiv) {
  * Call for when a num-pad number or punctuation button is touched.
  * Determine what the user is inputting and update the text field appropriately.
  */
-Blockly.FieldNumber.numPadButtonTouch = function() {
+Blockly.FieldNumber.numPadButtonTouch = function(e) {
   // String of the button (e.g., '7')
   var spliceValue = this.innerHTML;
   // Old value of the text field
@@ -279,17 +279,24 @@ Blockly.FieldNumber.numPadButtonTouch = function() {
   var newValue = oldValue.slice(0, selectionStart) + spliceValue +
       oldValue.slice(selectionEnd);
 
+  // pxtblockly: workaround iframe + android issue where it inserts values to the front
+  if (selectionEnd - selectionStart == 0) { // Length of selection == 0
+    newValue = oldValue + spliceValue;
+  }
+
   Blockly.FieldNumber.updateDisplay_(newValue);
 
   // This is just a click.
   Blockly.Touch.clearTouchIdentifier();
+
+  e.preventDefault();
 };
 
 /**
  * Call for when the num-pad erase button is touched.
  * Determine what the user is asking to erase, and erase it.
  */
-Blockly.FieldNumber.numPadEraseButtonTouch = function() {
+Blockly.FieldNumber.numPadEraseButtonTouch = function(e) {
   // Old value of the text field
   var oldValue = Blockly.FieldTextInput.htmlInput_.value;
   // Determine what is selected to erase (if anything)
@@ -300,13 +307,15 @@ Blockly.FieldNumber.numPadEraseButtonTouch = function() {
       oldValue.slice(selectionEnd);
   if (selectionEnd - selectionStart == 0) { // Length of selection == 0
     // Delete the last character if nothing was selected
-    newValue = oldValue.slice(0, selectionStart - 1) +
-        oldValue.slice(selectionStart);
+    newValue = selectionEnd == 0 ? oldValue.slice(0, oldValue.length - 1) :
+      oldValue.slice(0, selectionStart - 1) + oldValue.slice(selectionStart);
   }
   Blockly.FieldNumber.updateDisplay_(newValue);
 
   // This is just a click.
   Blockly.Touch.clearTouchIdentifier();
+
+  e.preventDefault();
 };
 
 /**

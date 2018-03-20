@@ -173,11 +173,14 @@ Blockly.FieldDropdown.prototype.showEditor_ = function() {
 
   var thisField = this;
 
+  var selected = false;
   function callback(e) {
+    if (selected) return;
     var menu = this;
     var menuItem = e.target;
     if (menuItem) {
       thisField.onItemSelected(menu, menuItem);
+      selected = true;
     }
     Blockly.DropDownDiv.hide();
     Blockly.Events.setGroup(false);
@@ -316,6 +319,8 @@ Blockly.FieldDropdown.prototype.getAnchorDimensions_ = function() {
  * @param {!goog.ui.MenuItem} menuItem The MenuItem selected within menu.
  */
 Blockly.FieldDropdown.prototype.onItemSelected = function(menu, menuItem) {
+  // pxtblockly: add extra check to make sure we don't double tap on any option
+  if (!this.dropDownOpen_) return;
   var value = menuItem.getValue();
   if (this.sourceBlock_) {
     // Call any validation function, and allow it to override.
