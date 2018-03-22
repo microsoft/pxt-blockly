@@ -28,3 +28,5 @@ tests/compile/*compiler*.jar
 /gh-pages/_site
 
 /chromedriver
+tests/compile/main_compressed.js
+tests/compile/*compiler*.jar

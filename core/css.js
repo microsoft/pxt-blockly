@@ -194,6 +194,12 @@ Blockly.Css.CONTENT = [
   '.blocklyWsDragSurface.blocklyOverflowVisible {',
     'overflow: visible;',
   '}',
+  /* Added as a separate rule with multiple classes to make it more specific
+     than a bootstrap rule that selects svg:root. See issue #1275 for context.
+  */
+  '.blocklyWsDragSurface.blocklyOverflowVisible {',
+    'overflow: visible;',
+  '}',
 
   '.blocklyBlockDragSurface {',
     'display: none;',
@@ -348,7 +354,7 @@ Blockly.Css.CONTENT = [
   '}',
 
   '.blocklyResizeLine {',
-    'stroke: #888;',
+    'stroke: #515A5A;',
     'stroke-width: 1;',
   '}',
 
@@ -410,6 +416,12 @@ Blockly.Css.CONTENT = [
 
   '.blocklyToolboxDelete {',
     'cursor: url("<<<PATH>>>/handdelete.cur"), auto;',
+  '}',
+
+  '.blocklyToolboxGrab {',
+    'cursor: url("<<<PATH>>>/handclosed.cur"), auto;',
+    'cursor: grabbing;',
+    'cursor: -webkit-grabbing;',
   '}',
 
   '.blocklyDragging>.blocklyPath,',
@@ -555,15 +567,41 @@ Blockly.Css.CONTENT = [
     'padding: 0;',
   '}',
 
+  '.blocklyCommentForeignObject {',
+    'position: relative;',
+    'z-index: 0;',
+  '}',
+
+  '.blocklyCommentRect {',
+    'fill: #F9F3A1;',
+    'stroke: #F9F3A1;',
+    'stroke-width: 1px',
+  '}',
+
+  '.blocklyCommentTarget {',
+    'fill: transparent;',
+    'stroke: #F9F3A1;',
+  '}',
+
+  '.blocklyFocused>.blocklyCommentRect {',
+    'fill: #FFB900;',
+    'stroke: #B9B272;',
+  '}',
+
+  '.blocklySelected>.blocklyCommentTarget {',
+    'stroke: #FFB900;',
+    'stroke-width: 1px;',
+  '}',
+
   '.blocklyCommentTextarea {',
-    'background-color: #ffc;',
+    'background-color: #FAF6BD;',
     'border: 0;',
     'outline: 0;',
     'margin: 0;',
-    'padding: 2px;',
+    'padding: 3px;',
     'resize: none;',
     'display: block;',
-    'overflow: none;',
+    'overflow: hidden;',
   '}',
 
   '.blocklyHtmlInput {',
@@ -692,6 +730,9 @@ Blockly.Css.CONTENT = [
 
   '.blocklyDropdownMenu {',
     'padding: 0 !important;',
+    /* max-height value is same as the constant
+     * Blockly.FieldDropdown.MAX_MENU_HEIGHT defined in field_dropdown.js. */
+    'max-height: 300px !important;',
   '}',
 
   '.blocklyDropDownNumPad {',

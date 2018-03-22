@@ -63,6 +63,17 @@ Blockly.FieldDropdown = function(menuGenerator, opt_validator) {
 goog.inherits(Blockly.FieldDropdown, Blockly.Field);
 
 /**
+ * Construct a FieldDropdown from a JSON arg object.
+ * @param {!Object} options A JSON object with options (options).
+ * @returns {!Blockly.FieldDropdown} The new field instance.
+ * @package
+ * @nocollapse
+ */
+Blockly.FieldDropdown.fromJson = function(options) {
+  return new Blockly.FieldDropdown(options['options']);
+};
+
+/**
  * Horizontal distance that a checkmark overhangs the dropdown.
  */
 Blockly.FieldDropdown.CHECKMARK_OVERHANG = 25;
@@ -164,6 +175,9 @@ Blockly.FieldDropdown.prototype.shouldShowRect_ = function() {
  * @private
  */
 Blockly.FieldDropdown.prototype.showEditor_ = function() {
+  var options = this.getOptions();
+  if (options.length == 0) return;
+
   this.dropDownOpen_ = true;
   // If there is an existing drop-down someone else owns, hide it immediately and clear it.
   Blockly.DropDownDiv.hideWithoutAnimation();
@@ -188,7 +202,6 @@ Blockly.FieldDropdown.prototype.showEditor_ = function() {
 
   var menu = new goog.ui.Menu();
   menu.setRightToLeft(this.sourceBlock_.RTL);
-  var options = this.getOptions();
   for (var i = 0; i < options.length; i++) {
     var content = options[i][0]; // Human-readable text or image.
     var value = options[i][1];   // Language-neutral value.
@@ -290,27 +303,6 @@ Blockly.FieldDropdown.prototype.onHide = function() {
       this.box_.setAttribute('fill', this.sourceBlock_.getColour());
     }
   }
-};
-
-/**
- * Returns the coordinates of the anchor rectangle for the widget div.
- * On a FieldDropdown we take the top-left corner of the field, then adjust for
- * the size of the checkmark that is displayed next to the currently selected
- * item. This means that the item text will be positioned directly under the
- * field text, rather than offset slightly.
- * @returns {!Object} The bounding rectangle of the anchor, in window
- *     coordinates.
- * @private
- */
-Blockly.FieldDropdown.prototype.getAnchorDimensions_ = function() {
-  var boundingBox = this.getScaledBBox_();
-  if (this.sourceBlock_.RTL) {
-    boundingBox.right += Blockly.FieldDropdown.CHECKMARK_OVERHANG;
-  } else {
-    boundingBox.left -= Blockly.FieldDropdown.CHECKMARK_OVERHANG;
-  }
-
-  return boundingBox;
 };
 
 /**
@@ -517,3 +509,5 @@ Blockly.FieldDropdown.prototype.dispose = function() {
   Blockly.WidgetDiv.hideIfOwner(this);
   Blockly.FieldDropdown.superClass_.dispose.call(this);
 };
+
+Blockly.Field.register('field_dropdown', Blockly.FieldDropdown);

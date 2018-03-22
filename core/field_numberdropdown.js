@@ -60,6 +60,19 @@ Blockly.FieldNumberDropdown = function(value, menuGenerator, opt_min, opt_max,
 
 goog.inherits(Blockly.FieldNumberDropdown, Blockly.FieldTextDropdown);
 
+/**
+ * Construct a FieldNumberDropdown from a JSON arg object.
+ * @param {!Object} options A JSON object with options (options).
+ * @returns {!Blockly.FieldNumberDropdown} The new field instance.
+ * @package
+ * @nocollapse
+ */
+Blockly.FieldNumberDropdown.fromJson = function(options) {
+  return new Blockly.FieldNumberDropdown(
+    element['value'], element['options'],
+    element['min'], element['max'], element['precision']
+  );
+};
 
 /**
  * Ensure that only a number in the correct range may be entered.
@@ -67,3 +80,5 @@ goog.inherits(Blockly.FieldNumberDropdown, Blockly.FieldTextDropdown);
  * @return {?string} A string representing a valid number, or null if invalid.
  */
 Blockly.FieldNumberDropdown.prototype.classValidator = Blockly.FieldNumber.prototype.classValidator;
+
+Blockly.Field.register('field_numberdropdown', Blockly.FieldNumberDropdown);

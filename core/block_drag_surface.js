@@ -20,10 +20,10 @@
 
 /**
  * @fileoverview A class that manages a surface for dragging blocks.  When a
- * block drag is started, we move the block (and children) to a separate dom
+ * block drag is started, we move the block (and children) to a separate DOM
  * element that we move around using translate3d. At the end of the drag, the
- * blocks are put back in into the svg they came from. This helps performance by
- * avoiding repainting the entire svg on every mouse move while dragging blocks.
+ * blocks are put back in into the SVG they came from. This helps performance by
+ * avoiding repainting the entire SVG on every mouse move while dragging blocks.
  * @author picklesrus
  */
 
@@ -153,8 +153,8 @@ Blockly.BlockDragSurfaceSvg.prototype.createDropShadowDom_ = function(defs) {
  * surface.
  */
 Blockly.BlockDragSurfaceSvg.prototype.setBlocksAndShow = function(blocks) {
-  goog.asserts.assert(this.dragGroup_.childNodes.length == 0,
-    'Already dragging a block.');
+  goog.asserts.assert(
+      this.dragGroup_.childNodes.length == 0, 'Already dragging a block.');
   // appendChild removes the blocks from the previous parent
   this.dragGroup_.appendChild(blocks);
   this.SVG_.style.display = 'block';
@@ -178,10 +178,10 @@ Blockly.BlockDragSurfaceSvg.prototype.translateAndScaleGroup = function(x, y, sc
   this.scale_ = scale;
   // This is a work-around to prevent a the blocks from rendering
   // fuzzy while they are being dragged on the drag surface.
-  x = x.toFixed(0);
-  y = y.toFixed(0);
-  this.dragGroup_.setAttribute('transform', 'translate('+ x + ','+ y + ')' +
-      ' scale(' + scale + ')');
+  var fixedX = x.toFixed(0);
+  var fixedY = y.toFixed(0);
+  this.dragGroup_.setAttribute('transform',
+      'translate('+ fixedX + ','+ fixedY + ') scale(' + scale + ')');
 };
 
 /**
@@ -248,7 +248,7 @@ Blockly.BlockDragSurfaceSvg.prototype.getCurrentBlock = function() {
  * element.
  * If the block is being deleted it doesn't need to go back to the original
  * surface, since it would be removed immediately during dispose.
- * @param {Element} opt_newSurface Surface the dragging blocks should be moved
+ * @param {Element=} opt_newSurface Surface the dragging blocks should be moved
  *     to, or null if the blocks should be removed from this surface without
  *     being moved to a different surface.
  */
@@ -260,8 +260,8 @@ Blockly.BlockDragSurfaceSvg.prototype.clearAndHide = function(opt_newSurface) {
     if (this.getCurrentBlock()) this.dragGroup_.removeChild(this.getCurrentBlock());
   }
   this.SVG_.style.display = 'none';
-  goog.asserts.assert(this.dragGroup_.childNodes.length == 0,
-    'Drag group was not cleared.');
+  goog.asserts.assert(
+      this.dragGroup_.childNodes.length == 0, 'Drag group was not cleared.');
   this.surfaceXY_ = null;
 
   // Reset the overflow property back to hidden so that nothing appears outside

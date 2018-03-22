@@ -29,6 +29,8 @@
 
 goog.provide('Blockly.Connection');
 
+goog.require('Blockly.Events.BlockMove');
+
 goog.require('goog.asserts');
 goog.require('goog.dom');
 

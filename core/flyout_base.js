@@ -28,6 +28,8 @@ goog.provide('Blockly.Flyout');
 
 goog.require('Blockly.Block');
 goog.require('Blockly.Events');
+goog.require('Blockly.Events.BlockCreate');
+goog.require('Blockly.Events.VarCreate');
 goog.require('Blockly.FlyoutButton');
 goog.require('Blockly.Gesture');
 goog.require('Blockly.Touch');
@@ -75,12 +77,12 @@ Blockly.Flyout = function(workspaceOptions) {
   this.eventWrappers_ = [];
 
   /**
-   * List of background buttons that lurk behind each block to catch clicks
+   * List of background mats that lurk behind each block to catch clicks
    * landing in the blocks' lakes and bays.
    * @type {!Array.<!Element>}
    * @private
    */
-  this.backgroundButtons_ = [];
+  this.mats_ = [];
 
   /**
    * List of visible buttons.
@@ -241,34 +243,17 @@ Blockly.Flyout.prototype.init = function(targetWorkspace) {
 
   // Dragging the flyout up and down.
   Array.prototype.push.apply(this.eventWrappers_,
-      Blockly.bindEventWithChecks_(this.svgBackground_, 'mousedown', this,
-      this.onMouseDown_));
+      Blockly.bindEventWithChecks_(
+          this.svgBackground_, 'mousedown', this, this.onMouseDown_));
 
   // A flyout connected to a workspace doesn't have its own current gesture.
   this.workspace_.getGesture =
       this.targetWorkspace_.getGesture.bind(this.targetWorkspace_);
 
   // Get variables from the main workspace rather than the target workspace.
-  this.workspace_.getVariable =
-      this.targetWorkspace_.getVariable.bind(this.targetWorkspace_);
+  this.workspace_.variableMap_  = this.targetWorkspace_.getVariableMap();
 
-  this.workspace_.getVariableById =
-      this.targetWorkspace_.getVariableById.bind(this.targetWorkspace_);
-
-  this.workspace_.getVariablesOfType =
-      this.targetWorkspace_.getVariablesOfType.bind(this.targetWorkspace_);
-
-  this.workspace_.deleteVariable =
-      this.targetWorkspace_.deleteVariable.bind(this.targetWorkspace_);
-
-  this.workspace_.deleteVariableById =
-      this.targetWorkspace_.deleteVariableById.bind(this.targetWorkspace_);
-
-  this.workspace_.renameVariable =
-      this.targetWorkspace_.renameVariable.bind(this.targetWorkspace_);
-
-  this.workspace_.renameVariableById =
-      this.targetWorkspace_.renameVariableById.bind(this.targetWorkspace_);
+  this.workspace_.createPotentialVariableMap();
 };
 
 /**
@@ -332,7 +317,7 @@ Blockly.Flyout.prototype.isVisible = function() {
   return this.isVisible_;
 };
 
- /**
+/**
  * Set whether the flyout is visible. A value of true does not necessarily mean
  * that the flyout is shown. It could be hidden because its container is hidden.
  * @param {boolean} visible True if visible.
@@ -518,7 +503,7 @@ Blockly.Flyout.prototype.show = function(xmlList) {
 };
 
 /**
- * Delete blocks and background buttons from a previous showing of the flyout.
+ * Delete blocks, mats and buttons from a previous showing of the flyout.
  * @private
  */
 Blockly.Flyout.prototype.clearOldBlocks_ = function() {
@@ -529,17 +514,22 @@ Blockly.Flyout.prototype.clearOldBlocks_ = function() {
       block.dispose(false, false);
     }
   }
-  // Delete any background buttons from a previous showing.
-  for (var j = 0; j < this.backgroundButtons_.length; j++) {
-    var rect = this.backgroundButtons_[j];
-    if (rect) goog.dom.removeNode(rect);
+  // Delete any mats from a previous showing.
+  for (var j = 0; j < this.mats_.length; j++) {
+    var rect = this.mats_[j];
+    if (rect) {
+      goog.dom.removeNode(rect);
+    }
   }
-  this.backgroundButtons_.length = 0;
-
+  this.mats_.length = 0;
+  // Delete any buttons from a previous showing.
   for (var i = 0, button; button = this.buttons_[i]; i++) {
     button.dispose();
   }
   this.buttons_.length = 0;
+
+  // Clear potential variables from the previous showing.
+  this.workspace_.getPotentialVariableMap().clear();
 };
 
 /**
@@ -547,7 +537,7 @@ Blockly.Flyout.prototype.clearOldBlocks_ = function() {
  * @param {!Element} root The root node of the SVG group the block is in.
  * @param {!Blockly.Block} block The block to add listeners for.
  * @param {!Element} rect The invisible rectangle under the block that acts as
- *     a button for that block.
+ *     a mat for that block.
  * @private
  */
 Blockly.Flyout.prototype.addBlockListeners_ = function(root, block, rect) {
@@ -604,6 +594,7 @@ Blockly.Flyout.prototype.onMouseDown_ = function(e) {
 Blockly.Flyout.prototype.createBlock = function(originalBlock) {
   var newBlock = null;
   Blockly.Events.disable();
+  var variablesBeforeCreation = this.targetWorkspace_.getAllVariables();
   this.targetWorkspace_.setResizesEnabled(false);
   try {
     newBlock = this.placeNewBlock_(originalBlock);
@@ -613,9 +604,17 @@ Blockly.Flyout.prototype.createBlock = function(originalBlock) {
     Blockly.Events.enable();
   }
 
+  var newVariables = Blockly.Variables.getAddedVariables(this.targetWorkspace_,
+      variablesBeforeCreation);
+
   if (Blockly.Events.isEnabled()) {
     Blockly.Events.setGroup(true);
     Blockly.Events.fire(new Blockly.Events.Create(newBlock));
+    // Fire a VarCreate event for each (if any) new variable created.
+    for(var i = 0; i < newVariables.length; i++) {
+      var thisVariable = newVariables[i];
+      Blockly.Events.fire(new Blockly.Events.VarCreate(thisVariable));
+    }
   }
   if (this.autoClose) {
     this.hide();
@@ -639,8 +638,9 @@ Blockly.Flyout.prototype.initFlyoutButton_ = function(button, x, y) {
   button.show();
   // Clicking on a flyout button or label is a lot like clicking on the
   // flyout background.
-  this.listeners_.push(Blockly.bindEventWithChecks_(buttonSvg, 'mousedown',
-       this, this.onMouseDown_));
+  this.listeners_.push(
+      Blockly.bindEventWithChecks_(
+          buttonSvg, 'mousedown', this, this.onMouseDown_));
 
   this.buttons_.push(button);
 };
@@ -652,8 +652,8 @@ Blockly.Flyout.prototype.initFlyoutButton_ = function(button, x, y) {
  * @param {number} y The y position of the cursor during this layout pass.
  * @param {!{height: number, width: number}} blockHW The height and width of the
  *     block.
- * @param {number} index The index into the background buttons list where this
- *     rect should be placed.
+ * @param {number} index The index into the mats list where this rect should be
+ *     placed.
  * @return {!SVGElement} Newly created SVG element for the rectangle behind the
  *     block.
  * @private
@@ -662,20 +662,20 @@ Blockly.Flyout.prototype.createRect_ = function(block, x, y, blockHW, index) {
   // Create an invisible rectangle under the block to act as a button.  Just
   // using the block as a button is poor, since blocks have holes in them.
   var rect = Blockly.utils.createSvgElement('rect',
-    {
-      'fill-opacity': 0,
-      'x': x,
-      'y': y,
-      'height': blockHW.height,
-      'width': blockHW.width
-    }, null);
+      {
+        'fill-opacity': 0,
+        'x': x,
+        'y': y,
+        'height': blockHW.height,
+        'width': blockHW.width
+      }, null);
   rect.tooltip = block;
   Blockly.Tooltip.bindMouseEvents(rect);
   // Add the rectangles under the blocks, so that the blocks' tooltips work.
   this.workspace_.getCanvas().insertBefore(rect, block.getSvgRoot());
 
   block.flyoutRect_ = rect;
-  this.backgroundButtons_[index] = rect;
+  this.mats_[index] = rect;
   return rect;
 };
 
@@ -725,14 +725,13 @@ Blockly.Flyout.prototype.filterForCapacity_ = function() {
 };
 
 /**
- * Reflow blocks and their buttons.
+ * Reflow blocks and their mats.
  */
 Blockly.Flyout.prototype.reflow = function() {
   if (this.reflowWrapper_) {
     this.workspace_.removeChangeListener(this.reflowWrapper_);
   }
-  var blocks = this.workspace_.getTopBlocks(false);
-  this.reflowInternal_(blocks);
+  this.reflowInternal_();
   if (this.reflowWrapper_) {
     this.workspace_.addChangeListener(this.reflowWrapper_);
   }

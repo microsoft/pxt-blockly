@@ -571,6 +571,7 @@ declare namespace Blockly {
         getSize(): goog.math.Size;
         getSvgRoot(): Element;
         classValidator(text: string): string;
+        forceRerender(): void;
     }
 
     class FieldVariable extends Field {
@@ -608,6 +609,7 @@ declare namespace Blockly {
     }
 
     class FieldDropdown extends Field {
+        selectedItem: goog.ui.MenuItem;
         box_: Element;
         arrow_: Element;
         arrowY_: number;
@@ -1082,6 +1084,10 @@ declare namespace Blockly {
         class Change extends Abstract {
             constructor(block: Block, element: String, name: String, oldValue: String, newValue: String);
         }
+        class BlockChange extends Abstract {
+            constructor(block: Block, element: String, name: String, oldValue: String, newValue: String);
+        }
+
     }
 
     class Toolbox {

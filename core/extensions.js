@@ -35,9 +35,7 @@ goog.provide('Blockly.Extensions');
 
 goog.require('Blockly.Mutator');
 goog.require('Blockly.utils');
-
 goog.require('goog.string');
-
 
 /**
  * The set of all registered extensions, keyed by extension name/id.
@@ -76,6 +74,9 @@ Blockly.Extensions.register = function(name, initFn) {
  *     registered.
  */
 Blockly.Extensions.registerMixin = function(name, mixinObj) {
+  if (!goog.isObject(mixinObj)){
+    throw new Error('Error: Mixin "' + name + '" must be a object');
+  }
   Blockly.Extensions.register(name, function() {
     this.mixin(mixinObj);
   });
@@ -99,10 +100,10 @@ Blockly.Extensions.registerMutator = function(name, mixinObj, opt_helperFn,
   var errorPrefix = 'Error when registering mutator "' + name + '": ';
 
   // Sanity check the mixin object before registering it.
-  Blockly.Extensions.checkHasFunction_(errorPrefix, mixinObj.domToMutation,
-                                       'domToMutation');
-  Blockly.Extensions.checkHasFunction_(errorPrefix, mixinObj.mutationToDom,
-                                       'mutationToDom');
+  Blockly.Extensions.checkHasFunction_(
+      errorPrefix, mixinObj.domToMutation, 'domToMutation');
+  Blockly.Extensions.checkHasFunction_(
+      errorPrefix, mixinObj.mutationToDom, 'mutationToDom');
 
   var hasMutatorDialog =
       Blockly.Extensions.checkMutatorDialog_(mixinObj, errorPrefix);
@@ -237,8 +238,9 @@ Blockly.Extensions.checkMutatorDialog_ = function(object, errorPrefix) {
  */
 Blockly.Extensions.checkBlockHasMutatorProperties_ = function(errorPrefix,
     block) {
-  if (typeof block.domToMutation !== 'function') {
-    throw new Error(errorPrefix + 'Applying a mutator didn\'t add "domToMutation"');
+  if (typeof block.domToMutation != 'function') {
+    throw new Error(errorPrefix +
+                    'Applying a mutator didn\'t add "domToMutation"');
   }
   if (typeof block.mutationToDom != 'function') {
     throw new Error(errorPrefix +
@@ -313,7 +315,7 @@ Blockly.Extensions.mutatorPropertiesMatch_ = function(oldProperties, block) {
  * reported as warnings in the console, and are never fatal.
  * @param {string} dropdownName The name of the field whose value is the key
  *     to the lookup table.
- * @param {!Object<string, string>} lookupTable The table of field values to
+ * @param {!Object.<string, string>} lookupTable The table of field values to
  *     tooltip text.
  * @return {Function} The extension function.
  */
@@ -326,7 +328,7 @@ Blockly.Extensions.buildTooltipForDropdown = function(dropdownName,
   // Wait for load, in case Blockly.Msg is not yet populated.
   // runAfterPageLoad() does not run in a Node.js environment due to lack of
   // document object, in which case skip the validation.
-  if (document) { // Relies on document.readyState
+  if (typeof document == 'object') {  // Relies on document.readyState
     Blockly.utils.runAfterPageLoad(function() {
       for (var key in lookupTable) {
         // Will print warnings if reference is missing.
@@ -373,7 +375,7 @@ Blockly.Extensions.buildTooltipForDropdown = function(dropdownName,
  * Emits console warnings when they are not.
  * @param {!Blockly.Block} block The block containing the dropdown
  * @param {string} dropdownName The name of the dropdown
- * @param {!Object<string, string>} lookupTable The string lookup table
+ * @param {!Object.<string, string>} lookupTable The string lookup table
  * @private
  */
 Blockly.Extensions.checkDropdownOptionsInTable_ = function(block, dropdownName,
@@ -395,19 +397,19 @@ Blockly.Extensions.checkDropdownOptionsInTable_ = function(block, dropdownName,
 /**
  * Builds an extension function that will install a dynamic tooltip. The
  * tooltip message should include the string '%1' and that string will be
- * replaced with the value of the named field.
+ * replaced with the text of the named field.
  * @param {string} msgTemplate The template form to of the message text, with
  *     %1 placeholder.
- * @param {string} fieldName The field with the replacement value.
+ * @param {string} fieldName The field with the replacement text.
  * @returns {Function} The extension function.
  */
-Blockly.Extensions.buildTooltipWithFieldValue = function(msgTemplate,
+Blockly.Extensions.buildTooltipWithFieldText = function(msgTemplate,
     fieldName) {
   // Check the tooltip string messages for invalid references.
   // Wait for load, in case Blockly.Msg is not yet populated.
   // runAfterPageLoad() does not run in a Node.js environment due to lack of
   // document object, in which case skip the validation.
-  if (document) {  // Relies on document.readyState
+  if (typeof document == 'object') {  // Relies on document.readyState
     Blockly.utils.runAfterPageLoad(function() {
       // Will print warnings if reference is missing.
       Blockly.utils.checkMessageReferences(msgTemplate);
@@ -420,8 +422,9 @@ Blockly.Extensions.buildTooltipWithFieldValue = function(msgTemplate,
    */
   var extensionFn = function() {
     this.setTooltip(function() {
+      var field = this.getField(fieldName);
       return Blockly.utils.replaceMessageReferences(msgTemplate)
-          .replace('%1', this.getFieldValue(fieldName));
+          .replace('%1', field ? field.getText() : '');
     }.bind(this));
   };
   return extensionFn;

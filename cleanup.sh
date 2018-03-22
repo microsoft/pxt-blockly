@@ -13,3 +13,4 @@ git checkout --ours python_compressed.js
 
 rm -rf accessible/*
 rm -rf demos/*
+rm -rf .github/*

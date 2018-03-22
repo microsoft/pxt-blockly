@@ -33,6 +33,10 @@ goog.require('Blockly.Blocks');
 goog.require('Blockly.Colours');
 goog.require('Blockly.Comment');
 goog.require('Blockly.Connection');
+goog.require('Blockly.Events.BlockChange');
+goog.require('Blockly.Events.BlockCreate');
+goog.require('Blockly.Events.BlockDelete');
+goog.require('Blockly.Events.BlockMove');
 goog.require('Blockly.Extensions');
 goog.require('Blockly.FieldLabelSerializable');
 goog.require('Blockly.Input');
@@ -53,10 +57,17 @@ goog.require('goog.string');
  * @param {?string} prototypeName Name of the language object containing
  *     type-specific functions for this block.
  * @param {string=} opt_id Optional ID.  Use this ID if provided, otherwise
- *     create a new id.
+ *     create a new ID.
  * @constructor
  */
 Blockly.Block = function(workspace, prototypeName, opt_id) {
+  if (typeof Blockly.Generator.prototype[prototypeName] !== 'undefined') {
+    console.warn('FUTURE ERROR: Block prototypeName "' + prototypeName
+        + '" conflicts with Blockly.Generator members. Registering Generators '
+        + 'for this block type will incur errors.'
+        + '\nThis name will be DISALLOWED (throwing an error) in future '
+        + 'versions of Blockly.');
+  }
   var flyoutWorkspace = workspace && workspace.getFlyout && workspace.getFlyout() ?
      workspace.getFlyout().getWorkspace() : null;
   /** @type {string} */
@@ -180,8 +191,21 @@ Blockly.Block = function(workspace, prototypeName, opt_id) {
   // Record initial inline state.
   /** @type {boolean|undefined} */
   this.inputsInlineDefault = this.inputsInline;
+
+  // Fire a create event.
   if (Blockly.Events.isEnabled()) {
-    Blockly.Events.fire(new Blockly.Events.BlockCreate(this));
+    var existingGroup = Blockly.Events.getGroup();
+    if (!existingGroup) {
+      Blockly.Events.setGroup(true);
+    }
+    try {
+      Blockly.Events.fire(new Blockly.Events.BlockCreate(this));
+    } finally {
+      if (!existingGroup) {
+        Blockly.Events.setGroup(false);
+      }
+    }
+
   }
   // Bind an onchange function, if it exists.
   if (goog.isFunction(this.onchange)) {
@@ -230,6 +254,13 @@ Blockly.Block.prototype.colourSecondary_ = '#FF0000';
  * @private
  */
 Blockly.Block.prototype.colourTertiary_ = '#FF0000';
+
+/**
+ * Colour of the block as HSV hue value (0-360)
+ * @type {?number}
+ * @private
+  */
+Blockly.Block.prototype.hue_ = null;
 
 /**
  * Dispose of this block.
@@ -295,9 +326,28 @@ Blockly.Block.prototype.dispose = function(healStack) {
 };
 
 /**
+ * Call initModel on all fields on the block.
+ * May be called more than once.
+ * Either initModel or initSvg must be called after creating a block and before
+ * the first interaction with it.  Interactions include UI actions
+ * (e.g. clicking and dragging) and firing events (e.g. create, delete, and
+ * change).
+ * @public
+ */
+Blockly.Block.prototype.initModel = function() {
+  for (var i = 0, input; input = this.inputList[i]; i++) {
+    for (var j = 0, field; field = input.fieldRow[j]; j++) {
+      if (field.initModel) {
+        field.initModel();
+      }
+    }
+  }
+};
+
+/**
  * Unplug this block from its superior block.  If this block is a statement,
  * optionally reconnect the block underneath with the block on top.
- * @param {boolean} opt_healStack Disconnect child statement and reconnect
+ * @param {boolean=} opt_healStack Disconnect child statement and reconnect
  *   stack.  Defaults to false.
  */
 Blockly.Block.prototype.unplug = function(opt_healStack) {
@@ -329,10 +379,13 @@ Blockly.Block.prototype.unplug = function(opt_healStack) {
 
 /**
  * Returns all connections originating from this block.
+ * @param {boolean} all If true, return all connections even hidden ones.
  * @return {!Array.<!Blockly.Connection>} Array of connections.
  * @private
  */
-Blockly.Block.prototype.getConnections_ = function() {
+Blockly.Block.prototype.getConnections_ = function(
+    /* eslint-disable no-unused-vars */ all
+    /* eslint-enable no-unused-vars */) {
   var myConnections = [];
   if (this.outputConnection) {
     myConnections.push(this.outputConnection);
@@ -726,6 +779,14 @@ Blockly.Block.prototype.getColour = function() {
 };
 
 /**
+ * Get the HSV hue value of a block. Null if hue not set.
+ * @return {?number} Hue value (0-360)
+ */
+Blockly.Block.prototype.getHue = function() {
+  return this.hue_;
+};
+
+/**
  * Get the secondary colour of a block.
  * @return {string} #RRGGBB string.
  */
@@ -827,6 +888,7 @@ Blockly.Block.prototype.getField = function(name) {
 /**
  * Return all variables referenced by this block.
  * @return {!Array.<string>} List of variable names.
+ * @package
  */
 Blockly.Block.prototype.getVars = function() {
   var vars = [];
@@ -841,17 +903,57 @@ Blockly.Block.prototype.getVars = function() {
 };
 
 /**
- * Notification that a variable is renaming.
- * If the name matches one of this block's variables, rename it.
- * @param {string} oldName Previous name of variable.
- * @param {string} newName Renamed variable.
+ * Return all variables referenced by this block.
+ * @return {!Array.<!Blockly.VariableModel>} List of variable models.
+ * @package
  */
-Blockly.Block.prototype.renameVar = function(oldName, newName) {
+Blockly.Block.prototype.getVarModels = function() {
+  var vars = [];
+  for (var i = 0, input; input = this.inputList[i]; i++) {
+    for (var j = 0, field; field = input.fieldRow[j]; j++) {
+      if (field instanceof Blockly.FieldVariable) {
+        var model = this.workspace.getVariableById(field.getValue());
+        // Check if the variable actually exists (and isn't just a potential
+        // variable).
+        if (model) {
+          vars.push(model);
+        }
+      }
+    }
+  }
+  return vars;
+};
+
+/**
+ * Notification that a variable is renaming but keeping the same ID.  If the
+ * variable is in use on this block, rerender to show the new name.
+ * @param {!Blockly.VariableModel} variable The variable being renamed.
+ * @package
+ */
+Blockly.Block.prototype.updateVarName = function(variable) {
   for (var i = 0, input; input = this.inputList[i]; i++) {
     for (var j = 0, field; field = input.fieldRow[j]; j++) {
       if (field instanceof Blockly.FieldVariable &&
-          Blockly.Names.equals(oldName, field.getValue())) {
-        field.setValue(newName);
+          variable.getId() == field.getValue()) {
+        field.setText(variable.name);
+      }
+    }
+  }
+};
+
+/**
+ * Notification that a variable is renaming.
+ * If the ID matches one of this block's variables, rename it.
+ * @param {string} oldId ID of variable to rename.
+ * @param {string} newId ID of new variable.  May be the same as oldId, but with
+ *     an updated name.
+ */
+Blockly.Block.prototype.renameVarById = function(oldId, newId) {
+  for (var i = 0, input; input = this.inputList[i]; i++) {
+    for (var j = 0, field; field = input.fieldRow[j]; j++) {
+      if (field instanceof Blockly.FieldVariable &&
+          oldId == field.getValue()) {
+        field.setValue(newId);
       }
     }
   }
@@ -884,7 +986,7 @@ Blockly.Block.prototype.setFieldValue = function(newValue, name) {
 /**
  * Set whether this block can chain onto the bottom of another block.
  * @param {boolean} newBoolean True if there can be a previous statement.
- * @param {string|Array.<string>|null|undefined} opt_check Statement type or
+ * @param {(string|Array.<string>|null)=} opt_check Statement type or
  *     list of statement types.  Null/undefined if any type could be connected.
  */
 Blockly.Block.prototype.setPreviousStatement = function(newBoolean, opt_check) {
@@ -912,7 +1014,7 @@ Blockly.Block.prototype.setPreviousStatement = function(newBoolean, opt_check) {
 /**
  * Set whether another block can chain onto the bottom of this block.
  * @param {boolean} newBoolean True if there can be a next statement.
- * @param {string|Array.<string>|null|undefined} opt_check Statement type or
+ * @param {(string|Array.<string>|null)=} opt_check Statement type or
  *     list of statement types.  Null/undefined if any type could be connected.
  */
 Blockly.Block.prototype.setNextStatement = function(newBoolean, opt_check) {
@@ -937,7 +1039,7 @@ Blockly.Block.prototype.setNextStatement = function(newBoolean, opt_check) {
 /**
  * Set whether this block returns a value.
  * @param {boolean} newBoolean True if there is an output.
- * @param {string|Array.<string>|null|undefined} opt_check Returned type or list
+ * @param {(string|Array.<string>|null)=} opt_check Returned type or list
  *     of returned types.  Null or undefined if any type could be returned
  *     (e.g. variable get).
  */
@@ -1145,10 +1247,11 @@ Blockly.Block.prototype.appendDummyInput = function(opt_name) {
  * @param {!Object} json Structured data describing the block.
  */
 Blockly.Block.prototype.jsonInit = function(json) {
+  var blockTypeName = json['type'];
 
   // Validate inputs.
-  goog.asserts.assert(json['output'] == undefined ||
-      json['previousStatement'] == undefined,
+  goog.asserts.assert(
+      json['output'] == undefined || json['previousStatement'] == undefined,
       'Must not have both an output and a previousStatement.');
 
   // Set basic properties of block.
@@ -1300,11 +1403,11 @@ Blockly.Block.prototype.interpolate_ = function(message, args, lastDummyAlign) {
     var token = tokens[i];
     if (typeof token == 'number') {
       if (token <= 0 || token > args.length) {
-        throw new Error('Block \"' + this.type + '\": ' +
+        throw new Error('Block "' + this.type + '": ' +
             'Message index %' + token + ' out of range.');
       }
       if (indexDup[token]) {
-        throw new Error('Block \"' + this.type + '\": ' +
+        throw new Error('Block "' + this.type + '": ' +
             'Message index %' + token + ' duplicated.');
       }
       indexDup[token] = true;
@@ -1318,13 +1421,13 @@ Blockly.Block.prototype.interpolate_ = function(message, args, lastDummyAlign) {
     }
   }
   if(indexCount != args.length) {
-    throw new Error('Block \"' + this.type + '\": ' +
+    throw new Error('Block "' + this.type + '": ' +
         'Message does not reference all ' + args.length + ' arg(s).');
   }
   // Add last dummy input if needed.
   if (elements.length && (typeof elements[elements.length - 1] == 'string' ||
-      goog.string.startsWith(elements[elements.length - 1]['type'],
-                             'field_'))) {
+      goog.string.startsWith(
+          elements[elements.length - 1]['type'], 'field_'))) {
     var dummyInput = {type: 'input_dummy'};
     if (lastDummyAlign) {
       dummyInput['align'] = lastDummyAlign;
@@ -1361,74 +1464,20 @@ Blockly.Block.prototype.interpolate_ = function(message, args, lastDummyAlign) {
             case 'input_dummy':
               input = this.appendDummyInput(element['name']);
               break;
-            case 'field_label':
-              field = Blockly.Block.newFieldLabelFromJson_(element);
-              break;
-            case 'field_label_serializable':
-              field = Blockly.Block.newFieldLabelSerializableFromJson_(element);
-              break;
-            case 'field_input':
-              field = Blockly.Block.newFieldTextInputFromJson_(element);
-              break;
-            case 'field_string':
-              field = Blockly.Block.newFieldStringFromJson_(element);
-              break;
-            case 'field_textdropdown':
-              field = new Blockly.FieldTextDropdown(element['text'], element['options']);
-              if (typeof element['spellcheck'] == 'boolean') {
-                field.setSpellcheck(element['spellcheck']);
-              }
-              break;
-            case 'field_numberdropdown':
-              field = new Blockly.FieldNumberDropdown(
-                element['value'], element['options'],
-                element['min'], element['max'], element['precision']
-              );
-              break;
-            case 'field_angle':
-              field = new Blockly.FieldAngle(element['angle']);
-              break;
-            case 'field_checkbox':
-              field = new Blockly.FieldCheckbox(
-                  element['checked'] ? 'TRUE' : 'FALSE');
-              break;
-            case 'field_colour':
-              field = new Blockly.FieldColour(element['colour']);
-              break;
-            case 'field_colour_slider':
-              field = new Blockly.FieldColourSlider(element['colour']);
-              break;
-            case 'field_variable':
-              field = Blockly.Block.newFieldVariableFromJson_(element);
-              break;
-            case 'field_dropdown':
-              field = new Blockly.FieldDropdown(element['options']);
-              break;
-            case 'field_iconmenu':
-              field = new Blockly.FieldIconMenu(element['options']);
-              break;
-            case 'field_image':
-              field = Blockly.Block.newFieldImageFromJson_(element);
-              break;
-            case 'field_number':
-              field = new Blockly.FieldNumber(element['value'],
-                  element['min'], element['max'], element['precision']);
-              break;
-            case 'field_slider':
-              field = new Blockly.FieldSlider(element['value'],
-                  element['min'], element['max'], element['precision'], element['step'], element['labelText']);
-              break;
-            case 'field_date':
-              if (Blockly.FieldDate) {
-                field = new Blockly.FieldDate(element['date']);
-                break;
-              }
-              // Fall through if FieldDate is not compiled in.
             default:
+              field = Blockly.Field.fromJson(element);
+
               // Unknown field.
-              if (element['alt']) {
-                element = element['alt'];
-                altRepeat = true;
+              if (!field) {
+                if (element['alt']) {
+                  element = element['alt'];
+                  altRepeat = true;
+                } else {
+                  console.warn('Blockly could not create a field of type ' +
+                      element['type'] +
+                      '. You may need to register your custom field.  See ' +
+                      'github.com/google/blockly/issues/1584');
+                }
               }
           }
         }
@@ -1449,94 +1498,6 @@ Blockly.Block.prototype.interpolate_ = function(message, args, lastDummyAlign) {
       }
     }
   }
-};
-
-/**
- * Helper function to construct a FieldImage from a JSON arg object,
- * dereferencing any string table references.
- * @param {!Object} options A JSON object with options (src, width, height, and alt).
- * @returns {!Blockly.FieldImage} The new image.
- * @private
- */
-Blockly.Block.newFieldImageFromJson_ = function(options) {
-  var src = Blockly.utils.replaceMessageReferences(options['src']);
-  var width = Number(Blockly.utils.replaceMessageReferences(options['width']));
-  var height =
-    Number(Blockly.utils.replaceMessageReferences(options['height']));
-  var alt = Blockly.utils.replaceMessageReferences(options['alt']);
-  var flip_rtl = !!options['flip_rtl'];
-  return new Blockly.FieldImage(src, width, height, alt, flip_rtl);
-};
-
-/**
- * Helper function to construct a FieldLabel from a JSON arg object,
- * dereferencing any string table references.
- * @param {!Object} options A JSON object with options (text, and class).
- * @returns {!Blockly.FieldLabel} The new label.
- * @private
- */
-Blockly.Block.newFieldLabelFromJson_ = function(options) {
-  var text = Blockly.utils.replaceMessageReferences(options['text']);
-  return new Blockly.FieldLabel(text, options['class']);
-};
-
-/**
- * Helper function to construct a FieldLabelSerializable from a JSON arg object,
- * dereferencing any string table references.
- * @param {!Object} options A JSON object with options (text, and class).
- * @returns {!Blockly.FieldLabelSerializable} The new label.
- * @private
- */
-Blockly.Block.newFieldLabelSerializableFromJson_ = function(options) {
-  var text = Blockly.utils.replaceMessageReferences(options['text']);
-  return new Blockly.FieldLabelSerializable(text, options['class']);
-};
-
-/**
- * Helper function to construct a FieldTextInput from a JSON arg object,
- * dereferencing any string table references.
- * @param {!Object} options A JSON object with options (text, class, and
- *                          spellcheck).
- * @returns {!Blockly.FieldTextInput} The new text input.
- * @private
- */
-Blockly.Block.newFieldTextInputFromJson_ = function(options) {
-  var text = Blockly.utils.replaceMessageReferences(options['text']);
-  var field = new Blockly.FieldTextInput(text, options['class']);
-  if (typeof options['spellcheck'] == 'boolean') {
-    field.setSpellcheck(options['spellcheck']);
-  }
-  return field;
-};
-
-/**
- * Helper function to construct a FieldString from a JSON arg object,
- * dereferencing any string table references.
- * @param {!Object} options A JSON object with options (text, class, and
- *                          spellcheck).
- * @returns {!Blockly.FieldString} The new text input.
- * @private
- */
-Blockly.Block.newFieldStringFromJson_ = function(options) {
-  var text = Blockly.utils.replaceMessageReferences(options['text']);
-  var field = new Blockly.FieldString(text, options['class']);
-  if (typeof options['spellcheck'] == 'boolean') {
-    field.setSpellcheck(options['spellcheck']);
-  }
-  return field;
-};
-
-/**
- * Helper function to construct a FieldVariable from a JSON arg object,
- * dereferencing any string table references.
- * @param {!Object} options A JSON object with options (variable).
- * @returns {!Blockly.FieldVariable} The variable field.
- * @private
- */
-Blockly.Block.newFieldVariableFromJson_ = function(options) {
-  var varname = Blockly.utils.replaceMessageReferences(options['variable']);
-  var variableTypes = options['variableTypes'];
-  return new Blockly.FieldVariable(varname, null, variableTypes);
 };
 
 /**
@@ -1586,8 +1547,8 @@ Blockly.Block.prototype.moveInputBefore = function(name, refName) {
     }
   }
   goog.asserts.assert(inputIndex != -1, 'Named input "%s" not found.', name);
-  goog.asserts.assert(refIndex != -1, 'Reference input "%s" not found.',
-                      refName);
+  goog.asserts.assert(
+      refIndex != -1, 'Reference input "%s" not found.', refName);
   this.moveNumberedInputBefore(inputIndex, refIndex);
 };
 
@@ -1601,9 +1562,9 @@ Blockly.Block.prototype.moveNumberedInputBefore = function(
   // Validate arguments.
   goog.asserts.assert(inputIndex != refIndex, 'Can\'t move input to itself.');
   goog.asserts.assert(inputIndex < this.inputList.length,
-                      'Input index ' + inputIndex + ' out of bounds.');
+      'Input index ' + inputIndex + ' out of bounds.');
   goog.asserts.assert(refIndex <= this.inputList.length,
-                      'Reference input ' + refIndex + ' out of bounds.');
+      'Reference input ' + refIndex + ' out of bounds.');
   // Remove input.
   var input = this.inputList[inputIndex];
   this.inputList.splice(inputIndex, 1);
@@ -1728,9 +1689,12 @@ Blockly.Block.prototype.getCategory = function() {
 /**
  * Set this block's warning text.
  * @param {?string} text The text, or null to delete.
- * @abstract
+ * @param {string=} opt_id An optional ID for the warning text to be able to
+ *     maintain multiple warnings.
  */
-Blockly.Block.prototype.setWarningText = function(/* text */) {
+Blockly.Block.prototype.setWarningText = function(text,
+    /* eslint-disable no-unused-vars */ opt_id
+    /* eslint-enable no-unused-vars */) {
   // NOP.
 };
 
@@ -1739,7 +1703,9 @@ Blockly.Block.prototype.setWarningText = function(/* text */) {
  * @param {Blockly.Mutator} mutator A mutator dialog instance or null to remove.
  * @abstract
  */
-Blockly.Block.prototype.setMutator = function(/* mutator */) {
+Blockly.Block.prototype.setMutator = function(
+    /* eslint-disable no-unused-vars */ mutator
+    /* eslint-enable no-unused-vars */) {
   // NOP.
 };
 

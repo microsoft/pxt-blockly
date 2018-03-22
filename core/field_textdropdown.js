@@ -55,6 +55,21 @@ Blockly.FieldTextDropdown = function(text, menuGenerator, opt_validator, opt_res
 };
 goog.inherits(Blockly.FieldTextDropdown, Blockly.FieldTextInput);
 
+/**
+ * Construct a FieldTextDropdown from a JSON arg object.
+ * @param {!Object} options A JSON object with options (options).
+ * @returns {!Blockly.FieldTextDropdown} The new field instance.
+ * @package
+ * @nocollapse
+ */
+Blockly.FieldTextDropdown.fromJson = function(options) {
+  var field = new Blockly.FieldTextDropdown(element['text'], element['options']);
+  if (typeof element['spellcheck'] == 'boolean') {
+    field.setSpellcheck(element['spellcheck']);
+  }
+  return field;
+};
+
 Blockly.FieldTextDropdown.DROPDOWN_SVG_DATAURI = 'data:image/svg+xml;base64,PHN2ZyBpZD0iTGF5ZXJfMSIgZGF0YS1uYW1lPSJMYXllciAxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMi43MSIgaGVpZ2h0PSI4Ljc5IiB2aWV3Qm94PSIwIDAgMTIuNzEgOC43OSI+PHRpdGxlPmRyb3Bkb3duLWFycm93PC90aXRsZT48ZyBvcGFjaXR5PSIwLjEiPjxwYXRoIGQ9Ik0xMi43MSwyLjQ0QTIuNDEsMi40MSwwLDAsMSwxMiw0LjE2TDguMDgsOC4wOGEyLjQ1LDIuNDUsMCwwLDEtMy40NSwwTDAuNzIsNC4xNkEyLjQyLDIuNDIsMCwwLDEsMCwyLjQ0LDIuNDgsMi40OCwwLDAsMSwuNzEuNzFDMSwwLjQ3LDEuNDMsMCw2LjM2LDBTMTEuNzUsMC40NiwxMiwuNzFBMi40NCwyLjQ0LDAsMCwxLDEyLjcxLDIuNDRaIiBmaWxsPSIjMjMxZjIwIi8+PC9nPjxwYXRoIGQ9Ik02LjM2LDcuNzlhMS40MywxLjQzLDAsMCwxLTEtLjQyTDEuNDIsMy40NWExLjQ0LDEuNDQsMCwwLDEsMC0yYzAuNTYtLjU2LDkuMzEtMC41Niw5Ljg3LDBhMS40NCwxLjQ0LDAsMCwxLDAsMkw3LjM3LDcuMzdBMS40MywxLjQzLDAsMCwxLDYuMzYsNy43OVoiIGZpbGw9IiM1NzVFNzUiLz48L3N2Zz4K';
 
 /**
@@ -166,3 +181,5 @@ Blockly.FieldTextDropdown.prototype.onItemSelected = function(menu, menuItem) {
     this.setValue(value);
   }
 };
+
+Blockly.Field.register('field_textdropdown', Blockly.FieldTextDropdown);

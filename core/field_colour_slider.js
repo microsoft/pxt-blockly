@@ -52,6 +52,17 @@ Blockly.FieldColourSlider = function(colour, opt_validator) {
 goog.inherits(Blockly.FieldColourSlider, Blockly.Field);
 
 /**
+ * Construct a FieldColourSlider from a JSON arg object.
+ * @param {!Object} options A JSON object with options (colour).
+ * @returns {!Blockly.FieldColourSlider} The new field instance.
+ * @package
+ * @nocollapse
+ */
+Blockly.FieldColourSlider.fromJson = function(options) {
+  return new Blockly.FieldColourSlider(options['colour']);
+};
+
+/**
  * Install this field on a block.
  * @param {!Blockly.Block} block The block containing this field.
  */
@@ -304,3 +315,5 @@ Blockly.FieldColourSlider.prototype.dispose = function() {
   Blockly.Events.setGroup(false);
   Blockly.FieldColourSlider.superClass_.dispose.call(this);
 };
+
+Blockly.Field.register('field_colour_slider', Blockly.FieldColourSlider);

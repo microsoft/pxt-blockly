@@ -584,21 +584,10 @@ Blockly.Extensions.registerMutator('math_is_divisibleby_mutator',
     Blockly.Constants.Math.IS_DIVISIBLEBY_MUTATOR_MIXIN,
     Blockly.Constants.Math.IS_DIVISIBLE_MUTATOR_EXTENSION);
 
-/**
- * Update the tooltip of 'math_change' block to reference the variable.
- * @this Blockly.Block
- * @package
- */
-Blockly.Constants.Math.CHANGE_TOOLTIP_EXTENSION = function() {
-  this.setTooltip(function() {
-    return Blockly.Msg.MATH_CHANGE_TOOLTIP.replace('%1',
-        this.getFieldValue('VAR'));
-  }.bind(this));
-};
-
+// Update the tooltip of 'math_change' block to reference the variable.
 Blockly.Extensions.register('math_change_tooltip',
-    Blockly.Extensions.buildTooltipWithFieldValue(
-        Blockly.Msg.MATH_CHANGE_TOOLTIP, 'VAR'));
+    Blockly.Extensions.buildTooltipWithFieldText(
+        '%{BKY_MATH_CHANGE_TOOLTIP}', 'VAR'));
 
 /**
  * Mixin with mutator methods to support alternate output based if the

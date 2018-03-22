@@ -59,6 +59,24 @@ Blockly.FieldTextInput = function(text, opt_validator, opt_restrictor) {
 goog.inherits(Blockly.FieldTextInput, Blockly.Field);
 
 /**
+ * Construct a FieldTextInput from a JSON arg object,
+ * dereferencing any string table references.
+ * @param {!Object} options A JSON object with options (text, class, and
+ *                          spellcheck).
+ * @returns {!Blockly.FieldTextInput} The new field instance.
+ * @package
+ * @nocollapse
+ */
+Blockly.FieldTextInput.fromJson = function(options) {
+  var text = Blockly.utils.replaceMessageReferences(options['text']);
+  var field = new Blockly.FieldTextInput(text, options['class']);
+  if (typeof options['spellcheck'] === 'boolean') {
+    field.setSpellcheck(options['spellcheck']);
+  }
+  return field;
+};
+
+/**
  * Length of animations in seconds.
  */
 Blockly.FieldTextInput.ANIMATION_TIME = 0.25;
@@ -91,12 +109,21 @@ Blockly.FieldTextInput.prototype.spellcheck_ = true;
  * Install this text field on a block.
  */
 Blockly.FieldTextInput.prototype.init = function() {
+  if (this.fieldGroup_) {
+    // Field has already been initialized once.
+    return;
+  }
+
+  // pxtblockly: and has more than one input.
+  var notInShadow = !this.sourceBlock_.isShadow() && (this.sourceBlock_.inputList && this.sourceBlock_.inputList.length > 1);
+
+  if (notInShadow) {
+    this.className_ += ' blocklyEditableLabel';
+  }
 
   Blockly.FieldTextInput.superClass_.init.call(this);
   // If not in a shadow block, draw a box
-  // pxtblockly: and has more than one input.
-  if (!this.sourceBlock_.isShadow()
-    && (this.sourceBlock_.inputList && this.sourceBlock_.inputList.length > 1)) {
+  if (notInShadow) {
     this.box_ = Blockly.utils.createSvgElement('rect', {
       'rx': Blockly.BlockSvg.CORNER_RADIUS,
       'ry': Blockly.BlockSvg.CORNER_RADIUS,
@@ -188,7 +215,7 @@ Blockly.FieldTextInput.prototype.setRestrictor = function(restrictor) {
  * @private
  */
 Blockly.FieldTextInput.prototype.showEditor_ = function(
-  opt_quietInput, opt_readOnly, opt_withArrow, opt_arrowCallback) {
+    opt_quietInput, opt_readOnly, opt_withArrow, opt_arrowCallback) {
   this.workspace_ = this.sourceBlock_.workspace;
   var quietInput = opt_quietInput || false;
   var readOnly = opt_readOnly || false;
@@ -428,6 +455,13 @@ Blockly.FieldTextInput.prototype.resizeEditor_ = function() {
   var scale = this.sourceBlock_.workspace.scale;
   var div = Blockly.WidgetDiv.DIV;
 
+  var initialWidth;
+  if (this.sourceBlock_.isShadow()) {
+    initialWidth = this.sourceBlock_.getHeightWidth().width * scale;
+  } else {
+    initialWidth = this.size_.width * scale;
+  }
+
   var width;
   if (Blockly.BlockSvg.FIELD_TEXTINPUT_EXPAND_PAST_TRUNCATION) {
     // Resize the box based on the measured width of the text, pre-truncation
@@ -443,7 +477,7 @@ Blockly.FieldTextInput.prototype.resizeEditor_ = function() {
     width = textWidth;
   } else {
     // Set width to (truncated) block size.
-    width = this.sourceBlock_.getHeightWidth().width * scale;
+    width = initialWidth;
   }
   // The width must be at least FIELD_WIDTH and at most FIELD_WIDTH_MAX_EDIT
   width = Math.max(width, Blockly.BlockSvg.FIELD_WIDTH_MIN_EDIT * scale);
@@ -456,10 +490,7 @@ Blockly.FieldTextInput.prototype.resizeEditor_ = function() {
   // Use margin-left to animate repositioning of the box (value is unscaled).
   // This is the difference between the default position and the positioning
   // after growing the box.
-  var fieldWidth = this.sourceBlock_.getHeightWidth().width;
-  var initialWidth = fieldWidth * scale;
-  var finalWidth = width;
-  div.style.marginLeft = -0.5 * (finalWidth - initialWidth) + 'px';
+  div.style.marginLeft = -0.5 * (width - initialWidth) + 'px';
 
   // Add 0.5px to account for slight difference between SVG and CSS border
   var borderRadius = this.getBorderRadius() + 0.5;
@@ -531,9 +562,14 @@ Blockly.FieldTextInput.prototype.widgetDispose_ = function() {
     div.style.boxShadow = '';
     // Resize to actual size of final source block.
     if (thisField.sourceBlock_) {
-      var size = thisField.sourceBlock_.getHeightWidth();
-      div.style.width = (size.width + 1) + 'px';
-      div.style.height = (size.height + 1) + 'px';
+      if (thisField.sourceBlock_.isShadow()) {
+        var size = thisField.sourceBlock_.getHeightWidth();
+        div.style.width = (size.width + 1) + 'px';
+        div.style.height = (size.height + 1) + 'px';
+      } else {
+        div.style.width = (thisField.size_.width + 1) + 'px';
+        div.style.height = (Blockly.BlockSvg.FIELD_HEIGHT_MAX_EDIT + 1) + 'px';
+      }
     }
     div.style.marginLeft = 0;
   };
@@ -614,3 +650,5 @@ Blockly.FieldTextInput.nonnegativeIntegerValidator = function(text) {
   }
   return n;
 };
+
+Blockly.Field.register('field_input', Blockly.FieldTextInput);

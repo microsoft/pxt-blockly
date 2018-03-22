@@ -155,25 +155,33 @@ Blockly.FlyoutButton.prototype.createDom = function() {
   if (!this.isLabel_) {
     // Shadow rectangle (light source does not mirror in RTL).
     var shadow = Blockly.utils.createSvgElement('rect',
-        {'class': 'blocklyFlyoutButtonShadow',
-         'rx': 4, 'ry': 4, 'x': 1, 'y': 1},
-         this.svgGroup_);
+        {
+          'class': 'blocklyFlyoutButtonShadow',
+          'rx': 4, 'ry': 4, 'x': 1, 'y': 1
+        },
+        this.svgGroup_);
   }
   // Background rectangle.
   var rect = Blockly.utils.createSvgElement('rect',
-      {'class': this.isLabel_ ?
-        'blocklyFlyoutLabelBackground' : 'blocklyFlyoutButtonBackground',
-        'rx': 4, 'ry': 4},
+      {
+        'class': this.isLabel_ ?
+            'blocklyFlyoutLabelBackground' : 'blocklyFlyoutButtonBackground',
+        'rx': 4, 'ry': 4
+      },
       this.svgGroup_);
 
   var svgText = Blockly.utils.createSvgElement('text',
-      {'class': this.isLabel_ ? 'blocklyFlyoutLabelText' : 'blocklyText',
-          'x': 0, 'y': 0, 'text-anchor': 'middle'},
+      {
+        'class': this.isLabel_ ? 'blocklyFlyoutLabelText' : 'blocklyText',
+        'x': 0,
+        'y': 0,
+        'text-anchor': 'middle'
+      },
       this.svgGroup_);
   svgText.textContent = this.text_;
 
   this.width = Blockly.Field.getCachedWidth(svgText);
-
+  // pxtblockly: support for icons in toolbox labels
   if (this.icon_ || this.iconClass_) {
     var svgIcon = Blockly.utils.createSvgElement('text',
       {'class': this.iconClass_ ? 'blocklyFlyoutLabelIcon ' + this.iconClass_ : 'blocklyFlyoutLabelIcon',
@@ -228,7 +236,7 @@ Blockly.FlyoutButton.prototype.show = function() {
 };
 
 /**
- * Update svg attributes to match internal state.
+ * Update SVG attributes to match internal state.
  * @private
  */
 Blockly.FlyoutButton.prototype.updateTransform_ = function() {
@@ -250,6 +258,7 @@ Blockly.FlyoutButton.prototype.moveTo = function(x, y) {
 /**
  * Location of the button.
  * @return {!goog.math.Coordinate} x, y coordinates.
+ * @package
  */
 Blockly.FlyoutButton.prototype.getPosition = function() {
   return this.position_;

@@ -62,6 +62,19 @@ Blockly.FieldNumber = function(opt_value, opt_min, opt_max, opt_precision,
 goog.inherits(Blockly.FieldNumber, Blockly.FieldTextInput);
 
 /**
+ * Construct a FieldNumber from a JSON arg object.
+ * @param {!Object} options A JSON object with options (value, min, max, and
+ *                          precision).
+ * @returns {!Blockly.FieldNumber} The new field instance.
+ * @package
+ * @nocollapse
+ */
+Blockly.FieldNumber.fromJson = function(options) {
+  return new Blockly.FieldNumber(options['value'],
+      options['min'], options['max'], options['precision']);
+};
+
+/**
  * Fixed width of the num-pad drop-down, in px.
  * @type {number}
  * @const
@@ -160,7 +173,7 @@ Blockly.FieldNumber.prototype.showEditor_ = function() {
   Blockly.FieldNumber.superClass_.showEditor_.call(this, false, showNumPad);
 
   // Show a numeric keypad in the drop-down on touch
-  if (true) {
+  if (showNumPad) {
     this.showNumPad_();
   }
 };
@@ -368,3 +381,5 @@ Blockly.FieldNumber.prototype.classValidator = function(text) {
   }
   return String(n);
 };
+
+Blockly.Field.register('field_number', Blockly.FieldNumber);

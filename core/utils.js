@@ -45,7 +45,7 @@ goog.require('goog.userAgent');
  * accessed through the exact name that was exported. Note, that all the exports
  * are happening as the last thing in the generated js files, so they won't be
  * accessible before JavaScript loads!
- * @return {!Object<string, string>} The message array
+ * @return {!Object.<string, string>} The message array.
  * @private
  */
 Blockly.utils.getMessageArray_ = function() {
@@ -122,7 +122,7 @@ Blockly.utils.removeClass = function(element, className) {
  * @param {!Element} element DOM element to check.
  * @param {string} className Name of class to check.
  * @return {boolean} True if class exists, false otherwise.
- * @private
+ * @package
  */
 Blockly.utils.hasClass = function(element, className) {
   var classes = element.getAttribute('class');
@@ -269,7 +269,7 @@ Blockly.utils.getScale_REGEXP_ = /scale\(\s*([-+\d.e]+)\s*\)/;
  * @private
  */
 Blockly.utils.getRelativeXY.XY_3D_REGEX_ =
-  /transform:\s*translate3d\(\s*([-+\d.e]+)px([ ,]\s*([-+\d.e]+)\s*)px([ ,]\s*([-+\d.e]+)\s*)px\)?/;
+    /transform:\s*translate3d\(\s*([-+\d.e]+)px([ ,]\s*([-+\d.e]+)\s*)px([ ,]\s*([-+\d.e]+)\s*)px\)?/;
 
 /**
  * Static regex to pull the x,y,z values out of a translate3d() style property.
@@ -278,7 +278,7 @@ Blockly.utils.getRelativeXY.XY_3D_REGEX_ =
  * @private
  */
 Blockly.utils.getRelativeXY.XY_2D_REGEX_ =
-  /transform:\s*translate\(\s*([-+\d.e]+)px([ ,]\s*([-+\d.e]+)\s*)px\)?/;
+    /transform:\s*translate\(\s*([-+\d.e]+)px([ ,]\s*([-+\d.e]+)\s*)px\)?/;
 
 /**
  * Helper method for creating SVG elements.
@@ -287,9 +287,9 @@ Blockly.utils.getRelativeXY.XY_2D_REGEX_ =
  * @param {Element} parent Optional parent on which to append the element.
  * @return {!SVGElement} Newly created SVG element.
  */
-Blockly.utils.createSvgElement = function(name, attrs, parent /*, opt_workspace */) {
-  var e = /** @type {!SVGElement} */ (
-      document.createElementNS(Blockly.SVG_NS, name));
+Blockly.utils.createSvgElement = function(name, attrs, parent) {
+  var e = /** @type {!SVGElement} */
+      (document.createElementNS(Blockly.SVG_NS, name));
   for (var key in attrs) {
     e.setAttribute(key, attrs[key]);
   }
@@ -325,7 +325,7 @@ Blockly.utils.isRightButton = function(e) {
  * @param {!Event} e Mouse event.
  * @param {!Element} svg SVG element.
  * @param {SVGMatrix} matrix Inverted screen CTM to use.
- * @return {!Object} Object with .x and .y properties.
+ * @return {!SVGPoint} Object with .x and .y properties.
  */
 Blockly.utils.mouseToSvg = function(e, svg, matrix) {
   var svgPoint = svg.createSVGPoint();
@@ -451,11 +451,11 @@ Blockly.utils.replaceMessageReferences = function(message) {
   var interpolatedResult = Blockly.utils.tokenizeInterpolation_(message, false);
   // When parseInterpolationTokens == false, interpolatedResult should be at
   // most length 1.
-  return interpolatedResult.length ? interpolatedResult[0] : "";
+  return interpolatedResult.length ? interpolatedResult[0] : '';
 };
 
 /**
- * Validates that any %{BKY_...} references in the message refer to keys of
+ * Validates that any %{MSG_KEY} references in the message refer to keys of
  * the Blockly.Msg string table.
  * @param {string} message Text which might contain string table references.
  * @return {boolean} True if all message references have matching values.
@@ -500,7 +500,7 @@ Blockly.utils.tokenizeInterpolation_ = function(message,
   // 0 - Base case.
   // 1 - % found.
   // 2 - Digit found.
-  // 3 - Message ref found
+  // 3 - Message ref found.
   var state = 0;
   var buffer = [];
   var number = null;
@@ -567,7 +567,8 @@ Blockly.utils.tokenizeInterpolation_ = function(message,
             if (goog.isString(rawValue)) {
               // Attempt to dereference substrings, too, appending to the end.
               Array.prototype.push.apply(tokens,
-                Blockly.utils.tokenizeInterpolation(rawValue));
+                  Blockly.utils.tokenizeInterpolation_(
+                      rawValue, parseInterpolationTokens));
             } else if (parseInterpolationTokens) {
               // When parsing interpolation tokens, numbers are special
               // placeholders (%1, %2, etc). Make sure all other values are
@@ -918,7 +919,7 @@ Blockly.utils.insertAfter_ = function(newNode, refNode) {
  * @throws Error Will throw if no global document can be found (e.g., Node.js).
  */
 Blockly.utils.runAfterPageLoad = function(fn) {
-  if (!document) {
+  if (typeof document != 'object') {
     throw new Error('Blockly.utils.runAfterPageLoad() requires browser document.');
   }
   if (document.readyState === 'complete') {

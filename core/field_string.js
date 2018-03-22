@@ -44,6 +44,22 @@ Blockly.FieldString = function(text, opt_validator, opt_restrictor) {
 goog.inherits(Blockly.FieldString, Blockly.FieldTextInput);
 
 /**
+ * Construct a FieldString from a JSON arg object.
+ * @param {!Object} options A JSON object with options (text).
+ * @returns {!Blockly.FieldString} The new field instance.
+ * @package
+ * @nocollapse
+ */
+Blockly.FieldString.fromJson = function(options) {
+  var text = Blockly.utils.replaceMessageReferences(options['text']);
+  var field = new Blockly.FieldString(text, options['class']);
+  if (typeof options['spellcheck'] == 'boolean') {
+    field.setSpellcheck(options['spellcheck']);
+  }
+  return field;
+};
+
+/**
  * Quote padding.
  * @type {number}
  * @public
@@ -154,3 +170,5 @@ Blockly.FieldString.prototype.positionArrow = function(x) {
     );
     return addedWidth;
 };
+
+Blockly.Field.register('field_string', Blockly.FieldString);

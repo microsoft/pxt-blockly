@@ -27,6 +27,7 @@
 goog.provide('Blockly.BlockDragger');
 
 goog.require('Blockly.InsertionMarkerManager');
+goog.require('Blockly.Events.BlockMove');
 
 goog.require('goog.math.Coordinate');
 goog.require('goog.asserts');
@@ -35,7 +36,7 @@ goog.require('goog.asserts');
 /**
  * Class for a block dragger.  It moves blocks around the workspace when they
  * are being dragged by a mouse or touch.
- * @param {!Blockly.Block} block The block to drag.
+ * @param {!Blockly.BlockSvg} block The block to drag.
  * @param {!Blockly.WorkspaceSvg} workspace The workspace to drag on.
  * @constructor
  */
@@ -167,8 +168,11 @@ Blockly.BlockDragger.prototype.startBlockDrag = function(currentDragDeltaXY) {
   // surface.
   this.draggingBlock_.moveToDragSurface_();
 
-  if (this.workspace_.toolbox_) {
-    this.workspace_.toolbox_.addDeleteStyle();
+  var toolbox = this.workspace_.getToolbox();
+  if (toolbox) {
+    var style = this.draggingBlock_.isDeletable() ? 'blocklyToolboxDelete' :
+        'blocklyToolboxGrab';
+    toolbox.addStyle(style);
   }
 };
 
@@ -223,8 +227,11 @@ Blockly.BlockDragger.prototype.endBlockDrag = function(e, currentDragDeltaXY) {
   }
   this.workspace_.setResizesEnabled(true);
 
-  if (this.workspace_.toolbox_) {
-    this.workspace_.toolbox_.removeDeleteStyle();
+  var toolbox = this.workspace_.getToolbox();
+  if (toolbox) {
+    var style = this.draggingBlock_.isDeletable() ? 'blocklyToolboxDelete' :
+        'blocklyToolboxGrab';
+    toolbox.removeStyle(style);
   }
   Blockly.Events.setGroup(false);
 };

@@ -49,6 +49,20 @@ Blockly.FieldSlider = function(value_, opt_min, opt_max, opt_precision, opt_step
   };
 goog.inherits(Blockly.FieldSlider, Blockly.FieldNumber);
 
+/**
+ * Construct a FieldSlider from a JSON arg object.
+ * @param {!Object} options A JSON object with options (value, min, max, and
+ *                          precision, step, labelText).
+ * @returns {!Blockly.FieldSlider} The new field instance.
+ * @package
+ * @nocollapse
+ */
+Blockly.FieldSlider.fromJson = function(options) {
+  return new Blockly.FieldSlider(options['value'],
+      options['min'], options['max'], options['precision'],
+      options['step'], options['labelText']);
+};
+
 Blockly.FieldSlider.prototype.setMinMax = function(min, max, step) {
     this.min_ = parseFloat(min);
     this.max_ = parseFloat(max);
@@ -245,3 +259,5 @@ Blockly.FieldSlider.prototype.dispose = function() {
     Blockly.Events.setGroup(false);
     Blockly.FieldSlider.superClass_.dispose.call(this);
 };
+
+Blockly.Field.register('field_slider', Blockly.FieldSlider);

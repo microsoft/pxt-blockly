@@ -104,6 +104,9 @@ Blockly.Constants.Variables.CUSTOM_CONTEXT_MENU_VARIABLE_GETTER_SETTER_MIXIN = {
    * @this Blockly.Block
    */
   customContextMenu: function(options) {
+    if(this.isInFlyout){
+      return;
+    }
     // Getter blocks have the option to create a setter block, and vice versa.
     if (this.type == 'variables_get') {
       var opposite_type = 'variables_set';
@@ -126,4 +129,4 @@ Blockly.Constants.Variables.CUSTOM_CONTEXT_MENU_VARIABLE_GETTER_SETTER_MIXIN = {
 };
 
 Blockly.Extensions.registerMixin('contextMenu_variableSetterGetter',
-  Blockly.Constants.Variables.CUSTOM_CONTEXT_MENU_VARIABLE_GETTER_SETTER_MIXIN);
+    Blockly.Constants.Variables.CUSTOM_CONTEXT_MENU_VARIABLE_GETTER_SETTER_MIXIN);

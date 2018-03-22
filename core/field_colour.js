@@ -27,6 +27,8 @@
 goog.provide('Blockly.FieldColour');
 
 goog.require('Blockly.Field');
+goog.require('Blockly.utils');
+
 goog.require('goog.dom');
 goog.require('goog.events');
 goog.require('goog.style');
@@ -49,6 +51,17 @@ Blockly.FieldColour = function(colour, opt_validator) {
   this.addArgType('colour');
 };
 goog.inherits(Blockly.FieldColour, Blockly.Field);
+
+/**
+ * Construct a FieldColour from a JSON arg object.
+ * @param {!Object} options A JSON object with options (colour).
+ * @returns {!Blockly.FieldColour} The new field instance.
+ * @package
+ * @nocollapse
+ */
+Blockly.FieldColour.fromJson = function(options) {
+  return new Blockly.FieldColour(options['colour']);
+};
 
 /**
  * By default use the global constants for colours.
@@ -181,20 +194,14 @@ Blockly.FieldColour.prototype.setColumns = function(columns) {
 Blockly.FieldColour.prototype.showEditor_ = function() {
   Blockly.DropDownDiv.hideWithoutAnimation();
   Blockly.DropDownDiv.clearContent();
-  var div = Blockly.DropDownDiv.getContentDiv();
 
-  // Create the palette using Closure.
-  this.colorPicker_ = new goog.ui.ColorPicker();
-  this.colorPicker_.setSize(this.columns_ || Blockly.FieldColour.COLUMNS);
-  this.colorPicker_.setColors(this.colours_ || Blockly.FieldColour.COLOURS);
+  Blockly.DropDownDiv.showPositionedByBlock(this, this.sourceBlock_);
 
-  this.colorPicker_.render(div);
-  this.colorPicker_.setSelectedColor(this.getValue(true));
+  this.colorPicker_ = this.createWidget_();
 
   Blockly.DropDownDiv.setColour('#ffffff', '#dddddd');
   if (this.sourceBlock_.parentBlock_) Blockly.DropDownDiv.setCategory(this.sourceBlock_.parentBlock_.getCategory());
-  Blockly.DropDownDiv.showPositionedByBlock(this, this.sourceBlock_);
-
+  
   this.setValue(this.getValue());
 
   // Configure event handler.
@@ -215,6 +222,22 @@ Blockly.FieldColour.prototype.showEditor_ = function() {
 };
 
 /**
+ * Create a color picker widget and render it inside the widget div.
+ * @return {!goog.ui.ColorPicker} The newly created color picker.
+ * @private
+ */
+Blockly.FieldColour.prototype.createWidget_ = function() {
+  // Create the palette using Closure.
+  var picker = new goog.ui.ColorPicker();
+  picker.setSize(this.columns_ || Blockly.FieldColour.COLUMNS);
+  picker.setColors(this.colours_ || Blockly.FieldColour.COLOURS);
+  var div = Blockly.DropDownDiv.getContentDiv();
+  picker.render(div);
+  picker.setSelectedColor(this.getValue(true));
+  return picker;
+};
+
+/**
  * Hide the colour palette.
  * @private
  */
@@ -225,3 +248,5 @@ Blockly.FieldColour.prototype.dispose = function() {
   Blockly.Events.setGroup(false);
   Blockly.FieldColour.superClass_.dispose.call(this);
 };
+
+Blockly.Field.register('field_colour', Blockly.FieldColour);
