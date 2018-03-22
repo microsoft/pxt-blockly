@@ -55,7 +55,7 @@ Blockly.WorkspaceCommentSvg.TEXTAREA_OFFSET = 2;
  * @type {number}
  * @const
  */
-Blockly.WorkspaceCommentSvg.TOP_OFFSET = 18;
+Blockly.WorkspaceCommentSvg.TOP_OFFSET = 20;
 
 /**
  * Returns a bounding box describing the dimensions of this comment.
@@ -79,6 +79,14 @@ Blockly.WorkspaceCommentSvg.prototype.render = function() {
   this.createEditor_();
   this.svgGroup_.appendChild(this.foreignObject_);
 
+  this.svgHandleTarget_ = Blockly.utils.createSvgElement('rect',
+      {
+        'class': 'blocklyCommentHandleTarget',
+        'fill': 'transparent',
+        'x': 0,
+        'y': 0
+      });
+  this.svgGroup_.appendChild(this.svgHandleTarget_);
   this.svgRectTarget_ = Blockly.utils.createSvgElement('rect',
       {
         'class': 'blocklyCommentTarget',
@@ -91,6 +99,10 @@ Blockly.WorkspaceCommentSvg.prototype.render = function() {
 
   // Add the resize icon
   this.addResizeDom_();
+  if (this.isDeletable()) {
+    // Add the delete icon
+    this.addDeleteDom_();
+  }
 
   this.setSize_(size.width, size.height);
 
@@ -102,6 +114,15 @@ Blockly.WorkspaceCommentSvg.prototype.render = function() {
   if (this.resizeGroup_) {
     Blockly.bindEventWithChecks_(
         this.resizeGroup_, 'mousedown', this, this.resizeMouseDown_);
+  }
+
+  if (this.isDeletable()) {
+    Blockly.bindEventWithChecks_(
+        this.deleteGroup_, 'mousedown', this, this.deleteMouseDown_);
+    Blockly.bindEventWithChecks_(
+        this.deleteGroup_, 'mouseout', this, this.deleteMouseOut_);
+    Blockly.bindEventWithChecks_(
+        this.deleteGroup_, 'mouseup', this, this.deleteMouseUp_);
   }
 };
 
@@ -186,6 +207,106 @@ Blockly.WorkspaceCommentSvg.prototype.addResizeDom_ = function() {
 };
 
 /**
+ * Add the delete icon to the DOM
+ * @private
+ */
+Blockly.WorkspaceCommentSvg.prototype.addDeleteDom_ = function() {
+  var iconColor = '#fff';
+  this.deleteGroup_ = Blockly.utils.createSvgElement(
+      'g',
+      {
+        'class': 'blocklyCommentDeleteIcon'
+      },
+      this.svgGroup_);
+  this.deleteIconBorder_ = Blockly.utils.createSvgElement('rect',
+      {
+        'x': '-2', 'y': '1',
+        'width': '17', 'height': '17',
+        'fill': 'transparent',
+        'class': 'blocklyDeleteIconShape'
+      },
+      this.deleteGroup_);
+  var deleteIconGroup = Blockly.utils.createSvgElement('g',
+      {
+        'transform': 'scale(0.8) translate(1, 3)'
+      },
+      this.deleteGroup_);
+  // Lid
+  var topX = 1;
+  var topY = 2;
+  var binWidth = 12;
+  var binHeight = 12;
+  Blockly.utils.createSvgElement(
+      'rect',
+      {
+        'x': topX + (binWidth/2) - 2, 'y': topY,
+        'width': '4', 'height': '2',
+        'stroke': iconColor,
+        'stroke-width': '1',
+        'fill': 'transparent'
+      },
+      deleteIconGroup);
+  // Top line.
+  var topLineY = topY + 2;
+  Blockly.utils.createSvgElement(
+      'line',
+      {
+        'x1': topX, 'y1': topLineY,
+        'x2': topX + binWidth, 'y2': topLineY,
+        'stroke': iconColor,
+        'stroke-width': '1',
+        'stroke-linecap': 'round'
+      },
+      deleteIconGroup);
+  // Rect
+  Blockly.utils.createSvgElement(
+      'rect',
+      {
+        'x': topX + 1, 'y': topLineY,
+        'width': topX + binWidth - 3, 'height': binHeight,
+        'rx': '1', 'ry': '1',
+        'stroke': iconColor,
+        'stroke-width': '1',
+        'fill': 'transparent'
+      },
+      deleteIconGroup);
+  // ||| icon.
+  var x = 5;
+  var y1 = topLineY + 3;
+  var y2 = topLineY + binHeight - 3;
+  Blockly.utils.createSvgElement(
+      'line',
+      {
+        'x1': x, 'y1': y1,
+        'x2': x, 'y2': y2,
+        'stroke': iconColor,
+        'stroke-width': '1',
+        'stroke-linecap': 'round'
+      },
+      deleteIconGroup);
+  Blockly.utils.createSvgElement(
+      'line',
+      {
+        'x1': x+2, 'y1': y1,
+        'x2': x+2, 'y2': y2,
+        'stroke': iconColor,
+        'stroke-width': '1',
+        'stroke-linecap': 'round'
+      },
+      deleteIconGroup);
+  Blockly.utils.createSvgElement(
+      'line',
+      {
+        'x1': x+4, 'y1': y1,
+        'x2': x+4, 'y2': y2,
+        'stroke': iconColor,
+        'stroke-width': '1',
+        'stroke-linecap': 'round'
+      },
+      deleteIconGroup);
+};
+
+/**
  * Handle a mouse-down on comment's resize corner.
  * @param {!Event} e Mouse down event.
  * @private
@@ -207,6 +328,42 @@ Blockly.WorkspaceCommentSvg.prototype.resizeMouseDown_ = function(e) {
   this.onMouseMoveWrapper_ = Blockly.bindEventWithChecks_(
       document, 'mousemove', this, this.resizeMouseMove_);
   Blockly.hideChaff();
+  // This event has been handled.  No need to bubble up to the document.
+  e.stopPropagation();
+};
+
+/**
+ * Handle a mouse-down on comment's delete icon.
+ * @param {!Event} e Mouse down event.
+ * @private
+ */
+Blockly.WorkspaceCommentSvg.prototype.deleteMouseDown_ = function(e) {
+  // highlight the delete icon
+  Blockly.utils.addClass(
+      /** @type {!Element} */ (this.deleteIconBorder_), 'blocklyDeleteIconHighlighted');
+  // This event has been handled.  No need to bubble up to the document.
+  e.stopPropagation();
+};
+
+/**
+ * Handle a mouse-out on comment's delete icon.
+ * @param {!Event} e Mouse out event.
+ * @private
+ */
+Blockly.WorkspaceCommentSvg.prototype.deleteMouseOut_ = function(/*e*/) {
+  // restore highlight on the delete icon
+  Blockly.utils.removeClass(
+      /** @type {!Element} */ (this.deleteIconBorder_), 'blocklyDeleteIconHighlighted');
+};
+
+/**
+ * Handle a mouse-up on comment's delete icon.
+ * @param {!Event} e Mouse up event.
+ * @private
+ */
+Blockly.WorkspaceCommentSvg.prototype.deleteMouseUp_ = function(e) {
+  // Delete this comment
+  this.dispose(true, true);
   // This event has been handled.  No need to bubble up to the document.
   e.stopPropagation();
 };
@@ -287,6 +444,8 @@ Blockly.WorkspaceCommentSvg.prototype.setSize_ = function(width, height) {
   this.svgRect_.setAttribute('height', height);
   this.svgRectTarget_.setAttribute('width', width);
   this.svgRectTarget_.setAttribute('height', height);
+  this.svgHandleTarget_.setAttribute('width', width);
+  this.svgHandleTarget_.setAttribute('height', Blockly.WorkspaceCommentSvg.TOP_OFFSET);
   if (this.RTL) {
     this.svgRect_.setAttribute('transform', 'scale(-1 1)');
     this.svgRectTarget_.setAttribute('transform', 'scale(-1 1)');
@@ -298,10 +457,15 @@ Blockly.WorkspaceCommentSvg.prototype.setSize_ = function(width, height) {
       // Mirror the resize group.
       this.resizeGroup_.setAttribute('transform', 'translate(' +
         (-width + resizeSize) + ',' + (height - resizeSize) + ') scale(-1 1)');
+      this.deleteGroup_.setAttribute('transform', 'translate(' +
+        (-width + (2 * resizeSize)) + ',' + (0) + ') scale(-1 1)');
     } else {
       this.resizeGroup_.setAttribute('transform', 'translate(' +
         (width - resizeSize) + ',' +
         (height - resizeSize) + ')');
+      this.deleteGroup_.setAttribute('transform', 'translate(' +
+        (width - (2 * resizeSize)) + ',' +
+        (0) + ')');
     }
   }
 
@@ -317,6 +481,7 @@ Blockly.WorkspaceCommentSvg.prototype.disposeInternal_ = function() {
   this.textarea_ = null;
   this.foreignObject_ = null;
   this.svgRectTarget_ = null;
+  this.svgHandleTarget_ = null;
 };
 
 /**
@@ -327,6 +492,7 @@ Blockly.WorkspaceCommentSvg.prototype.setFocus = function() {
   this.focused_ = true;
   var textarea = this.textarea_;
   this.svgRectTarget_.style.fill = "none";
+  this.svgHandleTarget_.style.fill = "transparent";
   setTimeout(function() {
     textarea.focus();
   }, 0);
@@ -341,6 +507,7 @@ Blockly.WorkspaceCommentSvg.prototype.blurFocus = function() {
   this.focused_ = false;
   var textarea = this.textarea_;
   this.svgRectTarget_.style.fill = "transparent";
+  this.svgHandleTarget_.style.fill = "none";
   setTimeout(function() {
     textarea.blur();
   }, 0);

@@ -604,6 +604,20 @@ Blockly.Css.CONTENT = [
     'overflow: hidden;',
   '}',
 
+  '.blocklyCommentDeleteIcon {',
+    'cursor: pointer;',
+    'fill: #000;',
+    'display: none',
+  '}',
+
+  '.blocklySelected > .blocklyCommentDeleteIcon {',
+    'display: block',
+  '}',
+
+  '.blocklyDeleteIconShape.blocklyDeleteIconHighlighted {',
+    'fill: #fc4;',
+  '}',
+
   '.blocklyHtmlInput {',
     'border: none;',
     'font-family: "Helvetica Neue", "Segoe UI", Helvetica, sans-serif;',
