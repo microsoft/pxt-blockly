@@ -203,7 +203,7 @@ Blockly.FieldColour.prototype.showEditor_ = function() {
       goog.ui.ColorPicker.EventType.CHANGE,
       function(event) {
         var colour = event.target.getSelectedColor() || '#000000';
-        Blockly.WidgetDiv.hide();
+        Blockly.DropDownDiv.hide();
         if (thisField.sourceBlock_) {
           // Call any validation function, and allow it to override.
           colour = thisField.callValidator(colour);
