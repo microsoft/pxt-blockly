@@ -101,7 +101,7 @@ Blockly.Lua['controls_whileUntil'] = function(block) {
 Blockly.Lua['controls_for'] = function(block) {
   // For loop.
   var variable0 = Blockly.Lua.variableDB_.getName(
-      block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
+      block.getField('VAR').getText(), Blockly.Variables.NAME_TYPE);
   var startVar = Blockly.Lua.valueToCode(block, 'FROM',
       Blockly.Lua.ORDER_NONE) || '0';
   var endVar = Blockly.Lua.valueToCode(block, 'TO',
@@ -144,7 +144,7 @@ Blockly.Lua['controls_for'] = function(block) {
 Blockly.Lua['controls_forEach'] = function(block) {
   // For each loop.
   var variable0 = Blockly.Lua.variableDB_.getName(
-      block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
+      block.getField('VAR').getText(), Blockly.Variables.NAME_TYPE);
   var argument0 = Blockly.Lua.valueToCode(block, 'LIST',
       Blockly.Lua.ORDER_NONE) || '{}';
   var branch = Blockly.Lua.statementToCode(block, 'DO') || '\n';

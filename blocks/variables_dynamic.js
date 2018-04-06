@@ -112,7 +112,7 @@ Blockly.Constants.VariablesDynamic.CUSTOM_CONTEXT_MENU_VARIABLE_GETTER_SETTER_MI
     }
 
     var option = { enabled: this.workspace.remainingCapacity() > 0 };
-    var name = this.getFieldValue('VAR');
+    var name = this.getField('VAR').getText();
     option.text = contextMenuMsg.replace('%1', name);
     var xmlField = goog.dom.createDom('field', null, name);
     xmlField.setAttribute('name', 'VAR');
@@ -124,7 +124,7 @@ Blockly.Constants.VariablesDynamic.CUSTOM_CONTEXT_MENU_VARIABLE_GETTER_SETTER_MI
     options.push(option);
   },
   onchange: function() {
-    var id = this.getFieldValue('VAR');
+    var id = this.getField('VAR').getText();
     var variableModel = this.workspace.getVariableById(id);
     if (this.type == 'variables_get_dynamic') {
       this.outputConnection.setCheck(variableModel.type);

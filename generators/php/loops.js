@@ -76,7 +76,7 @@ Blockly.PHP['controls_whileUntil'] = function(block) {
 Blockly.PHP['controls_for'] = function(block) {
   // For loop.
   var variable0 = Blockly.PHP.variableDB_.getName(
-      block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
+      block.getField('VAR').getText(), Blockly.Variables.NAME_TYPE);
   var argument0 = Blockly.PHP.valueToCode(block, 'FROM',
       Blockly.PHP.ORDER_ASSIGNMENT) || '0';
   var argument1 = Blockly.PHP.valueToCode(block, 'TO',
@@ -141,7 +141,7 @@ Blockly.PHP['controls_for'] = function(block) {
 Blockly.PHP['controls_forEach'] = function(block) {
   // For each loop.
   var variable0 = Blockly.PHP.variableDB_.getName(
-      block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
+      block.getField('VAR').getText(), Blockly.Variables.NAME_TYPE);
   var argument0 = Blockly.PHP.valueToCode(block, 'LIST',
       Blockly.PHP.ORDER_ASSIGNMENT) || '[]';
   var branch = Blockly.PHP.statementToCode(block, 'DO');

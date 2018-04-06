@@ -61,7 +61,7 @@ Blockly.Comment.prototype.width_ = 160;
  * Height of bubble.
  * @private
  */
-Blockly.Comment.prototype.height_ = 80;
+Blockly.Comment.prototype.height_ = 120;
 
 /**
  * Draw the comment icon.
@@ -69,28 +69,41 @@ Blockly.Comment.prototype.height_ = 80;
  * @private
  */
 Blockly.Comment.prototype.drawIcon_ = function(group) {
-  // Circle.
-  Blockly.utils.createSvgElement('circle',
-      {'class': 'blocklyIconShape', 'r': '8', 'cx': '8', 'cy': '8'},
-      group);
-  // Can't use a real '?' text character since different browsers and operating
-  // systems render it differently.
-  // Body of question mark.
   Blockly.utils.createSvgElement('path',
       {
-        'class': 'blocklyIconSymbol',
-        'd': 'm6.8,10h2c0.003,-0.617 0.271,-0.962 0.633,-1.266 2.875,-2.405' +
-          '0.607,-5.534 -3.765,-3.874v1.7c3.12,-1.657 3.698,0.118 2.336,1.25' +
-          '-1.201,0.998 -1.201,1.528 -1.204,2.19z'},
+        'class': 'blocklyIconShape',
+        'd': 'm 2,2 0,9.2211 3.0026599,0 1.6008929,1.5989 1.8138195,-1.5989 6.6046683,0 0,-9.2211 -13.0220406,0 z',
+        'style': 'fill: #fff;'
+      },
       group);
-  // Dot of question mark.
   Blockly.utils.createSvgElement('rect',
       {
         'class': 'blocklyIconSymbol',
-        'x': '6.8',
-        'y': '10.78',
-        'height': '2',
-        'width': '2'
+        'x': '4',
+        'y': '8',
+        'height': '1',
+        'width': '6',
+        'style': 'fill: #575E75;'
+      },
+      group);
+  Blockly.utils.createSvgElement('rect',
+      {
+        'class': 'blocklyIconSymbol',
+        'x': '4',
+        'y': '6',
+        'height': '1',
+        'width': '6',
+        'style': 'fill: #575E75;'
+      },
+      group);
+  Blockly.utils.createSvgElement('rect',
+      {
+        'class': 'blocklyIconSymbol',
+        'x': '4',
+        'y': '4',
+        'height': '1',
+        'width': '8',
+        'style': 'fill: #575E75;'
       },
       group);
 };
@@ -101,6 +114,41 @@ Blockly.Comment.prototype.drawIcon_ = function(group) {
  * @private
  */
 Blockly.Comment.prototype.createEditor_ = function() {
+  // Create core elements for the block.
+  /**
+   * @type {SVGElement}
+   * @private
+   */
+  this.svgGroup_ = Blockly.utils.createSvgElement(
+      'g', {'class': 'blocklyCommentBubble'}, null);
+  this.svgGroup_.translate_ = '';
+
+  this.createTextEditor_();
+  this.svgGroup_.appendChild(this.foreignObject_);
+  
+  // Add the delete icon
+  this.addDeleteDom_();
+  Blockly.bindEventWithChecks_(
+      this.deleteGroup_, 'mousedown', this, this.deleteMouseDown_);
+  Blockly.bindEventWithChecks_(
+      this.deleteGroup_, 'mouseout', this, this.deleteMouseOut_);
+  Blockly.bindEventWithChecks_(
+      this.deleteGroup_, 'mouseup', this, this.deleteMouseUp_);
+
+  // Add the minimize icon
+  this.addMinimizeDom_();
+  Blockly.bindEventWithChecks_(
+      this.minimizeGroup_, 'mousedown', this, this.minimizeMouseUp_);
+
+  return this.svgGroup_;
+};
+
+/**
+ * Create the textarea editor for the comment's bubble.
+ * @return {!Element} The top-level node of the editor.
+ * @private
+ */
+Blockly.Comment.prototype.createTextEditor_ = function() {
   /* Create the editor.  Here's the markup that will be generated:
     <foreignObject x="8" y="8" width="164" height="164">
       <body xmlns="http://www.w3.org/1999/xhtml" class="blocklyMinimalBody">
@@ -111,7 +159,10 @@ Blockly.Comment.prototype.createEditor_ = function() {
     </foreignObject>
   */
   this.foreignObject_ = Blockly.utils.createSvgElement('foreignObject',
-      {'x': Blockly.Bubble.BORDER_WIDTH, 'y': Blockly.Bubble.BORDER_WIDTH},
+      {
+        'x': Blockly.WorkspaceCommentSvg.BORDER_WIDTH,
+        'y': Blockly.WorkspaceCommentSvg.BORDER_WIDTH + Blockly.WorkspaceCommentSvg.TOP_OFFSET,
+      },
       null);
   var body = document.createElementNS(Blockly.HTML_NS, 'body');
   body.setAttribute('xmlns', Blockly.HTML_NS);
@@ -123,6 +174,7 @@ Blockly.Comment.prototype.createEditor_ = function() {
   this.textarea_ = textarea;
   this.foreignObject_.appendChild(body);
   Blockly.bindEventWithChecks_(textarea, 'mouseup', this, this.textareaFocus_, true, true);
+  Blockly.bindEventWithChecks_(textarea, 'blur', this, this.textareaBlur_);
   // Don't zoom with mousewheel.
   Blockly.bindEventWithChecks_(textarea, 'wheel', this, function(e) {
     e.stopPropagation();
@@ -139,7 +191,106 @@ Blockly.Comment.prototype.createEditor_ = function() {
   setTimeout(function() {
     textarea.focus();
   }, 0);
+  this.addFocus();
   return this.foreignObject_;
+};
+
+/**
+ * Add the delete icon to the DOM
+ * @private
+ */
+Blockly.Comment.prototype.addDeleteDom_ = function() {
+  this.deleteGroup_ = Blockly.utils.createSvgElement(
+      'g',
+      {
+        'class': 'blocklyCommentDeleteIcon'
+      },
+      this.svgGroup_);
+  this.deleteIconBorder_ = Blockly.utils.createSvgElement('rect',
+      {
+        'x': '-12.5', 'y': '1',
+        'width': '27.5', 'height': '27.5',
+        'fill': 'transparent',
+        'class': 'blocklyDeleteIconShape'
+      },
+      this.deleteGroup_);
+  Blockly.WorkspaceCommentSvg.drawDeleteIcon(this.deleteGroup_)
+};
+
+/**
+ * Handle a mouse-down on comment's delete icon.
+ * @param {!Event} e Mouse down event.
+ * @private
+ */
+Blockly.Comment.prototype.deleteMouseDown_ = function(e) {
+  // highlight the delete icon
+  Blockly.utils.addClass(
+      /** @type {!Element} */ (this.deleteIconBorder_), 'blocklyDeleteIconHighlighted');
+  // This event has been handled.  No need to bubble up to the document.
+  e.stopPropagation();
+};
+
+/**
+ * Handle a mouse-out on comment's delete icon.
+ * @param {!Event} e Mouse out event.
+ * @private
+ */
+Blockly.Comment.prototype.deleteMouseOut_ = function(/*e*/) {
+  // restore highlight on the delete icon
+  Blockly.utils.removeClass(
+      /** @type {!Element} */ (this.deleteIconBorder_), 'blocklyDeleteIconHighlighted');
+};
+
+/**
+ * Handle a mouse-up on comment's delete icon.
+ * @param {!Event} e Mouse up event.
+ * @private
+ */
+Blockly.Comment.prototype.deleteMouseUp_ = function(e) {
+  // Delete this comment
+  this.block_.setCommentText(null);
+  // This event has been handled.  No need to bubble up to the document.
+  e.stopPropagation();
+};
+
+/**
+ * Add the minimize icon to the DOM
+ * @private
+ */
+Blockly.Comment.prototype.addMinimizeDom_ = function() {
+  this.minimizeGroup_ = Blockly.utils.createSvgElement(
+      'g',
+      {
+        'class': 'blocklyCommentMinimizeIcon'
+      },
+      this.svgGroup_);
+  Blockly.utils.createSvgElement('rect',
+      {
+        'x': '2', 'y': '2',
+        'width': '27.5', 'height': '27.5',
+        'class': 'blocklyIconShape',
+        'style': 'fill: transparent; stroke-width: 0px;'
+      },
+      this.minimizeGroup_);
+  Blockly.utils.createSvgElement(
+      'path',
+      {
+        'd': 'm 15,17 c -2.0186301,-1.7939 -4.0372859,-3.5877 -6.0559675,-5.3815 4.0751576,0.011 8.1503148,0.023 12.2254728,0.034 -2.056269,1.7828 -4.112771,3.5653 -6.1695053,5.3475 z',
+        'style': 'fill: #fff'
+      },
+      this.minimizeGroup_);
+};
+
+/**
+ * Handle a mouse-up on comment's minimize icon.
+ * @param {!Event} e Mouse up event.
+ * @private
+ */
+Blockly.Comment.prototype.minimizeMouseUp_ = function(e) {
+  // Minimize this comment
+  this.block_.comment.setVisible(false);
+  // This event has been handled.  No need to bubble up to the document.
+  e.stopPropagation();
 };
 
 /**
@@ -164,11 +315,26 @@ Blockly.Comment.prototype.updateEditable = function() {
 Blockly.Comment.prototype.resizeBubble_ = function() {
   if (this.isVisible()) {
     var size = this.bubble_.getBubbleSize();
-    var doubleBorderWidth = 2 * Blockly.Bubble.BORDER_WIDTH;
+    var doubleBorderWidth = 2 * Blockly.WorkspaceCommentSvg.BORDER_WIDTH;
+    var topOffset = Blockly.WorkspaceCommentSvg.TOP_OFFSET;
     this.foreignObject_.setAttribute('width', size.width - doubleBorderWidth);
-    this.foreignObject_.setAttribute('height', size.height - doubleBorderWidth);
+    this.foreignObject_.setAttribute('height', size.height - doubleBorderWidth - topOffset);
     this.textarea_.style.width = (size.width - doubleBorderWidth - 4) + 'px';
-    this.textarea_.style.height = (size.height - doubleBorderWidth - 4) + 'px';
+    this.textarea_.style.height = (size.height - doubleBorderWidth - topOffset - 4) + 'px';
+
+    if (this.deleteGroup_) {
+      if (this.block_.RTL) {
+        this.deleteGroup_.setAttribute('transform', 'translate(' +
+          (Blockly.WorkspaceCommentSvg.DELETE_ICON_PADDING + 
+          Blockly.WorkspaceCommentSvg.BORDER_WIDTH) + ',' +
+          Blockly.WorkspaceCommentSvg.BORDER_WIDTH + ') scale(-1 1)');
+      } else {
+        this.deleteGroup_.setAttribute('transform', 'translate(' +
+          (size.width - Blockly.WorkspaceCommentSvg.DELETE_ICON_PADDING -
+          Blockly.WorkspaceCommentSvg.BORDER_WIDTH) + ',' +
+          Blockly.WorkspaceCommentSvg.BORDER_WIDTH + ')');
+      }
+    }
   }
 };
 
@@ -215,6 +381,22 @@ Blockly.Comment.prototype.setVisible = function(visible) {
 };
 
 /**
+ * Focus this comment.  Highlight it visually.
+ */
+Blockly.Comment.prototype.addFocus = function() {
+  Blockly.utils.addClass(
+      /** @type {!Element} */ (this.svgGroup_), 'blocklyFocused');
+};
+
+/**
+ * Unfocus this comment.  Remove its highlighting.
+ */
+Blockly.Comment.prototype.removeFocus = function() {
+  Blockly.utils.removeClass(
+      /** @type {!Element} */ (this.svgGroup_), 'blocklyFocused');
+};
+
+/**
  * Bring the comment to the top of the stack when clicked on.
  * @param {!Event} e Mouse up event.
  * @private
@@ -229,6 +411,17 @@ Blockly.Comment.prototype.textareaFocus_ = function(
     // we need to reapply the focus.
     this.textarea_.focus();
   }
+  this.addFocus();
+};
+
+/**
+ * Remove the focused attribute when the text area goes out of focus.
+ * @param {!Event} e blur event.
+ * @private
+ */
+Blockly.Comment.prototype.textareaBlur_ = function(
+    /* eslint-disable no-unused-vars */ e /* eslint-enable no-unused-vars */) {
+  this.removeFocus();
 };
 
 /**

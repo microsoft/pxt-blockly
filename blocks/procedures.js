@@ -858,6 +858,7 @@ Blockly.Blocks['procedures_callnoreturn'] = {
     option.callback = function() {
       var def = Blockly.Procedures.getDefinition(name, workspace);
       def && def.select();
+      workspace.centerOnBlock(def.id);
     };
     options.push(option);
   },

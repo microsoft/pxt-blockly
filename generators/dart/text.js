@@ -60,7 +60,7 @@ Blockly.Dart['text_join'] = function(block) {
 
 Blockly.Dart['text_append'] = function(block) {
   // Append to a variable in place.
-  var varName = Blockly.Dart.variableDB_.getName(block.getFieldValue('VAR'),
+  var varName = Blockly.Dart.variableDB_.getName(block.getField('VAR').getText(),
       Blockly.Variables.NAME_TYPE);
   var value = Blockly.Dart.valueToCode(block, 'TEXT',
       Blockly.Dart.ORDER_NONE) || '\'\'';

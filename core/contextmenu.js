@@ -294,6 +294,7 @@ Blockly.ContextMenu.blockCommentOption = function(block) {
     commentOption.text = Blockly.Msg.ADD_COMMENT;
     commentOption.callback = function() {
       block.setCommentText('');
+      block.comment.setVisible(true);
     };
   }
   return commentOption;
@@ -460,7 +461,7 @@ Blockly.ContextMenu.workspaceCommentOption = function(ws, e) {
   // location of the mouse event.
   var addWsComment = function() {
     var comment = ws.newComment(
-        Blockly.Msg.WORKSPACE_COMMENT_DEFAULT_TEXT, 100, 100);
+        Blockly.Msg.WORKSPACE_COMMENT_DEFAULT_TEXT, 120, 160);
 
     var injectionDiv = ws.getInjectionDiv();
     // Bounding rect coordinates are in client coordinates, meaning that they

@@ -163,6 +163,20 @@ Blockly.WorkspaceCommentSvg.prototype.showContextMenu_ = function(e) {
 };
 
 /**
+ * Move this workspace comment to the top of the stack.
+ * @return {!boolean} Whether or not the comment has been moved.
+ * @private
+ */
+Blockly.WorkspaceCommentSvg.prototype.promote_ = function() {
+  var svgGroup = this.svgGroup_.parentNode;
+  if (svgGroup.lastChild !== this.svgGroup_) {
+    svgGroup.appendChild(this.svgGroup_);
+    return true;
+  }
+  return false;
+};
+
+/**
  * Select this comment.  Highlight it visually.
  */
 Blockly.WorkspaceCommentSvg.prototype.select = function() {
@@ -184,6 +198,7 @@ Blockly.WorkspaceCommentSvg.prototype.select = function() {
   event.workspaceId = this.workspace.id;
   Blockly.Events.fire(event);
   Blockly.selected = this;
+  this.promote_();
   this.addSelect();
 };
 
@@ -444,42 +459,6 @@ Blockly.WorkspaceCommentSvg.prototype.setDragging = function(adding) {
     Blockly.utils.removeClass(
         /** @type {!Element} */ (this.svgGroup_), 'blocklyDragging');
   }
-};
-
-/**
- * Get comment height.
- * @return {number} comment height.
- * @public
- */
-Blockly.WorkspaceCommentSvg.prototype.getHeight = function() {
-  return this.height_;
-};
-
-/**
- * Set comment height.
- * @param {number} height comment height.
- * @public
- */
-Blockly.WorkspaceCommentSvg.prototype.setHeight = function(height) {
-  this.height_ = height;
-};
-
-/**
- * Get comment width.
- * @return {number} comment width.
- * @public
- */
-Blockly.WorkspaceCommentSvg.prototype.getWidth = function() {
-  return this.width_;
-};
-
-/**
- * Set comment width.
- * @param {number} width comment width.
- * @public
- */
-Blockly.WorkspaceCommentSvg.prototype.setWidth = function(width) {
-  this.width_ = width;
 };
 
 /**

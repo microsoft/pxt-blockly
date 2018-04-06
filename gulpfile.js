@@ -48,7 +48,6 @@ function pxtPublishTask() {
 		gulp.src('./blockly_compressed.js').pipe(gulp.dest('../pxt/webapp/public/blockly/'));
 		gulp.src('./msg/js/en.js').pipe(gulp.dest('../pxt/webapp/public/blockly/msg/js/'));
 		gulp.src('./msg/json/en.json').pipe(gulp.dest('../pxt/webapp/public/blockly/msg/json/'));
-		gulp.src('./messages.js').pipe(gulp.dest('../pxt/webapp/public/blockly/'));
 		gulp.src('./media/').pipe(gulp.dest('../pxt/webapp/public/blockly/media/'));
 	}
 }

@@ -260,6 +260,29 @@ Blockly.BlockSvg.prototype.setGlowStack = function(isGlowingStack) {
 };
 
 /**
+ * Warning highlight only this particular block, to highlight it visually as if it has a warning.
+ * @param {boolean} isHighlightingWarning Whether this block should glow as if has a warning.
+ */
+Blockly.BlockSvg.prototype.setHighlightWarning = function(isHighlightingWarning) {
+  //pxtblockly: Sanity check that the block is rendered before setting the highlight
+  if (!this.rendered) {
+    return;
+  }
+  this.isHighlightingWarningBlock_ = isHighlightingWarning;
+  // Update the applied SVG filter if the property has changed
+  var svg = this.svgPath_;
+  if (this.isHighlightingWarningBlock_ && !this.svgPathWarningHighlight_) {
+    this.svgPathWarningHighlight_ = this.svgPath_.cloneNode(true);
+    this.svgPathWarningHighlight_.setAttribute('fill', 'none');
+    this.svgPathWarningHighlight_.setAttribute('filter', 'url(#blocklyHighlightWarningFilter)');
+    this.getSvgRoot().appendChild(this.svgPathWarningHighlight_);
+  } else if (!this.isHighlightingWarningBlock_ && this.svgPathWarningHighlight_) {
+    this.getSvgRoot().removeChild(this.svgPathWarningHighlight_);
+    this.svgPathWarningHighlight_ = null;
+  }
+};
+
+/**
  * Glow only this particular block, to highlight it visually as if it's running.
  * @param {boolean} isHighlightingBlock Whether this block should glow as if running.
  */

@@ -31,7 +31,7 @@ goog.require('Blockly.Lua');
 
 Blockly.Lua['variables_get'] = function(block) {
   // Variable getter.
-  var code = Blockly.Lua.variableDB_.getName(block.getFieldValue('VAR'),
+  var code = Blockly.Lua.variableDB_.getName(block.getField('VAR').getText(),
       Blockly.Variables.NAME_TYPE);
   return [code, Blockly.Lua.ORDER_ATOMIC];
 };
@@ -41,6 +41,6 @@ Blockly.Lua['variables_set'] = function(block) {
   var argument0 = Blockly.Lua.valueToCode(block, 'VALUE',
       Blockly.Lua.ORDER_NONE) || '0';
   var varName = Blockly.Lua.variableDB_.getName(
-      block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
+      block.getField('VAR').getText(), Blockly.Variables.NAME_TYPE);
   return varName + ' = ' + argument0 + '\n';
 };

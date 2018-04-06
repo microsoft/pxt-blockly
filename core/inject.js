@@ -133,7 +133,7 @@ Blockly.createDom_ = function(container, options) {
         'height': '160%', 'width': '180%', y: '-30%', x: '-40%'}, defs);
   options.stackGlowBlur = Blockly.utils.createSvgElement('feGaussianBlur',
       {'in': 'SourceGraphic',
-      'stdDeviation': Blockly.STACK_GLOW_RADIUS}, stackGlowFilter);
+      'stdDeviation': Blockly.Colours.stackGlowSize}, stackGlowFilter);
   // Set all gaussian blur pixels to 1 opacity before applying flood
   var componentTransfer = Blockly.utils.createSvgElement('feComponentTransfer', {'result': 'outBlur'}, stackGlowFilter);
   Blockly.utils.createSvgElement('feFuncA',
@@ -154,7 +154,7 @@ Blockly.createDom_ = function(container, options) {
         'height': '160%', 'width': '180%', y: '-30%', x: '-40%'}, defs);
   Blockly.utils.createSvgElement('feGaussianBlur',
       {'in': 'SourceGraphic',
-      'stdDeviation': Blockly.REPLACEMENT_GLOW_RADIUS}, replacementGlowFilter);
+      'stdDeviation': Blockly.Colours.replacementGlowSize}, replacementGlowFilter);
   // Set all gaussian blur pixels to 1 opacity before applying flood
   var componentTransfer = Blockly.utils.createSvgElement('feComponentTransfer',
       {'result': 'outBlur'}, replacementGlowFilter);
@@ -170,7 +170,6 @@ Blockly.createDom_ = function(container, options) {
   Blockly.utils.createSvgElement('feComposite',
       {'in': 'SourceGraphic', 'in2': 'outGlow', 'operator': 'over'}, replacementGlowFilter);
 
-
   // Using a dilate distorts the block shape.
   // Instead use a gaussian blur, and then set all alpha to 1 with a transfer.
   var highlightGlowFilter = Blockly.utils.createSvgElement('filter',
@@ -178,18 +177,38 @@ Blockly.createDom_ = function(container, options) {
       'height': '160%', 'width': '180%', y: '-30%', x: '-40%'}, defs);
   options.stackGlowBlur = Blockly.utils.createSvgElement('feGaussianBlur',
     {'in': 'SourceGraphic',
-    'stdDeviation': Blockly.HIGHLIGHT_GLOW_RADIUS}, highlightGlowFilter);
+    'stdDeviation': Blockly.Colours.highlightGlowSize}, highlightGlowFilter);
   // Set all gaussian blur pixels to 1 opacity before applying flood
   var componentTransfer = Blockly.utils.createSvgElement('feComponentTransfer', {'result': 'outBlur'}, highlightGlowFilter);
   Blockly.utils.createSvgElement('feFuncA',
     {'type': 'table', 'tableValues': '0' + goog.string.repeat(' 1', 16)}, componentTransfer);
   // Color the highlight
   Blockly.utils.createSvgElement('feFlood',
-    {'flood-color': Blockly.Colours.stackGlow,
-    'flood-opacity': Blockly.Colours.stackGlowOpacity, 'result': 'outColor'}, highlightGlowFilter);
+    {'flood-color': Blockly.Colours.highlightGlow,
+    'flood-opacity': Blockly.Colours.highlightGlowSize, 'result': 'outColor'}, highlightGlowFilter);
   Blockly.utils.createSvgElement('feComposite',
     {'in': 'outColor', 'in2': 'outBlur',
     'operator': 'in', 'result': 'outGlow'}, highlightGlowFilter);
+
+  // Filter for error / warning marker
+  var warningGlowFilter = Blockly.utils.createSvgElement('filter',
+    {'id': 'blocklyHighlightWarningFilter',
+      'height': '160%', 'width': '180%', y: '-30%', x: '-40%'}, defs);
+  options.stackGlowBlur = Blockly.utils.createSvgElement('feGaussianBlur',
+    {'in': 'SourceGraphic',
+    'stdDeviation': Blockly.Colours.warningGlowSize}, warningGlowFilter);
+  // Set all gaussian blur pixels to 1 opacity before applying flood
+  var componentTransfer = Blockly.utils.createSvgElement('feComponentTransfer', {'result': 'outBlur'}, warningGlowFilter);
+  Blockly.utils.createSvgElement('feFuncA',
+    {'type': 'table', 'tableValues': '0' + goog.string.repeat(' 1', 16)}, componentTransfer);
+  // Color the highlight
+  Blockly.utils.createSvgElement('feFlood',
+    {'flood-color': Blockly.Colours.warningGlow,
+    'flood-opacity': Blockly.Colours.warningGlowOpacity, 'result': 'outColor'}, warningGlowFilter);
+  Blockly.utils.createSvgElement('feComposite',
+    {'in': 'outColor', 'in2': 'outBlur',
+    'operator': 'in', 'result': 'outGlow'}, warningGlowFilter);
+
   /*
     <filter id="blocklyEmbossFilter837493">
       <feGaussianBlur in="SourceAlpha" stdDeviation="1" result="blur" />
@@ -206,31 +225,31 @@ Blockly.createDom_ = function(container, options) {
   */
   var embossFilter = Blockly.utils.createSvgElement('filter',
       {'id': 'blocklyEmbossFilter' + rnd}, defs);
-  Blockly.utils.createSvgElement('feGaussianBlur',
-      {'in': 'SourceAlpha', 'stdDeviation': 1, 'result': 'blur'}, embossFilter);
-  var feSpecularLighting = Blockly.utils.createSvgElement('feSpecularLighting',
-      {
-        'in': 'blur',
-        'surfaceScale': 1,
-        'specularConstant': 0.5,
-        'specularExponent': 10,
-        'lighting-color': 'white',
-        'result': 'specOut'
-      },
-      embossFilter);
-  Blockly.utils.createSvgElement('fePointLight',
-      {'x': -5000, 'y': -10000, 'z': 20000}, feSpecularLighting);
-  Blockly.utils.createSvgElement('feComposite',
-      {
-        'in': 'specOut',
-        'in2': 'SourceAlpha',
-        'operator': 'in',
-        'result': 'specOut'
-      }, embossFilter);
+  // Blockly.utils.createSvgElement('feGaussianBlur',
+  //     {'in': 'SourceAlpha', 'stdDeviation': 1, 'result': 'blur'}, embossFilter);
+  // var feSpecularLighting = Blockly.utils.createSvgElement('feSpecularLighting',
+  //     {
+  //       'in': 'blur',
+  //       'surfaceScale': 1,
+  //       'specularConstant': 0.5,
+  //       'specularExponent': 10,
+  //       'lighting-color': 'white',
+  //       'result': 'specOut'
+  //     },
+  //     embossFilter);
+  // Blockly.utils.createSvgElement('fePointLight',
+  //     {'x': -5000, 'y': -10000, 'z': 20000}, feSpecularLighting);
+  // Blockly.utils.createSvgElement('feComposite',
+  //     {
+  //       'in': 'specOut',
+  //       'in2': 'SourceAlpha',
+  //       'operator': 'in',
+  //       'result': 'specOut'
+  //     }, embossFilter);
   Blockly.utils.createSvgElement('feComposite',
       {
         'in': 'SourceGraphic',
-        'in2': 'specOut',
+        //'in2': 'specOut',
         'operator': 'arithmetic',
         'k1': 0,
         'k2': 1,

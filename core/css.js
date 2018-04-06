@@ -434,8 +434,8 @@ Blockly.Css.CONTENT = [
   '}',
 
   '.blocklyDisabled>.blocklyPath {',
-    'fill-opacity: .5;',
-    'stroke-opacity: .5;',
+    'fill-opacity: .8;',
+    'stroke-opacity: .8;',
   '}',
   '.blocklyDisabled .blocklyEditableText .blocklyBlockBackground {',
     'fill-opacity: 0.1 !important;',
@@ -474,7 +474,14 @@ Blockly.Css.CONTENT = [
   '}',
 
   '.blocklyBubbleText {',
-    'fill: $colour_text;',
+    'fill: #fff;',
+  '}',
+
+  '.blocklyBubbleCanvas {',
+    'user-select: none;',
+    '-moz-user-select: none;',
+    '-ms-user-select: none;',
+    '-webkit-user-select: none;',
   '}',
 
   '.blocklyFlyout {',
@@ -519,7 +526,7 @@ Blockly.Css.CONTENT = [
   '.blocklyFlyoutLabelText {',
     'font-family: "Helvetica Neue", "Segoe UI", Helvetica, sans-serif;',
     'font-size: 14pt;',
-    'fill: #575E75;',
+    'fill: $colour_text;',
     'font-weight: bold;',
   '}',
 
@@ -556,6 +563,7 @@ Blockly.Css.CONTENT = [
     'fill: #000;',
     'stroke-width: 1px;',
     'stroke: #fff;',
+    'cursor: pointer;',
   '}',
 
   '.blocklyIconSymbol {',
@@ -565,6 +573,7 @@ Blockly.Css.CONTENT = [
   '.blocklyMinimalBody {',
     'margin: 0;',
     'padding: 0;',
+    'background-color: #FAF6BD;',
   '}',
 
   '.blocklyCommentForeignObject {',
@@ -573,7 +582,7 @@ Blockly.Css.CONTENT = [
   '}',
 
   '.blocklyCommentRect {',
-    'fill: #F9F3A1;',
+    'fill: #FAF6BD;',
     'stroke: #F9F3A1;',
     'stroke-width: 1px',
   '}',
@@ -601,7 +610,14 @@ Blockly.Css.CONTENT = [
     'padding: 3px;',
     'resize: none;',
     'display: block;',
+    'color: $colour_text;',
     'overflow: hidden;',
+    'font-size: 12pt;',
+    'line-height: 22px;',
+  '}',
+
+  '.blocklyUneditableComment {',
+    'fill: $colour_text;',
   '}',
 
   '.blocklyCommentDeleteIcon {',
@@ -610,12 +626,12 @@ Blockly.Css.CONTENT = [
     'display: none',
   '}',
 
-  '.blocklySelected > .blocklyCommentDeleteIcon {',
+  '.blocklyFocused > .blocklyCommentDeleteIcon, .blocklyCommentBubble > .blocklyCommentDeleteIcon {',
     'display: block',
   '}',
 
   '.blocklyDeleteIconShape.blocklyDeleteIconHighlighted {',
-    'fill: #fc4;',
+    'fill: rgba(255, 255, 255, 0.20);',
   '}',
 
   '.blocklyHtmlInput {',

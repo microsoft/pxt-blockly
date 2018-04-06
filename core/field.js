@@ -179,6 +179,12 @@ Blockly.Field.prototype.validator_ = null;
 Blockly.Field.NBSP = '\u00A0';
 
 /**
+ * Text offset used for IE/Edge.
+ * @const
+ */
+Blockly.Field.IE_TEXT_OFFSET = '0.3em';
+
+/**
  * Editable fields usually show some sort of UI for the user to change them.
  * @type {boolean}
  * @public
@@ -232,8 +238,10 @@ Blockly.Field.prototype.init = function() {
   this.textElement_ = Blockly.utils.createSvgElement('text',
       {'class': this.className_,
        'x': fieldX,
-       'dy': '0.7ex',
-       'y': size.height / 2},
+       'y': size.height / 2 + Blockly.BlockSvg.FIELD_TOP_PADDING,
+       'dominant-baseline': 'middle',
+       'dy': goog.userAgent.EDGE_OR_IE ? Blockly.Field.IE_TEXT_OFFSET : '0',
+       'text-anchor': 'middle'},
       this.fieldGroup_);
 
   this.updateEditable();
@@ -447,9 +455,10 @@ Blockly.Field.prototype.render_ = function() {
     }
 
     // Apply new text element x position.
-    var width = Blockly.Field.getCachedWidth(this.textElement_);
-    var newX = centerTextX - width / 2;
-    this.textElement_.setAttribute('x', newX);
+    this.textElement_.setAttribute('x', centerTextX);
+    //var width = Blockly.Field.getCachedWidth(this.textElement_);
+    //var newX = centerTextX - width / 2;
+    //this.textElement_.setAttribute('x', newX);
   }
 
   // Update any drawn box to the correct width and height.
@@ -763,12 +772,20 @@ Blockly.Field.prototype.setTooltip = function(
  */
 Blockly.Field.prototype.getClickTarget_ = function() {
   var nFields = 0;
+  var onlyDropdown = -1;
 
   for (var i = 0, input; input = this.sourceBlock_.inputList[i]; i++) {
+    for (var j = 0; j < input.fieldRow.length; j++) {
+      if (onlyDropdown < 0 && input.fieldRow[j] instanceof Blockly.FieldDropdown) {
+        onlyDropdown = 1;
+      } else if (!(input.fieldRow[j] instanceof Blockly.FieldLabel)) {
+        onlyDropdown = 0;
+      }
+    }
     nFields += input.fieldRow.length;
   }
 
-  if (nFields <= 1) {
+  if ((nFields <= 1 || onlyDropdown) && this.sourceBlock_.outputConnection) {
     return this.sourceBlock_.getSvgRoot();
   } else {
     return this.getSvgRoot();

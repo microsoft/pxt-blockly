@@ -65,7 +65,7 @@ Blockly.Lua['text_join'] = function(block) {
 Blockly.Lua['text_append'] = function(block) {
   // Append to a variable in place.
   var varName = Blockly.Lua.variableDB_.getName(
-      block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
+      block.getField('VAR').getText(), Blockly.Variables.NAME_TYPE);
   var value = Blockly.Lua.valueToCode(block, 'TEXT',
       Blockly.Lua.ORDER_CONCATENATION) || '\'\'';
   return varName + ' = ' + varName + ' .. ' + value + '\n';

@@ -224,6 +224,11 @@ function logger(e) {
   console.log(e);
 }
 
+function centerOnBlock() {
+  if (Blockly.selected) {
+    workspace.centerOnBlock(Blockly.selected.id);
+  }
+}
 
 function highlightBlock() {
   if (Blockly.selected) {
@@ -234,6 +239,24 @@ function highlightBlock() {
 function unhighlightBlock() {
   if (Blockly.selected) {
     workspace.highlightBlock(Blockly.selected.id, false);
+  }
+}
+
+function highlightBlockWarning() {
+  if (Blockly.selected) {
+    var block = workspace.getBlockById(Blockly.selected.id);
+    if (block) {
+      block.setHighlightWarning(true);
+    }
+  }
+}
+
+function unhighlightBlockWarning() {
+  if (Blockly.selected) {
+    var block = workspace.getBlockById(Blockly.selected.id);
+    if (block) {
+      block.setHighlightWarning(false);
+    }
   }
 }
 
@@ -417,9 +440,20 @@ h1 {
   </p>
 
   <p>
+    Center on block : &nbsp;
+    <input type="button" value="center on last clicked block" onclick="centerOnBlock()" />
+  </p>
+
+  <p>
     Highlight: &nbsp;
     <input type="button" value="Highlight last clicked block" onclick="highlightBlock()" />
     <input type="button" value="Unhighlight last clicked block" onclick="unhighlightBlock()" />
+  </p>
+
+  <p>
+    Warning: &nbsp;
+    <input type="button" value="Set warning on last clicked block" onclick="highlightBlockWarning()" />
+    <input type="button" value="Remove warning from last clicked block" onclick="unhighlightBlockWarning()" />
   </p>
 
   <p>

@@ -992,6 +992,55 @@ Blockly.WorkspaceSvg.prototype.reportValue = function(id, value) {
 };
 
 /**
+ * Scroll the workspace to center on the given block.
+ * @param {?string} id ID of block center on.
+ * @public
+ */
+Blockly.WorkspaceSvg.prototype.centerOnBlock = function(id) {
+  if (!this.scrollbar) {
+    console.warn('Tried to scroll a non-scrollable workspace.');
+    return;
+  }
+  var block = this.getBlockById(id);
+  if (block) {
+    // XY is in workspace coordinates.
+    var xy = block.getRelativeToSurfaceXY();
+    // Height/width is in workspace units.
+    var heightWidth = block.getHeightWidth();
+
+    // Center in workspace units.
+    var blockCenterX = xy.x + heightWidth.width / 2;
+    var blockCenterY = xy.y + heightWidth.height / 2;
+
+    // Workspace scale, used to convert from workspace coordinates to pixels.
+    var scale = this.scale;
+
+    // Center in pixels.  0, 0 is at the workspace origin.  These numbers may
+    // be negative.
+    var pixelX = blockCenterX * scale;
+    var pixelY = blockCenterY * scale;
+
+    var metrics = this.getMetrics();
+
+    // Scrolling to here would put the block in the top-left corner of the
+    // visible workspace.
+    var scrollToBlockX = pixelX - metrics.contentLeft;
+    var scrollToBlockY = pixelY - metrics.contentTop;
+
+    // viewHeight and viewWidth are in pixels.
+    var halfViewWidth = metrics.viewWidth / 2;
+    var halfViewHeight = metrics.viewHeight / 2;
+
+    // Put the block in the center of the visible workspace instead.
+    var scrollToCenterX = scrollToBlockX - halfViewWidth;
+    var scrollToCenterY = scrollToBlockY - halfViewHeight;
+
+    Blockly.WidgetDiv.hide(true);
+    this.scrollbar.set(scrollToCenterX, scrollToCenterY);
+  }
+};
+
+/**
  * Paste the provided block onto the workspace.
  * @param {!Element} xmlBlock XML block element.
  */
@@ -1272,6 +1321,7 @@ Blockly.WorkspaceSvg.prototype.onMouseWheel_ = function(e) {
     var x = this.scrollX - e.deltaX;
     var y = this.scrollY - e.deltaY;
     this.startDragMetrics = this.getMetrics();
+    console.log('ms:', x, y);
     this.scroll(x, y);
   }
   e.preventDefault();
@@ -1630,28 +1680,48 @@ Blockly.WorkspaceSvg.prototype.zoomToFit = function() {
   var ratioX = workspaceWidth / blocksWidth;
   var ratioY = workspaceHeight / blocksHeight;
   this.setScale(Math.min(ratioX, ratioY));
-  this.scrollCenter();
+  this.scrollCenter(true);
 };
 
 /**
  * Center the workspace.
  */
-Blockly.WorkspaceSvg.prototype.scrollCenter = function() {
+Blockly.WorkspaceSvg.prototype.scrollCenter = function(withAnimation) {
   if (!this.scrollbar) {
     // Can't center a non-scrolling workspace.
+    console.warn('Tried to scroll a non-scrollable workspace.');
     return;
   }
   // Hide the WidgetDiv without animation (zoom makes field out of place with div)
   Blockly.WidgetDiv.hide(true);
   Blockly.DropDownDiv.hideWithoutAnimation();
   Blockly.hideChaff(false);
+
+  var initialX = 724.991943359375;
+  var initialY = 370.21099853515625;
+
   var metrics = this.getMetrics();
+
   var x = (metrics.contentWidth - metrics.viewWidth) / 2;
   if (this.flyout_) {
     x -= this.flyout_.width_ / 2;
   }
   var y = (metrics.contentHeight - metrics.viewHeight) / 2;
-  this.scrollbar.set(x, y);
+
+  var scrollbar = this.scrollbar;
+  scrollbar.set(initialX, initialY);
+
+  var i = 0;
+  function step(timestamp) {
+    i++;
+    var intermediateX = (initialX - (Math.max(initialX, x)) / 10);
+    var intermediateY = (initialY - (Math.max(initialY, y)) / 10);
+    scrollbar.set(intermediateX, intermediateY);
+    if (i < 10) {
+      window.setTimeout(window.requestAnimationFrame(step), 1000);
+    }
+  }
+  window.requestAnimationFrame(step);
 };
 
 /**
@@ -2041,12 +2111,13 @@ Blockly.WorkspaceSvg.prototype.removeToolboxCategoryCallback = function(key) {
  * Look up the gesture that is tracking this touch stream on this workspace.
  * May create a new gesture.
  * @param {!Event} e Mouse event or touch event.
- * @return {Blockly.Gesture} The gesture that is tracking this touch stream,
- *     or null if no valid gesture exists.
+ * @return {Blockly.Gesture} The gesture that is tracking this touch
+ *     stream, or null if no valid gesture exists.
  * @package
  */
 Blockly.WorkspaceSvg.prototype.getGesture = function(e) {
-  var isStart = (e.type == 'mousedown' || e.type == 'touchstart' || e.type == 'pointerdown');
+  var isStart = (e.type == 'mousedown' || e.type == 'touchstart' ||
+      e.type == 'pointerdown');
 
   var gesture = this.currentGesture_;
   if (gesture) {

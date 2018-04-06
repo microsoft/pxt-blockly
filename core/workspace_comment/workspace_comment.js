@@ -84,6 +84,12 @@ Blockly.WorkspaceComment = function(workspace, content, height, width, opt_id) {
    */
   this.movable_ = true;
 
+  /**
+   * @type {boolean}
+   * @private
+   */
+  this.editable_ = true;
+
   /** @type {!string} */
   this.content_ = content;
 
@@ -131,6 +137,42 @@ Blockly.WorkspaceComment.prototype.moveBy = function(dx, dy) {
 };
 
 /**
+ * Get comment height.
+ * @return {number} comment height.
+ * @public
+ */
+Blockly.WorkspaceComment.prototype.getHeight = function() {
+  return this.height_;
+};
+
+/**
+ * Set comment height.
+ * @param {number} height comment height.
+ * @public
+ */
+Blockly.WorkspaceComment.prototype.setHeight = function(height) {
+  this.height_ = height;
+};
+
+/**
+ * Get comment width.
+ * @return {number} comment width.
+ * @public
+ */
+Blockly.WorkspaceComment.prototype.getWidth = function() {
+  return this.width_;
+};
+
+/**
+ * Set comment width.
+ * @param {number} width comment width.
+ * @public
+ */
+Blockly.WorkspaceComment.prototype.setWidth = function(width) {
+  this.width_ = width;
+};
+
+/**
  * Get whether this comment is deletable or not.
  * @return {boolean} True if deletable.
  */
@@ -162,6 +204,22 @@ Blockly.WorkspaceComment.prototype.isMovable = function() {
  */
 Blockly.WorkspaceComment.prototype.setMovable = function(movable) {
   this.movable_ = movable;
+};
+
+/**
+ * Get whether this comment is editable or not.
+ * @return {boolean} True if editable.
+ */
+Blockly.WorkspaceComment.prototype.isEditable = function() {
+  return this.editable_;
+};
+
+/**
+ * Set whether this comment is editable or not.
+ * @param {boolean} editable True if editable.
+ */
+Blockly.WorkspaceComment.prototype.setEditable = function(editable) {
+  this.editable_ = editable;
 };
 
 /**

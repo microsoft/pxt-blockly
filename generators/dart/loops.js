@@ -76,7 +76,7 @@ Blockly.Dart['controls_whileUntil'] = function(block) {
 Blockly.Dart['controls_for'] = function(block) {
   // For loop.
   var variable0 = Blockly.Dart.variableDB_.getName(
-      block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
+      block.getField('VAR').getText(), Blockly.Variables.NAME_TYPE);
   var argument0 = Blockly.Dart.valueToCode(block, 'FROM',
       Blockly.Dart.ORDER_ASSIGNMENT) || '0';
   var argument1 = Blockly.Dart.valueToCode(block, 'TO',
@@ -141,7 +141,7 @@ Blockly.Dart['controls_for'] = function(block) {
 Blockly.Dart['controls_forEach'] = function(block) {
   // For each loop.
   var variable0 = Blockly.Dart.variableDB_.getName(
-      block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
+      block.getField('VAR').getText(), Blockly.Variables.NAME_TYPE);
   var argument0 = Blockly.Dart.valueToCode(block, 'LIST',
       Blockly.Dart.ORDER_ASSIGNMENT) || '[]';
   var branch = Blockly.Dart.statementToCode(block, 'DO');

@@ -90,6 +90,11 @@ Blockly.Bubble = function(workspace, content, shape, anchorXY,
 Blockly.Bubble.BORDER_WIDTH = 6;
 
 /**
+ * Radius of the border around the bubble.
+ */
+Blockly.Bubble.BORDER_RADIUS = 0;
+
+/**
  * Determines the thickness of the base of the arrow in relation to the size
  * of the bubble.  Higher numbers result in thinner arrows.
  */
@@ -240,10 +245,11 @@ Blockly.Bubble.prototype.createDom_ = function(content, hasResize) {
         'class': 'blocklyDraggable',
         'x': 0,
         'y': 0,
-        'rx': Blockly.Bubble.BORDER_WIDTH,
-        'ry': Blockly.Bubble.BORDER_WIDTH
+        'rx': Blockly.Bubble.BORDER_RADIUS,
+        'ry': Blockly.Bubble.BORDER_RADIUS
       },
       bubbleEmboss);
+  this.bubbleGroup_.appendChild(content);
   if (hasResize) {
     this.resizeGroup_ = Blockly.utils.createSvgElement('g',
         {'class': this.workspace_.RTL ?
@@ -270,7 +276,6 @@ Blockly.Bubble.prototype.createDom_ = function(content, hasResize) {
   } else {
     this.resizeGroup_ = null;
   }
-  this.bubbleGroup_.appendChild(content);
   return this.bubbleGroup_;
 };
 
