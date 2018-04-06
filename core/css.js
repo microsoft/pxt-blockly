@@ -592,6 +592,10 @@ Blockly.Css.CONTENT = [
     'stroke: #F9F3A1;',
   '}',
 
+  '.blocklyCommentHandleTarget {',
+    'fill: none;',
+  '}',
+
   '.blocklyFocused>.blocklyCommentRect {',
     'fill: #FFB900;',
     'stroke: #B9B272;',

@@ -33,6 +33,7 @@ goog.require('Blockly.WorkspaceCommentSvg');
  * Size of the resize icon.
  * @type {number}
  * @const
+ * @private
  */
 Blockly.WorkspaceCommentSvg.RESIZE_SIZE = 12;
 
@@ -40,6 +41,7 @@ Blockly.WorkspaceCommentSvg.RESIZE_SIZE = 12;
  * Radius of the border around the comment.
  * @type {number}
  * @const
+ * @private
  */
 Blockly.WorkspaceCommentSvg.BORDER_RADIUS = 0;
 
@@ -52,6 +54,7 @@ Blockly.WorkspaceCommentSvg.BORDER_WIDTH = 1;
  * Offset from the foreignobject edge to the textarea edge.
  * @type {number}
  * @const
+ * @private
  */
 Blockly.WorkspaceCommentSvg.TEXTAREA_OFFSET = 2;
 
@@ -59,6 +62,7 @@ Blockly.WorkspaceCommentSvg.TEXTAREA_OFFSET = 2;
  * Offset from the top to make room for a top bar.
  * @type {number}
  * @const
+ * @private
  */
 Blockly.WorkspaceCommentSvg.TOP_OFFSET = 30;
 
@@ -87,11 +91,16 @@ Blockly.WorkspaceCommentSvg.UNEDITABLE_LINE_GAP = 30;
  * Returns a bounding box describing the dimensions of this comment.
  * @return {!{height: number, width: number}} Object with height and width
  *    properties in workspace units.
+ * @package
  */
 Blockly.WorkspaceCommentSvg.prototype.getHeightWidth = function() {
   return { width: this.getWidth(), height: this.getHeight() };
 };
 
+/**
+ * Renders the workspace comment.
+ * @package
+ */
 Blockly.WorkspaceCommentSvg.prototype.render = function() {
   if (this.rendered_) {
     return;
@@ -212,11 +221,7 @@ Blockly.WorkspaceCommentSvg.prototype.createEditor_ = function() {
   Blockly.bindEventWithChecks_(textarea, 'change', this, function(
       /* eslint-disable no-unused-vars */ e
       /* eslint-enable no-unused-vars */) {
-    if (this.content_ != textarea.value) {
-      Blockly.Events.fire(new Blockly.Events.BlockChange(
-          this.block_, 'comment', null, this.content_, textarea.value));
-      this.content_ = textarea.value;
-    }
+    this.setContent(textarea.value);
   });
   return this.foreignObject_;
 };
