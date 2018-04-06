@@ -1022,7 +1022,7 @@ Blockly.WorkspaceSvg.prototype.centerOnBlock = function(id) {
     var scrollToCenterX = scrollToBlockX - halfViewWidth;
     var scrollToCenterY = scrollToBlockY - halfViewHeight;
 
-    Blockly.WidgetDiv.hide(true);
+    Blockly.hideChaff();
     this.scrollbar.set(scrollToCenterX, scrollToCenterY);
   }
 };
