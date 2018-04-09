@@ -160,7 +160,7 @@ Blockly.FieldNumber.prototype.showEditor_ = function() {
   Blockly.FieldNumber.superClass_.showEditor_.call(this, false, showNumPad);
 
   // Show a numeric keypad in the drop-down on touch
-  if (true) {
+  if (showNumPad) {
     this.showNumPad_();
   }
 };
