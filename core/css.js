@@ -475,12 +475,11 @@ Blockly.Css.CONTENT = [
     'z-index: 20;',
   '}',
   '.blocklyFlyoutButton {',
-    'fill: none;',
+    'fill: #F4F4F4;',
   '}',
 
   '.blocklyFlyoutButtonBackground {',
-      'fill: #fff;',
-      'stroke: #c6c6c6;',
+      'stroke: #fff;',
   '}',
 
   '.blocklyFlyoutButton .blocklyText {',
@@ -492,7 +491,7 @@ Blockly.Css.CONTENT = [
   '}',
 
   '.blocklyFlyoutButton:hover {',
-    'fill: white;',
+    'fill: #EAEAEA;',
     'cursor: pointer;',
   '}',
 
