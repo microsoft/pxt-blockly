@@ -590,7 +590,7 @@ Blockly.Gesture.prototype.handleUp = function(e) {
     // Bubbles are in front of all fields and blocks.
     this.doBubbleClick_();
   } else if (this.isFieldClick_()) {
-    this.doFieldClick_();
+    this.doFieldClick_(e);
   } else if (this.isBlockClick_()) {
     this.doBlockClick_();
   } else if (this.isWorkspaceClick_()) {
@@ -728,8 +728,8 @@ Blockly.Gesture.prototype.doBubbleClick_ = function() {
  * Execute a field click.
  * @private
  */
-Blockly.Gesture.prototype.doFieldClick_ = function() {
-  this.startField_.showEditor_();
+Blockly.Gesture.prototype.doFieldClick_ = function(e) {
+  this.startField_.showEditor_(e);
   this.bringBlockToFront_();
 };
 

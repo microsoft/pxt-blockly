@@ -61,7 +61,7 @@ Blockly.Blocks['controls_if'] = {
         .setCheck('Boolean')
         .appendField(Blockly.Msg.CONTROLS_IF_MSG_IF);
     this.appendDummyInput('THEN0')
-        .appendField(Blockly.Msg.CONTROLS_IF_MSG_THEN)
+        .appendField(Blockly.Msg.CONTROLS_IF_MSG_THEN);
     this.appendStatementInput('DO0');
     this.updateShape_();
     this.setInputsInline(true);
@@ -118,38 +118,38 @@ Blockly.Blocks['controls_if'] = {
   /**
    * Restore pointers to any connected child blocks.
    */
-  restoreConnections_: function () {
+  restoreConnections_: function() {
     for (var i = 1; i <= this.elseifCount_; i++) {
-       Blockly.Mutator.reconnect(this.valueConnections_[i], this, 'IF' + i);
-       Blockly.Mutator.reconnect(this.statementConnections_[i], this, 'DO' + i);
+      Blockly.Mutator.reconnect(this.valueConnections_[i], this, 'IF' + i);
+      Blockly.Mutator.reconnect(this.statementConnections_[i], this, 'DO' + i);
     }
     Blockly.Mutator.reconnect(this.elseStatementConnection_, this, 'ELSE');
   },
-  addElse_: function () {
+  addElse_: function() {
     this.storeConnections_();
-    var update = function () {
+    var update = function() {
       this.elseCount_++;
-    }
+    };
     this.update_(update);
     this.restoreConnections_();
   },
-  addElseIf_: function () {
+  addElseIf_: function() {
     this.storeConnections_();
-    var update = function () {
+    var update = function() {
       this.elseifCount_++;
-    }
+    };
     this.update_(update);
     this.restoreConnections_();
   },
-  removeElseIf_: function (arg) {
+  removeElseIf_: function(arg) {
     this.storeConnections_(arg);
-    var update = function () {
+    var update = function() {
       this.elseifCount_--;
-    }
+    };
     this.update_(update);
     this.restoreConnections_();
   },
-  update_: function (update) {
+  update_: function(update) {
     Blockly.Events.setGroup(true);
     var block = this;
     var oldMutationDom = block.mutationToDom();
@@ -157,8 +157,8 @@ Blockly.Blocks['controls_if'] = {
     // Switch off rendering while the source block is rebuilt.
     var savedRendered = block.rendered;
     block.rendered = false;
-    // Update the mutation 
-    if (update) update.call(this)
+    // Update the mutation
+    if (update) update.call(this);
     // Allow the source block to rebuild itself.
     this.updateShape_();
     // Restore rendering and show the changes.
@@ -205,10 +205,10 @@ Blockly.Blocks['controls_if'] = {
     }
     // Rebuild block.
     for (var i = 1; i <= this.elseifCount_; i++) {
-      var removeElseIf = function (arg) {
-        return function () {
+      var removeElseIf = function(arg) {
+        return function() {
           that.removeElseIf_(arg);
-        }
+        };
       }(i);
       this.appendValueInput('IF' + i)
           .setCheck('Boolean')
@@ -218,28 +218,28 @@ Blockly.Blocks['controls_if'] = {
       this.appendDummyInput('IFBUTTONS' + i)
           .appendField(
         new Blockly.FieldImage(this.REMOVE_IMAGE_DATAURI, 24, 24, false, "*", removeElseIf));
-      this.appendStatementInput('DO' + i)
+      this.appendStatementInput('DO' + i);
     }
     if (this.elseCount_) {
       this.appendDummyInput('ELSETITLE')
-          .appendField(Blockly.Msg.CONTROLS_IF_MSG_ELSE)
+          .appendField(Blockly.Msg.CONTROLS_IF_MSG_ELSE);
       this.appendStatementInput('ELSE');
     }
     if (this.getInput('ADDBUTTON')) this.removeInput('ADDBUTTON');
     var that = this;
-    var addElseIf = function () {
-      return function () {
+    var addElseIf = function() {
+      return function() {
         if (that.elseCount_ == 0) {
           that.addElse_();
         } else {
           if (!that.elseifCount_) that.elseifCount_ = 0;
           that.addElseIf_();
         }
-      }
+      };
     }();
     this.appendDummyInput('ADDBUTTON')
         .appendField(
-      new Blockly.FieldImage(this.ADD_IMAGE_DATAURI, 24, 24, false, "*", addElseIf))
+      new Blockly.FieldImage(this.ADD_IMAGE_DATAURI, 24, 24, false, "*", addElseIf));
   }
 };
 
