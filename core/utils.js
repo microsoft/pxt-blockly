@@ -469,7 +469,7 @@ Blockly.utils.checkMessageReferences = function(message) {
   while (match) {
     var msgKey = match[1];
     if (Blockly.utils.getMessageArray_()[msgKey] == undefined) {
-      console.log('WARNING: No message string for %{BKY_' + msgKey + '}.');
+      //console.log('WARNING: No message string for %{BKY_' + msgKey + '}.');
       isValid = false;
     }
 
