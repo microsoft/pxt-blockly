@@ -29,7 +29,6 @@
  */
 'use strict';
 
-goog.provide('Blockly.Blocks.loops');  // Deprecated
 goog.provide('Blockly.Constants.Loops');
 
 goog.require('Blockly.Blocks');
@@ -37,13 +36,10 @@ goog.require('Blockly');
 
 
 /**
- * Common HSV hue for all blocks in this category.
- * Should be the same as Blockly.Msg.LOOPS_HUE
- * @readonly
+ * Unused constant for the common HSV hue for all blocks in this category.
+ * @deprecated Use Blockly.Msg.LOOPS_HUE. (2018 April 5)
  */
 Blockly.Constants.Loops.HUE = 120;
-/** @deprecated Use Blockly.Constants.Loops.HUE */
-Blockly.Blocks.loops.HUE = Blockly.Constants.Loops.HUE;
 
 Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
   // Block for repeat n times (external number).
@@ -261,13 +257,16 @@ Blockly.Constants.Loops.CUSTOM_CONTEXT_MENU_CREATE_VARIABLES_GET_MIXIN = {
    * @this Blockly.Block
    */
   customContextMenu: function(options) {
-    var varName = this.getField('VAR').getText();
+    if (this.isInFlyout){
+      return;
+    }
+    var variable = this.getField('VAR').getVariable();
+    var varName = variable.name;
     if (!this.isCollapsed() && varName != null) {
       var option = {enabled: true};
       option.text =
-        Blockly.Msg.VARIABLES_SET_CREATE_GET.replace('%1', varName);
-      var xmlField = goog.dom.createDom('field', null, varName);
-      xmlField.setAttribute('name', 'VAR');
+          Blockly.Msg.VARIABLES_SET_CREATE_GET.replace('%1', varName);
+      var xmlField = Blockly.Variables.generateVariableFieldDom(variable);
       var xmlBlock = goog.dom.createDom('block', null, xmlField);
       xmlBlock.setAttribute('type', 'variables_get');
       option.callback = Blockly.ContextMenu.callbackFactory(this, xmlBlock);

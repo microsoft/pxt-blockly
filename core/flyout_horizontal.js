@@ -262,7 +262,7 @@ Blockly.HorizontalFlyout.prototype.layout_ = function(contents, gaps) {
   for (var i = 0, item; item = contents[i]; i++) {
     if (item.type == 'block') {
       var block = item.block;
-      var allBlocks = block.getDescendants();
+      var allBlocks = block.getDescendants(false);
       for (var j = 0, child; child = allBlocks[j]; j++) {
         // Mark blocks as being inside a flyout.  This is used to detect and
         // prevent the closure of the flyout if the user right-clicks on such a
@@ -309,16 +309,10 @@ Blockly.HorizontalFlyout.prototype.isDragTowardWorkspace = function(
   var dragDirection = Math.atan2(dy, dx) / Math.PI * 180;
 
   var range = this.dragAngleRange_;
-  if (this.toolboxPosition_ == Blockly.TOOLBOX_AT_TOP) {
-    // Horizontal at top.
-    if (dragDirection < 90 + range && dragDirection > 90 - range) {
-      return true;
-    }
-  } else {
-    // Horizontal at bottom.
-    if (dragDirection > -90 - range && dragDirection < -90 + range) {
-      return true;
-    }
+  // Check for up or down dragging.
+  if ((dragDirection < 90 + range && dragDirection > 90 - range) ||
+      (dragDirection > -90 - range && dragDirection < -90 + range)) {
+    return true;
   }
   return false;
 };

@@ -29,7 +29,6 @@
  */
 'use strict';
 
-goog.provide('Blockly.Blocks.math');  // Deprecated
 goog.provide('Blockly.Constants.Math');
 
 goog.require('Blockly.Blocks');
@@ -39,13 +38,10 @@ goog.require('Blockly');
 
 
 /**
- * Common HSV hue for all blocks in this category.
- * Should be the same as Blockly.Msg.MATH_HUE
- * @readonly
+ * Unused constant for the common HSV hue for all blocks in this category.
+ * @deprecated Use Blockly.Msg.MATH_HUE. (2018 April 5)
  */
 Blockly.Constants.Math.HUE = 230;
-/** @deprecated Use Blockly.Constants.Math.HUE */
-Blockly.Blocks.math.HUE = Blockly.Constants.Math.HUE;
 
 Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
   // Block for numeric value.

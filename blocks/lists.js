@@ -29,8 +29,7 @@
  */
 'use strict';
 
-goog.provide('Blockly.Blocks.lists');  // Deprecated
-goog.provide('Blockly.Constants.Lists');
+goog.provide('Blockly.Constants.Lists');  // deprecated, 2018 April 5
 
 goog.require('Blockly.Blocks');
 goog.require('Blockly');
@@ -38,14 +37,10 @@ goog.require('Blockly');
 goog.require('Blockly.PXTBlockly.Extensions');
 
 /**
- * Common HSV hue for all blocks in this category.
- * This should be the same as Blockly.Msg.LISTS_HUE.
- * @readonly
+ * Unused constant for the common HSV hue for all blocks in this category.
+ * @deprecated Use Blockly.Msg.LISTS_HUE. (2018 April 5)
  */
 Blockly.Constants.Lists.HUE = 260;
-/** @deprecated Use Blockly.Constants.Lists.HUE */
-Blockly.Blocks.lists.HUE = Blockly.Constants.Lists.HUE;
-
 
 Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
   // Block for creating an empty list
@@ -145,7 +140,7 @@ Blockly.Blocks['lists_create_with'] = {
   init: function() {
     Blockly.Extensions.apply('inline-svgs', this, false);
     this.setHelpUrl(Blockly.Msg.LISTS_CREATE_WITH_HELPURL);
-    this.setColour(Blockly.Blocks.lists.HUE);
+    this.setColour(Blockly.Msg.LISTS_HUE);
     this.itemCount_ = 3;
     this.updateShape_();
     this.setOutput(true, 'Array');
@@ -359,7 +354,7 @@ Blockly.Blocks['lists_create_with_container'] = {
    * @this Blockly.Block
    */
   init: function() {
-    this.setColour(Blockly.Blocks.lists.HUE);
+    this.setColour(Blockly.Msg.LISTS_HUE);
     this.appendDummyInput()
         .appendField(Blockly.Msg.LISTS_CREATE_WITH_CONTAINER_TITLE_ADD);
     this.appendStatementInput('STACK');
@@ -374,7 +369,7 @@ Blockly.Blocks['lists_create_with_item'] = {
    * @this Blockly.Block
    */
   init: function() {
-    this.setColour(Blockly.Blocks.lists.HUE);
+    this.setColour(Blockly.Msg.LISTS_HUE);
     this.appendDummyInput()
         .appendField(Blockly.Msg.LISTS_CREATE_WITH_ITEM_TITLE);
     this.setPreviousStatement(true);
@@ -396,7 +391,7 @@ Blockly.Blocks['lists_indexOf'] = {
           [Blockly.Msg.LISTS_INDEX_OF_LAST, 'LAST']
         ];
     this.setHelpUrl(Blockly.Msg.LISTS_INDEX_OF_HELPURL);
-    this.setColour(Blockly.Blocks.lists.HUE);
+    this.setColour(Blockly.Msg.LISTS_HUE);
     this.setOutput(true, 'Number');
     this.setOutputShape(Blockly.OUTPUT_SHAPE_ROUND);
     this.appendValueInput('VALUE')
@@ -435,7 +430,7 @@ Blockly.Blocks['lists_getIndex'] = {
           [Blockly.Msg.LISTS_GET_INDEX_RANDOM, 'RANDOM']
         ];
     this.setHelpUrl(Blockly.Msg.LISTS_GET_INDEX_HELPURL);
-    this.setColour(Blockly.Blocks.lists.HUE);
+    this.setColour(Blockly.Msg.LISTS_HUE);
     var modeMenu = new Blockly.FieldDropdown(MODE, function(value) {
       var isStatement = (value == 'REMOVE');
       this.sourceBlock_.updateStatement_(isStatement);
@@ -619,7 +614,7 @@ Blockly.Blocks['lists_setIndex'] = {
           [Blockly.Msg.LISTS_GET_INDEX_RANDOM, 'RANDOM']
         ];
     this.setHelpUrl(Blockly.Msg.LISTS_SET_INDEX_HELPURL);
-    this.setColour(Blockly.Blocks.lists.HUE);
+    this.setColour(Blockly.Msg.LISTS_HUE);
     this.appendValueInput('LIST')
         .setCheck('Array')
         .appendField(Blockly.Msg.LISTS_SET_INDEX_INPUT_IN_LIST);
@@ -758,7 +753,7 @@ Blockly.Blocks['lists_getSublist'] = {
           [Blockly.Msg.LISTS_GET_SUBLIST_END_LAST, 'LAST']
         ];
     this.setHelpUrl(Blockly.Msg.LISTS_GET_SUBLIST_HELPURL);
-    this.setColour(Blockly.Blocks.lists.HUE);
+    this.setColour(Blockly.Msg.LISTS_HUE);
     this.appendValueInput('LIST')
         .setCheck('Array')
         .appendField(Blockly.Msg.LISTS_GET_SUBLIST_INPUT_IN_LIST);
@@ -885,7 +880,7 @@ Blockly.Blocks['lists_sort'] = {
       ],
       "output": "Array",
       "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
-      "colour": Blockly.Blocks.lists.HUE,
+      "colour": Blockly.Msg.LISTS_HUE,
       "tooltip": Blockly.Msg.LISTS_SORT_TOOLTIP,
       "helpUrl": Blockly.Msg.LISTS_SORT_HELPURL
     });
@@ -909,7 +904,7 @@ Blockly.Blocks['lists_split'] = {
           thisBlock.updateType_(newMode);
         });
     this.setHelpUrl(Blockly.Msg.LISTS_SPLIT_HELPURL);
-    this.setColour(Blockly.Blocks.lists.HUE);
+    this.setColour(Blockly.Msg.LISTS_HUE);
     this.appendValueInput('INPUT')
         .setCheck('String')
         .appendField(dropdown, 'MODE');

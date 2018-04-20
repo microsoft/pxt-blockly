@@ -635,13 +635,14 @@ Blockly.BlockSvg.prototype.render = function(opt_bubble) {
  * @param {!Array.<!Blockly.Field>} fieldList List of fields.
  * @param {number} cursorX X-coordinate to start the fields.
  * @param {number} cursorY Y-coordinate around which fields are centered.
- * @param {number} rowIndex index of the current row. (pxtblockly, only need to bump fields on first row)
+ * @param {number} rowIndex index of the current row.
+ *  (pxtblockly, only need to bump fields on first row)
  * @return {number} X-coordinate of the end of the field row (plus a gap).
  * @private
  */
 Blockly.BlockSvg.prototype.renderFields_ =
     function(fieldList, cursorX, cursorY, rowIndex) {
-  /* eslint-disable indent */
+    /* eslint-disable indent */
   if (this.RTL) {
     cursorX = -cursorX;
   }
@@ -814,7 +815,8 @@ Blockly.BlockSvg.prototype.renderCompute_ = function(iconWidth) {
     previousRow = row;
   }
   
-  // Bottom edge is sum of row heights (pxtblockly: do this before computing the padding, used for calculating padding of multi-line blocks)
+  // Bottom edge is sum of row heights (pxtblockly: do this before computing
+  // the padding, used for calculating padding of multi-line blocks)
   for (var i = 0; i < inputRows.length; i++) {
     inputRows.bottomEdge += inputRows[i].height;
   }
@@ -959,7 +961,8 @@ Blockly.BlockSvg.prototype.computeOutputPadding_ = function(inputRows) {
       (this.isShadow() && !Blockly.utils.isShadowArgumentReporter(this))) {
     return;
   }
-  // Blocks with outputs must have single row to be padded. (pxtblockly: remove to support multi-line blocks)
+  // Blocks with outputs must have single row to be padded.
+  // (pxtblockly: remove to support multi-line blocks)
   // if (inputRows.length > 1) {
   //   return;
   // }
@@ -1053,8 +1056,9 @@ Blockly.BlockSvg.prototype.renderDraw_ = function(iconWidth, inputRows) {
   // Should the top left corners be rounded or square?
   // Currently, it is squared only if it's a hat.
   this.squareTopLeftCorner_ = false;
-  // pxtblockly: support a starthat on blocks that have it enabled 
-  if (!this.outputConnection && !this.previousConnection && (Blockly.BlockSvg.START_HAT || this.getStartHat())) {
+  // pxtblockly: support a starthat on blocks that have it enabled
+  if (!this.outputConnection && !this.previousConnection
+      && (Blockly.BlockSvg.START_HAT || this.getStartHat())) {
     // No output or previous connection.
     this.squareTopLeftCorner_ = true;
     this.startHat_ = true;
@@ -1195,7 +1199,8 @@ Blockly.BlockSvg.prototype.renderDrawRight_ = function(steps,
   var cursorX = 0;
   var cursorY = 0;
   var connectionX, connectionY;
-  // pxtblockly: we assume that a block maybe a sequence of INLINE blocks, followed by a sequence of statement blocks
+  // pxtblockly: we assume that a block maybe a sequence of INLINE blocks,
+  // followed by a sequence of statement blocks
   // any kind of mixed bag of those 2 kind of entries is not supported
   var rowHeight = 0;
   var prevCursorX = 0;
@@ -1203,7 +1208,8 @@ Blockly.BlockSvg.prototype.renderDrawRight_ = function(steps,
 
   // pxtblockly: align all row right edges together
   function flushRows() {
-    // rowHeight will be positive if inline blocks have been rendered, render a single line on the right
+    // rowHeight will be positive if inline blocks have been rendered,
+    // render a single line on the right
     if (rowHeight > 0) {
       if (!this_.edgeShape_) {
         // Include corner radius in drawing the horizontal line.
@@ -1219,7 +1225,7 @@ Blockly.BlockSvg.prototype.renderDrawRight_ = function(steps,
         steps.push('v', rowHeight - Blockly.BlockSvg.CORNER_RADIUS * 2);
       }
       rowHeight = 0;
-    }          
+    }
   }
 
   for (var y = 0, row; row = inputRows[y]; y++) {
@@ -1282,7 +1288,7 @@ Blockly.BlockSvg.prototype.renderDrawRight_ = function(steps,
       cursorX = inputRows.statementEdge + Blockly.BlockSvg.NOTCH_WIDTH;
 
       Blockly.BlockSvg.drawStatementInputFromTopRight_(steps, cursorX,
-            inputRows.rightEdge, row);
+          inputRows.rightEdge, row);
 
       // Create statement connection.
       connectionX = this.RTL ? -cursorX : cursorX;
@@ -1341,7 +1347,7 @@ Blockly.BlockSvg.prototype.renderInputShape_ = function(input, x, y) {
     inputShapeY = y - (Blockly.BlockSvg.INPUT_SHAPE_HEIGHT / 2);
     inputShape.setAttribute('d', inputShapeInfo.path);
     inputShape.setAttribute('transform',
-      'translate(' + inputShapeX + ',' + inputShapeY + ')'
+        'translate(' + inputShapeX + ',' + inputShapeY + ')'
     );
     inputShape.setAttribute('data-argument-type', inputShapeInfo.argType);
     inputShape.setAttribute('style', 'visibility: visible');
@@ -1445,7 +1451,7 @@ Blockly.BlockSvg.prototype.drawEdgeShapeRight_ = function(steps) {
  */
 Blockly.BlockSvg.prototype.positionNewBlock =
     function(newBlock, newConnection, existingConnection) {
-  /* eslint-disable indent */
+    /* eslint-disable indent */
   // We only need to position the new block if it's before the existing one,
   // otherwise its position is set by the previous block.
   if (newConnection.type == Blockly.NEXT_STATEMENT) {

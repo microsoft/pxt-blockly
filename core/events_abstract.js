@@ -33,24 +33,9 @@ goog.require('goog.math.Coordinate');
 
 /**
  * Abstract class for an event.
- * @param {Blockly.Block|Blockly.VariableModel} elem The block or variable.
  * @constructor
  */
-Blockly.Events.Abstract = function(elem) {
-  /**
-   * The block id for the block this event pertains to, if appropriate for the
-   * event type.
-   * @type {string|undefined}
-   */
-  this.blockId = undefined;
-
-  /**
-   * The variable id for the variable this event pertains to. Only set in
-   * VarCreate, VarDelete, and VarRename events.
-   * @type {string|undefined}
-   */
-  this.varId = undefined;
-
+Blockly.Events.Abstract = function() {
   /**
    * The workspace identifier for this event.
    * @type {string|undefined}
@@ -63,25 +48,12 @@ Blockly.Events.Abstract = function(elem) {
    * perspective, and should be undone together.
    * @type {string}
    */
-  this.group = undefined;
+  this.group = Blockly.Events.group_;
 
   /**
    * Sets whether the event should be added to the undo stack.
    * @type {boolean}
    */
-  this.recordUndo = undefined;
-
-  if (elem instanceof Blockly.Block) {
-    this.blockId = elem.id;
-    this.workspaceId = elem.workspace.id;
-  } else if (elem instanceof Blockly.WorkspaceComment) {
-    this.commentId = elem.id;
-    this.workspaceId = elem.workspace.id;
-  } else if (elem instanceof Blockly.VariableModel) {
-    this.workspaceId = elem.workspace.id;
-    this.varId = elem.getId();
-  }
-  this.group = Blockly.Events.group_;
   this.recordUndo = Blockly.Events.recordUndo;
 };
 
@@ -93,12 +65,6 @@ Blockly.Events.Abstract.prototype.toJson = function() {
   var json = {
     'type': this.type
   };
-  if (this.blockId) {
-    json['blockId'] = this.blockId;
-  }
-  if (this.varId) {
-    json['varId'] = this.varId;
-  }
   if (this.group) {
     json['group'] = this.group;
   }
@@ -110,8 +76,6 @@ Blockly.Events.Abstract.prototype.toJson = function() {
  * @param {!Object} json JSON representation.
  */
 Blockly.Events.Abstract.prototype.fromJson = function(json) {
-  this.blockId = json['blockId'];
-  this.varId = json['varId'];
   this.group = json['group'];
 };
 
@@ -125,11 +89,9 @@ Blockly.Events.Abstract.prototype.isNull = function() {
 
 /**
  * Run an event.
- * @param {boolean} forward True if run forward, false if run backward (undo).
+ * @param {boolean} _forward True if run forward, false if run backward (undo).
  */
-Blockly.Events.Abstract.prototype.run = function(
-    /* eslint-disable no-unused-vars */ forward
-    /* eslint-enable no-unused-vars */) {
+Blockly.Events.Abstract.prototype.run = function(_forward) {
   // Defined by subclasses.
 };
 

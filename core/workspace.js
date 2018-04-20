@@ -232,13 +232,25 @@ Blockly.Workspace.prototype.getTopComments = function(ordered) {
 };
 
 /**
- * Find all blocks in workspace.  No particular order.
+ * Find all blocks in workspace.  Blocks are optionally sorted
+ * by position; top to bottom (with slight LTR or RTL bias).
+ * @param {boolean} ordered Sort the list if true.
  * @return {!Array.<!Blockly.Block>} Array of blocks.
  */
-Blockly.Workspace.prototype.getAllBlocks = function() {
-  var blocks = this.getTopBlocks(false);
-  for (var i = 0; i < blocks.length; i++) {
-    blocks.push.apply(blocks, blocks[i].getChildren());
+Blockly.Workspace.prototype.getAllBlocks = function(ordered) {
+  if (ordered) {
+    // Slow, but ordered.
+    var topBlocks = this.getTopBlocks(true);
+    var blocks = [];
+    for (var i = 0; i < topBlocks.length; i++) {
+      blocks.push.apply(blocks, topBlocks[i].getDescendants(true));
+    }
+  } else {
+    // Fast, but in no particular order.
+    var blocks = this.getTopBlocks(false);
+    for (var i = 0; i < blocks.length; i++) {
+      blocks.push.apply(blocks, blocks[i].getChildren(false));
+    }
   }
   return blocks;
 };
@@ -331,15 +343,13 @@ Blockly.Workspace.prototype.deleteVariableInternal_ = function(variable, uses) {
 /**
  * Check whether a variable exists with the given name.  The check is
  * case-insensitive.
- * @param {string} name The name to check for.
+ * @param {string} _name The name to check for.
  * @return {number} The index of the name in the variable list, or -1 if it is
  *     not present.
  * @deprecated April 2017
  */
 
-Blockly.Workspace.prototype.variableIndexOf = function(
-    /* eslint-disable no-unused-vars */ name
-    /* eslint-enable no-unused-vars */) {
+Blockly.Workspace.prototype.variableIndexOf = function(_name) {
   console.warn(
       'Deprecated call to Blockly.Workspace.prototype.variableIndexOf');
   return -1;

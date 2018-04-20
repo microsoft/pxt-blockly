@@ -66,7 +66,6 @@ goog.require('Blockly.inject');
 goog.require('Blockly.utils');
 
 goog.require('goog.color');
-goog.require('goog.userAgent');
 
 
 // Turn off debugging when compiled.
@@ -410,21 +409,28 @@ Blockly.jsonInitFactory_ = function(jsonDef) {
  * @param {!Array.<!Object>} jsonArray An array of JSON block definitions.
  */
 Blockly.defineBlocksWithJsonArray = function(jsonArray) {
-  for (var i = 0, elem; elem = jsonArray[i]; i++) {
-    var typename = elem.type;
-    if (typename == null || typename === '') {
+  for (var i = 0; i < jsonArray.length; i++) {
+    var elem = jsonArray[i];
+    if (!elem) {
       console.warn(
-          'Block definition #' + i +
-          ' in JSON array is missing a type attribute. Skipping.');
+          'Block definition #' + i + ' in JSON array is ' + elem + '. ' +
+          'Skipping.');
     } else {
-      if (Blockly.Blocks[typename]) {
+      var typename = elem.type;
+      if (typename == null || typename === '') {
         console.warn(
-            'Block definition #' + i + ' in JSON array' +
-            ' overwrites prior definition of "' + typename + '".');
+            'Block definition #' + i +
+            ' in JSON array is missing a type attribute. Skipping.');
+      } else {
+        if (Blockly.Blocks[typename]) {
+          console.warn(
+              'Block definition #' + i + ' in JSON array' +
+              ' overwrites prior definition of "' + typename + '".');
+        }
+        Blockly.Blocks[typename] = {
+          init: Blockly.jsonInitFactory_(elem)
+        };
       }
-      Blockly.Blocks[typename] = {
-        init: Blockly.jsonInitFactory_(elem)
-      };
     }
   }
 };
@@ -578,6 +584,78 @@ Blockly.unbindEvent_ = function(bindData) {
  */
 Blockly.isNumber = function(str) {
   return /^\s*-?\d+(\.\d+)?\s*$/.test(str);
+};
+
+/**
+ * Checks old colour constants are not overwritten by the host application.
+ * If a constant is overwritten, it prints a console warning directing the
+ * developer to use the equivalent Msg constant.
+ * @package
+ */
+Blockly.checkBlockColourConstants = function() {
+  Blockly.checkBlockColourConstant_(
+      'LOGIC_HUE', ['Blocks', 'logic', 'HUE'], undefined);
+  Blockly.checkBlockColourConstant_(
+      'LOGIC_HUE', ['Constants', 'Logic', 'HUE'], 210);
+  Blockly.checkBlockColourConstant_(
+      'LOOPS_HUE', ['Blocks', 'loops', 'HUE'], undefined);
+  Blockly.checkBlockColourConstant_(
+      'LOOPS_HUE', ['Constants', 'Loops', 'HUE'], 120);
+  Blockly.checkBlockColourConstant_(
+      'MATH_HUE', ['Blocks', 'math', 'HUE'], undefined);
+  Blockly.checkBlockColourConstant_(
+      'MATH_HUE', ['Constants', 'Math', 'HUE'], 230);
+  Blockly.checkBlockColourConstant_(
+      'TEXTS_HUE', ['Blocks', 'texts', 'HUE'], undefined);
+  Blockly.checkBlockColourConstant_(
+      'TEXTS_HUE', ['Constants', 'Text', 'HUE'], 160);
+  Blockly.checkBlockColourConstant_(
+      'LISTS_HUE', ['Blocks', 'lists', 'HUE'], undefined);
+  Blockly.checkBlockColourConstant_(
+      'LISTS_HUE', ['Constants', 'Lists', 'HUE'], 260);
+  Blockly.checkBlockColourConstant_(
+      'COLOUR_HUE', ['Blocks', 'colour', 'HUE'], undefined);
+  Blockly.checkBlockColourConstant_(
+      'COLOUR_HUE', ['Constants', 'Colour', 'HUE'], 20);
+  Blockly.checkBlockColourConstant_(
+      'VARIABLES_HUE', ['Blocks', 'variables', 'HUE'], undefined);
+  Blockly.checkBlockColourConstant_(
+      'VARIABLES_HUE', ['Constants', 'Variables', 'HUE'], 330);
+  // Blockly.Blocks.variables_dynamic.HUE never existed.
+  Blockly.checkBlockColourConstant_(
+      'VARIABLES_DYNAMIC_HUE', ['Constants', 'VariablesDynamic', 'HUE'], 310);
+  Blockly.checkBlockColourConstant_(
+      'PROCEDURES_HUE', ['Blocks', 'procedures', 'HUE'], undefined);
+  // Blockly.Constants.Procedures.HUE never existed.
+};
+
+/**
+ * Checks for a constant in the Blockly namespace, verifying it is undefined or
+ * has the old/original value. Prints a warning if this is not true.
+ * @param {string} msgName The Msg constant identifier.
+ * @param {Array<string>} blocklyNamePath The name parts of the tested
+ *     constant.
+ * @param {number|undefined} expectedValue The expected value of the constant.
+ * @private
+ */
+Blockly.checkBlockColourConstant_ = function(
+    msgName, blocklyNamePath, expectedValue) {
+  var namePath = 'Blockly';
+  var value = Blockly;
+  for (var i =0; i < blocklyNamePath.length; ++i) {
+    namePath += '.' + blocklyNamePath[i];
+    if (value) {
+      value = value[blocklyNamePath[i]];
+    }
+  }
+
+  if (value && value !== expectedValue) {
+    var warningPattern = (expectedValue === undefined) ?
+        '%1 has been removed. Use Blockly.Msg.%2.' :
+        '%1 is deprecated and unused. Override Blockly.Msg.%2.';
+    var warning = warningPattern.replace('%1', namePath).replace('%2', msgName);
+    console.warn(warning);
+  }
 };
 
 // IE9 does not have a console.  Create a stub to stop errors.

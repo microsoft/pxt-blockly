@@ -28,6 +28,7 @@ goog.provide('Blockly.Events.Ui');
 
 goog.require('Blockly.Events');
 goog.require('Blockly.Events.Abstract');
+
 goog.require('goog.array');
 goog.require('goog.math.Coordinate');
 
@@ -41,7 +42,13 @@ goog.require('goog.math.Coordinate');
  * @constructor
  */
 Blockly.Events.Ui = function(block, element, oldValue, newValue) {
-  Blockly.Events.Ui.superClass_.constructor.call(this, block);
+  if (!block) {
+    return;  // Blank event to be populated by fromJson.
+  }
+
+  Blockly.Events.Ui.superClass_.constructor.call(this);
+  this.blockId = block.id;
+  this.workspaceId = block.workspace.id;
   this.element = element;
   this.oldValue = oldValue;
   this.newValue = newValue;
@@ -65,6 +72,9 @@ Blockly.Events.Ui.prototype.toJson = function() {
   if (this.newValue !== undefined) {
     json['newValue'] = this.newValue;
   }
+  if (this.blockId) {
+    json['blockId'] = this.blockId;
+  }
   return json;
 };
 
@@ -76,4 +86,5 @@ Blockly.Events.Ui.prototype.fromJson = function(json) {
   Blockly.Events.Ui.superClass_.fromJson.call(this, json);
   this.element = json['element'];
   this.newValue = json['newValue'];
+  this.blockId = json['blockId'];
 };

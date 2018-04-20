@@ -24,7 +24,6 @@
  */
 'use strict';
 
-goog.provide('Blockly.Blocks.texts');  // Deprecated
 goog.provide('Blockly.Constants.Text');
 
 goog.require('Blockly.Blocks');
@@ -32,13 +31,10 @@ goog.require('Blockly');
 
 
 /**
- * Common HSV hue for all blocks in this category.
- * Should be the same as Blockly.Msg.TEXTS_HUE
- * @readonly
+ * Unused constant for the common HSV hue for all blocks in this category.
+ * @deprecated Use Blockly.Msg.TEXTS_HUE. (2018 April 5)
  */
 Blockly.Constants.Text.HUE = 160;
-/** @deprecated Use Blockly.Constants.Text.HUE */
-Blockly.Blocks.texts.HUE = Blockly.Constants.Text.HUE;
 
 Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
   // Block for text value
@@ -231,7 +227,7 @@ Blockly.Blocks['text_getSubstring'] = {
       [Blockly.Msg.TEXT_GET_SUBSTRING_END_LAST, 'LAST']
     ];
     this.setHelpUrl(Blockly.Msg.TEXT_GET_SUBSTRING_HELPURL);
-    this.setColour(Blockly.Blocks.texts.HUE);
+    this.setColour(Blockly.Msg.TEXTS_HUE);
     this.appendValueInput('STRING')
         .setCheck('String')
         .appendField(Blockly.Msg.TEXT_GET_SUBSTRING_INPUT_IN_TEXT);
@@ -340,7 +336,7 @@ Blockly.Blocks['text_changeCase'] = {
       [Blockly.Msg.TEXT_CHANGECASE_OPERATOR_TITLECASE, 'TITLECASE']
     ];
     this.setHelpUrl(Blockly.Msg.TEXT_CHANGECASE_HELPURL);
-    this.setColour(Blockly.Blocks.texts.HUE);
+    this.setColour(Blockly.Msg.TEXTS_HUE);
     this.appendValueInput('TEXT')
         .setCheck('String')
         .appendField(new Blockly.FieldDropdown(OPERATORS), 'CASE');
@@ -362,7 +358,7 @@ Blockly.Blocks['text_trim'] = {
       [Blockly.Msg.TEXT_TRIM_OPERATOR_RIGHT, 'RIGHT']
     ];
     this.setHelpUrl(Blockly.Msg.TEXT_TRIM_HELPURL);
-    this.setColour(Blockly.Blocks.texts.HUE);
+    this.setColour(Blockly.Msg.TEXTS_HUE);
     this.appendValueInput('TEXT')
         .setCheck('String')
         .appendField(new Blockly.FieldDropdown(OPERATORS), 'MODE');
@@ -388,7 +384,7 @@ Blockly.Blocks['text_print'] = {
       ],
       "previousStatement": null,
       "nextStatement": null,
-      "colour": Blockly.Blocks.texts.HUE,
+      "colour": Blockly.Msg.TEXTS_HUE,
       "tooltip": Blockly.Msg.TEXT_PRINT_TOOLTIP,
       "helpUrl": Blockly.Msg.TEXT_PRINT_HELPURL
     });
@@ -406,7 +402,7 @@ Blockly.Blocks['text_prompt_ext'] = {
       [Blockly.Msg.TEXT_PROMPT_TYPE_NUMBER, 'NUMBER']
     ];
     this.setHelpUrl(Blockly.Msg.TEXT_PROMPT_HELPURL);
-    this.setColour(Blockly.Blocks.texts.HUE);
+    this.setColour(Blockly.Msg.TEXTS_HUE);
     // Assign 'this' to a variable for use in the closures below.
     var thisBlock = this;
     var dropdown = new Blockly.FieldDropdown(TYPES, function(newOp) {
@@ -467,7 +463,7 @@ Blockly.Blocks['text_prompt'] = {
     // Assign 'this' to a variable for use in the closures below.
     var thisBlock = this;
     this.setHelpUrl(Blockly.Msg.TEXT_PROMPT_HELPURL);
-    this.setColour(Blockly.Blocks.texts.HUE);
+    this.setColour(Blockly.Msg.TEXTS_HUE);
     var dropdown = new Blockly.FieldDropdown(TYPES, function(newOp) {
       thisBlock.updateType_(newOp);
     });
@@ -512,7 +508,7 @@ Blockly.Blocks['text_count'] = {
       "output": "Number",
       "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
       "inputsInline": true,
-      "colour": Blockly.Blocks.texts.HUE,
+      "colour": Blockly.Msg.TEXTS_HUE,
       "tooltip": Blockly.Msg.TEXT_COUNT_TOOLTIP,
       "helpUrl": Blockly.Msg.TEXT_COUNT_HELPURL
     });
@@ -547,7 +543,7 @@ Blockly.Blocks['text_replace'] = {
       "output": "String",
       "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
       "inputsInline": true,
-      "colour": Blockly.Blocks.texts.HUE,
+      "colour": Blockly.Msg.TEXTS_HUE,
       "tooltip": Blockly.Msg.TEXT_REPLACE_TOOLTIP,
       "helpUrl": Blockly.Msg.TEXT_REPLACE_HELPURL
     });
@@ -572,7 +568,7 @@ Blockly.Blocks['text_reverse'] = {
       "output": "String",
       "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
       "inputsInline": true,
-      "colour": Blockly.Blocks.texts.HUE,
+      "colour": Blockly.Msg.TEXTS_HUE,
       "tooltip": Blockly.Msg.TEXT_REVERSE_TOOLTIP,
       "helpUrl": Blockly.Msg.TEXT_REVERSE_HELPURL
     });
@@ -656,7 +652,10 @@ Blockly.Constants.Text.QUOTE_IMAGE_MIXIN = {
   }
 };
 
-/** Wraps TEXT field with images of double quote characters. */
+/**
+ * Wraps TEXT field with images of double quote characters.
+ * @this Blockly.Block
+ */
 Blockly.Constants.Text.TEXT_QUOTES_EXTENSION = function() {
   this.mixin(Blockly.Constants.Text.QUOTE_IMAGE_MIXIN);
   this.quoteField_('TEXT');
@@ -782,7 +781,10 @@ Blockly.Constants.Text.TEXT_JOIN_MUTATOR_MIXIN = {
   }
 };
 
-// Performs final setup of a text_join block.
+/**
+ * Performs final setup of a text_join block.
+ * @this Blockly.Block
+ */
 Blockly.Constants.Text.TEXT_JOIN_EXTENSION = function() {
   // Add the quote mixin for the itemCount_ = 0 case.
   this.mixin(Blockly.Constants.Text.QUOTE_IMAGE_MIXIN);
@@ -798,6 +800,10 @@ Blockly.Extensions.register('text_append_tooltip',
     Blockly.Extensions.buildTooltipWithFieldText(
         '%{BKY_TEXT_APPEND_TOOLTIP}', 'VAR'));
 
+/**
+ * Update the tooltip of 'text_append' block to reference the variable.
+ * @this Blockly.Block
+ */
 Blockly.Constants.Text.TEXT_INDEXOF_TOOLTIP_EXTENSION = function() {
   // Assign 'this' to a variable for use in the tooltip closure below.
   var thisBlock = this;
@@ -863,7 +869,10 @@ Blockly.Constants.Text.TEXT_CHARAT_MUTATOR_MIXIN = {
   }
 };
 
-// Does the initial mutator update of text_charAt and adds the tooltip
+/**
+ * Does the initial mutator update of text_charAt and adds the tooltip
+ * @this Blockly.Block
+ */
 Blockly.Constants.Text.TEXT_CHARAT_EXTENSION = function() {
   var dropdown = this.getField('WHERE');
   dropdown.setValidator(function(value) {

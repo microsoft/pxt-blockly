@@ -288,6 +288,16 @@ Blockly.Bubble.prototype.getSvgRoot = function() {
 };
 
 /**
+ * Expose the block's ID on the bubble's top-level SVG group.
+ * @param {string} id ID of block.
+ */
+Blockly.Bubble.prototype.setSvgId = function(id) {
+  if (this.bubbleGroup_.dataset) {
+    this.bubbleGroup_.dataset.blockId = id;
+  }
+};
+
+/**
  * Handle a mouse-down on bubble's border.
  * @param {!Event} e Mouse down event.
  * @private

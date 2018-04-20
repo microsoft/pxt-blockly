@@ -29,7 +29,6 @@
  */
 'use strict';
 
-goog.provide('Blockly.Blocks.logic');  // Deprecated
 goog.provide('Blockly.Constants.Logic');
 
 goog.require('Blockly.Blocks');
@@ -38,13 +37,10 @@ goog.require('Blockly');
 goog.require('Blockly.PXTBlockly.Extensions');
 
 /**
- * Common HSV hue for all blocks in this category.
- * Should be the same as Blockly.Msg.LOGIC_HUE.
- * @readonly
+ * Unused constant for the common HSV hue for all blocks in this category.
+ * @deprecated Use Blockly.Msg.LOGIC_HUE. (2018 April 5)
  */
 Blockly.Constants.Logic.HUE = 210;
-/** @deprecated Use Blockly.Constants.Logic.HUE */
-Blockly.Blocks.logic.HUE = Blockly.Constants.Logic.HUE;
 
 Blockly.Blocks['controls_if'] = {
   /**
@@ -56,7 +52,6 @@ Blockly.Blocks['controls_if'] = {
     this.elseifCount_ = 0;
     this.elseCount_ = 0;
     this.setHelpUrl(Blockly.Msg.CONTROLS_IF_HELPURL);
-    this.setColour(Blockly.Blocks.logic.HUE);
     this.appendValueInput('IF0')
         .setCheck('Boolean')
         .appendField(Blockly.Msg.CONTROLS_IF_MSG_IF);
@@ -217,7 +212,7 @@ Blockly.Blocks['controls_if'] = {
           .appendField(Blockly.Msg.CONTROLS_IF_MSG_THEN);
       this.appendDummyInput('IFBUTTONS' + i)
           .appendField(
-        new Blockly.FieldImage(this.REMOVE_IMAGE_DATAURI, 24, 24, false, "*", removeElseIf));
+              new Blockly.FieldImage(this.REMOVE_IMAGE_DATAURI, 24, 24, false, "*", removeElseIf));
       this.appendStatementInput('DO' + i);
     }
     if (this.elseCount_) {
@@ -239,7 +234,7 @@ Blockly.Blocks['controls_if'] = {
     }();
     this.appendDummyInput('ADDBUTTON')
         .appendField(
-      new Blockly.FieldImage(this.ADD_IMAGE_DATAURI, 24, 24, false, "*", addElseIf));
+            new Blockly.FieldImage(this.ADD_IMAGE_DATAURI, 24, 24, false, "*", addElseIf));
   }
 };
 
@@ -726,8 +721,6 @@ Blockly.Constants.Logic.fixLogicCompareRtlOpLabels =
  * @readonly
  */
 Blockly.Constants.Logic.LOGIC_COMPARE_ONCHANGE_MIXIN = {
-  prevBlocks_: [null, null],
-
   /**
    * Called whenever anything on the workspace changes.
    * Prevent mismatched types from being compared.
@@ -735,25 +728,39 @@ Blockly.Constants.Logic.LOGIC_COMPARE_ONCHANGE_MIXIN = {
    * @this Blockly.Block
    */
   onchange: function(e) {
+    if (!this.prevBlocks_) {
+      this.prevBlocks_ = [null, null];
+    }
+
     var blockA = this.getInputTargetBlock('A');
     var blockB = this.getInputTargetBlock('B');
     // Disconnect blocks that existed prior to this change if they don't match.
     if (blockA && blockB &&
         !blockA.outputConnection.checkType_(blockB.outputConnection)) {
-      // Mismatch between two inputs.  Disconnect previous and bump it away.
-      // Ensure that any disconnections are grouped with the causing event.
+      // Mismatch between two inputs.  Revert the block connections,
+      // bumping away the newly connected block(s).
       Blockly.Events.setGroup(e.group);
-      for (var i = 0; i < this.prevBlocks_.length; i++) {
-        var block = this.prevBlocks_[i];
-        if (block === blockA || block === blockB) {
-          block.unplug();
-          block.bumpNeighbours_();
+      var prevA = this.prevBlocks_[0];
+      if (prevA !== blockA) {
+        blockA.unplug();
+        if (prevA && !prevA.isShadow()) {
+          // The shadow block is automatically replaced during unplug().
+          this.getInput('A').connection.connect(prevA.outputConnection);
         }
       }
+      var prevB = this.prevBlocks_[1];
+      if (prevB !== blockB) {
+        blockB.unplug();
+        if (prevB && !prevB.isShadow()) {
+          // The shadow block is automatically replaced during unplug().
+          this.getInput('B').connection.connect(prevB.outputConnection);
+        }
+      }
+      this.bumpNeighbours_();
       Blockly.Events.setGroup(false);
     }
-    this.prevBlocks_[0] = blockA;
-    this.prevBlocks_[1] = blockB;
+    this.prevBlocks_[0] = this.getInputTargetBlock('A');
+    this.prevBlocks_[1] = this.getInputTargetBlock('B');
   }
 };
 

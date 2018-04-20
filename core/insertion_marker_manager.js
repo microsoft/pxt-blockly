@@ -26,6 +26,7 @@
 
 goog.provide('Blockly.InsertionMarkerManager');
 
+goog.require('Blockly.BlockAnimations');
 goog.require('Blockly.Events');
 goog.require('Blockly.RenderedConnection');
 
@@ -204,7 +205,8 @@ Blockly.InsertionMarkerManager.prototype.applyConnections = function() {
       // Determine which connection is inferior (lower in the source stack).
       var inferiorConnection = this.localConnection_.isSuperior() ?
           this.closestConnection_ : this.localConnection_;
-      inferiorConnection.getSourceBlock().connectionUiEffect();
+      Blockly.BlockAnimations.connectionUiEffect(
+          inferiorConnection.getSourceBlock());
       // Bring the just-edited stack to the front.
       var rootBlock = this.topBlock_.getRootBlock();
       rootBlock.bringToFront();
@@ -573,7 +575,7 @@ Blockly.InsertionMarkerManager.prototype.highlightBlock_ = function() {
   if (closest.targetBlock()) {
     this.highlightedBlock_ = closest.targetBlock();
     closest.targetBlock().highlightForReplacement(true);
-  } else if(local.type == Blockly.OUTPUT_VALUE) {
+  } else if (local.type == Blockly.OUTPUT_VALUE) {
     this.highlightedBlock_ = closest.sourceBlock_;
     closest.sourceBlock_.highlightShapeForInput(closest, true);
   }

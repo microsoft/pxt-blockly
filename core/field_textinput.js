@@ -115,7 +115,8 @@ Blockly.FieldTextInput.prototype.init = function() {
   }
 
   // pxtblockly: and has more than one input.
-  var notInShadow = !this.sourceBlock_.isShadow() && (this.sourceBlock_.inputList && this.sourceBlock_.inputList.length > 1);
+  var notInShadow = !this.sourceBlock_.isShadow()
+    && (this.sourceBlock_.inputList && this.sourceBlock_.inputList.length > 1);
 
   if (notInShadow) {
     this.className_ += ' blocklyEditableLabel';
@@ -248,7 +249,7 @@ Blockly.FieldTextInput.prototype.showEditor_ = function(
     var dropDownArrow =
         goog.dom.createDom(goog.dom.TagName.IMG, 'blocklyTextDropDownArrow');
     dropDownArrow.setAttribute('src',
-      Blockly.mainWorkspace.options.pathToMedia + 'dropdown-arrow-dark.svg');
+        Blockly.mainWorkspace.options.pathToMedia + 'dropdown-arrow-dark.svg');
     dropDownArrow.style.width = this.arrowSize_ + 'px';
     dropDownArrow.style.height = this.arrowSize_ + 'px';
     dropDownArrow.style.top = this.arrowY_ + 'px';
@@ -262,7 +263,7 @@ Blockly.FieldTextInput.prototype.showEditor_ = function(
     }
     if (opt_arrowCallback) {
       htmlInput.dropDownArrowMouseWrapper_ = Blockly.bindEvent_(dropDownArrow,
-        'mousedown', this, opt_arrowCallback);
+          'mousedown', this, opt_arrowCallback);
     }
     div.appendChild(dropDownArrow);
   }
@@ -311,15 +312,15 @@ Blockly.FieldTextInput.prototype.bindEvents_ = function(htmlInput) {
   // Bind to keydown -- trap Enter without IME and Esc to hide.
   htmlInput.onKeyDownWrapper_ =
       Blockly.bindEventWithChecks_(htmlInput, 'keydown', this,
-      this.onHtmlInputKeyDown_);
+          this.onHtmlInputKeyDown_);
   // Bind to keyup -- trap Enter; resize after every keystroke.
   htmlInput.onKeyUpWrapper_ =
       Blockly.bindEventWithChecks_(htmlInput, 'keyup', this,
-      this.onHtmlInputChange_);
+          this.onHtmlInputChange_);
   // Bind to keyPress -- repeatedly resize when holding down a key.
   htmlInput.onKeyPressWrapper_ =
       Blockly.bindEventWithChecks_(htmlInput, 'keypress', this,
-      this.onHtmlInputChange_);
+          this.onHtmlInputChange_);
   // For modern browsers (IE 9+, Chrome, Firefox, etc.) that support the
   // DOM input event, also trigger onHtmlInputChange_ then. The input event
   // is triggered on keypress but after the value of the text input
@@ -381,35 +382,35 @@ Blockly.FieldTextInput.GECKO_KEYCODE_WHITELIST = [
 
 /**
  * Handle a change to the editor.
- * @param {!Event} e Keyboard event.
+ * @param {!Event} _e Keyboard event.
  * @private
  */
-Blockly.FieldTextInput.prototype.onHtmlInputChange_ = function(e) {
+Blockly.FieldTextInput.prototype.onHtmlInputChange_ = function(_e) {
   // Check if the key matches the restrictor.
-  if (e.type === 'keypress' && this.restrictor_) {
+  if (_e.type === 'keypress' && this.restrictor_) {
     var keyCode;
     var isWhitelisted = false;
     if (goog.userAgent.GECKO) {
       // e.keyCode is not available in Gecko.
-      keyCode = e.charCode;
+      keyCode = _e.charCode;
       // Gecko reports control characters (e.g., left, right, copy, paste)
       // in the key event - whitelist these from being restricted.
       // < 32 and 127 (delete) are control characters.
       // See: http://www.theasciicode.com.ar/ascii-control-characters/delete-ascii-code-127.html
       if (keyCode < 32 || keyCode == 127) {
         isWhitelisted = true;
-      } else if (e.metaKey || e.ctrlKey) {
+      } else if (_e.metaKey || _e.ctrlKey) {
         // For combos (ctrl-v, ctrl-c, etc.), Gecko reports the ASCII letter
         // and the metaKey/ctrlKey flags.
         isWhitelisted = Blockly.FieldTextInput.GECKO_KEYCODE_WHITELIST.indexOf(keyCode) > -1;
       }
     } else {
-      keyCode = e.keyCode;
+      keyCode = _e.keyCode;
     }
     var char = String.fromCharCode(keyCode);
-    if (!isWhitelisted && !this.restrictor_.test(char) && e.preventDefault) {
+    if (!isWhitelisted && !this.restrictor_.test(char) && _e.preventDefault) {
       // Failed to pass restrictor.
-      e.preventDefault();
+      _e.preventDefault();
       return;
     }
   }
@@ -467,10 +468,10 @@ Blockly.FieldTextInput.prototype.resizeEditor_ = function() {
   if (Blockly.BlockSvg.FIELD_TEXTINPUT_EXPAND_PAST_TRUNCATION) {
     // Resize the box based on the measured width of the text, pre-truncation
     var textWidth = Blockly.utils.measureText(
-      Blockly.FieldTextInput.htmlInput_.style.fontSize,
-      Blockly.FieldTextInput.htmlInput_.style.fontFamily,
-      Blockly.FieldTextInput.htmlInput_.style.fontWeight,
-      Blockly.FieldTextInput.htmlInput_.value
+        Blockly.FieldTextInput.htmlInput_.style.fontSize,
+        Blockly.FieldTextInput.htmlInput_.style.fontFamily,
+        Blockly.FieldTextInput.htmlInput_.style.fontWeight,
+        Blockly.FieldTextInput.htmlInput_.value
     );
     // Size drawn in the canvas needs padding and scaling
     textWidth += Blockly.FieldTextInput.TEXT_MEASURE_PADDING_MAGIC;

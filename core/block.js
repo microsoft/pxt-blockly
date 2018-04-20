@@ -96,13 +96,13 @@ Blockly.Block = function(workspace, prototypeName, opt_id) {
 
   /**
    * @type {Blockly.Block}
-   * @private
+   * @protected
    */
   this.parentBlock_ = null;
 
   /**
    * @type {!Array.<!Blockly.Block>}
-   * @private
+   * @protected
    */
   this.childBlocks_ = [];
 
@@ -132,7 +132,7 @@ Blockly.Block = function(workspace, prototypeName, opt_id) {
 
   /**
    * @type {boolean}
-   * @private
+   * @protected
    */
   this.collapsed_ = false;
 
@@ -379,13 +379,11 @@ Blockly.Block.prototype.unplug = function(opt_healStack) {
 
 /**
  * Returns all connections originating from this block.
- * @param {boolean} all If true, return all connections even hidden ones.
+ * @param {boolean} _all If true, return all connections even hidden ones.
  * @return {!Array.<!Blockly.Connection>} Array of connections.
  * @private
  */
-Blockly.Block.prototype.getConnections_ = function(
-    /* eslint-disable no-unused-vars */ all
-    /* eslint-enable no-unused-vars */) {
+Blockly.Block.prototype.getConnections_ = function(_all) {
   var myConnections = [];
   if (this.outputConnection) {
     myConnections.push(this.outputConnection);
@@ -426,7 +424,7 @@ Blockly.Block.prototype.lastConnectionInStack = function() {
 /**
  * Bump unconnected blocks out of alignment.  Two blocks which aren't actually
  * connected should not coincidentally line up on screen.
- * @private
+ * @protected
  */
 Blockly.Block.prototype.bumpNeighbours_ = function() {
   console.warn('Not expected to reach this bumpNeighbours_ function. The ' +
@@ -537,12 +535,30 @@ Blockly.Block.prototype.getRootBlock = function() {
 
 /**
  * Find all the blocks that are directly nested inside this one.
- * Includes value and block inputs, as well as any following statement.
+ * Includes value and statement inputs, as well as any following statement.
  * Excludes any connection on an output tab or any preceding statement.
+ * Blocks are optionally sorted by position; top to bottom.
+ * @param {boolean} ordered Sort the list if true.
  * @return {!Array.<!Blockly.Block>} Array of blocks.
  */
-Blockly.Block.prototype.getChildren = function() {
-  return this.childBlocks_;
+Blockly.Block.prototype.getChildren = function(ordered) {
+  if (!ordered) {
+    return this.childBlocks_;
+  }
+  var blocks = [];
+  for (var i = 0, input; input = this.inputList[i]; i++) {
+    if (input.connection) {
+      var child = input.connection.targetBlock();
+      if (child) {
+        blocks.push(child);
+      }
+    }
+  }
+  var next = this.getNextBlock();
+  if (next) {
+    blocks.push(next);
+  }
+  return blocks;
 };
 
 /**
@@ -584,17 +600,17 @@ Blockly.Block.prototype.setParent = function(newParent) {
 /**
  * Find all the blocks that are directly or indirectly nested inside this one.
  * Includes this block in the list.
- * Includes value and block inputs, as well as any following statements.
+ * Includes value and statement inputs, as well as any following statements.
  * Excludes any connection on an output tab or any preceding statements.
- * @param {boolean=} opt_ignoreShadows If set, don't include shadow blocks.
+ * Blocks are optionally sorted by position; top to bottom.
+ * @param {boolean} ordered Sort the list if true.
  * @return {!Array.<!Blockly.Block>} Flattened array of blocks.
  */
-Blockly.Block.prototype.getDescendants = function(opt_ignoreShadows) {
+Blockly.Block.prototype.getDescendants = function(ordered) {
   var blocks = [this];
-  for (var child, x = 0; child = this.childBlocks_[x]; x++) {
-    if (!opt_ignoreShadows || !child.isShadow_) {
-      blocks.push.apply(blocks, child.getDescendants(opt_ignoreShadows));
-    }
+  var childBlocks = this.getChildren(ordered);
+  for (var child, i = 0; child = childBlocks[i]; i++) {
+    blocks.push.apply(blocks, child.getDescendants(ordered));
   }
   return blocks;
 };
@@ -815,7 +831,11 @@ Blockly.Block.prototype.makeColour_ = function(colour) {
   } else if (goog.isString(colour) && colour.match(/^#[0-9a-fA-F]{6}$/)) {
     return colour;
   } else {
-    throw 'Invalid colour: ' + colour;
+    var errorMsg = 'Invalid colour: "' + dereferenced + '"';
+    if (colour != dereferenced) {
+      errorMsg += ' (from "' + colour + '")';
+    }
+    throw errorMsg;
   }
 };
 
@@ -1247,12 +1267,12 @@ Blockly.Block.prototype.appendDummyInput = function(opt_name) {
  * @param {!Object} json Structured data describing the block.
  */
 Blockly.Block.prototype.jsonInit = function(json) {
-  var blockTypeName = json['type'];
+  var warningPrefix = json['type'] ? 'Block "' + json['type'] + '": ' : '';
 
   // Validate inputs.
   goog.asserts.assert(
       json['output'] == undefined || json['previousStatement'] == undefined,
-      'Must not have both an output and a previousStatement.');
+      warningPrefix + 'Must not have both an output and a previousStatement.');
 
   // Set basic properties of block.
   if (json['colour'] !== undefined) {
@@ -1298,8 +1318,10 @@ Blockly.Block.prototype.jsonInit = function(json) {
     this.setHelpUrl(localizedValue);
   }
   if (goog.isString(json['extensions'])) {
-    console.warn('JSON attribute \'extensions\' should be an array of ' +
-      'strings. Found raw string in JSON for \'' + json['type'] + '\' block.');
+    console.warn(
+        warningPrefix + 'JSON attribute \'extensions\' should be an array of' +
+        ' strings. Found raw string in JSON for \'' + json['type'] +
+        '\' block.');
     json['extensions'] = [json['extensions']];  // Correct and continue.
   }
 
@@ -1420,7 +1442,7 @@ Blockly.Block.prototype.interpolate_ = function(message, args, lastDummyAlign) {
       }
     }
   }
-  if(indexCount != args.length) {
+  if (indexCount != args.length) {
     throw new Error('Block "' + this.type + '": ' +
         'Message does not reference all ' + args.length + ' arg(s).');
   }
@@ -1507,7 +1529,7 @@ Blockly.Block.prototype.interpolate_ = function(message, args, lastDummyAlign) {
  * @param {string} name Language-neutral identifier which may used to find this
  *     input again.  Should be unique to this block.
  * @return {!Blockly.Input} The input object created.
- * @private
+ * @protected
  */
 Blockly.Block.prototype.appendInput_ = function(type, name) {
   var connection = null;
@@ -1688,24 +1710,20 @@ Blockly.Block.prototype.getCategory = function() {
 
 /**
  * Set this block's warning text.
- * @param {?string} text The text, or null to delete.
- * @param {string=} opt_id An optional ID for the warning text to be able to
+ * @param {?string} _text The text, or null to delete.
+ * @param {string=} _opt_id An optional ID for the warning text to be able to
  *     maintain multiple warnings.
  */
-Blockly.Block.prototype.setWarningText = function(text,
-    /* eslint-disable no-unused-vars */ opt_id
-    /* eslint-enable no-unused-vars */) {
+Blockly.Block.prototype.setWarningText = function(_text, _opt_id) {
   // NOP.
 };
 
 /**
  * Give this block a mutator dialog.
- * @param {Blockly.Mutator} mutator A mutator dialog instance or null to remove.
- * @abstract
+ * @param {Blockly.Mutator} _mutator A mutator dialog instance or null to
+ *     remove.
  */
-Blockly.Block.prototype.setMutator = function(
-    /* eslint-disable no-unused-vars */ mutator
-    /* eslint-enable no-unused-vars */) {
+Blockly.Block.prototype.setMutator = function(_mutator) {
   // NOP.
 };
 

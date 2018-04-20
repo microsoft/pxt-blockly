@@ -41,6 +41,7 @@ goog.require('Blockly.Grid');
 goog.require('Blockly.Options');
 goog.require('Blockly.ScrollbarPair');
 goog.require('Blockly.Touch');
+goog.require('Blockly.TouchGesture');
 goog.require('Blockly.Trashcan');
 //goog.require('Blockly.VerticalFlyout');
 goog.require('Blockly.VariablesDynamic');
@@ -55,7 +56,6 @@ goog.require('Blockly.ZoomControls');
 goog.require('goog.array');
 goog.require('goog.dom');
 goog.require('goog.math.Coordinate');
-goog.require('goog.userAgent');
 
 
 /**
@@ -291,6 +291,13 @@ Blockly.WorkspaceSvg.prototype.flyoutButtonCallbacks_ = {};
  * @private
  */
 Blockly.WorkspaceSvg.prototype.toolboxCategoryCallbacks_ = {};
+
+/**
+ * Developers may define this function to add custom menu options to the
+ * workspace's context menu or edit the workspace-created set of menu options.
+ * @param {!Array.<!Object>} options List of menu options to add to.
+ */
+Blockly.WorkspaceSvg.prototype.configureContextMenu = null;
 
 /**
  * In a flyout, the target workspace where blocks should be placed after a drag.
@@ -972,8 +979,8 @@ Blockly.WorkspaceSvg.prototype.reportValue = function(id, value) {
   valueReportBox.innerHTML = Blockly.utils.encodeEntities(value);
   contentDiv.appendChild(valueReportBox);
   Blockly.DropDownDiv.setColour(
-    Blockly.Colours.valueReportBackground,
-    Blockly.Colours.valueReportBorder
+      Blockly.Colours.valueReportBackground,
+      Blockly.Colours.valueReportBorder
   );
   Blockly.DropDownDiv.showPositionedByBlock(this, block);
 };
@@ -1193,7 +1200,7 @@ Blockly.WorkspaceSvg.prototype.createVariable = function(name, opt_type, opt_id)
  * Make a list of all the delete areas for this workspace.
  */
 Blockly.WorkspaceSvg.prototype.recordDeleteAreas = function() {
-  if (this.trashcan) {
+  if (this.trashcan && this.svgGroup_.parentNode) {
     this.deleteAreaTrash_ = this.trashcan.getClientRect();
   } else {
     this.deleteAreaTrash_ = null;
@@ -1292,7 +1299,8 @@ Blockly.WorkspaceSvg.prototype.onMouseWheel_ = function(e) {
   if (this.currentGesture_) {
     this.currentGesture_.cancel();
   }
-  // pxtblockly: Blockly zoom with Ctrl / Cmd + mousewheel scroll, and scroll workspace with just mousewheel scroll
+  // pxtblockly: Blockly zoom with Ctrl / Cmd + mousewheel scroll,
+  // and scroll workspace with just mousewheel scroll
   if (e.ctrlKey || e.metaKey) {
     // The vertical scroll distance that corresponds to a click of a zoom button.
     var PIXELS_PER_ZOOM_STEP = 50;
@@ -1474,6 +1482,11 @@ Blockly.WorkspaceSvg.prototype.showContextMenu_ = function(e) {
     }
   };
   menuOptions.push(deleteOption);
+
+  // Allow the developer to add or modify menuOptions.
+  if (this.configureContextMenu) {
+    this.configureContextMenu(menuOptions);
+  }
 
   Blockly.ContextMenu.show(e, menuOptions, this.RTL);
 };
@@ -1667,48 +1680,80 @@ Blockly.WorkspaceSvg.prototype.zoomToFit = function() {
   var ratioX = workspaceWidth / blocksWidth;
   var ratioY = workspaceHeight / blocksHeight;
   this.setScale(Math.min(ratioX, ratioY));
-  this.scrollCenter(true);
+  this.scrollCenter();
 };
 
 /**
  * Center the workspace.
  */
-Blockly.WorkspaceSvg.prototype.scrollCenter = function(withAnimation) {
+Blockly.WorkspaceSvg.prototype.scrollCenter = function() {
   if (!this.scrollbar) {
     // Can't center a non-scrolling workspace.
     console.warn('Tried to scroll a non-scrollable workspace.');
     return;
   }
-  // Hide the WidgetDiv without animation (zoom makes field out of place with div)
-  Blockly.WidgetDiv.hide(true);
-  Blockly.DropDownDiv.hideWithoutAnimation();
-  Blockly.hideChaff(false);
-
-  var initialX = 724.991943359375;
-  var initialY = 370.21099853515625;
-
   var metrics = this.getMetrics();
-
   var x = (metrics.contentWidth - metrics.viewWidth) / 2;
   if (this.flyout_) {
     x -= this.flyout_.width_ / 2;
   }
   var y = (metrics.contentHeight - metrics.viewHeight) / 2;
+  this.scrollbar.set(x, y);
+};
 
-  var scrollbar = this.scrollbar;
-  scrollbar.set(initialX, initialY);
-
-  var i = 0;
-  function step(timestamp) {
-    i++;
-    var intermediateX = (initialX - (Math.max(initialX, x)) / 10);
-    var intermediateY = (initialY - (Math.max(initialY, y)) / 10);
-    scrollbar.set(intermediateX, intermediateY);
-    if (i < 10) {
-      window.setTimeout(window.requestAnimationFrame(step), 1000);
-    }
+/**
+ * Scroll the workspace to center on the given block.
+ * @param {?string} id ID of block center on.
+ * @public
+ */
+Blockly.WorkspaceSvg.prototype.centerOnBlock = function(id) {
+  if (!this.scrollbar) {
+    console.warn('Tried to scroll a non-scrollable workspace.');
+    return;
   }
-  window.requestAnimationFrame(step);
+
+  var block = this.getBlockById(id);
+  if (!block) {
+    return;
+  }
+
+  // XY is in workspace coordinates.
+  var xy = block.getRelativeToSurfaceXY();
+  // Height/width is in workspace units.
+  var heightWidth = block.getHeightWidth();
+
+  // Find the enter of the block in workspace units.
+  var blockCenterY = xy.y + heightWidth.height / 2;
+
+  // In RTL the block's position is the top right of the block, not top left.
+  var multiplier = this.RTL ? -1 : 1;
+  var blockCenterX = xy.x + (multiplier * heightWidth.width / 2);
+
+  // Workspace scale, used to convert from workspace coordinates to pixels.
+  var scale = this.scale;
+
+  // Center in pixels.  0, 0 is at the workspace origin.  These numbers may
+  // be negative.
+  var pixelX = blockCenterX * scale;
+  var pixelY = blockCenterY * scale;
+
+  var metrics = this.getMetrics();
+
+  // Scrolling to here would put the block in the top-left corner of the
+  // visible workspace.
+  var scrollToBlockX = pixelX - metrics.contentLeft;
+  var scrollToBlockY = pixelY - metrics.contentTop;
+
+  // viewHeight and viewWidth are in pixels.
+  var halfViewWidth = metrics.viewWidth / 2;
+  var halfViewHeight = metrics.viewHeight / 2;
+
+  // Put the block in the center of the visible workspace instead.
+  var scrollToCenterX = scrollToBlockX - halfViewWidth;
+  var scrollToCenterY = scrollToBlockY - halfViewHeight;
+
+  Blockly.hideChaff();
+  this.scrollbar.set(scrollToCenterX, scrollToCenterY);
 };
 
 /**
@@ -1753,13 +1798,12 @@ Blockly.WorkspaceSvg.prototype.scroll = function(x, y) {
                metrics.contentWidth);
   y = Math.max(y, metrics.viewHeight - metrics.contentTop -
                metrics.contentHeight);
-   // When the workspace starts scrolling, hide the WidgetDiv without animation.
-   // This is to prevent a dispoal animation from happening in the wrong location.
+  // When the workspace starts scrolling, hide the WidgetDiv without animation.
+  // This is to prevent a dispoal animation from happening in the wrong location.
   Blockly.WidgetDiv.hide(true);
   Blockly.DropDownDiv.hideWithoutAnimation();
   // Move the scrollbars and the page will scroll automatically.
-  this.scrollbar.set(-x - metrics.contentLeft,
-                     -y - metrics.contentTop);
+  this.scrollbar.set(-x - metrics.contentLeft, -y - metrics.contentTop);
 };
 
 /**
@@ -1770,7 +1814,7 @@ Blockly.WorkspaceSvg.prototype.updateStackGlowScale_ = function() {
   // No such def in the flyout workspace.
   if (this.options.stackGlowBlur) {
     this.options.stackGlowBlur.setAttribute('stdDeviation',
-      Blockly.STACK_GLOW_RADIUS / this.scale
+        Blockly.STACK_GLOW_RADIUS / this.scale
     );
   }
 };

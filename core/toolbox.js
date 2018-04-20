@@ -407,7 +407,7 @@ Blockly.Toolbox.prototype.syncTrees_ = function(treeIn, treeOut, pathToMedia) {
 
 Blockly.Toolbox.prototype.isInverted_ = function() {
   return this.workspace_.options.toolboxOptions && this.workspace_.options.toolboxOptions.inverted;
-}
+};
 
 /**
  * Recursively add colours to this toolbox.
@@ -417,61 +417,61 @@ Blockly.Toolbox.prototype.isInverted_ = function() {
  */
 // pxtblockly specific: (support inverted toolbox, and coloured toolbox)
 Blockly.Toolbox.prototype.addColour_ = function(opt_tree) {
-    var options = this.workspace_.options;
-    var tree = opt_tree || this.tree_;
-    var children = tree.getChildren();
-    for (var i = 0, child; child = children[i]; i++) {
-        var element = child.getRowElement();
-        if (element) {
-            // Support for inverted and coloured toolboxes
-            var toolboxOptions = options.toolboxOptions;
-            if (toolboxOptions.inverted) {
-                if (this.hasColours_) {
-                    element.style.color = '#fff';
-                    element.style.background = (child.hexColour || '#ddd');
-                    var invertedMultiplier = toolboxOptions.invertedMultiplier;
-                    if (!child.disabled) {
-                        // Hovering over toolbox category fades.
-                        Blockly.bindEvent_(child.getRowElement(), 'mouseenter', child,
-                            function(e) {
-                            if (!this.isSelected()) {
-                                this.getRowElement().style.background = Blockly.PXTUtils.fadeColour(this.hexColour || '#ddd', invertedMultiplier, false);
-                            }
-                            });
-                        Blockly.bindEvent_(child.getRowElement(), 'mouseleave', child,
-                            function(e) {
-                            if (!this.isSelected()) {
-                                this.getRowElement().style.background = (this.hexColour || '#ddd');
-                            }
-                            });
-                    }
-                }
-            } else {
-                if (toolboxOptions.border) {
-                    // Only show if the toolbox type is not noborder
-                    if (this.hasColours_) {
-                        var border = '8px solid ' + (child.hexColour || '#ddd');
-                    } else {
-                        var border = 'none';
-                    }
-                    if (this.workspace_.RTL) {
-                        element.style.borderRight = border;
-                    } else {
-                        element.style.borderLeft = border;
-                    }
-                }
-                // support for a coloured toolbox
-                if (toolboxOptions.colour && this.hasColours_) {
-                    element.style.color = (child.hexColour || '#000');
-                }
-            }
-            // if disabled, show disabled opacity
-            if (child.disabled) {
-                element.style.opacity = toolboxOptions.disabledOpacity;
-            }
+  var options = this.workspace_.options;
+  var tree = opt_tree || this.tree_;
+  var children = tree.getChildren(false);
+  for (var i = 0, child; child = children[i]; i++) {
+    var element = child.getRowElement();
+    if (element) {
+      // Support for inverted and coloured toolboxes
+      var toolboxOptions = options.toolboxOptions;
+      if (toolboxOptions.inverted) {
+        if (this.hasColours_) {
+          element.style.color = '#fff';
+          element.style.background = (child.hexColour || '#ddd');
+          var invertedMultiplier = toolboxOptions.invertedMultiplier;
+          if (!child.disabled) {
+            // Hovering over toolbox category fades.
+            Blockly.bindEvent_(child.getRowElement(), 'mouseenter', child,
+                function(/*e*/) {
+                  if (!this.isSelected()) {
+                    this.getRowElement().style.background = Blockly.PXTUtils.fadeColour(this.hexColour || '#ddd', invertedMultiplier, false);
+                  }
+                });
+            Blockly.bindEvent_(child.getRowElement(), 'mouseleave', child,
+                function(/*e*/) {
+                  if (!this.isSelected()) {
+                    this.getRowElement().style.background = (this.hexColour || '#ddd');
+                  }
+                });
+          }
         }
-        this.addColour_(child);
+      } else {
+        if (toolboxOptions.border) {
+          // Only show if the toolbox type is not noborder
+          if (this.hasColours_) {
+            var border = '8px solid ' + (child.hexColour || '#ddd');
+          } else {
+            var border = 'none';
+          }
+          if (this.workspace_.RTL) {
+            element.style.borderRight = border;
+          } else {
+            element.style.borderLeft = border;
+          }
+        }
+        // support for a coloured toolbox
+        if (toolboxOptions.colour && this.hasColours_) {
+          element.style.color = (child.hexColour || '#000');
+        }
+      }
+      // if disabled, show disabled opacity
+      if (child.disabled) {
+        element.style.opacity = toolboxOptions.disabledOpacity;
+      }
     }
+    this.addColour_(child);
+  }
 };
 
 /**
@@ -617,7 +617,7 @@ Blockly.Toolbox.TreeControl.prototype.createNode = function(opt_html) {
         goog.ui.tree.BaseNode.EventType.EXPAND, resize);
     goog.events.listen(this.toolbox_.tree_,
         goog.ui.tree.BaseNode.EventType.COLLAPSE, resize);
-      this.eventHandlerRegistered_ = true;
+    this.eventHandlerRegistered_ = true;
   }
   var html = opt_html ?
       goog.html.SafeHtml.htmlEscape(opt_html) : goog.html.SafeHtml.EMPTY;
@@ -696,11 +696,10 @@ Blockly.Toolbox.TreeNode.prototype.getExpandIconSafeHtml = function() {
 
 /**
  * Expand or collapse the node on mouse click.
- * @param {!goog.events.BrowserEvent} e The browser event.
+ * @param {!goog.events.BrowserEvent} _e The browser event.
  * @override
  */
-Blockly.Toolbox.TreeNode.prototype.onClick_ = function(
-    /* eslint-disable no-unused-vars */ e /* eslint-disable no-unused-vars */) {
+Blockly.Toolbox.TreeNode.prototype.onClick_ = function(_e) {
   // Expand icon.
   if (this.hasChildren() && this.isUserCollapsible_) {
     this.toggle();
@@ -715,23 +714,21 @@ Blockly.Toolbox.TreeNode.prototype.onClick_ = function(
 
 /**
  * Suppress the inherited mouse down behaviour.
- * @param {!goog.events.BrowserEvent} e The browser event.
+ * @param {!goog.events.BrowserEvent} _e The browser event.
  * @override
  * @private
  */
-Blockly.Toolbox.TreeNode.prototype.onMouseDown = function(
-    /* eslint-disable no-unused-vars */ e /* eslint-disable no-unused-vars */) {
+Blockly.Toolbox.TreeNode.prototype.onMouseDown = function(_e) {
   // NOPE.
 };
 
 /**
  * Suppress the inherited double-click behaviour.
- * @param {!goog.events.BrowserEvent} e The browser event.
+ * @param {!goog.events.BrowserEvent} _e The browser event.
  * @override
  * @private
  */
-Blockly.Toolbox.TreeNode.prototype.onDoubleClick_ = function(
-    /* eslint-disable no-unused-vars */ e /* eslint-disable no-unused-vars */) {
+Blockly.Toolbox.TreeNode.prototype.onDoubleClick_ = function(_e) {
   // NOP.
 };
 
