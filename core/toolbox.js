@@ -659,8 +659,12 @@ Blockly.Toolbox.TreeControl.prototype.setSelectedItem = function(node) {
     toolbox.flyout_.hide();
   }
   if (oldNode != node && oldNode != this) {
-    var event = new Blockly.Events.Ui(null, 'category',
-        oldNode && oldNode.getHtml(), node && node.getHtml());
+    // pxtblockly: workaround changes to the UI event
+    var event = new Blockly.Events.Ui(null);
+    event.fromJson({
+        'element': 'category',
+        'newValue': node && node.getHtml()
+    });
     event.workspaceId = toolbox.workspace_.id;
     Blockly.Events.fire(event);
   }
