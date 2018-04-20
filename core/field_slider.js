@@ -38,15 +38,15 @@ goog.require('goog.ui.Slider');
  * @extends {Blockly.FieldNumber}
  * @constructor
  */
-Blockly.FieldSlider = function(value_, opt_min, opt_max, opt_precision, opt_step, opt_labelText, opt_validator) {
-    Blockly.FieldSlider.superClass_.constructor.call(this, value_,
-        opt_validator);
-    this.min_ = parseFloat(opt_min);
-    this.max_ = parseFloat(opt_max);
-    this.step_ = parseFloat(opt_step);
-    this.labelText_ = opt_labelText;
-    this.precision_ = parseFloat(opt_precision);
-  };
+Blockly.FieldSlider = function (value_, opt_min, opt_max, opt_precision, opt_step, opt_labelText, opt_validator) {
+  Blockly.FieldSlider.superClass_.constructor.call(this, value_,
+    opt_validator);
+  this.min_ = parseFloat(opt_min);
+  this.max_ = parseFloat(opt_max);
+  this.step_ = parseFloat(opt_step);
+  this.labelText_ = opt_labelText;
+  this.precision_ = parseFloat(opt_precision);
+};
 goog.inherits(Blockly.FieldSlider, Blockly.FieldNumber);
 
 /**
@@ -57,119 +57,120 @@ goog.inherits(Blockly.FieldSlider, Blockly.FieldNumber);
  * @package
  * @nocollapse
  */
-Blockly.FieldSlider.fromJson = function(options) {
+Blockly.FieldSlider.fromJson = function (options) {
   return new Blockly.FieldSlider(options['value'],
-      options['min'], options['max'], options['precision'],
-      options['step'], options['labelText']);
+    options['min'], options['max'], options['precision'],
+    options['step'], options['labelText']);
 };
 
-Blockly.FieldSlider.prototype.setMinMax = function(min, max, step) {
-    this.min_ = parseFloat(min);
-    this.max_ = parseFloat(max);
-    this.step_ = parseFloat(step) || undefined;
+Blockly.FieldSlider.prototype.setMinMax = function (min, max, step) {
+  this.min_ = parseFloat(min);
+  this.max_ = parseFloat(max);
+  this.step_ = parseFloat(step) || undefined;
 };
 
-Blockly.FieldSlider.prototype.setLabel = function(labelText) {
-    if (labelText != undefined) this.labelText_ = labelText;
+Blockly.FieldSlider.prototype.setLabel = function (labelText) {
+  if (labelText != undefined) this.labelText_ = labelText;
 };
 
-Blockly.FieldSlider.prototype.setColor = function(color) {
-    if (color != undefined) this.sliderColor_ = color;
+Blockly.FieldSlider.prototype.setColor = function (color) {
+  if (color != undefined) this.sliderColor_ = color;
 };
 
-Blockly.FieldSlider.prototype.init = function() {
-    Blockly.FieldTextInput.superClass_.init.call(this);
-    this.setValue(this.getValue());
+Blockly.FieldSlider.prototype.init = function () {
+  Blockly.FieldTextInput.superClass_.init.call(this);
+  this.setValue(this.getValue());
 };
 
 /**
  * Show the inline free-text editor on top of the text.
+ * @param {!Event} e A mouse down or touch start event.
  * @private
  */
-Blockly.FieldSlider.prototype.showEditor_ = function() {
-    Blockly.FieldSlider.superClass_.showEditor_.call(this, false);
-    if (this.max_ == Infinity || this.min_ == -Infinity) {
-        return;
-    }
+Blockly.FieldSlider.prototype.showEditor_ = function (e) {
+  Blockly.FieldSlider.superClass_.showEditor_.call(this, e, false);
+  if (this.max_ == Infinity || this.min_ == -Infinity) {
+    return;
+  }
 
-    this.showSlider_();
+  this.showSlider_();
 
-    this.setValue(this.getValue());
+  this.setValue(this.getValue());
 };
 
 /**
  * Show the slider.
  * @private
  */
-Blockly.FieldSlider.prototype.showSlider_ = function() {
-    // If there is an existing drop-down someone else owns, hide it immediately
-    // and clear it.
-    Blockly.DropDownDiv.hideWithoutAnimation();
-    Blockly.DropDownDiv.clearContent();
+Blockly.FieldSlider.prototype.showSlider_ = function () {
+  // If there is an existing drop-down someone else owns, hide it immediately
+  // and clear it.
+  Blockly.DropDownDiv.hideWithoutAnimation();
+  Blockly.DropDownDiv.clearContent();
 
-    var contentDiv = Blockly.DropDownDiv.getContentDiv();
+  var contentDiv = Blockly.DropDownDiv.getContentDiv();
 
-    // Accessibility properties
-    contentDiv.setAttribute('role', 'menu');
-    contentDiv.setAttribute('aria-haspopup', 'true');
+  // Accessibility properties
+  contentDiv.setAttribute('role', 'menu');
+  contentDiv.setAttribute('aria-haspopup', 'true');
 
-    this.addSlider_(contentDiv);
+  this.addSlider_(contentDiv);
 
-    // Set colour and size of drop-down
-    Blockly.DropDownDiv.setColour('#ffffff', '#dddddd');
-    Blockly.DropDownDiv.showPositionedByBlock(this, this.sourceBlock_);
+  // Set colour and size of drop-down
+  Blockly.DropDownDiv.setColour('#ffffff', '#dddddd');
+  Blockly.DropDownDiv.showPositionedByBlock(this, this.sourceBlock_);
 
-    if (this.slider_) this.slider_.setVisible(true)
+  if (this.slider_) this.slider_.setVisible(true)
 };
 
 /**
  * Add the slider.
  * @private
  */
-Blockly.FieldSlider.prototype.addSlider_ = function(contentDiv) {
-    if (this.labelText_) {
-        var elements = this.createLabelDom_(this.labelText_);
-        contentDiv.appendChild(elements[0]);
-        this.readout_ = elements[1];
-    }
-    this.slider_ = new goog.ui.Slider();
-    this.slider_.setMoveToPointEnabled(false);
-    this.slider_.setMinimum(this.min_);
-    this.slider_.setMaximum(this.max_);
-    if (this.step_) this.slider_.setUnitIncrement(this.step_);
-    this.slider_.setRightToLeft(this.sourceBlock_.RTL);
+Blockly.FieldSlider.prototype.addSlider_ = function (contentDiv) {
+  if (this.labelText_) {
+    var elements = this.createLabelDom_(this.labelText_);
+    contentDiv.appendChild(elements[0]);
+    this.readout_ = elements[1];
+  }
+  this.slider_ = new goog.ui.Slider();
+  this.slider_.setMoveToPointEnabled(false);
+  this.slider_.setMinimum(this.min_);
+  this.slider_.setMaximum(this.max_);
+  if (this.step_) this.slider_.setUnitIncrement(this.step_);
+  this.slider_.setRightToLeft(this.sourceBlock_.RTL);
 
-    var value = parseFloat(this.getValue());
-    value = isNaN(value) ? 0 : value;
-    this.slider_.setValue(value);
+  var value = parseFloat(this.getValue());
+  value = isNaN(value) ? 0 : value;
+  this.slider_.setValue(value);
 
-    this.slider_.render(contentDiv);
+  this.slider_.render(contentDiv);
 
-    // Configure event handler.
-    var thisField = this;
-    Blockly.FieldSlider.changeEventKey_ = goog.events.listen(this.slider_,
-        goog.ui.Component.EventType.CHANGE,
-        function (event) {
-            var val = event.target.getValue() || 0;
-            if (thisField.sourceBlock_) {
-                // Call any validation function, and allow it to override.
-                val = thisField.callValidator(val);
-            }
-            if (val !== null) {
-                thisField.setValue(val);
-                var htmlInput = Blockly.FieldTextInput.htmlInput_;
-                htmlInput.value = val;
-                htmlInput.focus();
-            }
-        });
+  // Configure event handler.
+  var thisField = this;
+  Blockly.FieldSlider.changeEventKey_ = goog.events.listen(this.slider_,
+      goog.ui.Component.EventType.CHANGE,
+      function(event) {
+        var val = event.target.getValue() || 0;
+        if (thisField.sourceBlock_) {
+          // Call any validation function, and allow it to override.
+          val = thisField.callValidator(val);
+        }
+        if (val !== null) {
+          thisField.setValue(val);
+          var htmlInput = Blockly.FieldTextInput.htmlInput_;
+          htmlInput.value = val;
+          htmlInput.focus();
+        }
+      });
 
-    Blockly.FieldSlider.focusEventKey_ = goog.events.listen(this.slider_.getElement(),
-        goog.ui.Component.EventType.FOCUS,
-        function (event) {
-            // Switch focus to the HTML input field
-            var htmlInput = Blockly.FieldTextInput.htmlInput_;
-            htmlInput.focus();
-        })
+  Blockly.FieldSlider.focusEventKey_ = goog.events.listen(this.slider_.getElement(),
+      goog.ui.Component.EventType.FOCUS,
+      function(/*event*/) {
+        // Switch focus to the HTML input field
+        var htmlInput = Blockly.FieldTextInput.htmlInput_;
+        htmlInput.focus();
+      });
 };
 
 /**
@@ -177,87 +178,87 @@ Blockly.FieldSlider.prototype.addSlider_ = function(contentDiv) {
  * @private
  */
 Blockly.FieldSlider.prototype.createLabelDom_ = function(labelText) {
-    var labelContainer = document.createElement('div');
-    labelContainer.setAttribute('class', 'blocklyFieldSliderLabel');
-    var readout = document.createElement('span');
-    readout.setAttribute('class', 'blocklyFieldSliderReadout');
-    var label = document.createElement('span');
-    label.setAttribute('class', 'blocklyFieldSliderLabelText');
-    label.innerHTML = labelText;
-    labelContainer.appendChild(label);
-    labelContainer.appendChild(readout);
-    return [labelContainer, readout];
+  var labelContainer = document.createElement('div');
+  labelContainer.setAttribute('class', 'blocklyFieldSliderLabel');
+  var readout = document.createElement('span');
+  readout.setAttribute('class', 'blocklyFieldSliderReadout');
+  var label = document.createElement('span');
+  label.setAttribute('class', 'blocklyFieldSliderLabelText');
+  label.innerHTML = labelText;
+  labelContainer.appendChild(label);
+  labelContainer.appendChild(readout);
+  return [labelContainer, readout];
 };
 
 /**
  * Set value.
  */
-Blockly.FieldSlider.prototype.setValue = function(value) {
-    Blockly.FieldSlider.superClass_.setValue.call(this, value);
-    this.updateSliderHandles_();
-    this.updateDom_();
+Blockly.FieldSlider.prototype.setValue = function (value) {
+  Blockly.FieldSlider.superClass_.setValue.call(this, value);
+  this.updateSliderHandles_();
+  this.updateDom_();
 };
 
 /**
  * Update the DOM.
  * @private
  */
-Blockly.FieldSlider.prototype.updateDom_ = function() {
-    if (this.slider_ && this.readout_) {
-        // Update the slider background
-        this.setBackground_(this.slider_.getElement());
-        this.setReadout_(this.readout_, this.getValue());
-    }
+Blockly.FieldSlider.prototype.updateDom_ = function () {
+  if (this.slider_ && this.readout_) {
+    // Update the slider background
+    this.setBackground_(this.slider_.getElement());
+    this.setReadout_(this.readout_, this.getValue());
+  }
 };
 
 /**
  * Set the slider background.
  * @private
  */
-Blockly.FieldSlider.prototype.setBackground_ = function(slider) {
-    if (this.sliderColor_)
-        goog.style.setStyle(slider, 'background', this.sliderColor_);
-    else if (this.sourceBlock_.isShadow() && this.sourceBlock_.parentBlock_)
-        goog.style.setStyle(slider, 'background', this.sourceBlock_.parentBlock_.getColourTertiary());
+Blockly.FieldSlider.prototype.setBackground_ = function (slider) {
+  if (this.sliderColor_)
+    goog.style.setStyle(slider, 'background', this.sliderColor_);
+  else if (this.sourceBlock_.isShadow() && this.sourceBlock_.parentBlock_)
+    goog.style.setStyle(slider, 'background', this.sourceBlock_.parentBlock_.getColourTertiary());
 };
 
 /**
  * Set readout.
  * @private
  */
-Blockly.FieldSlider.prototype.setReadout_ = function(readout, value) {
-    readout.innerHTML = value;
+Blockly.FieldSlider.prototype.setReadout_ = function (readout, value) {
+  readout.innerHTML = value;
 };
 
 /**
  * Update slider handles.
  * @private
  */
-Blockly.FieldSlider.prototype.updateSliderHandles_ = function() {
-    if (this.slider_) {
-        this.slider_.setValue(parseFloat(this.getValue()));
-    }
+Blockly.FieldSlider.prototype.updateSliderHandles_ = function () {
+  if (this.slider_) {
+    this.slider_.setValue(parseFloat(this.getValue()));
+  }
 };
 
-Blockly.FieldSlider.prototype.onHtmlInputChange_ = function(e) {
-    Blockly.FieldSlider.superClass_.onHtmlInputChange_.call(this, e);
-    if (this.slider_) {
-        this.slider_.setValue(parseFloat(this.getValue()))
-    }
+Blockly.FieldSlider.prototype.onHtmlInputChange_ = function (e) {
+  Blockly.FieldSlider.superClass_.onHtmlInputChange_.call(this, e);
+  if (this.slider_) {
+    this.slider_.setValue(parseFloat(this.getValue()))
+  }
 };
 
 /**
  * Close the slider if this input is being deleted.
  */
-Blockly.FieldSlider.prototype.dispose = function() {
-    if (Blockly.FieldSlider.changeEventKey_) {
-        goog.events.unlistenByKey(Blockly.FieldSlider.changeEventKey_);
-    }
-    if (Blockly.FieldSlider.focusEventKey_) {
-        goog.events.unlistenByKey(Blockly.FieldSlider.focusEventKey_);
-    }
-    Blockly.Events.setGroup(false);
-    Blockly.FieldSlider.superClass_.dispose.call(this);
+Blockly.FieldSlider.prototype.dispose = function () {
+  if (Blockly.FieldSlider.changeEventKey_) {
+    goog.events.unlistenByKey(Blockly.FieldSlider.changeEventKey_);
+  }
+  if (Blockly.FieldSlider.focusEventKey_) {
+    goog.events.unlistenByKey(Blockly.FieldSlider.focusEventKey_);
+  }
+  Blockly.Events.setGroup(false);
+  Blockly.FieldSlider.superClass_.dispose.call(this);
 };
 
 Blockly.Field.register('field_slider', Blockly.FieldSlider);

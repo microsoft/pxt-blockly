@@ -206,6 +206,7 @@ Blockly.FieldTextInput.prototype.setRestrictor = function(restrictor) {
 
 /**
  * Show the inline free-text editor on top of the text.
+ * @param {!Event} e A mouse down or touch start event.
  * @param {boolean=} opt_quietInput True if editor should be created without
  *     focus.  Defaults to false.
  * @param {boolean=} opt_readOnly True if editor should be created with HTML
@@ -215,7 +216,7 @@ Blockly.FieldTextInput.prototype.setRestrictor = function(restrictor) {
  * @private
  */
 Blockly.FieldTextInput.prototype.showEditor_ = function(
-    opt_quietInput, opt_readOnly, opt_withArrow, opt_arrowCallback) {
+    e, opt_quietInput, opt_readOnly, opt_withArrow, opt_arrowCallback) {
   this.workspace_ = this.sourceBlock_.workspace;
   var quietInput = opt_quietInput || false;
   var readOnly = opt_readOnly || false;

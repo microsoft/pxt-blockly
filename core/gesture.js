@@ -726,6 +726,7 @@ Blockly.Gesture.prototype.doBubbleClick_ = function() {
 
 /**
  * Execute a field click.
+ * @param {!Event} e A mouse down or touch start event.
  * @private
  */
 Blockly.Gesture.prototype.doFieldClick_ = function(e) {

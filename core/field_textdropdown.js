@@ -116,10 +116,11 @@ Blockly.FieldTextDropdown.prototype.dispose = function() {
 
 /**
  * If the drop-down isn't open, show the text editor.
+ * @param {!Event} e A mouse down or touch start event.
  */
-Blockly.FieldTextDropdown.prototype.showEditor_ = function() {
+Blockly.FieldTextDropdown.prototype.showEditor_ = function(e) {
   if (!this.dropDownOpen_) {
-    Blockly.FieldTextDropdown.superClass_.showEditor_.call(this, null, null,
+    Blockly.FieldTextDropdown.superClass_.showEditor_.call(this, e, null, null,
       true, function() {
         this.showDropdown_();
         Blockly.Touch.clearTouchIdentifier();
