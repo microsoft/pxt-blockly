@@ -98,34 +98,7 @@ Blockly.BlockAnimations.disposeUiStep_ = function(clone, rtl, start,
  * @package
  */
 Blockly.BlockAnimations.connectionUiEffect = function(block) {
-  var workspace = block.workspace;
-  var scale = workspace.scale;
-  workspace.getAudioManager().play('click');
-  if (scale < 1) {
-    return;  // Too small to care about visual effects.
-  }
-  // Determine the absolute coordinates of the inferior block.
-  var xy = workspace.getSvgXY(block.getSvgRoot());
-  // Offset the coordinates based on the two connection types, fix scale.
-  if (block.outputConnection) {
-    xy.x += (block.RTL ? 3 : -3) * scale;
-    xy.y += 13 * scale;
-  } else if (block.previousConnection) {
-    xy.x += (block.RTL ? -23 : 23) * scale;
-    xy.y += 3 * scale;
-  }
-  var ripple = Blockly.utils.createSvgElement('circle',
-      {
-        'cx': xy.x,
-        'cy': xy.y,
-        'r': 0,
-        'fill': 'none',
-        'stroke': '#888',
-        'stroke-width': 10
-      },
-      workspace.getParentSvg());
-  // Start the animation.
-  Blockly.BlockAnimations.connectionUiStep_(ripple, new Date, scale);
+  block.workspace.getAudioManager().play('click');
 };
 
 /**
@@ -155,47 +128,6 @@ Blockly.BlockAnimations.connectionUiStep_ = function(ripple, start, scale) {
  */
 Blockly.BlockAnimations.disconnectUiEffect = function(block) {
   block.workspace.getAudioManager().play('disconnect');
-  if (block.workspace.scale < 1) {
-    return;  // Too small to care about visual effects.
-  }
-  // Horizontal distance for bottom of block to wiggle.
-  var DISPLACEMENT = 10;
-  // Scale magnitude of skew to height of block.
-  var height = block.getHeightWidth().height;
-  var magnitude = Math.atan(DISPLACEMENT / height) / Math.PI * 180;
-  if (!block.RTL) {
-    magnitude *= -1;
-  }
-  // Start the animation.
-  Blockly.BlockAnimations.disconnectUiStep_(
-      block.getSvgRoot(), magnitude, new Date);
-};
-/**
- * Animate a brief wiggle of a disconnected block.
- * @param {!Element} group SVG element to animate.
- * @param {number} magnitude Maximum degrees skew (reversed for RTL).
- * @param {!Date} start Date of animation's start.
- * @private
- */
-Blockly.BlockAnimations.disconnectUiStep_ = function(group, magnitude, start) {
-  var DURATION = 200;  // Milliseconds.
-  var WIGGLES = 3;  // Half oscillations.
-
-  var ms = new Date - start;
-  var percent = ms / DURATION;
-
-  if (percent > 1) {
-    group.skew_ = '';
-  } else {
-    var skew = Math.round(
-        Math.sin(percent * Math.PI * WIGGLES) * (1 - percent) * magnitude);
-    group.skew_ = 'skewX(' + skew + ')';
-    Blockly.BlockAnimations.disconnectGroup_ = group;
-    Blockly.BlockAnimations.disconnectPid_ =
-        setTimeout(Blockly.BlockAnimations.disconnectUiStep_, 10, group,
-            magnitude, start);
-  }
-  group.setAttribute('transform', group.translate_ + group.skew_);
 };
 
 /**
@@ -203,11 +135,4 @@ Blockly.BlockAnimations.disconnectUiStep_ = function(group, magnitude, start) {
  * @package
  */
 Blockly.BlockAnimations.disconnectUiStop = function() {
-  if (Blockly.BlockAnimations.disconnectGroup_) {
-    clearTimeout(Blockly.BlockAnimations.disconnectPid_);
-    var group = Blockly.BlockAnimations.disconnectGroup_;
-    group.skew_ = '';
-    group.setAttribute('transform', group.translate_);
-    Blockly.BlockAnimations.disconnectGroup_ = null;
-  }
 };
