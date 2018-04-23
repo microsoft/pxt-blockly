@@ -553,6 +553,7 @@ Blockly.WorkspaceCommentSvg.fromXml = function(xmlComment, workspace,
 
     var comment = new Blockly.WorkspaceCommentSvg(workspace,
         info.content, info.h, info.w, info.id);
+    comment.data = xmlComment.getAttribute('data');
     if (workspace.rendered) {
       comment.initSvg();
       comment.render(false);
