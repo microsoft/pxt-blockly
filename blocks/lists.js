@@ -145,7 +145,7 @@ Blockly.Blocks['lists_create_with'] = {
     this.updateShape_();
     this.setOutput(true, 'Array');
     this.setOutputShape(Blockly.OUTPUT_SHAPE_ROUND);
-    this.setInputsInline(false);
+    this.setInputsInline(true);
     //this.setMutator(new Blockly.Mutator(['lists_create_with_item']));
     this.setTooltip(Blockly.Msg.LISTS_CREATE_WITH_TOOLTIP);
   },
@@ -235,38 +235,56 @@ Blockly.Blocks['lists_create_with'] = {
   /**
    * Store pointers to any connected child blocks.
    */
-  storeConnections_: function (arg) {
+  storeConnections_: function() {
     this.valueConnections_ = [];
     for (var i = 0; i < this.itemCount_; i++) {
-      if (arg != i) {
-        this.valueConnections_.push(this.getInput('ADD' + i).connection.targetConnection);
-      } else {
-        if (this.getInput('ADD' + i).connection.targetConnection) this.getInput('ADD' + i).connection.disconnect();
+      this.valueConnections_.push(this.getInput('ADD' + i).connection.targetConnection);
+    }
+  },
+  restoreConnections_: function() {
+    for (var i = 0; i < this.itemCount_; i++) {
+      Blockly.Mutator.reconnect(this.valueConnections_[i], this, 'ADD' + i);
+    }
+  },
+  addItem_: function() {
+    this.storeConnections_();
+    var update = function() {
+      this.itemCount_++;
+    };
+    this.update_(update);
+    this.restoreConnections_();
+    // Add shadow block
+    if (this.itemCount_ > 1) {
+      // Find shadow type
+      var firstInput = this.getInput('ADD' + 0);
+      if (firstInput && firstInput.connection.targetConnection) {
+        // Create a new shadow DOM with the same type as the first input
+        // but with an empty default value
+        var newInput = this.getInput('ADD' + (this.itemCount_ - 1));
+        var shadowInputDom = firstInput.connection.getShadowDom();
+        var shadowDom = document.createElement('shadow');
+        var shadowInputType = shadowInputDom.getAttribute('type');
+        shadowDom.setAttribute('type', shadowInputType);
+        var shadowDomField = document.createElement('field');
+        shadowDomField.setAttribute('name', 'NUM');
+        shadowDom.appendChild(shadowDomField);
+        if (shadowDom) {
+          shadowDom.setAttribute('id', Blockly.utils.genUid());
+          newInput.connection.setShadowDom(shadowDom);
+          newInput.connection.respawnShadow_();
+        }
       }
     }
   },
-  restoreConnections_: function () {
-    for (var i = 0; i < this.itemCount_; i++) {
-       Blockly.Mutator.reconnect(this.valueConnections_[i], this, 'ADD' + i);
-    }
-  },
-  addItem_: function () {
+  removeItem_: function() {
     this.storeConnections_();
-    var update = function () {
-      this.itemCount_++;
-    }
-    this.update_(update);
-    this.restoreConnections_();
-  },
-  removeItem_: function (item) {
-    this.storeConnections_(item);
-    var update = function () {
+    var update = function() {
       this.itemCount_--;
-    }
+    };
     this.update_(update);
     this.restoreConnections_();
   },
-  update_: function (update) {
+  update_: function(update) {
     Blockly.Events.setGroup(true);
     var block = this;
     var oldMutationDom = block.mutationToDom();
@@ -274,8 +292,8 @@ Blockly.Blocks['lists_create_with'] = {
     // Switch off rendering while the source block is rebuilt.
     var savedRendered = block.rendered;
     block.rendered = false;
-    // Update the mutation 
-    if (update) update.call(this)
+    // Update the mutation
+    if (update) update.call(this);
     // Allow the source block to rebuild itself.
     this.updateShape_();
     // Restore rendering and show the changes.
@@ -309,42 +327,45 @@ Blockly.Blocks['lists_create_with'] = {
     var that = this;
     var add = function() {
       that.addItem_();
-    }
+    };
+    var remove = function() {
+      that.removeItem_();
+    };
     if (this.itemCount_) {
       if (this.getInput('EMPTY')) this.removeInput('EMPTY');
       if (!this.getInput('TITLE')) {
         this.appendDummyInput('TITLE')
-            .appendField(Blockly.Msg.LISTS_CREATE_WITH_INPUT_WITH)
-            .appendField(
-          new Blockly.FieldImage(this.ADD_IMAGE_DATAURI, 24, 24, false, "*", add));
+            .appendField(Blockly.Msg.LISTS_CREATE_WITH_INPUT_WITH);
       }
     } else {
       if (this.getInput('TITLE')) this.removeInput('TITLE');
       if (!this.getInput('EMPTY')) {
         this.appendDummyInput('EMPTY')
-            .appendField(Blockly.Msg.LISTS_CREATE_EMPTY_TITLE)
-            .appendField(
-          new Blockly.FieldImage(this.ADD_IMAGE_DATAURI, 24, 24, false, "*", add));
+            .appendField(Blockly.Msg.LISTS_CREATE_EMPTY_TITLE);
       }
     }
     var i = 0;
+    // Add new inputs.
+    for (i = 0; i < this.itemCount_; i++) {
+      if (!this.getInput('ADD' + i)) {
+        this.appendValueInput('ADD' + i);
+      }
+    }
     // Remove deleted inputs.
     while (this.getInput('ADD' + i)) {
       this.removeInput('ADD' + i);
       i++;
     }
-    // Add new inputs.
-    for (i = 0; i < this.itemCount_; i++) {
-      if (!this.getInput('ADD' + i)) {
-        var input = this.appendValueInput('ADD' + i)
-        var removeItem = function (arg) {
-          return function () {
-            that.removeItem_(arg);
-          }
-        }(i);
-        input.appendField(new Blockly.FieldImage(this.REMOVE_IMAGE_DATAURI, 24, 24, false, "*", removeItem));
-      }
+    // Remove button
+    if (this.getInput('REMOVEBUTTON')) this.removeInput('REMOVEBUTTON');
+    if (this.itemCount_ > 0) {
+      this.appendDummyInput('REMOVEBUTTON')
+          .appendField(new Blockly.FieldImage(this.REMOVE_IMAGE_DATAURI, 24, 24, false, "*", remove));
     }
+    // Add button
+    if (this.getInput('ADDBUTTON')) this.removeInput('ADDBUTTON');
+    this.appendDummyInput('ADDBUTTON')
+        .appendField(new Blockly.FieldImage(this.ADD_IMAGE_DATAURI, 24, 24, false, "*", add));
   }
 };
 
