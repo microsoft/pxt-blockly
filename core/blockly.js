@@ -52,6 +52,7 @@ goog.require('Blockly.FieldTextDropdown');
 goog.require('Blockly.FieldNumber');
 goog.require('Blockly.FieldNumberDropdown');
 goog.require('Blockly.FieldVariable');
+goog.require('Blockly.FieldVerticalSeparator');
 goog.require('Blockly.FieldSlider');
 goog.require('Blockly.FieldString');
 goog.require('Blockly.Generator');

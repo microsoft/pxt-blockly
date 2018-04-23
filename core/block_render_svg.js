@@ -153,6 +153,13 @@ Blockly.BlockSvg.START_HAT = false;
 Blockly.BlockSvg.START_HAT_HEIGHT = 16;
 
 /**
+ * Height of the vertical separator line for icons that appear at the left edge
+ * of a block, such as extension icons.
+ * @const
+ */
+Blockly.BlockSvg.ICON_SEPARATOR_HEIGHT = 10 * Blockly.BlockSvg.GRID_UNIT;
+
+/**
  * Path of the top hat's curve.
  * @const
  */

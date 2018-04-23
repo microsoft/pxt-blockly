@@ -121,4 +121,5 @@ Blockly.FieldLabelSerializable.prototype.render_ = function() {
   }
 };
 
-Blockly.Field.register('field_label_serializable', Blockly.FieldLabelSerializable);
+Blockly.Field.register(
+    'field_label_serializable', Blockly.FieldLabelSerializable);
