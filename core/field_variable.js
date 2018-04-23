@@ -75,8 +75,7 @@ goog.inherits(Blockly.FieldVariable, Blockly.FieldDropdown);
 Blockly.FieldVariable.fromJson = function(options) {
   var varname = Blockly.utils.replaceMessageReferences(options['variable']);
   var variableTypes = options['variableTypes'];
-  var defaultType = options['defaultType'];
-  return new Blockly.FieldVariable(varname, null, variableTypes, defaultType);
+  return new Blockly.FieldVariable(varname, null, variableTypes);
 };
 
 /**
@@ -106,12 +105,9 @@ Blockly.FieldVariable.prototype.initModel = function() {
     return; // Initialization already happened.
   }
   this.workspace_ = this.sourceBlock_.workspace;
-  // Initialize this field if it's in a broadcast block in the flyout
-  var variable = this.initFlyoutBroadcast_(this.workspace_);
-  if (!variable) {
-    var variable = Blockly.Variables.getOrCreateVariablePackage(
-        this.workspace_, null, this.defaultVariableName, this.defaultType_);
-  }
+  var variable = Blockly.Variables.getOrCreateVariablePackage(
+      this.workspace_, null, this.defaultVariableName, this.defaultType_);
+
   // Don't fire a change event for this setValue.  It would have null as the
   // old value, which is not valid.
   Blockly.Events.disable();
@@ -119,29 +115,6 @@ Blockly.FieldVariable.prototype.initModel = function() {
     this.setValue(variable.getId());
   } finally {
     Blockly.Events.enable();
-  }
-};
-
-/**
- * Initialize broadcast blocks in the flyout.
- * Implicit deletion of broadcast messages from the scratch vm may cause
- * broadcast blocks in the flyout to change which variable they display as the
- * selected option when the workspace is refreshed.
- * Re-sort the broadcast messages by name, and set the field value to the id
- * of the variable that comes first in sorted order.
- * @param {!Blockly.Workspace} workspace The flyout workspace containing the
- * broadcast block.
- * @return {string} The variable of type 'broadcast_msg' that comes
- * first in sorted order.
- */
-Blockly.FieldVariable.prototype.initFlyoutBroadcast_ = function(workspace) {
-  // Using shorter name for this constant
-  var broadcastMsgType = Blockly.BROADCAST_MESSAGE_VARIABLE_TYPE;
-  var broadcastVars = workspace.getVariablesOfType(broadcastMsgType);
-  if(workspace.isFlyout && this.defaultType_ == broadcastMsgType &&
-      broadcastVars.length != 0) {
-    broadcastVars.sort(Blockly.VariableModel.compareByName);
-    return broadcastVars[0];
   }
 };
 
@@ -309,14 +282,10 @@ Blockly.FieldVariable.dropdownCreate = function() {
     // Set the uuid as the internal representation of the variable.
     options[i] = [variableModelList[i].name, variableModelList[i].getId()];
   }
-  if (this.defaultType_ == Blockly.BROADCAST_MESSAGE_VARIABLE_TYPE) {
-    options.push([Blockly.Msg.NEW_BROADCAST_MESSAGE, Blockly.NEW_BROADCAST_MESSAGE_ID]);
-  } else {
-    options.push([Blockly.Msg.RENAME_VARIABLE, Blockly.RENAME_VARIABLE_ID]);
-    if (Blockly.Msg.DELETE_VARIABLE) {
-      options.push([Blockly.Msg.DELETE_VARIABLE.replace('%1', name),
-          Blockly.DELETE_VARIABLE_ID]);
-    }
+  options.push([Blockly.Msg.RENAME_VARIABLE, Blockly.RENAME_VARIABLE_ID]);
+  if (Blockly.Msg.DELETE_VARIABLE) {
+    options.push([Blockly.Msg.DELETE_VARIABLE.replace('%1', name),
+      Blockly.DELETE_VARIABLE_ID]);
   }
 
   return options;
@@ -342,16 +311,6 @@ Blockly.FieldVariable.prototype.onItemSelected = function(menu, menuItem) {
       // Delete variable.
       workspace.deleteVariableById(this.variable_.getId());
       return;
-    } else if (id == Blockly.NEW_BROADCAST_MESSAGE_ID) {
-      var thisField = this;
-      var updateField = function(varId) {
-        if (varId) {
-          thisField.setValue(varId);
-        }
-      };
-      Blockly.Variables.createVariable(workspace, updateField,
-          Blockly.BROADCAST_MESSAGE_VARIABLE_TYPE);
-      return;
     }
 
     // TODO (blockly #1529): Call any validation function, and allow it to override.
@@ -364,7 +323,7 @@ Blockly.FieldVariable.prototype.onItemSelected = function(menu, menuItem) {
  * @return {boolean} True if we should show a box (rect) around the dropdown menu. Otherwise false.
  * @private
  */
-Blockly.FieldVariable.prototype.shouldShowRect_ = function () {
+Blockly.FieldVariable.prototype.shouldShowRect_ = function() {
   //pxtblockly: don't show a rect around the variable dropdown when in a shadow block
   return !this.sourceBlock_.isShadow() && this.sourceBlock_.type != 'variables_get';
 };
