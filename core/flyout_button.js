@@ -184,27 +184,24 @@ Blockly.FlyoutButton.prototype.createDom = function() {
   // pxtblockly: support for icons in toolbox labels
   if (this.icon_ || this.iconClass_) {
     var svgIcon = Blockly.utils.createSvgElement('text',
-      {'class': this.iconClass_ ? 'blocklyFlyoutLabelIcon ' + this.iconClass_ : 'blocklyFlyoutLabelIcon',
+        {'class': this.iconClass_ ? 'blocklyFlyoutLabelIcon ' + this.iconClass_ : 'blocklyFlyoutLabelIcon',
           'x': 0, 'y': 0, 'text-anchor': 'middle'},
-      this.svgGroup_);
+        this.svgGroup_);
     if (this.icon_) svgIcon.textContent = this.icon_;
     if (this.iconColor_) svgIcon.setAttribute('style', 'fill: ' + this.iconColor_);
 
     this.width += svgIcon.getComputedTextLength() + 2 * Blockly.FlyoutButton.MARGIN;
 
     svgIcon.setAttribute('text-anchor', 'end');
-    svgText.setAttribute('dominant-baseline', 'central');
-    svgText.setAttribute('dy', goog.userAgent.EDGE_OR_IE ?
-      Blockly.Field.IE_TEXT_OFFSET : '0');
     svgIcon.setAttribute('x', this.targetWorkspace_.RTL ? this.width : Blockly.FlyoutButton.MARGIN);
     svgIcon.setAttribute('y', this.height / 2);
   }
 
   if (this.line_) {
     var svgLine = Blockly.utils.createSvgElement('line',
-      {'class': 'blocklyFlyoutLine', 'stroke-dasharray': this.line_,
+        {'class': 'blocklyFlyoutLine', 'stroke-dasharray': this.line_,
           'text-anchor': 'middle'},
-      this.svgGroup_);
+        this.svgGroup_);
     svgLine.setAttribute('x1', 0);
     svgLine.setAttribute('x2', this.lineWidth_ != null ? this.lineWidth_ : this.width);
     svgLine.setAttribute('y1', this.height);
@@ -220,7 +217,9 @@ Blockly.FlyoutButton.prototype.createDom = function() {
   rect.setAttribute('height', this.height);
 
   svgText.setAttribute('text-anchor', 'middle');
-  svgText.setAttribute('alignment-baseline', 'central');
+  svgText.setAttribute('dominant-baseline', 'central');
+  svgText.setAttribute('dy', goog.userAgent.EDGE_OR_IE ?
+    Blockly.Field.IE_TEXT_OFFSET : '0');
   svgText.setAttribute('x', this.width / 2);
   svgText.setAttribute('y', this.height / 2);
 
