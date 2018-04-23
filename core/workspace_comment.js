@@ -314,6 +314,15 @@ Blockly.WorkspaceComment.prototype.setContent = function(content) {
 };
 
 /**
+ * Return the coordinates of the top-left corner of this comment relative to the
+ * drawing surface's origin (0,0), in workspace units.
+ * @return {!goog.math.Coordinate} Object with .x and .y properties.
+ */
+Blockly.WorkspaceComment.prototype.getRelativeToSurfaceXY = function() {
+  return this.xy_;
+};
+
+/**
  * Encode a comment subtree as XML with XY coordinates.
  * @param {boolean} opt_noId True if the encoder should skip the comment id.
  * @return {!Element} Tree of XML elements.
