@@ -747,9 +747,39 @@ h1 {
     </category>
     <category name="Lists" colour="260" iconclass="blocklyTreeIconCustom">
       <block type="lists_create_with">
-        <mutation items="0"></mutation>
+        <mutation items="0" type="math_number"></mutation>
       </block>
-      <block type="lists_create_with"></block>
+      <block type="lists_create_with">
+        <mutation items="3" type="text"></mutation>
+        <value name="ADD0">
+          <shadow type="math_number">
+            <field name="NUM">1</field>
+          </shadow>
+        </value>
+        <value name="ADD1">
+          <shadow type="math_number">
+            <field name="NUM">2</field>
+          </shadow>
+        </value>
+        <value name="ADD2">
+          <shadow type="math_number">
+            <field name="NUM">3</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="lists_create_with">
+        <mutation items="2" type="text"></mutation>
+        <value name="ADD0">
+          <shadow type="text">
+            <field name="TEXT">Hello</field>
+          </shadow>
+        </value>
+        <value name="ADD1">
+          <shadow type="text">
+            <field name="TEXT">World</field>
+          </shadow>
+        </value>
+      </block>
       <block type="lists_repeat">
         <value name="NUM">
           <shadow type="math_number">
@@ -759,34 +789,10 @@ h1 {
       </block>
       <block type="lists_length"></block>
       <block type="lists_isEmpty"></block>
-      <block type="lists_indexOf">
-        <value name="VALUE">
-          <block type="variables_get">
-            <field name="VAR">list</field>
-          </block>
-        </value>
-      </block>
-      <block type="lists_getIndex">
-        <value name="VALUE">
-          <block type="variables_get">
-            <field name="VAR">list</field>
-          </block>
-        </value>
-      </block>
-      <block type="lists_setIndex">
-        <value name="LIST">
-          <block type="variables_get">
-            <field name="VAR">list</field>
-          </block>
-        </value>
-      </block>
-      <block type="lists_getSublist">
-        <value name="LIST">
-          <block type="variables_get">
-            <field name="VAR">list</field>
-          </block>
-        </value>
-      </block>
+      <block type="lists_indexOf"></block>
+      <block type="lists_getIndex"></block>
+      <block type="lists_setIndex"></block>
+      <block type="lists_getSublist"></block>
       <block type="lists_split">
         <value name="DELIM">
           <shadow type="text">
