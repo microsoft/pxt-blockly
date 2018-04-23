@@ -157,6 +157,11 @@ Blockly.Blocks['lists_create_with'] = {
   mutationToDom: function() {
     var container = document.createElement('mutation');
     container.setAttribute('items', this.itemCount_);
+    /* Switch to vertical list when the list is too long */
+    var showHorizontalList = this.itemCount_ <= 5;
+    this.setInputsInline(showHorizontalList);
+    this.setOutputShape(showHorizontalList ?
+      Blockly.OUTPUT_SHAPE_ROUND : Blockly.OUTPUT_SHAPE_SQUARE);
     return container;
   },
   /**
@@ -356,16 +361,13 @@ Blockly.Blocks['lists_create_with'] = {
       this.removeInput('ADD' + i);
       i++;
     }
-    // Remove button
-    if (this.getInput('REMOVEBUTTON')) this.removeInput('REMOVEBUTTON');
+    if (this.getInput('BUTTONS')) this.removeInput('BUTTONS');
     if (this.itemCount_ > 0) {
-      this.appendDummyInput('REMOVEBUTTON')
-          .appendField(new Blockly.FieldImage(this.REMOVE_IMAGE_DATAURI, 24, 24, false, "*", remove));
+      // Add and remove buttons
+      this.appendDummyInput('BUTTONS')
+          .appendField(new Blockly.FieldImage(this.REMOVE_IMAGE_DATAURI, 24, 24, false, "*", remove))
+          .appendField(new Blockly.FieldImage(this.ADD_IMAGE_DATAURI, 24, 24, false, "*", add));
     }
-    // Add button
-    if (this.getInput('ADDBUTTON')) this.removeInput('ADDBUTTON');
-    this.appendDummyInput('ADDBUTTON')
-        .appendField(new Blockly.FieldImage(this.ADD_IMAGE_DATAURI, 24, 24, false, "*", add));
   }
 };
 
