@@ -119,6 +119,13 @@ Blockly.WorkspaceComment = function(workspace, content, height, width, opt_id) {
 };
 
 /**
+ * Optional text data that round-trips beween blocks and XML.
+ * Has no effect. May be used by 3rd parties for meta information.
+ * @type {?string}
+ */
+Blockly.WorkspaceComment.prototype.data = null;
+
+/**
  * Dispose of this comment.
  * @publc
  */
@@ -351,6 +358,9 @@ Blockly.WorkspaceComment.prototype.toXml = function(opt_noId) {
     commentElement.setAttribute('id', this.id);
   }
   commentElement.textContent = this.getContent();
+  if (this.data) {
+    commentElement.setAttribute('data', this.data);
+  }
   return commentElement;
 };
 
@@ -387,6 +397,7 @@ Blockly.WorkspaceComment.fromXml = function(xmlComment, workspace) {
 
   var comment = new Blockly.WorkspaceComment(
       workspace, info.content, info.h, info.w, info.id);
+  comment.data = xmlComment.getAttribute('data');
 
   var commentX = parseInt(xmlComment.getAttribute('x'), 10);
   var commentY = parseInt(xmlComment.getAttribute('y'), 10);
