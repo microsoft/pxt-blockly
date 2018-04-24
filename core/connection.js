@@ -743,7 +743,7 @@ Blockly.Connection.prototype.getOutputShape = function() {
     return Blockly.OUTPUT_SHAPE_ROUND;
   }
   if (this.check_.indexOf('String') !== -1) {
-    return Blockly.OUTPUT_SHAPE_SQUARE;
+    return Blockly.OUTPUT_SHAPE_ROUND;
   }
   return Blockly.OUTPUT_SHAPE_ROUND;
 };
