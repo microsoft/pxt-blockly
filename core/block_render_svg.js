@@ -884,7 +884,7 @@ Blockly.BlockSvg.prototype.computeInputWidth_ = function(input) {
 Blockly.BlockSvg.prototype.computeInputHeight_ = function(input, row,
     previousRow) {
   if (this.inputList.length === 1 && this.outputConnection &&
-      (this.isShadow() &&  !Blockly.utils.isShadowArgumentReporter(this))) {
+      (this.isShadow())) {
     // "Lone" field blocks are smaller.
     return Blockly.BlockSvg.MIN_BLOCK_Y_SINGLE_FIELD_OUTPUT;
   } else if (this.outputConnection) {

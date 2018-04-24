@@ -137,8 +137,9 @@ Blockly.Xml.fieldToDomVariable_ = function(field) {
  * @private
  */
 Blockly.Xml.fieldToDom_ = function(field) {
-  if (field.name && field.EDITABLE) {
-    if (field instanceof Blockly.FieldVariable) {
+  if (field.name) {
+    if (field instanceof Blockly.FieldVariable ||
+        field instanceof Blockly.FieldVariableGetter) {
       return Blockly.Xml.fieldToDomVariable_(field);
     } else {
       var container = goog.dom.createDom('field', null, field.getValue());
@@ -751,8 +752,8 @@ Blockly.Xml.domToBlockHeadless_ = function(xmlBlock, workspace) {
           child.isShadow(), 'Shadow block not allowed non-shadow child.');
     }
     // Ensure this block doesn't have any variable inputs.
-    goog.asserts.assert(block.getVarModels().length == 0,
-        'Shadow blocks cannot have variable references.');
+    // goog.asserts.assert(block.getVarModels().length == 0,
+    //     'Shadow blocks cannot have variable references.');
     block.setShadow(true);
   }
   return block;
@@ -806,7 +807,8 @@ Blockly.Xml.domToField_ = function(block, fieldName, xml) {
 
   var workspace = block.workspace;
   var text = xml.textContent;
-  if (field instanceof Blockly.FieldVariable) {
+  if (field instanceof Blockly.FieldVariable ||
+      field instanceof Blockly.FieldVariableGetter) {
     Blockly.Xml.domToFieldVariable_(workspace, xml, text, field);
   } else {
     field.setValue(text);

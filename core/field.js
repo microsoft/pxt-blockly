@@ -49,8 +49,8 @@ goog.require('goog.userAgent');
  */
 Blockly.Field = function(text, opt_validator) {
   this.size_ = new goog.math.Size(
-    Blockly.BlockSvg.FIELD_WIDTH,
-    Blockly.BlockSvg.FIELD_HEIGHT);
+      Blockly.BlockSvg.FIELD_WIDTH,
+      Blockly.BlockSvg.FIELD_HEIGHT);
   this.setValue(text);
   this.setValidator(opt_validator);
 
@@ -237,11 +237,11 @@ Blockly.Field.prototype.init = function() {
   /** @type {!Element} */
   this.textElement_ = Blockly.utils.createSvgElement('text',
       {'class': this.className_,
-       'x': fieldX,
-       'y': size.height / 2 + Blockly.BlockSvg.FIELD_TOP_PADDING,
-       'dominant-baseline': 'middle',
-       'dy': goog.userAgent.EDGE_OR_IE ? Blockly.Field.IE_TEXT_OFFSET : '0',
-       'text-anchor': 'middle'},
+        'x': fieldX,
+        'y': size.height / 2 + Blockly.BlockSvg.FIELD_TOP_PADDING,
+        'dominant-baseline': 'middle',
+        'dy': goog.userAgent.EDGE_OR_IE ? Blockly.Field.IE_TEXT_OFFSET : '0',
+        'text-anchor': 'middle'},
       this.fieldGroup_);
 
   this.updateEditable();
@@ -534,7 +534,7 @@ Blockly.Field.getCachedWidth = function(textElement) {
     // approximation and do not cache the result. At some later point in time
     // when the block is inserted into the visible DOM, this method will be
     // called again and, at that point in time, will not throw an exception.
-    return textElement.textContent.length * 8;    
+    return textElement.textContent.length * 8;
   }
   // Cache the computed width and return.
   if (Blockly.Field.cacheWidths_) {
