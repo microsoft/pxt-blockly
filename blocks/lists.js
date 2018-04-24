@@ -157,11 +157,6 @@ Blockly.Blocks['lists_create_with'] = {
   mutationToDom: function() {
     var container = document.createElement('mutation');
     container.setAttribute('items', this.itemCount_);
-    /* Switch to vertical list when the list is too long */
-    var showHorizontalList = this.itemCount_ <= 5;
-    this.setInputsInline(showHorizontalList);
-    this.setOutputShape(showHorizontalList ?
-      Blockly.OUTPUT_SHAPE_ROUND : Blockly.OUTPUT_SHAPE_SQUARE);
     return container;
   },
   /**
@@ -367,6 +362,12 @@ Blockly.Blocks['lists_create_with'] = {
       buttons.appendField(new Blockly.FieldImage(this.REMOVE_IMAGE_DATAURI, 24, 24, false, "*", remove));
     }
     buttons.appendField(new Blockly.FieldImage(this.ADD_IMAGE_DATAURI, 24, 24, false, "*", add));
+
+    /* Switch to vertical list when the list is too long */
+    var showHorizontalList = this.itemCount_ <= 5;
+    this.setInputsInline(showHorizontalList);
+    this.setOutputShape(showHorizontalList ?
+      Blockly.OUTPUT_SHAPE_ROUND : Blockly.OUTPUT_SHAPE_SQUARE);
   }
 };
 
