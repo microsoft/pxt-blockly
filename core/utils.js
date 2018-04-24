@@ -980,8 +980,9 @@ Blockly.utils.changeObscuredShadowIds = function(block) {
  * @package
  */
 Blockly.utils.isShadowArgumentReporter = function(block) {
-  return (block.isShadow() && (block.type == 'argument_reporter_boolean' ||
-      block.type == 'argument_reporter_string_number'));
+  return ((block.isShadow() && (block.type == 'argument_reporter_boolean' ||
+      block.type == 'argument_reporter_string_number')) ||
+      (block.type == 'variables_get_reporter'));
 };
 
 /**

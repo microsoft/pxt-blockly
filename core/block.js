@@ -39,6 +39,7 @@ goog.require('Blockly.Events.BlockDelete');
 goog.require('Blockly.Events.BlockMove');
 goog.require('Blockly.Extensions');
 goog.require('Blockly.FieldLabelSerializable');
+goog.require('Blockly.FieldVariableGetter');
 goog.require('Blockly.Input');
 goog.require('Blockly.Mutator');
 goog.require('Blockly.Warning');
@@ -831,14 +832,9 @@ Blockly.Block.prototype.makeColour_ = function(colour) {
   } else if (goog.isString(colour) && colour.match(/^#[0-9a-fA-F]{6}$/)) {
     return colour;
   } else {
-    var errorMsg = 'Invalid colour: "' + dereferenced + '"';
-    if (colour != dereferenced) {
-      errorMsg += ' (from "' + colour + '")';
-    }
-    throw errorMsg;
+    throw 'Invalid colour: ' + colour;
   }
 };
-
 /**
  * Change the colour of a block, and optional secondary/teriarty colours.
  * @param {number|string} colour HSV hue value, or #RRGGBB string.
@@ -914,7 +910,8 @@ Blockly.Block.prototype.getVars = function() {
   var vars = [];
   for (var i = 0, input; input = this.inputList[i]; i++) {
     for (var j = 0, field; field = input.fieldRow[j]; j++) {
-      if (field instanceof Blockly.FieldVariable) {
+      if (field instanceof Blockly.FieldVariable ||
+          field instanceof Blockly.FieldVariableGetter) {
         vars.push(field.getValue());
       }
     }
@@ -931,7 +928,8 @@ Blockly.Block.prototype.getVarModels = function() {
   var vars = [];
   for (var i = 0, input; input = this.inputList[i]; i++) {
     for (var j = 0, field; field = input.fieldRow[j]; j++) {
-      if (field instanceof Blockly.FieldVariable) {
+      if (field instanceof Blockly.FieldVariable ||
+          field instanceof Blockly.FieldVariableGetter) {
         var model = this.workspace.getVariableById(field.getValue());
         // Check if the variable actually exists (and isn't just a potential
         // variable).
@@ -953,7 +951,8 @@ Blockly.Block.prototype.getVarModels = function() {
 Blockly.Block.prototype.updateVarName = function(variable) {
   for (var i = 0, input; input = this.inputList[i]; i++) {
     for (var j = 0, field; field = input.fieldRow[j]; j++) {
-      if (field instanceof Blockly.FieldVariable &&
+      if ((field instanceof Blockly.FieldVariable ||
+          field instanceof Blockly.FieldVariableGetter) &&
           variable.getId() == field.getValue()) {
         field.setText(variable.name);
       }
@@ -971,7 +970,8 @@ Blockly.Block.prototype.updateVarName = function(variable) {
 Blockly.Block.prototype.renameVarById = function(oldId, newId) {
   for (var i = 0, input; input = this.inputList[i]; i++) {
     for (var j = 0, field; field = input.fieldRow[j]; j++) {
-      if (field instanceof Blockly.FieldVariable &&
+      if ((field instanceof Blockly.FieldVariable ||
+          field instanceof Blockly.FieldVariableGetter) &&
           oldId == field.getValue()) {
         field.setValue(newId);
       }
@@ -1139,7 +1139,7 @@ Blockly.Block.prototype.setStartHat = function(newBoolean) {
  */
 Blockly.Block.prototype.getStartHat = function() {
   return this.startHat;
-}
+};
 
 /**
  * Set whether the block is disabled or not.

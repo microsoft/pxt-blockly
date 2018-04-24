@@ -121,9 +121,9 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
     "message0": "%{BKY_CONTROLS_FOR_TITLE}",
     "args0": [
       {
-        "type": "field_variable",
+        "type": "input_value",
         "name": "VAR",
-        "variable": null
+        "check": "Variable"
       },
       {
         "type": "input_value",
@@ -155,7 +155,6 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
     "colour": "%{BKY_LOOPS_HUE}",
     "helpUrl": "%{BKY_CONTROLS_FOR_HELPURL}",
     "extensions": [
-      "contextMenu_newGetVariableBlock",
       "controls_for_tooltip"
     ]
   },
@@ -165,9 +164,9 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
     "message0": "%{BKY_CONTROLS_FOREACH_TITLE}",
     "args0": [
       {
-        "type": "field_variable",
+        "type": "input_value",
         "name": "VAR",
-        "variable": null
+        "check": "Variable"
       },
       {
         "type": "input_value",
@@ -185,7 +184,6 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
     "colour": "%{BKY_LOOPS_HUE}",
     "helpUrl": "%{BKY_CONTROLS_FOREACH_HELPURL}",
     "extensions": [
-      "contextMenu_newGetVariableBlock",
       "controls_forEach_tooltip"
     ]
   },

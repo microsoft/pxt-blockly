@@ -60,6 +60,24 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
     "tooltip": "%{BKY_VARIABLES_GET_TOOLTIP}",
     "extensions": ["contextMenu_variableSetterGetter"]
   },
+  // Block for variable getter.
+  {
+    "type": "variables_get_reporter",
+    "message0": "%1",
+    "args0": [
+      {
+        "type": "field_variable_getter",
+        "name": "VAR",
+        "variable": "%{BKY_VARIABLES_DEFAULT_NAME}"
+      }
+    ],
+    "output": null,
+    "colour": "%{BKY_VARIABLES_HUE}",
+    "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
+    "helpUrl": "%{BKY_VARIABLES_GET_HELPURL}",
+    "tooltip": "%{BKY_VARIABLES_GET_TOOLTIP}",
+    "extensions": ["contextMenu_variableSetterGetter"]
+  },
   // Block for variable setter.
   {
     "type": "variables_set",
@@ -104,7 +122,7 @@ Blockly.Constants.Variables.CUSTOM_CONTEXT_MENU_VARIABLE_GETTER_SETTER_MIXIN = {
       return;
     }
     // Getter blocks have the option to create a setter block, and vice versa.
-    if (this.type == 'variables_get') {
+    if (this.type == 'variables_get' || this.type == 'variables_get_reporter') {
       var opposite_type = 'variables_set';
       var contextMenuMsg = Blockly.Msg.VARIABLES_GET_CREATE_SET;
     } else {

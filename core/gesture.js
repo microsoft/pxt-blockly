@@ -981,12 +981,29 @@ Blockly.Gesture.prototype.forceStartBlockDrag = function(fakeEvent, block) {
  */
 Blockly.Gesture.prototype.duplicateOnDrag_ = function() {
   var newBlock = null;
+  Blockly.Events.disable();
   try {
     // Note: targetBlock_ should have no children.  If it has children we would
     // need to update shadow block IDs to avoid problems in the VM.
     // Resizes will be reenabled at the end of the drag.
     this.startWorkspace_.setResizesEnabled(false);
     var xmlBlock = Blockly.Xml.blockToDom(this.targetBlock_);
+    if (xmlBlock.getAttribute('type') == 'variables_get_reporter') {
+      // pxtblockly: special case, convert into a variable_get block with the same id
+      var xmlBlockField = xmlBlock.firstChild;
+      if (!xmlBlockField) {
+        throw "unable to create a variable_get block from a variables_get_reporter" +
+          " block, block has no VAR field";
+      }
+      var newVariableBlock = document.createElement('block');
+      newVariableBlock.setAttribute('type', 'variables_get');
+      var newVariableField = document.createElement('field');
+      newVariableField.setAttribute('name', xmlBlockField.getAttribute('name'));
+      newVariableField.setAttribute('id', xmlBlockField.getAttribute('id'));
+      newVariableField.textContent = xmlBlockField.textContent;
+      newVariableBlock.appendChild(newVariableField);
+      xmlBlock = newVariableBlock;
+    }
     newBlock = Blockly.Xml.domToBlock(xmlBlock, this.startWorkspace_);
 
     // Move the duplicate to original position.
