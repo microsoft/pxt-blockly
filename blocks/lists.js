@@ -362,12 +362,11 @@ Blockly.Blocks['lists_create_with'] = {
       i++;
     }
     if (this.getInput('BUTTONS')) this.removeInput('BUTTONS');
+    var buttons = this.appendDummyInput('BUTTONS');
     if (this.itemCount_ > 0) {
-      // Add and remove buttons
-      this.appendDummyInput('BUTTONS')
-          .appendField(new Blockly.FieldImage(this.REMOVE_IMAGE_DATAURI, 24, 24, false, "*", remove))
-          .appendField(new Blockly.FieldImage(this.ADD_IMAGE_DATAURI, 24, 24, false, "*", add));
+      buttons.appendField(new Blockly.FieldImage(this.REMOVE_IMAGE_DATAURI, 24, 24, false, "*", remove));
     }
+    buttons.appendField(new Blockly.FieldImage(this.ADD_IMAGE_DATAURI, 24, 24, false, "*", add));
   }
 };
 

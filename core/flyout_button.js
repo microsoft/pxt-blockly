@@ -193,6 +193,7 @@ Blockly.FlyoutButton.prototype.createDom = function() {
     this.width += svgIcon.getComputedTextLength() + 2 * Blockly.FlyoutButton.MARGIN;
 
     svgIcon.setAttribute('text-anchor', 'end');
+    svgIcon.setAttribute('alignment-baseline', 'central');
     svgIcon.setAttribute('x', this.targetWorkspace_.RTL ? this.width : Blockly.FlyoutButton.MARGIN);
     svgIcon.setAttribute('y', this.height / 2);
   }
