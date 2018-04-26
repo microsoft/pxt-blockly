@@ -36,11 +36,11 @@ goog.require('goog.style');
  * @constructor
  */
 Blockly.FieldString = function(text, opt_validator, opt_restrictor) {
-    Blockly.FieldString.superClass_.constructor.call(this, text,
-        opt_validator);
-    this.setRestrictor(opt_restrictor);
-    this.addArgType('text');
-  };
+  Blockly.FieldString.superClass_.constructor.call(this, text,
+      opt_validator);
+  this.setRestrictor(opt_restrictor);
+  this.addArgType('text');
+};
 goog.inherits(Blockly.FieldString, Blockly.FieldTextInput);
 
 /**
@@ -85,90 +85,92 @@ Blockly.FieldString.QUOTE_1_DATA_URI = 'data:image/svg+xml;base64,PD94bWwgdmVyc2
  * Install this string on a block.
  */
 Blockly.FieldString.prototype.init = function() {
-    Blockly.FieldTextInput.superClass_.init.call(this);
+  Blockly.FieldTextInput.superClass_.init.call(this);
 
-    // Add quotes around the string
-    // Positioned on render, after text size is calculated.
-    this.quoteSize_ = 12;
-    this.quoteLeftX_ = 0;
-    this.quoteRightX_ = 0;
-    this.quoteY_ = 8;
-    this.quoteLeft_ = Blockly.utils.createSvgElement('image', {
-        'height': this.quoteSize_ + 'px',
-        'width': this.quoteSize_ + 'px'
-    });
-    this.quoteRight_ = Blockly.utils.createSvgElement('image', {
-        'height': this.quoteSize_ + 'px',
-        'width': this.quoteSize_ + 'px'
-    });
-    var quoteLeft = this.sourceBlock_.RTL ? Blockly.FieldString.QUOTE_1_DATA_URI : Blockly.FieldString.QUOTE_0_DATA_URI;
-    var quoteRight = this.sourceBlock_.RTL ? Blockly.FieldString.QUOTE_0_DATA_URI : Blockly.FieldString.QUOTE_1_DATA_URI;
-    this.quoteLeft_.setAttributeNS('http://www.w3.org/1999/xlink',
-        'xlink:href', quoteLeft);
-    this.quoteRight_.setAttributeNS('http://www.w3.org/1999/xlink',
-        'xlink:href', quoteRight);
+  // Add quotes around the string
+  // Positioned on render, after text size is calculated.
+  this.quoteSize_ = 12;
+  this.quoteLeftX_ = 0;
+  this.quoteRightX_ = 0;
+  this.quoteY_ = 8;
+  if (this.quoteLeft_) this.quoteLeft_.parentElement.removeChild(this.quoteLeft_);
+  this.quoteLeft_ = Blockly.utils.createSvgElement('image', {
+    'height': this.quoteSize_ + 'px',
+    'width': this.quoteSize_ + 'px'
+  });
+  if (this.quoteRight_) this.quoteRight_.parentElement.removeChild(this.quoteRight_);
+  this.quoteRight_ = Blockly.utils.createSvgElement('image', {
+    'height': this.quoteSize_ + 'px',
+    'width': this.quoteSize_ + 'px'
+  });
+  var quoteLeft = this.sourceBlock_.RTL ? Blockly.FieldString.QUOTE_1_DATA_URI : Blockly.FieldString.QUOTE_0_DATA_URI;
+  var quoteRight = this.sourceBlock_.RTL ? Blockly.FieldString.QUOTE_0_DATA_URI : Blockly.FieldString.QUOTE_1_DATA_URI;
+  this.quoteLeft_.setAttributeNS('http://www.w3.org/1999/xlink',
+      'xlink:href', quoteLeft);
+  this.quoteRight_.setAttributeNS('http://www.w3.org/1999/xlink',
+      'xlink:href', quoteRight);
 
-    // Force a reset of the text to add the arrow.
-    var text = this.text_;
-    this.text_ = null;
-    this.setText(text);
+  // Force a reset of the text to add the arrow.
+  var text = this.text_;
+  this.text_ = null;
+  this.setText(text);
 };
 
 Blockly.FieldString.prototype.setText = function(text) {
-    if (text === null || text === this.text_) {
-        // No change if null.
-        return;
-    }
-    this.text_ = text;
-    if (this.textElement_) {
-        this.textElement_.parentNode.appendChild(this.quoteLeft_);
-    }
-    this.updateTextNode_();
-    if (this.textElement_) {
-        this.textElement_.parentNode.appendChild(this.quoteRight_);
-    }
-    if (this.sourceBlock_ && this.sourceBlock_.rendered) {
-        this.sourceBlock_.render();
-        this.sourceBlock_.bumpNeighbours_();
-    }
+  if (text === null || text === this.text_) {
+    // No change if null.
+    return;
+  }
+  this.text_ = text;
+  if (this.textElement_) {
+    this.textElement_.parentNode.appendChild(this.quoteLeft_);
+  }
+  this.updateTextNode_();
+  if (this.textElement_) {
+    this.textElement_.parentNode.appendChild(this.quoteRight_);
+  }
+  if (this.sourceBlock_ && this.sourceBlock_.rendered) {
+    this.sourceBlock_.render();
+    this.sourceBlock_.bumpNeighbours_();
+  }
 };
 
 // Position Left
 Blockly.FieldString.prototype.positionLeft = function(x) {
-    if (!this.quoteLeft_) {
-      return 0;
-    }
-    var addedWidth = 0;
-    if (this.sourceBlock_.RTL) {
-      this.quoteLeftX_ = x + this.quoteSize_ + Blockly.FieldString.quotePadding * 2;
-      addedWidth = this.quoteSize_ + Blockly.FieldString.quotePadding;
-    } else {
-      this.quoteLeftX_ = 0;
-      addedWidth = this.quoteSize_ + Blockly.FieldString.quotePadding;
-    }
-    this.quoteLeft_.setAttribute('transform',
-        'translate(' + this.quoteLeftX_ + ',' + this.quoteY_ + ')'
-    );
-    return addedWidth;
+  if (!this.quoteLeft_) {
+    return 0;
+  }
+  var addedWidth = 0;
+  if (this.sourceBlock_.RTL) {
+    this.quoteLeftX_ = x + this.quoteSize_ + Blockly.FieldString.quotePadding * 2;
+    addedWidth = this.quoteSize_ + Blockly.FieldString.quotePadding;
+  } else {
+    this.quoteLeftX_ = 0;
+    addedWidth = this.quoteSize_ + Blockly.FieldString.quotePadding;
+  }
+  this.quoteLeft_.setAttribute('transform',
+      'translate(' + this.quoteLeftX_ + ',' + this.quoteY_ + ')'
+  );
+  return addedWidth;
 };
 
 // // Position Right
 Blockly.FieldString.prototype.positionArrow = function(x) {
-    if (!this.quoteRight_) {
-      return 0;
-    }
-    var addedWidth = 0;
-    if (this.sourceBlock_.RTL) {
-      this.quoteRightX_ = Blockly.FieldString.quotePadding;
-      addedWidth = this.quoteSize_ + Blockly.FieldString.quotePadding;
-    } else {
-      this.quoteRightX_ = x + Blockly.FieldString.quotePadding;
-      addedWidth = this.quoteSize_ + Blockly.FieldString.quotePadding;
-    }
-    this.quoteRight_.setAttribute('transform',
+  if (!this.quoteRight_) {
+    return 0;
+  }
+  var addedWidth = 0;
+  if (this.sourceBlock_.RTL) {
+    this.quoteRightX_ = Blockly.FieldString.quotePadding;
+    addedWidth = this.quoteSize_ + Blockly.FieldString.quotePadding;
+  } else {
+    this.quoteRightX_ = x + Blockly.FieldString.quotePadding;
+    addedWidth = this.quoteSize_ + Blockly.FieldString.quotePadding;
+  }
+  this.quoteRight_.setAttribute('transform',
       'translate(' + this.quoteRightX_ + ',' + this.quoteY_ + ')'
-    );
-    return addedWidth;
+  );
+  return addedWidth;
 };
 
 Blockly.Field.register('field_string', Blockly.FieldString);
