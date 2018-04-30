@@ -29,39 +29,27 @@ goog.provide('Blockly.FieldVariableGetter');
 
 goog.require('Blockly.Field');
 
-
 /**
  * Class for a variable getter field.
  * @param {?string} varname The default name for the variable.  If null,
  *     a unique variable name will be generated.
  * @param {Function=} opt_validator A function that is executed when a new
  *     option is selected.  Its sole argument is the new option value.
- * @param {Array.<string>} opt_variableTypes A list of the types of variables to
- *     include in the dropdown.
- * @extends {Blockly.FieldLabel}
+ * @param {Array.<string>=} opt_variableTypes A list of the types of variables
+ *     to include in the dropdown.
+ * @param {string=} opt_defaultType The type of variable to create if this
+ *     field's value is not explicitly set.  Defaults to ''.
+ * @extends {Blockly.FieldDropdown}
  * @constructor
- *
  */
-Blockly.FieldVariableGetter = function(varname, opt_validator, opt_variableTypes) {
-  // The FieldDropdown constructor would call setValue, which might create a
-  // spurious variable.  Just do the relevant parts of the constructor.
+Blockly.FieldVariableGetter = function(varname, opt_validator, opt_variableTypes,
+    opt_defaultType) {
   this.size_ = new goog.math.Size(Blockly.BlockSvg.FIELD_WIDTH,
       Blockly.BlockSvg.FIELD_HEIGHT);
   this.setValidator(opt_validator);
-  // TODO (blockly #1499): Add opt_default_type to match default value.
-  // If not set, ''.
   this.defaultVariableName = (varname || '');
-  var hasSingleVarType = opt_variableTypes && (opt_variableTypes.length == 1);
-  this.defaultType_ = hasSingleVarType ? opt_variableTypes[0] : '';
-  this.variableTypes = opt_variableTypes;
 
-  /**
-   * Maximum characters of text to display before adding an ellipsis.
-   * Same for strings and numbers.
-   * @type {number}
-   */
-  this.maxDisplayLength = Blockly.BlockSvg.MAX_DISPLAY_LENGTH;
-
+  this.setTypes_(opt_variableTypes, opt_defaultType);
   this.value_ = null;
 };
 goog.inherits(Blockly.FieldVariableGetter, Blockly.Field);
@@ -78,7 +66,9 @@ goog.inherits(Blockly.FieldVariableGetter, Blockly.Field);
 Blockly.FieldVariableGetter.fromJson = function(options) {
   var varname = Blockly.utils.replaceMessageReferences(options['variable']);
   var variableTypes = options['variableTypes'];
-  return new Blockly.FieldVariableGetter(varname, null, variableTypes);
+  var defaultType = options['defaultType'];
+  return new Blockly.FieldVariableGetter(varname, null,
+      variableTypes, defaultType);
 };
 
 /**
@@ -250,6 +240,46 @@ Blockly.FieldVariableGetter.prototype.getVariableTypes_ = function() {
       name + ' was an empty list');
   }
   return variableTypes;
+};
+
+/**
+ * Parse the optional arguments representing the allowed variable types and the
+ * default variable type.
+ * @param {Array.<string>=} opt_variableTypes A list of the types of variables
+ *     to include in the dropdown.  If null or undefined, variables of all types
+ *     will be displayed in the dropdown.
+ * @param {string=} opt_defaultType The type of the variable to create if this
+ *     field's value is not explicitly set.  Defaults to ''.
+ * @private
+ */
+Blockly.FieldVariableGetter.prototype.setTypes_ = function(opt_variableTypes,
+    opt_defaultType) {
+  // If you expected that the default type would be the same as the only entry
+  // in the variable types array, tell the Blockly team by commenting on #1499.
+  var defaultType = opt_defaultType || '';
+  // Set the allowable variable types.  Null means all types on the workspace.
+  if (opt_variableTypes == null || opt_variableTypes == undefined) {
+    var variableTypes = null;
+  } else if (Array.isArray(opt_variableTypes)) {
+    var variableTypes = opt_variableTypes;
+    // Make sure the default type is valid.
+    var isInArray = false;
+    for (var i = 0; i < variableTypes.length; i++) {
+      if (variableTypes[i] == defaultType) {
+        isInArray = true;
+      }
+    }
+    if (!isInArray) {
+      throw new Error('Invalid default type \'' + defaultType + '\' in ' +
+          'the definition of a FieldVariable');
+    }
+  } else {
+    throw new Error('\'variableTypes\' was not an array in the definition of ' +
+        'a FieldVariable');
+  }
+  // Only update the field once all checks pass.
+  this.defaultType_ =  defaultType;
+  this.variableTypes = variableTypes;
 };
 
 /**

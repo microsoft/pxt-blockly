@@ -95,7 +95,7 @@ Blockly.FieldNumber.DROPDOWN_Y_PADDING = 8;
  * @type {Array.<string>}
  * @const
  */
- // Calculator order
+// Calculator order
 Blockly.FieldNumber.NUMPAD_BUTTONS =
     ['7', '8', '9', '4', '5', '6', '1', '2', '3', '.', '0', '-', ' '];
 
@@ -372,7 +372,6 @@ Blockly.FieldNumber.prototype.classValidator = function(text) {
   // TODO: Handle cases like 'ten', '1.203,14', etc.
   // 'O' is sometimes mistaken for '0' by inexperienced users.
   text = text.replace(/O/ig, '0');
-  if (text === '-') text = '-1';
   // Strip out thousands separators.
   text = text.replace(/,/g, '');
   var n = parseFloat(text || 0);

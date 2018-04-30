@@ -40,25 +40,24 @@ goog.require('goog.string');
  *     a unique variable name will be generated.
  * @param {Function=} opt_validator A function that is executed when a new
  *     option is selected.  Its sole argument is the new option value.
- * @param {Array.<string>} opt_variableTypes A list of the types of variables to
- *     include in the dropdown.
+ * @param {Array.<string>=} opt_variableTypes A list of the types of variables
+ *     to include in the dropdown.
+ * @param {string=} opt_defaultType The type of variable to create if this
+ *     field's value is not explicitly set.  Defaults to ''.
  * @extends {Blockly.FieldDropdown}
  * @constructor
  */
-Blockly.FieldVariable = function(varname, opt_validator, opt_variableTypes) {
+Blockly.FieldVariable = function(varname, opt_validator, opt_variableTypes,
+    opt_defaultType) {
   // The FieldDropdown constructor would call setValue, which might create a
   // spurious variable.  Just do the relevant parts of the constructor.
   this.menuGenerator_ = Blockly.FieldVariable.dropdownCreate;
   this.size_ = new goog.math.Size(Blockly.BlockSvg.FIELD_WIDTH,
       Blockly.BlockSvg.FIELD_HEIGHT);
   this.setValidator(opt_validator);
-  // TODO (blockly #1499): Add opt_default_type to match default value.
-  // If not set, ''.
   this.defaultVariableName = (varname || '');
-  var hasSingleVarType = opt_variableTypes && (opt_variableTypes.length == 1);
-  this.defaultType_ = hasSingleVarType ? opt_variableTypes[0] : '';
-  this.variableTypes = opt_variableTypes;
 
+  this.setTypes_(opt_variableTypes, opt_defaultType);
   this.value_ = null;
 };
 goog.inherits(Blockly.FieldVariable, Blockly.FieldDropdown);
@@ -75,7 +74,9 @@ goog.inherits(Blockly.FieldVariable, Blockly.FieldDropdown);
 Blockly.FieldVariable.fromJson = function(options) {
   var varname = Blockly.utils.replaceMessageReferences(options['variable']);
   var variableTypes = options['variableTypes'];
-  return new Blockly.FieldVariable(varname, null, variableTypes);
+  var defaultType = options['defaultType'];
+  return new Blockly.FieldVariable(varname, null,
+      variableTypes, defaultType);
 };
 
 /**
@@ -122,7 +123,7 @@ Blockly.FieldVariable.prototype.initModel = function() {
  * Dispose of this field.
  * @public
  */
-Blockly.FieldVariable.dispose = function() {
+Blockly.FieldVariable.prototype.dispose = function() {
   Blockly.FieldVariable.superClass_.dispose.call(this);
   this.workspace_ = null;
   this.variableMap_ = null;
@@ -242,6 +243,46 @@ Blockly.FieldVariable.prototype.getVariableTypes_ = function() {
 };
 
 /**
+ * Parse the optional arguments representing the allowed variable types and the
+ * default variable type.
+ * @param {Array.<string>=} opt_variableTypes A list of the types of variables
+ *     to include in the dropdown.  If null or undefined, variables of all types
+ *     will be displayed in the dropdown.
+ * @param {string=} opt_defaultType The type of the variable to create if this
+ *     field's value is not explicitly set.  Defaults to ''.
+ * @private
+ */
+Blockly.FieldVariable.prototype.setTypes_ = function(opt_variableTypes,
+    opt_defaultType) {
+  // If you expected that the default type would be the same as the only entry
+  // in the variable types array, tell the Blockly team by commenting on #1499.
+  var defaultType = opt_defaultType || '';
+  // Set the allowable variable types.  Null means all types on the workspace.
+  if (opt_variableTypes == null || opt_variableTypes == undefined) {
+    var variableTypes = null;
+  } else if (Array.isArray(opt_variableTypes)) {
+    var variableTypes = opt_variableTypes;
+    // Make sure the default type is valid.
+    var isInArray = false;
+    for (var i = 0; i < variableTypes.length; i++) {
+      if (variableTypes[i] == defaultType) {
+        isInArray = true;
+      }
+    }
+    if (!isInArray) {
+      throw new Error('Invalid default type \'' + defaultType + '\' in ' +
+          'the definition of a FieldVariable');
+    }
+  } else {
+    throw new Error('\'variableTypes\' was not an array in the definition of ' +
+        'a FieldVariable');
+  }
+  // Only update the field once all checks pass.
+  this.defaultType_ =  defaultType;
+  this.variableTypes = variableTypes;
+};
+
+/**
  * Return a sorted list of variable names for variable dropdown menus.
  * Include a special option at the end for creating a new variable name.
  * @return {!Array.<string>} Array of variable names.
@@ -252,40 +293,37 @@ Blockly.FieldVariable.dropdownCreate = function() {
     throw new Error('Tried to call dropdownCreate on a variable field with no' +
         ' variable selected.');
   }
-  var variableModelList = [];
   var name = this.getText();
   var workspace = null;
   if (this.sourceBlock_) {
     workspace = this.sourceBlock_.workspace;
   }
+  var variableModelList = [];
   if (workspace) {
     var variableTypes = this.getVariableTypes_();
-    var variableModelList = [];
     // Get a copy of the list, so that adding rename and new variable options
     // doesn't modify the workspace's list.
     for (var i = 0; i < variableTypes.length; i++) {
       var variableType = variableTypes[i];
       var variables = workspace.getVariablesOfType(variableType);
       variableModelList = variableModelList.concat(variables);
-
-      var potentialVarMap = workspace.getPotentialVariableMap();
-      if (potentialVarMap) {
-        var potentialVars = potentialVarMap.getVariablesOfType(variableType);
-        variableModelList = variableModelList.concat(potentialVars);
-      }
     }
   }
   variableModelList.sort(Blockly.VariableModel.compareByName);
 
   var options = [];
   for (var i = 0; i < variableModelList.length; i++) {
-    // Set the uuid as the internal representation of the variable.
+    // Set the UUID as the internal representation of the variable.
     options[i] = [variableModelList[i].name, variableModelList[i].getId()];
   }
   options.push([Blockly.Msg.RENAME_VARIABLE, Blockly.RENAME_VARIABLE_ID]);
   if (Blockly.Msg.DELETE_VARIABLE) {
-    options.push([Blockly.Msg.DELETE_VARIABLE.replace('%1', name),
-      Blockly.DELETE_VARIABLE_ID]);
+    options.push(
+        [
+          Blockly.Msg.DELETE_VARIABLE.replace('%1', name),
+          Blockly.DELETE_VARIABLE_ID
+        ]
+    );
   }
 
   return options;
@@ -293,8 +331,7 @@ Blockly.FieldVariable.dropdownCreate = function() {
 
 /**
  * Handle the selection of an item in the variable dropdown menu.
- * Special case the 'Rename variable...', 'Delete variable...',
- * and 'New message...' options.
+ * Special case the 'Rename variable...', 'Delete variable...' options.
  * In the rename case, prompt the user for a new name.
  * @param {!goog.ui.Menu} menu The Menu component clicked.
  * @param {!goog.ui.MenuItem} menuItem The MenuItem selected within menu.
