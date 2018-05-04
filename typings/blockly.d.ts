@@ -1100,6 +1100,8 @@ declare namespace Blockly {
         function fire(ev: Abstract): void;
         function disableOrphans(ev: Abstract): void;
         function isEnabled(): boolean;
+        function enable(): boolean;
+        function disable(): boolean;
         class Abstract {
             type: string;
         }
