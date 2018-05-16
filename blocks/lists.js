@@ -262,16 +262,18 @@ Blockly.Blocks['lists_create_with'] = {
         // but with an empty default value
         var newInput = this.getInput('ADD' + (this.itemCount_ - 1));
         var shadowInputDom = firstInput.connection.getShadowDom();
-        var shadowDom = document.createElement('shadow');
-        var shadowInputType = shadowInputDom.getAttribute('type');
-        shadowDom.setAttribute('type', shadowInputType);
-        var shadowDomField = document.createElement('field');
-        shadowDomField.setAttribute('name', 'NUM');
-        shadowDom.appendChild(shadowDomField);
-        if (shadowDom) {
-          shadowDom.setAttribute('id', Blockly.utils.genUid());
-          newInput.connection.setShadowDom(shadowDom);
-          newInput.connection.respawnShadow_();
+        if (shadowInputDom) {
+          var shadowDom = document.createElement('shadow');
+          var shadowInputType = shadowInputDom.getAttribute('type');
+          shadowDom.setAttribute('type', shadowInputType);
+          var shadowDomField = document.createElement('field');
+          shadowDomField.setAttribute('name', 'NUM');
+          shadowDom.appendChild(shadowDomField);
+          if (shadowDom) {
+            shadowDom.setAttribute('id', Blockly.utils.genUid());
+            newInput.connection.setShadowDom(shadowDom);
+            newInput.connection.respawnShadow_();
+          }
         }
       }
     }
