@@ -195,10 +195,9 @@ Blockly.FieldColour.prototype.showEditor_ = function() {
   Blockly.DropDownDiv.hideWithoutAnimation();
   Blockly.DropDownDiv.clearContent();
 
-  Blockly.DropDownDiv.showPositionedByBlock(this, this.sourceBlock_);
-
   this.colorPicker_ = this.createWidget_();
 
+  Blockly.DropDownDiv.showPositionedByBlock(this, this.sourceBlock_);
   Blockly.DropDownDiv.setColour('#ffffff', '#dddddd');
   if (this.sourceBlock_.parentBlock_) {
     Blockly.DropDownDiv.setCategory(this.sourceBlock_.parentBlock_.getCategory());
