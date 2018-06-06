@@ -1,1 +1,1 @@
-module.exports = require('imports?this=>window!exports?Blockly&goog!../blockly_compressed');
+module.exports = require('imports-loader?this=>window!exports-loader?Blockly&goog!../blockly_compressed');

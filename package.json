@@ -2,21 +2,20 @@
   "name": "pxt-blockly",
   "version": "2.0.1",
   "description": "Blockly fork for Microsoft MakeCode",
+  "author": "Microsoft",
+  "license": "MIT",
+  "homepage": "https://github.com/Microsoft/pxt-blockly#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Microsoft/pxt-blockly.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Microsoft/pxt-blockly/issues"
+  },
   "keywords": [
     "blockly",
     "pxt"
   ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/google/blockly.git"
-  },
-  "bugs": {
-    "url": "https://github.com/google/blockly/issues"
-  },
-  "homepage": "https://developers.google.com/blockly/",
-  "author": {
-    "name": "Microsoft"
-  },
   "scripts": {
     "deploy": "gh-pages -t -d gh-pages -m \"Build for $(git log --pretty=format:%H -n1)\"",
     "prepublish": "node_modules/.bin/gulp build && webpack",
@@ -26,8 +25,6 @@
     "watch": "node_modules/.bin/gulp watch",
     "publish": "node_modules/.bin/gulp release"
   },
-  "license": "MIT",
-  "private": true,
   "files": [
     "README.md",
     "blockly_compressed.js",
@@ -37,20 +34,25 @@
   ],
   "devDependencies": {
     "jshint": "latest",
-    "copy-webpack-plugin": "4.0.1",
-    "exports-loader": "0.6.3",
+    "async": "2.6.0",
+    "copy-webpack-plugin": "4.5.1",
+    "eslint": "^4.16",
+    "event-stream": "3.3.4",
     "gh-pages": "0.12.0",
-    "google-closure-library": "20170910.0.0",
+    "glob": "7.1.2",
+    "google-closure-compiler": "20180402.0.0",
+    "google-closure-library": "20180204.0.0",
     "graceful-fs": "4.1.11",
-    "imports-loader": "0.6.5",
     "json": "9.0.4",
+    "rimraf": "2.6.2",
     "travis-after-all": "1.4.4",
-    "webpack": "1.13.2",
+    "uglifyjs-webpack-plugin": "^1.2.5",
+    "webdriverio": "4.8.0",
+    "webpack": "^4.8.0",
+    "webpack-cli": "^2.0.15",
     "gulp": "^3.9.1",
     "gulp-bump": "^2.7.0",
-    "merge-stream": "^1.0.0",
-    "rimraf": "^2.5.4",
-    "eslint": "^4.16"
+    "merge-stream": "^1.0.0"
   },
   "jshintConfig": {
     "globalstrict": true,
@@ -70,8 +72,8 @@
     "google-closure-library": "^20180204.0.0",
     "install": "^0.8.8",
     "npm": "^4.4.4",
-    "travis-after-all": "1.4.4",
-    "closure-library": "^1.43629075.2",
-    "webdriverio": "^4.6.2"
+    "webdriverio": "^4.6.2",
+    "exports-loader": "0.6.3",
+    "imports-loader": "0.6.5"
   }
 }

@@ -652,12 +652,12 @@ Blockly.Constants.Math.MATH_NUMBER_MINMAX_MIXIN = {
    */
   mutationToDom: function() {
     var container = document.createElement('mutation');
-    if (this.inputList[0].fieldRow[0].min_ != undefined) var min = container.setAttribute('min', this.inputList[0].fieldRow[0].min_);
-    if (this.inputList[0].fieldRow[0].max_ != undefined) var max = container.setAttribute('max', this.inputList[0].fieldRow[0].max_);
-    if (this.inputList[0].fieldRow[0].labelText_ != undefined) var label = container.setAttribute('label', this.inputList[0].fieldRow[0].labelText_);
-    if (this.inputList[0].fieldRow[0].step_ != undefined) var step = container.setAttribute('step', this.inputList[0].fieldRow[0].step_);
-    if (this.inputList[0].fieldRow[0].sliderColor_ != undefined) var color = container.setAttribute('color', this.inputList[0].fieldRow[0].sliderColor_);
-    if (this.inputList[0].fieldRow[0].precision_ != undefined) var precision = container.setAttribute('precision', this.inputList[0].fieldRow[0].precision_);
+    if (this.inputList[0].fieldRow[0].min_ != undefined) container.setAttribute('min', this.inputList[0].fieldRow[0].min_);
+    if (this.inputList[0].fieldRow[0].max_ != undefined) container.setAttribute('max', this.inputList[0].fieldRow[0].max_);
+    if (this.inputList[0].fieldRow[0].labelText_ != undefined) container.setAttribute('label', this.inputList[0].fieldRow[0].labelText_);
+    if (this.inputList[0].fieldRow[0].step_ != undefined) container.setAttribute('step', this.inputList[0].fieldRow[0].step_);
+    if (this.inputList[0].fieldRow[0].sliderColor_ != undefined) container.setAttribute('color', this.inputList[0].fieldRow[0].sliderColor_);
+    if (this.inputList[0].fieldRow[0].precision_ != undefined) container.setAttribute('precision', this.inputList[0].fieldRow[0].precision_);
     return container;
   },
   /**
@@ -679,4 +679,4 @@ Blockly.Constants.Math.MATH_NUMBER_MINMAX_MIXIN = {
 };
 
 Blockly.Extensions.registerMutator('math_number_minmax_mutator',
-  Blockly.Constants.Math.MATH_NUMBER_MINMAX_MIXIN);
+    Blockly.Constants.Math.MATH_NUMBER_MINMAX_MIXIN);

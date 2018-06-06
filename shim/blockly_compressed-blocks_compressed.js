@@ -1,1 +1,1 @@
-module.exports = require('imports?Blockly=./shim/blockly_compressed.Blockly!exports?Blockly!../blocks_compressed');
+module.exports = require('imports-loader?Blockly=./shim/blockly_compressed.Blockly!exports-loader?Blockly!../blocks_compressed');
