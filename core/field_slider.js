@@ -77,6 +77,10 @@ Blockly.FieldSlider.prototype.setColor = function (color) {
   if (color != undefined) this.sliderColor_ = color;
 };
 
+Blockly.FieldSlider.prototype.setPrecision = function (precision) {
+  if (precision != undefined) this.precision_ = precision;
+};
+
 Blockly.FieldSlider.prototype.init = function () {
   Blockly.FieldTextInput.superClass_.init.call(this);
   this.setValue(this.getValue());

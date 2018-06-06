@@ -656,7 +656,8 @@ Blockly.Constants.Math.MATH_NUMBER_MINMAX_MIXIN = {
     if (this.inputList[0].fieldRow[0].max_ != undefined) var max = container.setAttribute('max', this.inputList[0].fieldRow[0].max_);
     if (this.inputList[0].fieldRow[0].labelText_ != undefined) var label = container.setAttribute('label', this.inputList[0].fieldRow[0].labelText_);
     if (this.inputList[0].fieldRow[0].step_ != undefined) var step = container.setAttribute('step', this.inputList[0].fieldRow[0].step_);
-    if (this.inputList[0].fieldRow[0].sliderColor_ != undefined) var step = container.setAttribute('color', this.inputList[0].fieldRow[0].sliderColor_);
+    if (this.inputList[0].fieldRow[0].sliderColor_ != undefined) var color = container.setAttribute('color', this.inputList[0].fieldRow[0].sliderColor_);
+    if (this.inputList[0].fieldRow[0].precision_ != undefined) var precision = container.setAttribute('precision', this.inputList[0].fieldRow[0].precision_);
     return container;
   },
   /**
@@ -670,8 +671,9 @@ Blockly.Constants.Math.MATH_NUMBER_MINMAX_MIXIN = {
     var step = (xmlElement.getAttribute('step'));
     var label = (xmlElement.getAttribute('label'));
     var color = (xmlElement.getAttribute('color'));
+    var precision = (xmlElement.getAttribute('precision'));
     this.inputList[0].fieldRow[0].setLabel(label);
-    this.inputList[0].fieldRow[0].setMinMax(min, max, step);
+    this.inputList[0].fieldRow[0].setOptions(min, max, step, precision);
     this.inputList[0].fieldRow[0].setColor(color);
   }
 };
