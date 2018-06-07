@@ -63,10 +63,14 @@ Blockly.FieldSlider.fromJson = function (options) {
     options['step'], options['labelText']);
 };
 
-Blockly.FieldSlider.prototype.setMinMax = function (min, max, step) {
+Blockly.FieldSlider.prototype.setOptions = function (min, max, step, precision) {
   this.min_ = parseFloat(min);
   this.max_ = parseFloat(max);
   this.step_ = parseFloat(step) || undefined;
+  this.precision_ = parseFloat(precision) || undefined;
+
+  var numRestrictor = this.getNumRestrictor(this.min_, this.max_, this.precision_);
+  this.setRestrictor(numRestrictor);
 };
 
 Blockly.FieldSlider.prototype.setLabel = function (labelText) {
@@ -75,10 +79,6 @@ Blockly.FieldSlider.prototype.setLabel = function (labelText) {
 
 Blockly.FieldSlider.prototype.setColor = function (color) {
   if (color != undefined) this.sliderColor_ = color;
-};
-
-Blockly.FieldSlider.prototype.setPrecision = function (precision) {
-  if (precision != undefined) this.precision_ = precision;
 };
 
 Blockly.FieldSlider.prototype.init = function () {
