@@ -937,7 +937,7 @@ Blockly.BlockSvg.prototype.dispose = function(healStack, animate) {
  * Change the colour of a block.
  */
 Blockly.BlockSvg.prototype.updateColour = function() {
-  if (this.disabled) {
+  if (this.disabled || this.getInheritedDisabled()) {
     // Disabled blocks don't have colour.
     return;
   }
@@ -1166,7 +1166,7 @@ Blockly.BlockSvg.prototype.setHighlighted = function(highlighted) {
 Blockly.BlockSvg.prototype.addSelect = function() {
   Blockly.utils.addClass(
       /** @type {!Element} */ (this.svgGroup_), 'blocklySelected');
-  if (!this.disabled) this.setGlowBlock(true);
+  if (!this.disabled && !this.getInheritedDisabled()) this.setGlowBlock(true);
 };
 
 /**
@@ -1175,7 +1175,7 @@ Blockly.BlockSvg.prototype.addSelect = function() {
 Blockly.BlockSvg.prototype.removeSelect = function() {
   Blockly.utils.removeClass(
       /** @type {!Element} */ (this.svgGroup_), 'blocklySelected');
-  if (!this.disabled) this.setGlowBlock(false);
+  if (!this.disabled && !this.getInheritedDisabled()) this.setGlowBlock(false);
 };
 
 /**
