@@ -457,12 +457,7 @@ Blockly.FieldTextInput.prototype.resizeEditor_ = function() {
   var scale = this.sourceBlock_.workspace.scale;
   var div = Blockly.WidgetDiv.DIV;
 
-  var initialWidth;
-  if (this.sourceBlock_.isShadow()) {
-    initialWidth = this.sourceBlock_.getHeightWidth().width * scale;
-  } else {
-    initialWidth = this.size_.width * scale;
-  }
+  var initialWidth = this.sourceBlock_.getHeightWidth().width * scale;
 
   var width;
   if (Blockly.BlockSvg.FIELD_TEXTINPUT_EXPAND_PAST_TRUNCATION) {
@@ -484,9 +479,12 @@ Blockly.FieldTextInput.prototype.resizeEditor_ = function() {
   // The width must be at least FIELD_WIDTH and at most FIELD_WIDTH_MAX_EDIT
   width = Math.max(width, Blockly.BlockSvg.FIELD_WIDTH_MIN_EDIT * scale);
   width = Math.min(width, Blockly.BlockSvg.FIELD_WIDTH_MAX_EDIT * scale);
+
+  var inputHeight = this.sourceBlock_.isShadow() ? Blockly.BlockSvg.FIELD_HEIGHT_MAX_EDIT : this.sourceBlock_.getHeightWidth().height;
+
   // Add 1px to width and height to account for border (pre-scale)
   div.style.width = (width / scale + 1) + 'px';
-  div.style.height = (Blockly.BlockSvg.FIELD_HEIGHT_MAX_EDIT + 1) + 'px';
+  div.style.height = (inputHeight + 1) + 'px';
   div.style.transform = 'scale(' + scale + ')';
 
   // Use margin-left to animate repositioning of the box (value is unscaled).
