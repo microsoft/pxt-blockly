@@ -105,7 +105,7 @@ Blockly.Css.inject = function(hasCss, pathToMedia) {
       );
     }
   }
-  
+
   // Inject CSS tag at start of head.
   var cssNode = document.createElement('style');
   document.head.insertBefore(cssNode, document.head.firstChild);
@@ -573,6 +573,11 @@ Blockly.Css.CONTENT = [
     'margin: 0;',
     'padding: 0;',
     'background-color: #FAF6BD;',
+  '}',
+
+  // pxtblockly: workspace comment background in IE
+  '.blocklyUneditableMinimalBody {',
+    'fill: #FAF6BD;',
   '}',
 
   '.blocklyCommentForeignObject {',

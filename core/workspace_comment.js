@@ -251,7 +251,7 @@ Blockly.WorkspaceComment.prototype.setWidth = function(width) {
  */
 Blockly.WorkspaceComment.prototype.isDeletable = function() {
   return this.deletable_ &&
-      !(this.workspace && this.workspace.options.readOnly || goog.userAgent.IE);
+      !(this.workspace && this.workspace.options.readOnly);
 };
 
 /**
