@@ -474,19 +474,23 @@ Blockly.WorkspaceCommentSvg.prototype.resizeComment_ = function() {
   var topOffset = Blockly.WorkspaceCommentSvg.TOP_OFFSET;
   var textOffset = Blockly.WorkspaceCommentSvg.TEXTAREA_OFFSET * 2;
 
-  if (this.foreignObject_) {
-    this.foreignObject_.setAttribute('width',
+  var backdrop = this.foreignObject_ || this.uneditableBackground_;
+
+  if (backdrop) {
+    backdrop.setAttribute('width',
         size.width);
-    this.foreignObject_.setAttribute('height',
+    backdrop.setAttribute('height',
         size.height - topOffset);
     if (this.RTL) {
-      this.foreignObject_.setAttribute('x',
+      backdrop.setAttribute('x',
           -size.width);
     }
-    this.textarea_.style.width =
-        (size.width - textOffset) + 'px';
-    this.textarea_.style.height =
-        (size.height - textOffset - topOffset) + 'px';
+    if (this.textarea_) {
+      this.textarea_.style.width =
+          (size.width - textOffset) + 'px';
+      this.textarea_.style.height =
+          (size.height - textOffset - topOffset) + 'px';
+    }
   }
 };
 
@@ -519,19 +523,22 @@ Blockly.WorkspaceCommentSvg.prototype.setSize_ = function(width, height) {
       // Mirror the resize group.
       this.resizeGroup_.setAttribute('transform', 'translate(' +
         (-width + resizeSize) + ',' + (height - resizeSize) + ') scale(-1 1)');
-      if (this.isDeletable()) {
-        this.deleteGroup_.setAttribute('transform', 'translate(' +
-          (-width + Blockly.WorkspaceCommentSvg.DELETE_ICON_PADDING) + ',' + (0) + ') scale(-1 1)');
-      }
     } else {
       this.resizeGroup_.setAttribute('transform', 'translate(' +
         (width - resizeSize) + ',' +
         (height - resizeSize) + ')');
-      if (this.isDeletable()) {
-        this.deleteGroup_.setAttribute('transform', 'translate(' +
-          (width - Blockly.WorkspaceCommentSvg.DELETE_ICON_PADDING) + ',' +
-          (0) + ')');
-      }
+    }
+  }
+
+  if (this.isDeletable()) {
+    if (this.RTL) {
+      this.deleteGroup_.setAttribute('transform', 'translate(' +
+      (-width + Blockly.WorkspaceCommentSvg.DELETE_ICON_PADDING) + ',' + (0) + ') scale(-1 1)');
+    }
+    else {
+      this.deleteGroup_.setAttribute('transform', 'translate(' +
+      (width - Blockly.WorkspaceCommentSvg.DELETE_ICON_PADDING) + ',' +
+      (0) + ')');
     }
   }
 
@@ -556,12 +563,14 @@ Blockly.WorkspaceCommentSvg.prototype.disposeInternal_ = function() {
  */
 Blockly.WorkspaceCommentSvg.prototype.setFocus = function() {
   this.focused_ = true;
-  var textarea = this.textarea_;
   this.svgRectTarget_.style.fill = "none";
   this.svgHandleTarget_.style.fill = "transparent";
-  setTimeout(function() {
-    textarea.focus();
-  }, 0);
+  if (this.textarea_) {
+    var textarea = this.textarea_;
+    setTimeout(function() {
+      textarea.focus();
+    }, 0);
+  }
   this.addFocus();
 };
 
@@ -571,12 +580,14 @@ Blockly.WorkspaceCommentSvg.prototype.setFocus = function() {
  */
 Blockly.WorkspaceCommentSvg.prototype.blurFocus = function() {
   this.focused_ = false;
-  var textarea = this.textarea_;
   this.svgRectTarget_.style.fill = "transparent";
   this.svgHandleTarget_.style.fill = "none";
-  setTimeout(function() {
-    textarea.blur();
-  }, 0);
+  if (this.textarea_) {
+    var textarea = this.textarea_;
+    setTimeout(function() {
+      textarea.blur();
+    }, 0);
+  }
   this.removeFocus();
 };
 
@@ -591,7 +602,15 @@ Blockly.WorkspaceCommentSvg.prototype.createUneditableText_ = function() {
         'class': 'blocklyUneditableComment'
       },
       this.svgGroup_);
-  this.uneditableTextLineY = 30;
+  this.uneditableBackground_ = Blockly.utils.createSvgElement(
+    'rect',
+    {
+      'class': 'blocklyUneditableMinimalBody',
+      'y': Blockly.WorkspaceCommentSvg.TOP_OFFSET.toString()
+    },
+    this.svgGroup_);
+  this.uneditableTextGroup_.appendChild(this.uneditableBackground_);
+  this.uneditableTextLineY = Blockly.WorkspaceCommentSvg.TOP_OFFSET * 2;
 };
 
 /**
