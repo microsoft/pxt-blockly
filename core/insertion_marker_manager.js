@@ -150,6 +150,7 @@ Blockly.InsertionMarkerManager = function(block, handleXY) {
    */
   this.availableConnections_ = this.initAvailableConnections_();
 
+  // pxtblockly: select target connections based on user's handle on the block
   if (block.outputConnection) {
     const coord = new goog.math.Coordinate(block.outputConnection.x_, block.outputConnection.y_);
     this.handleDXY = goog.math.Coordinate.difference(handleXY, coord)
@@ -387,6 +388,7 @@ Blockly.InsertionMarkerManager.prototype.getCandidate_ = function(dxy) {
   for (var i = 0; i < this.availableConnections_.length; i++) {
     var myConnection = this.availableConnections_[i];
 
+    // pxtblockly: for output connections select the target based on the user's "handle"
     if (this.topBlock_.outputConnection === myConnection) {
       dxy = goog.math.Coordinate.sum(dxy, this.handleDXY);
     }
