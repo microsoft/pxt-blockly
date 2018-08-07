@@ -462,7 +462,7 @@ Blockly.Gesture.prototype.startDraggingBlock_ = function() {
     this.duplicateOnDrag_();
   }
   this.blockDragger_ = new Blockly.BlockDragger(this.targetBlock_,
-      this.startWorkspace_);
+      this.startWorkspace_, this.mouseDownXY_);
   this.blockDragger_.startBlockDrag(this.currentDragDeltaXY_, this.healStack_);
   this.blockDragger_.dragBlock(this.mostRecentEvent_,
       this.currentDragDeltaXY_);

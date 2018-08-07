@@ -39,9 +39,11 @@ goog.require('goog.asserts');
  * are being dragged by a mouse or touch.
  * @param {!Blockly.BlockSvg} block The block to drag.
  * @param {!Blockly.WorkspaceSvg} workspace The workspace to drag on.
+ * @param {!goog.math.Coordinate} mousedownxy Position where the mouse down
+ *          that started the drag occured in pixels (pxtblockly)
  * @constructor
  */
-Blockly.BlockDragger = function(block, workspace) {
+Blockly.BlockDragger = function(block, workspace, mousedownxy) {
   /**
    * The top block in the stack that is being dragged.
    * @type {!Blockly.BlockSvg}
@@ -62,7 +64,7 @@ Blockly.BlockDragger = function(block, workspace) {
    * @private
    */
   this.draggedConnectionManager_ = new Blockly.InsertionMarkerManager(
-      this.draggingBlock_);
+      this.draggingBlock_, this.pixelsToWorkspaceUnits_(goog.math.Coordinate.difference(mousedownxy, this.workspaceOriginInPixels_())));
 
   /**
    * Which delete area the mouse pointer is over, if any.
@@ -318,6 +320,18 @@ Blockly.BlockDragger.prototype.pixelsToWorkspaceUnits_ = function(pixelCoord) {
     result = result.scale(1 / mainScale);
   }
   return result;
+};
+
+
+/**
+ * (pxtblockly) Gets the top left of the workspace in pixels
+ * @return {!goog.math.Coordinate} The coordinate of the workspace top left in pixels
+ * @private
+ */
+Blockly.BlockDragger.prototype.workspaceOriginInPixels_ = function() {
+  var injectOrigin = goog.style.getPageOffset(this.workspace_.getInjectionDiv());
+  var wsOffset = this.workspace_.getOriginOffsetInPixels();
+  return goog.math.Coordinate.sum(injectOrigin, wsOffset);
 };
 
 /**
