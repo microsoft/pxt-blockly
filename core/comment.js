@@ -125,7 +125,7 @@ Blockly.Comment.prototype.createEditor_ = function() {
 
   this.createTextEditor_();
   this.svgGroup_.appendChild(this.foreignObject_);
-  
+
   // Add the delete icon
   this.addDeleteDom_();
   Blockly.bindEventWithChecks_(
@@ -162,6 +162,8 @@ Blockly.Comment.prototype.createTextEditor_ = function() {
       {
         'x': Blockly.WorkspaceCommentSvg.BORDER_WIDTH,
         'y': Blockly.WorkspaceCommentSvg.BORDER_WIDTH + Blockly.WorkspaceCommentSvg.TOP_OFFSET,
+        // pxtblockly: Firefox does not respect the stacking context for foreign objects; see https://bugzilla.mozilla.org/show_bug.cgi?id=984312
+        'transform': 'translate(0, 0)'
       },
       null);
   var body = document.createElementNS(Blockly.HTML_NS, 'body');
@@ -323,7 +325,7 @@ Blockly.Comment.prototype.resizeBubble_ = function() {
     if (this.deleteGroup_) {
       if (this.block_.RTL) {
         this.deleteGroup_.setAttribute('transform', 'translate(' +
-          (Blockly.WorkspaceCommentSvg.DELETE_ICON_PADDING + 
+          (Blockly.WorkspaceCommentSvg.DELETE_ICON_PADDING +
           Blockly.WorkspaceCommentSvg.BORDER_WIDTH) + ',' +
           Blockly.WorkspaceCommentSvg.BORDER_WIDTH + ') scale(-1 1)');
       } else {
