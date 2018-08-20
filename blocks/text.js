@@ -781,9 +781,6 @@ Blockly.Constants.Text.TEXT_JOIN_MUTATOR_MIXIN = {
           var shadowDom = document.createElement('shadow');
           var shadowInputType = shadowInputDom.getAttribute('type');
           shadowDom.setAttribute('type', shadowInputType);
-          var shadowDomField = document.createElement('field');
-          shadowDomField.setAttribute('name', 'NUM');
-          shadowDom.appendChild(shadowDomField);
           if (shadowDom) {
             shadowDom.setAttribute('id', Blockly.utils.genUid());
             newInput.connection.setShadowDom(shadowDom);
