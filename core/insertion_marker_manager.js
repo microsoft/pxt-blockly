@@ -38,9 +38,11 @@ goog.require('goog.math.Coordinate');
  * responsible for finding the closest eligible connection and highlighting or
  * unhiglighting it as needed during a drag.
  * @param {!Blockly.BlockSvg} block The top block in the stack being dragged.
+ * @param {!goog.math.Coordinate} handleXY Position where the mouse down
+ *          that started the drag occured in workspace units (pxtblockly)
  * @constructor
  */
-Blockly.InsertionMarkerManager = function(block) {
+Blockly.InsertionMarkerManager = function(block, handleXY) {
   Blockly.selected = block;
 
   /**
@@ -147,6 +149,15 @@ Blockly.InsertionMarkerManager = function(block) {
    * @private
    */
   this.availableConnections_ = this.initAvailableConnections_();
+
+  // pxtblockly: select target connections based on user's handle on the block
+  if (block.outputConnection) {
+    const coord = new goog.math.Coordinate(block.outputConnection.x_, block.outputConnection.y_);
+    this.handleDXY = goog.math.Coordinate.difference(handleXY, coord)
+  }
+  else {
+    this.handleDXY = new goog.math.Coordinate(0, 0);
+  }
 };
 
 /**
@@ -376,6 +387,12 @@ Blockly.InsertionMarkerManager.prototype.getCandidate_ = function(dxy) {
 
   for (var i = 0; i < this.availableConnections_.length; i++) {
     var myConnection = this.availableConnections_[i];
+
+    // pxtblockly: for output connections select the target based on the user's "handle"
+    if (this.topBlock_.outputConnection === myConnection) {
+      dxy = goog.math.Coordinate.sum(dxy, this.handleDXY);
+    }
+
     var neighbour = myConnection.closest(radius, dxy);
     if (neighbour.connection) {
       candidateClosest = neighbour.connection;
