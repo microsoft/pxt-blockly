@@ -821,7 +821,7 @@ Blockly.BlockSvg.prototype.renderCompute_ = function(iconWidth) {
     }
     previousRow = row;
   }
-  
+
   // Bottom edge is sum of row heights (pxtblockly: do this before computing
   // the padding, used for calculating padding of multi-line blocks)
   for (var i = 0; i < inputRows.length; i++) {
@@ -1096,11 +1096,15 @@ Blockly.BlockSvg.prototype.renderDraw_ = function(iconWidth, inputRows) {
 
   var pathString = steps.join(' ');
   this.svgPath_.setAttribute('d', pathString);
+  if (this.svgPathWarningHighlight_) this.svgPathWarningHighlight_.setAttribute('d', pathString);
+  if (this.svgPathHighlight_) this.svgPathHighlight_.setAttribute('d', pathString);
 
   if (this.RTL) {
     // Mirror the block's path.
     // This is awesome.
     this.svgPath_.setAttribute('transform', 'scale(-1 1)');
+    if (this.svgPathWarningHighlight_) this.svgPathWarningHighlight_.setAttribute('transform', 'scale(-1 1)');
+    if (this.svgPathHighlight_) this.svgPathHighlight_.setAttribute('transform', 'scale(-1 1)');
   }
 };
 
