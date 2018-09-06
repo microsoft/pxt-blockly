@@ -1581,8 +1581,7 @@ Blockly.BlockSvg.getInputShapeInfo_ = function(shape) {
 Blockly.BlockSvg.getAlignedCursor_ = function(cursorX, input, rightEdge) {
   // Align inline field rows (left/right/centre).
   if (input.align === Blockly.ALIGN_RIGHT) {
-    cursorX += rightEdge - input.fieldWidth -
-      (2 * Blockly.BlockSvg.SEP_SPACE_X);
+    cursorX = Math.max(cursorX, rightEdge - input.fieldWidth - Blockly.BlockSvg.SEP_SPACE_X);
   } else if (input.align === Blockly.ALIGN_CENTRE) {
     cursorX = Math.max(cursorX, rightEdge / 2 - input.fieldWidth / 2);
   }

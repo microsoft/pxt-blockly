@@ -128,6 +128,14 @@ Blockly.Blocks['controls_if'] = {
     this.update_(update);
     this.restoreConnections_();
   },
+  removeElse_: function() {
+    this.storeConnections_();
+    var update = function() {
+      this.elseCount_--;
+    };
+    this.update_(update);
+    this.restoreConnections_();
+  },
   addElseIf_: function() {
     this.storeConnections_();
     var update = function() {
@@ -189,6 +197,7 @@ Blockly.Blocks['controls_if'] = {
     if (this.getInput('ELSE')) {
       this.removeInput('ELSE');
       this.removeInput('ELSETITLE');
+      this.removeInput('ELSEBUTTONS');
     }
     var i = 1;
     while (this.getInput('IF' + i)) {
@@ -218,6 +227,10 @@ Blockly.Blocks['controls_if'] = {
     if (this.elseCount_) {
       this.appendDummyInput('ELSETITLE')
           .appendField(Blockly.Msg.CONTROLS_IF_MSG_ELSE);
+      this.appendDummyInput('ELSEBUTTONS')
+          .setAlign(Blockly.ALIGN_RIGHT)
+          .appendField(
+              new Blockly.FieldImage(this.REMOVE_IMAGE_DATAURI, 24, 24, false, "*", that.removeElse_.bind(that)));
       this.appendStatementInput('ELSE');
     }
     if (this.getInput('ADDBUTTON')) this.removeInput('ADDBUTTON');
