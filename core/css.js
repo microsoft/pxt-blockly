@@ -364,8 +364,15 @@ Blockly.Css.CONTENT = [
     'stroke-width: 4px;',
   '}',
 
+  // pxtblockly: highlight reporter blocks on hover
   '.blocklyPath {',
     'stroke-width: 1px;',
+    'transition: stroke .4s;',
+  '}',
+
+  '.blocklyPath.hover-emphasis {',
+    'stroke-width: 2px;',
+    'stroke: white;',
   '}',
 
   '.blocklySelected>.blocklyPath {',

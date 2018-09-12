@@ -80,6 +80,8 @@ Blockly.BlockSvg = function(workspace, prototypeName, opt_id) {
   Blockly.BlockSvg.superClass_.constructor.call(this,
       workspace, prototypeName, opt_id);
 
+  this.bindHoverEvents_();
+
   // Expose this block's ID on its top-level SVG group.
   if (this.svgGroup_.dataset) {
     this.svgGroup_.dataset.id = this.id;
@@ -1456,3 +1458,26 @@ Blockly.BlockSvg.prototype.scheduleSnapAndBump = function() {
     Blockly.Events.setGroup(false);
   }, Blockly.BUMP_DELAY);
 };
+
+/**
+ * pxtblockly
+ * Binds mouse events to handle the highlighting of reporter blocks
+ * @private
+ */
+Blockly.BlockSvg.prototype.bindHoverEvents_ = function() {
+  var that = this;
+  Blockly.bindEvent_(this.svgGroup_, 'mouseover', null, function(e) {
+    var target = that;
+    if (that.isShadow_ && that.parentBlock_) {
+      target = that.parentBlock_;
+    }
+    if (target.parentBlock_ && target.outputConnection) {
+      Blockly.utils.addClass(/** @type {!Element} */ (target.svgPath_), 'hover-emphasis');
+    }
+    e.stopPropagation();
+  });
+
+  Blockly.bindEvent_(this.svgGroup_, 'mouseout', null, function(e) {
+    Blockly.utils.removeClass(/** @type {!Element} */ (that.svgPath_), 'hover-emphasis');
+  });
+}
