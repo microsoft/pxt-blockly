@@ -502,7 +502,9 @@ Blockly.BlockSvg.prototype.updateColour = function() {
 
   // Render block fill
   if (this.isGlowingBlock_ || renderShadowed) {
-    var fillColour = this.getColourSecondary();
+    var fillColour = goog.color.rgbArrayToHex(
+        goog.color.darken(goog.color.hexToRgb(this.colour_),
+      0.2));
   } else {
     var fillColour = this.getColour();
   }
@@ -1096,15 +1098,22 @@ Blockly.BlockSvg.prototype.renderDraw_ = function(iconWidth, inputRows) {
 
   var pathString = steps.join(' ');
   this.svgPath_.setAttribute('d', pathString);
-  if (this.svgPathWarningHighlight_) this.svgPathWarningHighlight_.setAttribute('d', pathString);
-  if (this.svgPathHighlight_) this.svgPathHighlight_.setAttribute('d', pathString);
+
+  if (this.highlightPaths_) {
+    for (var i = 0; i < this.highlightPaths_.length; i++) {
+      this.highlightPaths_[i].setAttribute('d', pathString);
+    }
+  }
 
   if (this.RTL) {
     // Mirror the block's path.
     // This is awesome.
     this.svgPath_.setAttribute('transform', 'scale(-1 1)');
-    if (this.svgPathWarningHighlight_) this.svgPathWarningHighlight_.setAttribute('transform', 'scale(-1 1)');
-    if (this.svgPathHighlight_) this.svgPathHighlight_.setAttribute('transform', 'scale(-1 1)');
+    if (this.highlightPaths_) {
+      for (var i = 0; i < this.highlightPaths_.length; i++) {
+        this.highlightPaths_[i].setAttribute('transform', 'scale(-1 1)');
+      }
+    }
   }
 };
 

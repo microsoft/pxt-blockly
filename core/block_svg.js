@@ -274,12 +274,9 @@ Blockly.BlockSvg.prototype.setHighlightWarning = function(isHighlightingWarning)
   // Update the applied SVG filter if the property has changed
   // var svg = this.svgPath_;
   if (this.isHighlightingWarningBlock_ && !this.svgPathWarningHighlight_) {
-    this.svgPathWarningHighlight_ = this.svgPath_.cloneNode(true);
-    this.svgPathWarningHighlight_.setAttribute('fill', 'none');
-    this.svgPathWarningHighlight_.setAttribute('filter', 'url(#blocklyHighlightWarningFilter)');
-    this.getSvgRoot().appendChild(this.svgPathWarningHighlight_);
+    this.svgPathWarningHighlight_ = this.addHighlightPath_('url(#blocklyHighlightWarningFilter)');
   } else if (!this.isHighlightingWarningBlock_ && this.svgPathWarningHighlight_) {
-    this.getSvgRoot().removeChild(this.svgPathWarningHighlight_);
+    this.removeHighlightPath_(this.svgPathWarningHighlight_);
     this.svgPathWarningHighlight_ = null;
   }
 };
@@ -297,13 +294,43 @@ Blockly.BlockSvg.prototype.setHighlightBlock = function(isHighlightingBlock) {
   // Update the applied SVG filter if the property has changed
   // var svg = this.svgPath_;
   if (this.isHighlightingBlock_ && !this.svgPathHighlight_) {
-    this.svgPathHighlight_ = this.svgPath_.cloneNode(true);
-    this.svgPathHighlight_.setAttribute('fill', 'none');
-    this.svgPathHighlight_.setAttribute('filter', 'url(#blocklyHighlightGlowFilter)');
-    this.getSvgRoot().appendChild(this.svgPathHighlight_);
+    this.svgPathHighlight_ = this.addHighlightPath_('url(#blocklyHighlightGlowFilter)');
   } else if (!this.isHighlightingBlock_ && this.svgPathHighlight_) {
-    this.getSvgRoot().removeChild(this.svgPathHighlight_);
+    this.removeHighlightPath_(this.svgPathHighlight_);
     this.svgPathHighlight_ = null;
+  }
+};
+
+
+/**
+ * pxtblockly
+ * Creates a path for highlighting blocks and adds it to the DOM
+ */
+Blockly.BlockSvg.prototype.addHighlightPath_ = function(filter) {
+  var newPath = this.svgPath_.cloneNode(true);
+  newPath.setAttribute('fill', 'none');
+  newPath.setAttribute('filter', filter);
+  this.getSvgRoot().appendChild(newPath);
+
+  if (!this.highlightPaths_) {
+    this.highlightPaths_ = [];
+  }
+  this.highlightPaths_.push(newPath);
+  return newPath;
+};
+
+/**
+ * pxtblockly
+ * Removes a highlight path from the DOM
+ */
+Blockly.BlockSvg.prototype.removeHighlightPath_ = function(toRemove) {
+  this.getSvgRoot().removeChild(toRemove);
+
+  if (this.highlightPaths_) {
+    var index = this.highlightPaths_.indexOf(toRemove);
+    if (index != -1) {
+      this.highlightPaths_.splice(index, 1);
+    }
   }
 };
 
@@ -1167,6 +1194,10 @@ Blockly.BlockSvg.prototype.addSelect = function() {
   Blockly.utils.addClass(
       /** @type {!Element} */ (this.svgGroup_), 'blocklySelected');
   if (!this.disabled && !this.getInheritedDisabled()) this.setGlowBlock(true);
+
+  if (!this.svgPathSelect_ && !this.disabled) {
+    this.svgPathSelect_ = this.addHighlightPath_('url(#blocklyHighlightGlowFilter)');
+  }
 };
 
 /**
@@ -1176,6 +1207,11 @@ Blockly.BlockSvg.prototype.removeSelect = function() {
   Blockly.utils.removeClass(
       /** @type {!Element} */ (this.svgGroup_), 'blocklySelected');
   if (!this.disabled && !this.getInheritedDisabled()) this.setGlowBlock(false);
+
+  if (this.svgPathSelect_) {
+    this.removeHighlightPath_(this.svgPathSelect_);
+    this.svgPathSelect_ = null;
+  }
 };
 
 /**
