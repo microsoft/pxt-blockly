@@ -118,7 +118,7 @@ Blockly.Blocks['controls_if'] = {
       Blockly.Mutator.reconnect(this.valueConnections_[i], this, 'IF' + i);
       Blockly.Mutator.reconnect(this.statementConnections_[i], this, 'DO' + i);
     }
-    Blockly.Mutator.reconnect(this.elseStatementConnection_, this, 'ELSE');
+    if (this.getInput('ELSE')) Blockly.Mutator.reconnect(this.elseStatementConnection_, this, 'ELSE');
   },
   addElse_: function() {
     this.storeConnections_();
