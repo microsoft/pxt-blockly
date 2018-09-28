@@ -848,14 +848,14 @@ Blockly.Block.prototype.setColour = function(colour, colourSecondary, colourTert
   } else {
     this.colourSecondary_ = goog.color.rgbArrayToHex(
         goog.color.darken(goog.color.hexToRgb(this.colour_),
-        0.1));
+            0.15));
   }
   if (colourTertiary !== undefined) {
     this.colourTertiary_ = this.makeColour_(colourTertiary);
   } else {
     this.colourTertiary_ = goog.color.rgbArrayToHex(
         goog.color.darken(goog.color.hexToRgb(this.colour_),
-        0.2));
+            0.25));
   }
   if (this.rendered) {
     this.updateColour();
