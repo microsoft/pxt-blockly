@@ -213,7 +213,7 @@ Blockly.createDom_ = function(container, options) {
 
   var selectedGlowFilter = Blockly.utils.createSvgElement('filter',
       {'id': 'blocklySelectedGlowFilter',
-        'height': '160%', 'width': '180%', y: '-30%', x: '-40%'}, defs);
+        'height': '140%', 'width': '140%', y: '-20%', x: '-20%'}, defs);
   options.stackGlowBlur = Blockly.utils.createSvgElement('feGaussianBlur',
       {'in': 'SourceGraphic',
         'stdDeviation': Blockly.Colours.selectedGlowSize}, selectedGlowFilter);
