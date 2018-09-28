@@ -114,6 +114,13 @@ Blockly.FieldString.prototype.init = function() {
   var text = this.text_;
   this.text_ = null;
   this.setText(text);
+
+  this.mouseOverWrapper_ =
+      Blockly.bindEvent_(
+          this.getClickTarget_(), 'mouseover', this, this.onMouseOver_);
+  this.mouseOutWrapper_ =
+      Blockly.bindEvent_(
+          this.getClickTarget_(), 'mouseout', this, this.onMouseOut_);
 };
 
 Blockly.FieldString.prototype.setText = function(text) {

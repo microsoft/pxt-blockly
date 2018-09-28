@@ -159,6 +159,39 @@ Blockly.FieldDropdown.prototype.init = function() {
   var text = this.text_;
   this.text_ = null;
   this.setText(text);
+
+  this.mouseOverWrapper_ =
+      Blockly.bindEvent_(
+          this.getClickTarget_(), 'mouseover', this, this.onMouseOver_);
+  this.mouseOutWrapper_ =
+      Blockly.bindEvent_(
+          this.getClickTarget_(), 'mouseout', this, this.onMouseOut_);
+};
+
+/**
+ * Handle a mouse over event on a dropdown field.
+ * @param {!Event} e Mouse over event.
+ * @private
+ */
+Blockly.FieldDropdown.prototype.onMouseOver_ = function(e) {
+  if (this.sourceBlock_.isInFlyout) return;
+  var gesture = this.sourceBlock_.workspace.getGesture(e);
+  if (gesture && gesture.isDragging()) return;
+  if (this.box_) this.box_.style.stroke = '#fff';
+  else if (this.sourceBlock_.svgPath_) this.sourceBlock_.svgPath_.style.stroke = '#fff';
+};
+
+/**
+ * Handle a mouse out event on a dropdown field.
+ * @param {!Event} e Mouse out event.
+ * @private
+ */
+Blockly.FieldDropdown.prototype.onMouseOut_ = function(e) {
+  if (this.sourceBlock_.isInFlyout) return;
+  var gesture = this.sourceBlock_.workspace.getGesture(e);
+  if (gesture && gesture.isDragging()) return;
+  if (this.box_) this.box_.style.stroke = '';
+  else if (this.sourceBlock_.svgPath_) this.sourceBlock_.svgPath_.style.stroke = '';
 };
 
 /**
@@ -505,6 +538,14 @@ Blockly.FieldDropdown.prototype.positionArrow = function(x) {
  * Close the dropdown menu if this input is being deleted.
  */
 Blockly.FieldDropdown.prototype.dispose = function() {
+  if (this.mouseOverWrapper_) {
+    Blockly.unbindEvent_(this.mouseOverWrapper_);
+    this.mouseOverWrapper_ = null;
+  }
+  if (this.mouseOutWrapper_) {
+    Blockly.unbindEvent_(this.mouseOutWrapper_);
+    this.mouseOutWrapper_ = null;
+  }
   this.selectedItem = null;
   Blockly.WidgetDiv.hideIfOwner(this);
   Blockly.FieldDropdown.superClass_.dispose.call(this);

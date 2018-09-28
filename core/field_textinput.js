@@ -137,12 +137,55 @@ Blockly.FieldTextInput.prototype.init = function() {
     });
     this.fieldGroup_.insertBefore(this.box_, this.textElement_);
   }
+
+  this.mouseOverWrapper_ =
+      Blockly.bindEvent_(
+          this.getClickTarget_(), 'mouseover', this, this.onMouseOver_);
+  this.mouseOutWrapper_ =
+      Blockly.bindEvent_(
+          this.getClickTarget_(), 'mouseout', this, this.onMouseOut_);
+};
+
+/**
+ * Handle a mouse over event on a input field.
+ * @param {!Event} e Mouse over event.
+ * @private
+ */
+Blockly.FieldTextInput.prototype.onMouseOver_ = function(e) {
+  if (this.sourceBlock_.isInFlyout) return;
+  var gesture = this.sourceBlock_.workspace.getGesture(e);
+  if (gesture && gesture.isDragging()) return;
+  if (this.sourceBlock_.svgPath_) {
+    this.sourceBlock_.svgPath_.style.stroke = '#fff';
+  }
+};
+
+/**
+ * Handle a mouse out event on a input field.
+ * @param {!Event} e Mouse out event.
+ * @private
+ */
+Blockly.FieldTextInput.prototype.onMouseOut_ = function(e) {
+  if (this.sourceBlock_.isInFlyout) return;
+  var gesture = this.sourceBlock_.workspace.getGesture(e);
+  if (gesture && gesture.isDragging()) return;
+  if (this.sourceBlock_.svgPath_) {
+    this.sourceBlock_.svgPath_.style.stroke = '';
+  }
 };
 
 /**
  * Close the input widget if this input is being deleted.
  */
 Blockly.FieldTextInput.prototype.dispose = function() {
+  if (this.mouseOverWrapper_) {
+    Blockly.unbindEvent_(this.mouseOverWrapper_);
+    this.mouseOverWrapper_ = null;
+  }
+  if (this.mouseOutWrapper_) {
+    Blockly.unbindEvent_(this.mouseOutWrapper_);
+    this.mouseOutWrapper_ = null;
+  }
   Blockly.WidgetDiv.hideIfOwner(this);
   Blockly.FieldTextInput.superClass_.dispose.call(this);
 };
