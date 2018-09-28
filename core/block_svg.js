@@ -310,6 +310,29 @@ Blockly.BlockSvg.prototype.setHighlightBlock = function(isHighlightingBlock) {
 };
 
 /**
+ * Glow only this particular block, to select it visually as if it's selected.
+ * @param {boolean} isSelectingBlock Whether this block should glow as if selected.
+ */
+Blockly.BlockSvg.prototype.setSelectedBlock = function(isSelectingBlock) {
+  //pxtblockly: Sanity check that the block is rendered before setting the highlight
+  if (!this.rendered) {
+    return;
+  }
+  this.isSelectingBlock_ = isSelectingBlock;
+  // Update the applied SVG filter if the property has changed
+  // var svg = this.svgPath_;
+  if (this.isSelectingBlock_ && !this.svgPathSelected_) {
+    this.svgPathSelected_ = this.svgPath_.cloneNode(true);
+    this.svgPathSelected_.setAttribute('fill', 'none');
+    this.svgPathSelected_.setAttribute('filter', 'url(#blocklySelectedGlowFilter)');
+    this.getSvgRoot().appendChild(this.svgPathSelected_);
+  } else if (!this.isSelectingBlock_ && this.svgPathSelected_) {
+    this.getSvgRoot().removeChild(this.svgPathSelected_);
+    this.svgPathSelected_ = null;
+  }
+};
+
+/**
  * Block's mutator icon (if any).
  * @type {Blockly.Mutator}
  */
@@ -1168,7 +1191,7 @@ Blockly.BlockSvg.prototype.setHighlighted = function(highlighted) {
 Blockly.BlockSvg.prototype.addSelect = function() {
   Blockly.utils.addClass(
       /** @type {!Element} */ (this.svgGroup_), 'blocklySelected');
-  if (!this.disabled && !this.getInheritedDisabled()) this.setGlowBlock(true);
+  if (!this.disabled && !this.getInheritedDisabled()) this.setSelectedBlock(true);
 };
 
 /**
@@ -1177,7 +1200,7 @@ Blockly.BlockSvg.prototype.addSelect = function() {
 Blockly.BlockSvg.prototype.removeSelect = function() {
   Blockly.utils.removeClass(
       /** @type {!Element} */ (this.svgGroup_), 'blocklySelected');
-  if (!this.disabled && !this.getInheritedDisabled()) this.setGlowBlock(false);
+  if (!this.disabled && !this.getInheritedDisabled()) this.setSelectedBlock(false);
 };
 
 /**
