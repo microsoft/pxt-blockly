@@ -81,7 +81,7 @@ Blockly.FieldDropdown.CHECKMARK_OVERHANG = 25;
 /**
  * Mouse cursor style when over the hotspot that initiates the editor.
  */
-Blockly.FieldDropdown.prototype.CURSOR = 'default';
+Blockly.FieldDropdown.prototype.CURSOR = 'pointer';
 
 /**
  * Closure menu item currently selected.
