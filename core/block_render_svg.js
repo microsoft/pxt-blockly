@@ -1098,6 +1098,7 @@ Blockly.BlockSvg.prototype.renderDraw_ = function(iconWidth, inputRows) {
   this.svgPath_.setAttribute('d', pathString);
   if (this.svgPathWarningHighlight_) this.svgPathWarningHighlight_.setAttribute('d', pathString);
   if (this.svgPathHighlight_) this.svgPathHighlight_.setAttribute('d', pathString);
+  if (this.svgPathSelected_) this.svgPathSelected_.setAttribute('d', pathString);
 
   if (this.RTL) {
     // Mirror the block's path.
@@ -1105,6 +1106,7 @@ Blockly.BlockSvg.prototype.renderDraw_ = function(iconWidth, inputRows) {
     this.svgPath_.setAttribute('transform', 'scale(-1 1)');
     if (this.svgPathWarningHighlight_) this.svgPathWarningHighlight_.setAttribute('transform', 'scale(-1 1)');
     if (this.svgPathHighlight_) this.svgPathHighlight_.setAttribute('transform', 'scale(-1 1)');
+    if (this.svgPathSelected_) this.svgPathHighlight_.setAttribute('transform', 'scale(-1 1)');
   }
 };
 
