@@ -151,8 +151,11 @@ Blockly.FieldTextInput.prototype.init = function() {
  * @param {!Event} e Mouse over event.
  * @private
  */
-Blockly.FieldTextInput.prototype.onMouseOver_ = function(/*e*/) {
-  if (this.sourceBlock_.svgPath_ && !this.sourceBlock_.isInFlyout) {
+Blockly.FieldTextInput.prototype.onMouseOver_ = function(e) {
+  if (this.sourceBlock_.isInFlyout) return;
+  var gesture = this.sourceBlock_.workspace.getGesture(e);
+  if (gesture && gesture.isDragging()) return;
+  if (this.sourceBlock_.svgPath_) {
     this.sourceBlock_.svgPath_.style.stroke = '#fff';
   }
 };
@@ -162,8 +165,11 @@ Blockly.FieldTextInput.prototype.onMouseOver_ = function(/*e*/) {
  * @param {!Event} e Mouse out event.
  * @private
  */
-Blockly.FieldTextInput.prototype.onMouseOut_ = function(/*e*/) {
-  if (this.sourceBlock_.svgPath_ && !this.sourceBlock_.isInFlyout) {
+Blockly.FieldTextInput.prototype.onMouseOut_ = function(e) {
+  if (this.sourceBlock_.isInFlyout) return;
+  var gesture = this.sourceBlock_.workspace.getGesture(e);
+  if (gesture && gesture.isDragging()) return;
+  if (this.sourceBlock_.svgPath_) {
     this.sourceBlock_.svgPath_.style.stroke = '';
   }
 };

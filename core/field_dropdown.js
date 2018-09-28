@@ -173,8 +173,10 @@ Blockly.FieldDropdown.prototype.init = function() {
  * @param {!Event} e Mouse over event.
  * @private
  */
-Blockly.FieldDropdown.prototype.onMouseOver_ = function(/*e*/) {
+Blockly.FieldDropdown.prototype.onMouseOver_ = function(e) {
   if (this.sourceBlock_.isInFlyout) return;
+  var gesture = this.sourceBlock_.workspace.getGesture(e);
+  if (gesture && gesture.isDragging()) return;
   if (this.box_) this.box_.style.stroke = '#fff';
   else if (this.sourceBlock_.svgPath_) this.sourceBlock_.svgPath_.style.stroke = '#fff';
 };
@@ -184,8 +186,10 @@ Blockly.FieldDropdown.prototype.onMouseOver_ = function(/*e*/) {
  * @param {!Event} e Mouse out event.
  * @private
  */
-Blockly.FieldDropdown.prototype.onMouseOut_ = function(/*e*/) {
+Blockly.FieldDropdown.prototype.onMouseOut_ = function(e) {
   if (this.sourceBlock_.isInFlyout) return;
+  var gesture = this.sourceBlock_.workspace.getGesture(e);
+  if (gesture && gesture.isDragging()) return;
   if (this.box_) this.box_.style.stroke = '';
   else if (this.sourceBlock_.svgPath_) this.sourceBlock_.svgPath_.style.stroke = '';
 };

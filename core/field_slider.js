@@ -4,7 +4,7 @@
  *
  * Copyright (c) Microsoft Corporation. All rights reserved.
  * https://github.com/Microsoft/pxt-blockly
- * 
+ *
  * See LICENSE file for details.
  */
 
@@ -38,9 +38,10 @@ goog.require('goog.ui.Slider');
  * @extends {Blockly.FieldNumber}
  * @constructor
  */
-Blockly.FieldSlider = function (value_, opt_min, opt_max, opt_precision, opt_step, opt_labelText, opt_validator) {
+Blockly.FieldSlider = function(value_, opt_min, opt_max, opt_precision,
+    opt_step, opt_labelText, opt_validator) {
   Blockly.FieldSlider.superClass_.constructor.call(this, value_,
-    opt_validator);
+      opt_validator);
   this.min_ = parseFloat(opt_min);
   this.max_ = parseFloat(opt_max);
   this.step_ = parseFloat(opt_step);
@@ -57,13 +58,13 @@ goog.inherits(Blockly.FieldSlider, Blockly.FieldNumber);
  * @package
  * @nocollapse
  */
-Blockly.FieldSlider.fromJson = function (options) {
+Blockly.FieldSlider.fromJson = function(options) {
   return new Blockly.FieldSlider(options['value'],
-    options['min'], options['max'], options['precision'],
-    options['step'], options['labelText']);
+      options['min'], options['max'], options['precision'],
+      options['step'], options['labelText']);
 };
 
-Blockly.FieldSlider.prototype.setOptions = function (min, max, step, precision) {
+Blockly.FieldSlider.prototype.setOptions = function(min, max, step, precision) {
   this.min_ = parseFloat(min);
   this.max_ = parseFloat(max);
   this.step_ = parseFloat(step) || undefined;
@@ -73,17 +74,24 @@ Blockly.FieldSlider.prototype.setOptions = function (min, max, step, precision) 
   this.setRestrictor(numRestrictor);
 };
 
-Blockly.FieldSlider.prototype.setLabel = function (labelText) {
+Blockly.FieldSlider.prototype.setLabel = function(labelText) {
   if (labelText != undefined) this.labelText_ = labelText;
 };
 
-Blockly.FieldSlider.prototype.setColor = function (color) {
+Blockly.FieldSlider.prototype.setColor = function(color) {
   if (color != undefined) this.sliderColor_ = color;
 };
 
-Blockly.FieldSlider.prototype.init = function () {
+Blockly.FieldSlider.prototype.init = function() {
   Blockly.FieldTextInput.superClass_.init.call(this);
   this.setValue(this.getValue());
+
+  this.mouseOverWrapper_ =
+      Blockly.bindEvent_(
+          this.getClickTarget_(), 'mouseover', this, this.onMouseOver_);
+  this.mouseOutWrapper_ =
+      Blockly.bindEvent_(
+          this.getClickTarget_(), 'mouseout', this, this.onMouseOut_);
 };
 
 /**
@@ -91,7 +99,7 @@ Blockly.FieldSlider.prototype.init = function () {
  * @param {!Event} e A mouse down or touch start event.
  * @private
  */
-Blockly.FieldSlider.prototype.showEditor_ = function (e) {
+Blockly.FieldSlider.prototype.showEditor_ = function(e) {
   Blockly.FieldSlider.superClass_.showEditor_.call(this, e, false);
   if (this.max_ == Infinity || this.min_ == -Infinity) {
     return;
@@ -106,7 +114,7 @@ Blockly.FieldSlider.prototype.showEditor_ = function (e) {
  * Show the slider.
  * @private
  */
-Blockly.FieldSlider.prototype.showSlider_ = function () {
+Blockly.FieldSlider.prototype.showSlider_ = function() {
   // If there is an existing drop-down someone else owns, hide it immediately
   // and clear it.
   Blockly.DropDownDiv.hideWithoutAnimation();
@@ -124,14 +132,14 @@ Blockly.FieldSlider.prototype.showSlider_ = function () {
   Blockly.DropDownDiv.setColour('#ffffff', '#dddddd');
   Blockly.DropDownDiv.showPositionedByBlock(this, this.sourceBlock_);
 
-  if (this.slider_) this.slider_.setVisible(true)
+  if (this.slider_) this.slider_.setVisible(true);
 };
 
 /**
  * Add the slider.
  * @private
  */
-Blockly.FieldSlider.prototype.addSlider_ = function (contentDiv) {
+Blockly.FieldSlider.prototype.addSlider_ = function(contentDiv) {
   if (this.labelText_) {
     var elements = this.createLabelDom_(this.labelText_);
     contentDiv.appendChild(elements[0]);
@@ -197,7 +205,7 @@ Blockly.FieldSlider.prototype.createLabelDom_ = function(labelText) {
 /**
  * Set value.
  */
-Blockly.FieldSlider.prototype.setValue = function (value) {
+Blockly.FieldSlider.prototype.setValue = function(value) {
   Blockly.FieldSlider.superClass_.setValue.call(this, value);
   this.updateSliderHandles_();
   this.updateDom_();
@@ -207,7 +215,7 @@ Blockly.FieldSlider.prototype.setValue = function (value) {
  * Update the DOM.
  * @private
  */
-Blockly.FieldSlider.prototype.updateDom_ = function () {
+Blockly.FieldSlider.prototype.updateDom_ = function() {
   if (this.slider_ && this.readout_) {
     // Update the slider background
     this.setBackground_(this.slider_.getElement());
@@ -219,18 +227,20 @@ Blockly.FieldSlider.prototype.updateDom_ = function () {
  * Set the slider background.
  * @private
  */
-Blockly.FieldSlider.prototype.setBackground_ = function (slider) {
-  if (this.sliderColor_)
+Blockly.FieldSlider.prototype.setBackground_ = function(slider) {
+  if (this.sliderColor_) {
     goog.style.setStyle(slider, 'background', this.sliderColor_);
-  else if (this.sourceBlock_.isShadow() && this.sourceBlock_.parentBlock_)
+  }
+  else if (this.sourceBlock_.isShadow() && this.sourceBlock_.parentBlock_) {
     goog.style.setStyle(slider, 'background', this.sourceBlock_.parentBlock_.getColourTertiary());
+  }
 };
 
 /**
  * Set readout.
  * @private
  */
-Blockly.FieldSlider.prototype.setReadout_ = function (readout, value) {
+Blockly.FieldSlider.prototype.setReadout_ = function(readout, value) {
   readout.innerHTML = value;
 };
 
@@ -238,23 +248,23 @@ Blockly.FieldSlider.prototype.setReadout_ = function (readout, value) {
  * Update slider handles.
  * @private
  */
-Blockly.FieldSlider.prototype.updateSliderHandles_ = function () {
+Blockly.FieldSlider.prototype.updateSliderHandles_ = function() {
   if (this.slider_) {
     this.slider_.setValue(parseFloat(this.getValue()));
   }
 };
 
-Blockly.FieldSlider.prototype.onHtmlInputChange_ = function (e) {
+Blockly.FieldSlider.prototype.onHtmlInputChange_ = function(e) {
   Blockly.FieldSlider.superClass_.onHtmlInputChange_.call(this, e);
   if (this.slider_) {
-    this.slider_.setValue(parseFloat(this.getValue()))
+    this.slider_.setValue(parseFloat(this.getValue()));
   }
 };
 
 /**
  * Close the slider if this input is being deleted.
  */
-Blockly.FieldSlider.prototype.dispose = function () {
+Blockly.FieldSlider.prototype.dispose = function() {
   if (Blockly.FieldSlider.changeEventKey_) {
     goog.events.unlistenByKey(Blockly.FieldSlider.changeEventKey_);
   }
