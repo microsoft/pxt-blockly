@@ -48,7 +48,7 @@ Blockly.Colours = {
   "highlightGlowSize": 1.1,
   "highlightGlowOpacity": 1,
   "selectedGlow": "#FFF200",
-  "selectedGlowSize": 0.4,
+  "selectedGlowSize": 1,
   "warningGlow": "#E53D00",
   "warningGlowSize": 1.1,
   "warningGlowOpacity": 1,

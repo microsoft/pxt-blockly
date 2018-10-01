@@ -257,7 +257,8 @@ Blockly.BlockSvg.prototype.setGlowStack = function(isGlowingStack) {
   // Update the applied SVG filter if the property has changed
   var svg = this.getSvgRoot();
   if (this.isGlowingStack_ && !svg.hasAttribute('filter')) {
-    svg.setAttribute('filter', 'url(#blocklyStackGlowFilter)');
+    var stackGlowFilterId = Blockly.mainWorkspace.options.stackGlowFilterId || 'blocklyStackGlowFilter';
+    svg.setAttribute('filter', 'url(#' + stackGlowFilterId + ')');
   } else if (!this.isGlowingStack_ && svg.hasAttribute('filter')) {
     svg.removeAttribute('filter');
   }
@@ -276,9 +277,10 @@ Blockly.BlockSvg.prototype.setHighlightWarning = function(isHighlightingWarning)
   // Update the applied SVG filter if the property has changed
   // var svg = this.svgPath_;
   if (this.isHighlightingWarningBlock_ && !this.svgPathWarningHighlight_) {
+    var warningGlowFilterId = Blockly.mainWorkspace.options.warningGlowFilterId || 'blocklyHighlightWarningFilter';
     this.svgPathWarningHighlight_ = this.svgPath_.cloneNode(true);
     this.svgPathWarningHighlight_.setAttribute('fill', 'none');
-    this.svgPathWarningHighlight_.setAttribute('filter', 'url(#blocklyHighlightWarningFilter)');
+    this.svgPathWarningHighlight_.setAttribute('filter', 'url(#' + warningGlowFilterId + ')');
     this.getSvgRoot().appendChild(this.svgPathWarningHighlight_);
   } else if (!this.isHighlightingWarningBlock_ && this.svgPathWarningHighlight_) {
     this.getSvgRoot().removeChild(this.svgPathWarningHighlight_);
@@ -299,9 +301,10 @@ Blockly.BlockSvg.prototype.setHighlightBlock = function(isHighlightingBlock) {
   // Update the applied SVG filter if the property has changed
   // var svg = this.svgPath_;
   if (this.isHighlightingBlock_ && !this.svgPathHighlight_) {
+    var highlightGlowFilterId = Blockly.mainWorkspace.options.highlightGlowFilterId || 'blocklyHighlightGlowFilter';
     this.svgPathHighlight_ = this.svgPath_.cloneNode(true);
     this.svgPathHighlight_.setAttribute('fill', 'none');
-    this.svgPathHighlight_.setAttribute('filter', 'url(#blocklyHighlightGlowFilter)');
+    this.svgPathHighlight_.setAttribute('filter', 'url(#' + highlightGlowFilterId + ')');
     this.getSvgRoot().appendChild(this.svgPathHighlight_);
   } else if (!this.isHighlightingBlock_ && this.svgPathHighlight_) {
     this.getSvgRoot().removeChild(this.svgPathHighlight_);
@@ -321,13 +324,14 @@ Blockly.BlockSvg.prototype.setSelectedBlock = function(isSelectingBlock) {
   this.isSelectingBlock_ = isSelectingBlock;
   // Update the applied SVG filter if the property has changed
   // var svg = this.svgPath_;
+  var svg = this.getSvgRoot();
   if (this.isSelectingBlock_ && !this.svgPathSelected_) {
+    var selectedGlowFilterId = Blockly.mainWorkspace.options.selectedGlowFilterId || 'blocklySelectedGlowFilter';
     this.svgPathSelected_ = this.svgPath_.cloneNode(true);
-    this.svgPathSelected_.setAttribute('fill', 'none');
-    this.svgPathSelected_.setAttribute('filter', 'url(#blocklySelectedGlowFilter)');
-    this.getSvgRoot().appendChild(this.svgPathSelected_);
+    this.svgPathSelected_.setAttribute('filter', 'url(#' + selectedGlowFilterId + ')');
+    svg.insertBefore(this.svgPathSelected_, svg.firstChild);
   } else if (!this.isSelectingBlock_ && this.svgPathSelected_) {
-    this.getSvgRoot().removeChild(this.svgPathSelected_);
+    svg.removeChild(this.svgPathSelected_);
     this.svgPathSelected_ = null;
   }
 };
