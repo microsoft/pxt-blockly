@@ -328,8 +328,11 @@ Blockly.BlockSvg.prototype.setSelectedBlock = function(isSelectingBlock) {
   if (this.isSelectingBlock_ && !this.svgPathSelected_) {
     var selectedGlowFilterId = Blockly.mainWorkspace.options.selectedGlowFilterId || 'blocklySelectedGlowFilter';
     this.svgPathSelected_ = this.svgPath_.cloneNode(true);
+    Blockly.utils.removeClass(/** @type {!Element} */ (this.svgPathSelected_), 'hover-emphasis');
+    this.svgPathSelected_.setAttribute('fill', 'none');
+    this.svgPathSelected_.setAttribute('stroke', Blockly.Colours.selectedGlow);
     this.svgPathSelected_.setAttribute('filter', 'url(#' + selectedGlowFilterId + ')');
-    svg.insertBefore(this.svgPathSelected_, svg.firstChild);
+    this.getSvgRoot().appendChild(this.svgPathSelected_);
   } else if (!this.isSelectingBlock_ && this.svgPathSelected_) {
     svg.removeChild(this.svgPathSelected_);
     this.svgPathSelected_ = null;
@@ -1504,7 +1507,8 @@ Blockly.BlockSvg.prototype.bindHoverEvents_ = function() {
     e.stopPropagation();
   });
 
-  Blockly.bindEvent_(this.svgGroup_, 'mouseout', null, function(e) {
+  Blockly.bindEvent_(this.svgGroup_, 'mouseout', null, function(/*e*/) {
     Blockly.utils.removeClass(/** @type {!Element} */ (that.svgPath_), 'hover-emphasis');
   });
-}
+};
+
