@@ -1818,6 +1818,11 @@ Blockly.WorkspaceSvg.prototype.updateStackGlowScale_ = function() {
         Blockly.STACK_GLOW_RADIUS / this.scale
     );
   }
+  if (this.options.selectedGlowBlur) {
+    this.options.selectedGlowBlur.setAttribute('stdDeviation',
+        Blockly.STACK_GLOW_RADIUS / this.scale
+    );
+  }
 };
 
 /**
