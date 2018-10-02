@@ -177,8 +177,14 @@ Blockly.FieldDropdown.prototype.onMouseOver_ = function(e) {
   if (this.sourceBlock_.isInFlyout) return;
   var gesture = this.sourceBlock_.workspace.getGesture(e);
   if (gesture && gesture.isDragging()) return;
-  if (this.box_) this.box_.style.stroke = '#fff';
-  else if (this.sourceBlock_.svgPath_) this.sourceBlock_.svgPath_.style.stroke = '#fff';
+  if (this.box_) {
+    this.box_.style.strokeWidth = '2px';
+    this.box_.style.stroke = '#fff';
+  }
+  else if (this.sourceBlock_.svgPath_) {
+    this.sourceBlock_.svgPath_.style.strokeWidth = '2px';
+    this.sourceBlock_.svgPath_.style.stroke = '#fff';
+  }
 };
 
 /**
@@ -190,8 +196,14 @@ Blockly.FieldDropdown.prototype.onMouseOut_ = function(e) {
   if (this.sourceBlock_.isInFlyout) return;
   var gesture = this.sourceBlock_.workspace.getGesture(e);
   if (gesture && gesture.isDragging()) return;
-  if (this.box_) this.box_.style.stroke = '';
-  else if (this.sourceBlock_.svgPath_) this.sourceBlock_.svgPath_.style.stroke = '';
+  if (this.box_) {
+    this.box_.style.strokeWidth = '1px';
+    this.box_.style.stroke = this.sourceBlock_.getColourTertiary();
+  }
+  else if (this.sourceBlock_.svgPath_) {
+    this.sourceBlock_.svgPath_.style.strokeWidth = '1px';
+    this.sourceBlock_.svgPath_.style.stroke = this.sourceBlock_.getColourTertiary();
+  }
 };
 
 /**

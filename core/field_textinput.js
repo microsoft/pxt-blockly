@@ -156,6 +156,7 @@ Blockly.FieldTextInput.prototype.onMouseOver_ = function(e) {
   var gesture = this.sourceBlock_.workspace.getGesture(e);
   if (gesture && gesture.isDragging()) return;
   if (this.sourceBlock_.svgPath_) {
+    this.sourceBlock_.svgPath_.style.strokeWidth = '2px';
     this.sourceBlock_.svgPath_.style.stroke = '#fff';
   }
 };
@@ -170,7 +171,8 @@ Blockly.FieldTextInput.prototype.onMouseOut_ = function(e) {
   var gesture = this.sourceBlock_.workspace.getGesture(e);
   if (gesture && gesture.isDragging()) return;
   if (this.sourceBlock_.svgPath_) {
-    this.sourceBlock_.svgPath_.style.stroke = '';
+    this.sourceBlock_.svgPath_.style.strokeWidth = '1px';
+    this.sourceBlock_.svgPath_.style.stroke = this.sourceBlock_.getColourTertiary();
   }
 };
 
