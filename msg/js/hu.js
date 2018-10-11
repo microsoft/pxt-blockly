@@ -68,6 +68,7 @@ Blockly.Msg.DELETE_VARIABLE_CONFIRMATION = "A(z) „%2” változó %1 használa
 Blockly.Msg.DELETE_X_BLOCKS = "%1 blokk törlése";
 Blockly.Msg.DISABLE_BLOCK = "Blokk letiltása";
 Blockly.Msg.DUPLICATE_BLOCK = "Másolat";
+Blockly.Msg.DUPLICATE_COMMENT = "Duplicate Comment";  // untranslated
 Blockly.Msg.ENABLE_BLOCK = "Blokk engedélyezése";
 Blockly.Msg.EXPAND_ALL = "Blokkok kibontása";
 Blockly.Msg.EXPAND_BLOCK = "Blokk kibontása";

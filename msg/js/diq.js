@@ -68,6 +68,7 @@ Blockly.Msg.DELETE_VARIABLE_CONFIRMATION = "%1 ke vırnayışê '%2'i gırweneno
 Blockly.Msg.DELETE_X_BLOCKS = "%1 blokan bestere";
 Blockly.Msg.DISABLE_BLOCK = "Çengi devre ra vec";
 Blockly.Msg.DUPLICATE_BLOCK = "Zewnc";
+Blockly.Msg.DUPLICATE_COMMENT = "Duplicate Comment";  // untranslated
 Blockly.Msg.ENABLE_BLOCK = "Bloki feal ke";
 Blockly.Msg.EXPAND_ALL = "Blokan hera ke";
 Blockly.Msg.EXPAND_BLOCK = "Bloki hera ke";

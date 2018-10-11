@@ -68,6 +68,7 @@ Blockly.Msg.DELETE_VARIABLE_CONFIRMATION = "Delete %1 uses of the '%2' variable?
 Blockly.Msg.DELETE_X_BLOCKS = "Eyða %1 kubbum";
 Blockly.Msg.DISABLE_BLOCK = "Óvirkja kubb";
 Blockly.Msg.DUPLICATE_BLOCK = "Afrita";
+Blockly.Msg.DUPLICATE_COMMENT = "Duplicate Comment";  // untranslated
 Blockly.Msg.ENABLE_BLOCK = "Virkja kubb";
 Blockly.Msg.EXPAND_ALL = "Opna kubba";
 Blockly.Msg.EXPAND_BLOCK = "Opna kubb";

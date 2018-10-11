@@ -68,6 +68,7 @@ Blockly.Msg.DELETE_VARIABLE_CONFIRMATION = "حذف%1 1 استخدامات الم
 Blockly.Msg.DELETE_X_BLOCKS = "احذف %1 قطع";
 Blockly.Msg.DISABLE_BLOCK = "عطّل القطعة";
 Blockly.Msg.DUPLICATE_BLOCK = "مكرر";
+Blockly.Msg.DUPLICATE_COMMENT = "Duplicate Comment";  // untranslated
 Blockly.Msg.ENABLE_BLOCK = "أعد تفعيل القطعة";
 Blockly.Msg.EXPAND_ALL = "وسٌّع القطع";
 Blockly.Msg.EXPAND_BLOCK = "وسٌّع القطعة";

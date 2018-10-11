@@ -68,6 +68,7 @@ Blockly.Msg.DELETE_VARIABLE_CONFIRMATION = "Da obrišem %1 upotreba promenljive 
 Blockly.Msg.DELETE_X_BLOCKS = "Obriši %1 blokova";
 Blockly.Msg.DISABLE_BLOCK = "Onemogući blok";
 Blockly.Msg.DUPLICATE_BLOCK = "Dupliraj";
+Blockly.Msg.DUPLICATE_COMMENT = "Duplicate Comment";  // untranslated
 Blockly.Msg.ENABLE_BLOCK = "Omogući blok";
 Blockly.Msg.EXPAND_ALL = "Proširi blokove";
 Blockly.Msg.EXPAND_BLOCK = "Proširi blok";

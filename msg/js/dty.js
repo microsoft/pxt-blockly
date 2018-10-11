@@ -68,6 +68,7 @@ Blockly.Msg.DELETE_VARIABLE_CONFIRMATION = "'%2' भेरिएबला %1 प
 Blockly.Msg.DELETE_X_BLOCKS = " %1 ब्लकहरू हटाउन्या";
 Blockly.Msg.DISABLE_BLOCK = "ब्लकलाई निश्क्रिय पाड्डे";
 Blockly.Msg.DUPLICATE_BLOCK = "कपी गर";
+Blockly.Msg.DUPLICATE_COMMENT = "Duplicate Comment";  // untranslated
 Blockly.Msg.ENABLE_BLOCK = "ब्लकलाई सक्रिय पाड्डे";
 Blockly.Msg.EXPAND_ALL = "ब्लकनलाई फैलाओ";
 Blockly.Msg.EXPAND_BLOCK = "ब्लकनलाई फैलाओ";

@@ -68,6 +68,7 @@ Blockly.Msg.DELETE_VARIABLE_CONFIRMATION = "'%2' değişkeninin %1 kullanımın�
 Blockly.Msg.DELETE_X_BLOCKS = "%1 Blokları Sil";
 Blockly.Msg.DISABLE_BLOCK = "Bloğu Devre Dışı Bırak";
 Blockly.Msg.DUPLICATE_BLOCK = "Çoğalt";
+Blockly.Msg.DUPLICATE_COMMENT = "Duplicate Comment";  // untranslated
 Blockly.Msg.ENABLE_BLOCK = "Bloğu Etkinleştir";
 Blockly.Msg.EXPAND_ALL = "Blokları Genişlet";
 Blockly.Msg.EXPAND_BLOCK = "Bloğu Genişlet";

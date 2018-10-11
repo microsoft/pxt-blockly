@@ -68,6 +68,7 @@ Blockly.Msg.DELETE_VARIABLE_CONFIRMATION = "Poistetaanko %1 käyttöä muuttujal
 Blockly.Msg.DELETE_X_BLOCKS = "Poista %1 lohkoa";
 Blockly.Msg.DISABLE_BLOCK = "Passivoi lohko";
 Blockly.Msg.DUPLICATE_BLOCK = "Kaksoiskappale";
+Blockly.Msg.DUPLICATE_COMMENT = "Duplicate Comment";  // untranslated
 Blockly.Msg.ENABLE_BLOCK = "Aktivoi lohko";
 Blockly.Msg.EXPAND_ALL = "Laajenna lohkot";
 Blockly.Msg.EXPAND_BLOCK = "Laajenna lohko";

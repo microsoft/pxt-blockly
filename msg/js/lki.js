@@ -68,6 +68,7 @@ Blockly.Msg.DELETE_VARIABLE_CONFIRMATION = "Delete %1 uses of the '%2' variable?
 Blockly.Msg.DELETE_X_BLOCKS = "حةذف %1 بلاکةل";
 Blockly.Msg.DISABLE_BLOCK = "إ کار کةتن(غیرفعال‌سازی) بلاک";
 Blockly.Msg.DUPLICATE_BLOCK = "کؤپی کردن";
+Blockly.Msg.DUPLICATE_COMMENT = "Duplicate Comment";  // untranslated
 Blockly.Msg.ENABLE_BLOCK = "إ کارآشتن(فعال)بلاک";
 Blockly.Msg.EXPAND_ALL = "کةلنگآ کردِن بلاکةل";
 Blockly.Msg.EXPAND_BLOCK = "کةلنگآ کردِن بلاک";

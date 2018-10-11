@@ -68,6 +68,7 @@ Blockly.Msg.DELETE_VARIABLE_CONFIRMATION = "Delete %1 uses of the '%2' variable?
 Blockly.Msg.DELETE_X_BLOCKS = "ລຶບ %1 ບລັອກ";
 Blockly.Msg.DISABLE_BLOCK = "ປິດໃຊ້ງານບລັອກ";
 Blockly.Msg.DUPLICATE_BLOCK = "ເຮັດສຳເນົາ";
+Blockly.Msg.DUPLICATE_COMMENT = "Duplicate Comment";  // untranslated
 Blockly.Msg.ENABLE_BLOCK = "ເປີດໃຊ້ງານບລັອກ";
 Blockly.Msg.EXPAND_ALL = "ຂະຫຍາຍບລັອກ";
 Blockly.Msg.EXPAND_BLOCK = "ຂະຫຍາຍບລັອກ";

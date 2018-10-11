@@ -68,6 +68,7 @@ Blockly.Msg.DELETE_VARIABLE_CONFIRMATION = "Delete %1 uses of the '%2' variable?
 Blockly.Msg.DELETE_X_BLOCKS = "מחק %1 קטעי קוד";
 Blockly.Msg.DISABLE_BLOCK = "נטרל קטע קוד";
 Blockly.Msg.DUPLICATE_BLOCK = "שכפל";
+Blockly.Msg.DUPLICATE_COMMENT = "Duplicate Comment";  // untranslated
 Blockly.Msg.ENABLE_BLOCK = "הפעל קטע קוד";
 Blockly.Msg.EXPAND_ALL = "הרחב קטעי קוד";
 Blockly.Msg.EXPAND_BLOCK = "הרחב קטע קוד";

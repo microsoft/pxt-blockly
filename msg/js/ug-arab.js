@@ -68,6 +68,7 @@ Blockly.Msg.DELETE_VARIABLE_CONFIRMATION = "ئۆچۈرۈش “%2” ئۆزگەر
 Blockly.Msg.DELETE_X_BLOCKS = "بۆلەك %1 نى ئۆچۈرۈش";
 Blockly.Msg.DISABLE_BLOCK = "چەكلەنگەن بۆلەك";
 Blockly.Msg.DUPLICATE_BLOCK = "كۆچۈرۈش";
+Blockly.Msg.DUPLICATE_COMMENT = "Duplicate Comment";  // untranslated
 Blockly.Msg.ENABLE_BLOCK = "قوزغىتىلغان بۆلەك";
 Blockly.Msg.EXPAND_ALL = "ئېچىلىش بۆلىكى";
 Blockly.Msg.EXPAND_BLOCK = "ئېچىلىش بۆلىكى";

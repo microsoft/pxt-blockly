@@ -68,6 +68,7 @@ Blockly.Msg.DELETE_VARIABLE_CONFIRMATION = "'%2' ವ್ಯತ್ಯಯೊದ %1 
 Blockly.Msg.DELETE_X_BLOCKS = "%1 ಬ್ಲಾಕ್‍ಲೆನ್ ಮಾಜಾವು";
 Blockly.Msg.DISABLE_BLOCK = "ಬ್ಲಾಕ್‍ನ್ ದೆತ್ತ್‌ಪಾಡ್";
 Blockly.Msg.DUPLICATE_BLOCK = "ನಕಲ್";
+Blockly.Msg.DUPLICATE_COMMENT = "Duplicate Comment";  // untranslated
 Blockly.Msg.ENABLE_BLOCK = "ತಡೆನ್ ಸಕ್ರಿಯೊ ಮಲ್ಪು";
 Blockly.Msg.EXPAND_ALL = "ಮಾತಾ ತಡೆಕ್ಲೆನ ಮಾಹಿತಿನ್ ಪರಡಾವು";
 Blockly.Msg.EXPAND_BLOCK = "ಬ್ಲಾಕ್‍ದ ಮಾಹಿತಿನ್ ಪರಡಾವು";

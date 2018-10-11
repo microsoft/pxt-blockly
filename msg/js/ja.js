@@ -68,6 +68,7 @@ Blockly.Msg.DELETE_VARIABLE_CONFIRMATION = "%1か所で使われている変数 
 Blockly.Msg.DELETE_X_BLOCKS = "%1 個のブロックを削除";
 Blockly.Msg.DISABLE_BLOCK = "ブロックを無効にする";
 Blockly.Msg.DUPLICATE_BLOCK = "複製";
+Blockly.Msg.DUPLICATE_COMMENT = "Duplicate Comment";  // untranslated
 Blockly.Msg.ENABLE_BLOCK = "ブロックを有効にする";
 Blockly.Msg.EXPAND_ALL = "ブロックを展開する";
 Blockly.Msg.EXPAND_BLOCK = "ブロックを展開する";

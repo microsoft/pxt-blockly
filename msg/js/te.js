@@ -68,6 +68,7 @@ Blockly.Msg.DELETE_VARIABLE_CONFIRMATION = "Delete %1 uses of the '%2' variable?
 Blockly.Msg.DELETE_X_BLOCKS = "%1నిరోదనలను తోలగించు";
 Blockly.Msg.DISABLE_BLOCK = "నిరోదన పని చేయకుండా చేయు";
 Blockly.Msg.DUPLICATE_BLOCK = "నకలు";
+Blockly.Msg.DUPLICATE_COMMENT = "Duplicate Comment";  // untranslated
 Blockly.Msg.ENABLE_BLOCK = "నిరోదన ప్రారంబించు";
 Blockly.Msg.EXPAND_ALL = "నిరోదనలను విస్తరించు";
 Blockly.Msg.EXPAND_BLOCK = "నిరోదన విస్తరించు";

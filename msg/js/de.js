@@ -68,6 +68,7 @@ Blockly.Msg.DELETE_VARIABLE_CONFIRMATION = "%1 Verwendungen der Variable „%2�
 Blockly.Msg.DELETE_X_BLOCKS = "%1 Bausteine löschen";
 Blockly.Msg.DISABLE_BLOCK = "Baustein deaktivieren";
 Blockly.Msg.DUPLICATE_BLOCK = "Kopieren";
+Blockly.Msg.DUPLICATE_COMMENT = "Duplicate Comment";  // untranslated
 Blockly.Msg.ENABLE_BLOCK = "Baustein aktivieren";
 Blockly.Msg.EXPAND_ALL = "Alle Bausteine entfalten";
 Blockly.Msg.EXPAND_BLOCK = "Baustein entfalten";

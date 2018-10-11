@@ -68,6 +68,7 @@ Blockly.Msg.DELETE_VARIABLE_CONFIRMATION = "Kkes %1 n useqdec n umutti '%2'?";
 Blockly.Msg.DELETE_X_BLOCKS = "Kkes %1 n iḥder";
 Blockly.Msg.DISABLE_BLOCK = "Sens iḥder";
 Blockly.Msg.DUPLICATE_BLOCK = "Sleg";
+Blockly.Msg.DUPLICATE_COMMENT = "Duplicate Comment";  // untranslated
 Blockly.Msg.ENABLE_BLOCK = "Sens iḥedran";
 Blockly.Msg.EXPAND_ALL = "Snefli iḥedran";
 Blockly.Msg.EXPAND_BLOCK = "Snefli iḥder";

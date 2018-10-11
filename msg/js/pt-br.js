@@ -68,6 +68,7 @@ Blockly.Msg.DELETE_VARIABLE_CONFIRMATION = "Deletar %1 usos da variável '%2'?";
 Blockly.Msg.DELETE_X_BLOCKS = "Deletar %1 blocos";
 Blockly.Msg.DISABLE_BLOCK = "Desabilitar bloco";
 Blockly.Msg.DUPLICATE_BLOCK = "Duplicar";
+Blockly.Msg.DUPLICATE_COMMENT = "Duplicate Comment";  // untranslated
 Blockly.Msg.ENABLE_BLOCK = "Habilitar bloco";
 Blockly.Msg.EXPAND_ALL = "Expandir blocos";
 Blockly.Msg.EXPAND_BLOCK = "Expandir bloco";

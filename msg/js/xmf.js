@@ -68,6 +68,7 @@ Blockly.Msg.DELETE_VARIABLE_CONFIRMATION = "'%2' მათირეფონი�
 Blockly.Msg.DELETE_X_BLOCKS = "%1 ბლოკიშ ლასუა";
 Blockly.Msg.DISABLE_BLOCK = "ბლოკიშ თიშუა";
 Blockly.Msg.DUPLICATE_BLOCK = "კოპირაფა";
+Blockly.Msg.DUPLICATE_COMMENT = "Duplicate Comment";  // untranslated
 Blockly.Msg.ENABLE_BLOCK = "ბლოკიშ ჩართება";
 Blockly.Msg.EXPAND_ALL = "ბლოკეფიშ გჷმოფაჩუა";
 Blockly.Msg.EXPAND_BLOCK = "ბლოკიშ გჷმოფაჩუა";

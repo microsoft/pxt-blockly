@@ -68,6 +68,7 @@ Blockly.Msg.DELETE_VARIABLE_CONFIRMATION = "Выдаліць %1 выкарыст
 Blockly.Msg.DELETE_X_BLOCKS = "Выдаліць %1 блокаў";
 Blockly.Msg.DISABLE_BLOCK = "Адключыць блок";
 Blockly.Msg.DUPLICATE_BLOCK = "Дубляваць";
+Blockly.Msg.DUPLICATE_COMMENT = "Duplicate Comment";  // untranslated
 Blockly.Msg.ENABLE_BLOCK = "Уключыць блок";
 Blockly.Msg.EXPAND_ALL = "Разгарнуць блокі";
 Blockly.Msg.EXPAND_BLOCK = "Разгарнуць блок";

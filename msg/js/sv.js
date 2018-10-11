@@ -68,6 +68,7 @@ Blockly.Msg.DELETE_VARIABLE_CONFIRMATION = "Radera %1 användningar av variabeln
 Blockly.Msg.DELETE_X_BLOCKS = "Radera %1 block";
 Blockly.Msg.DISABLE_BLOCK = "Inaktivera block";
 Blockly.Msg.DUPLICATE_BLOCK = "Duplicera";
+Blockly.Msg.DUPLICATE_COMMENT = "Duplicate Comment";  // untranslated
 Blockly.Msg.ENABLE_BLOCK = "Aktivera block";
 Blockly.Msg.EXPAND_ALL = "Fäll ut block";
 Blockly.Msg.EXPAND_BLOCK = "Fäll ut block";

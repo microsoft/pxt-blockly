@@ -68,6 +68,7 @@ Blockly.Msg.DELETE_VARIABLE_CONFIRMATION = "Slet %1's brug af variablen »%2«?"
 Blockly.Msg.DELETE_X_BLOCKS = "Slet %1 blokke";
 Blockly.Msg.DISABLE_BLOCK = "Deaktivér blok";
 Blockly.Msg.DUPLICATE_BLOCK = "Duplikér";
+Blockly.Msg.DUPLICATE_COMMENT = "Duplicate Comment";  // untranslated
 Blockly.Msg.ENABLE_BLOCK = "Aktivér blok";
 Blockly.Msg.EXPAND_ALL = "Fold blokkene ud";
 Blockly.Msg.EXPAND_BLOCK = "Fold blokken ud";

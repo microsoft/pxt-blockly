@@ -68,6 +68,7 @@ Blockly.Msg.DELETE_VARIABLE_CONFIRMATION = "Delete %1 uses of the '%2' variable?
 Blockly.Msg.DELETE_X_BLOCKS = "Moluluto %1 Blok";
 Blockly.Msg.DISABLE_BLOCK = "Moberenti Blok";
 Blockly.Msg.DUPLICATE_BLOCK = "Duplikat";
+Blockly.Msg.DUPLICATE_COMMENT = "Duplicate Comment";  // untranslated
 Blockly.Msg.ENABLE_BLOCK = "Momulayi Blok";
 Blockly.Msg.EXPAND_ALL = "Lolade Blok";
 Blockly.Msg.EXPAND_BLOCK = "Lolade Blok";

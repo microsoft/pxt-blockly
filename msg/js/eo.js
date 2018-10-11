@@ -68,6 +68,7 @@ Blockly.Msg.DELETE_VARIABLE_CONFIRMATION = "Ĉu forigi %1 uzojn de la varianto '
 Blockly.Msg.DELETE_X_BLOCKS = "Forigi %1 blokojn";
 Blockly.Msg.DISABLE_BLOCK = "Malŝalti blokon";
 Blockly.Msg.DUPLICATE_BLOCK = "Duobligi";
+Blockly.Msg.DUPLICATE_COMMENT = "Duplicate Comment";  // untranslated
 Blockly.Msg.ENABLE_BLOCK = "Ŝalti blokon";
 Blockly.Msg.EXPAND_ALL = "Malfaldi blokojn";
 Blockly.Msg.EXPAND_BLOCK = "Malfaldi blokon";

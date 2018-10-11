@@ -68,6 +68,7 @@ Blockly.Msg.DELETE_VARIABLE_CONFIRMATION = "Odstrániť %1 použití premennej '
 Blockly.Msg.DELETE_X_BLOCKS = "Odstrániť %1 blokov";
 Blockly.Msg.DISABLE_BLOCK = "Vypnúť blok";
 Blockly.Msg.DUPLICATE_BLOCK = "Duplikovať";
+Blockly.Msg.DUPLICATE_COMMENT = "Duplicate Comment";  // untranslated
 Blockly.Msg.ENABLE_BLOCK = "Povoliť blok";
 Blockly.Msg.EXPAND_ALL = "Rozvinúť bloky";
 Blockly.Msg.EXPAND_BLOCK = "Rozvinúť blok";

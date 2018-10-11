@@ -68,6 +68,7 @@ Blockly.Msg.DELETE_VARIABLE_CONFIRMATION = "刪除%1使用的「%2」變數？";
 Blockly.Msg.DELETE_X_BLOCKS = "刪除 %1 個積木";
 Blockly.Msg.DISABLE_BLOCK = "停用積木";
 Blockly.Msg.DUPLICATE_BLOCK = "複製";
+Blockly.Msg.DUPLICATE_COMMENT = "Duplicate Comment";  // untranslated
 Blockly.Msg.ENABLE_BLOCK = "啟用積木";
 Blockly.Msg.EXPAND_ALL = "展開積木";
 Blockly.Msg.EXPAND_BLOCK = "展開積木";

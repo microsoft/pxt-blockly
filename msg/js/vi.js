@@ -68,6 +68,7 @@ Blockly.Msg.DELETE_VARIABLE_CONFIRMATION = "Delete %1 uses of the '%2' variable?
 Blockly.Msg.DELETE_X_BLOCKS = "Xóa %1 Mảnh";
 Blockly.Msg.DISABLE_BLOCK = "Ngưng Tác Dụng";
 Blockly.Msg.DUPLICATE_BLOCK = "Tạo Bản Sao";
+Blockly.Msg.DUPLICATE_COMMENT = "Duplicate Comment";  // untranslated
 Blockly.Msg.ENABLE_BLOCK = "Phục Hồi Tác Dụng";
 Blockly.Msg.EXPAND_ALL = "Mở Lớn Mọi Mảnh";
 Blockly.Msg.EXPAND_BLOCK = "Mở Lớn Mảnh";

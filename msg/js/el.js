@@ -68,6 +68,7 @@ Blockly.Msg.DELETE_VARIABLE_CONFIRMATION = "Delete %1 uses of the '%2' variable?
 Blockly.Msg.DELETE_X_BLOCKS = "Διάγραψε %1 Μπλοκ";
 Blockly.Msg.DISABLE_BLOCK = "Απενεργοποίησε Το Μπλοκ";
 Blockly.Msg.DUPLICATE_BLOCK = "Διπλότυπο";
+Blockly.Msg.DUPLICATE_COMMENT = "Duplicate Comment";  // untranslated
 Blockly.Msg.ENABLE_BLOCK = "Ενεργοποίησε Το Μπλοκ";
 Blockly.Msg.EXPAND_ALL = "Επέκτεινε Όλα Τα Μπλοκ";
 Blockly.Msg.EXPAND_BLOCK = "Επέκτεινε Το Μπλοκ";

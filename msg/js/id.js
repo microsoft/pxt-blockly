@@ -68,6 +68,7 @@ Blockly.Msg.DELETE_VARIABLE_CONFIRMATION = "Hapus %1 yang digunakan pada variabe
 Blockly.Msg.DELETE_X_BLOCKS = "Hapus %1 Blok";
 Blockly.Msg.DISABLE_BLOCK = "Nonaktifkan Blok";
 Blockly.Msg.DUPLICATE_BLOCK = "Duplikat";
+Blockly.Msg.DUPLICATE_COMMENT = "Duplicate Comment";  // untranslated
 Blockly.Msg.ENABLE_BLOCK = "Aktifkan Blok";
 Blockly.Msg.EXPAND_ALL = "Kembangkan Blok";
 Blockly.Msg.EXPAND_BLOCK = "Kembangkan Blok";

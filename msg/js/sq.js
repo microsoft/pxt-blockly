@@ -68,6 +68,7 @@ Blockly.Msg.DELETE_VARIABLE_CONFIRMATION = "Fshi përdorimin %1 të variablës '
 Blockly.Msg.DELETE_X_BLOCKS = "Fshij %1 blloqe";
 Blockly.Msg.DISABLE_BLOCK = "Çaktivizo bllokun";
 Blockly.Msg.DUPLICATE_BLOCK = "Kopjo";
+Blockly.Msg.DUPLICATE_COMMENT = "Duplicate Comment";  // untranslated
 Blockly.Msg.ENABLE_BLOCK = "Aktivizo bllokun";
 Blockly.Msg.EXPAND_ALL = "Zmadho blloqet";
 Blockly.Msg.EXPAND_BLOCK = "Zmadho bllokun";

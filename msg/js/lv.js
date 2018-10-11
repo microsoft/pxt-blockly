@@ -68,6 +68,7 @@ Blockly.Msg.DELETE_VARIABLE_CONFIRMATION = "Mainīgais \"%2\" tiek izmantots %1 
 Blockly.Msg.DELETE_X_BLOCKS = "Izmest %1 blokus";
 Blockly.Msg.DISABLE_BLOCK = "Atspējot bloku";
 Blockly.Msg.DUPLICATE_BLOCK = "Dublēt";
+Blockly.Msg.DUPLICATE_COMMENT = "Duplicate Comment";  // untranslated
 Blockly.Msg.ENABLE_BLOCK = "Iespējot bloku";
 Blockly.Msg.EXPAND_ALL = "Izvērst blokus";
 Blockly.Msg.EXPAND_BLOCK = "Izvērst bloku";

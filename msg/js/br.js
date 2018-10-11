@@ -68,6 +68,7 @@ Blockly.Msg.DELETE_VARIABLE_CONFIRMATION = "Lemel %1 implij eus an argemm '%2' ?
 Blockly.Msg.DELETE_X_BLOCKS = "Dilemel %1 bloc'h";
 Blockly.Msg.DISABLE_BLOCK = "Diweredekaat ar bloc'h";
 Blockly.Msg.DUPLICATE_BLOCK = "Eiladuriñ";
+Blockly.Msg.DUPLICATE_COMMENT = "Duplicate Comment";  // untranslated
 Blockly.Msg.ENABLE_BLOCK = "Gweredekaat ar bloc'h";
 Blockly.Msg.EXPAND_ALL = "Astenn ar bloc'hoù";
 Blockly.Msg.EXPAND_BLOCK = "Astenn ar bloc'h";

@@ -68,6 +68,7 @@ Blockly.Msg.DELETE_VARIABLE_CONFIRMATION = "删除“%2”变量的%1用途么�
 Blockly.Msg.DELETE_X_BLOCKS = "删除 %1 块";
 Blockly.Msg.DISABLE_BLOCK = "禁用块";
 Blockly.Msg.DUPLICATE_BLOCK = "复制";
+Blockly.Msg.DUPLICATE_COMMENT = "Duplicate Comment";  // untranslated
 Blockly.Msg.ENABLE_BLOCK = "启用块";
 Blockly.Msg.EXPAND_ALL = "展开块";
 Blockly.Msg.EXPAND_BLOCK = "展开块";

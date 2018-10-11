@@ -68,6 +68,7 @@ Blockly.Msg.DELETE_VARIABLE_CONFIRMATION = "'%2' 변수에서 %1을(를) 삭제�
 Blockly.Msg.DELETE_X_BLOCKS = "블록 %1개 삭제";
 Blockly.Msg.DISABLE_BLOCK = "블록 비활성화";
 Blockly.Msg.DUPLICATE_BLOCK = "복제";
+Blockly.Msg.DUPLICATE_COMMENT = "Duplicate Comment";  // untranslated
 Blockly.Msg.ENABLE_BLOCK = "블록 활성화";
 Blockly.Msg.EXPAND_ALL = "블록 확장";
 Blockly.Msg.EXPAND_BLOCK = "블록 확장";

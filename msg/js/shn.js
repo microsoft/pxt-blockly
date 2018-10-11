@@ -68,6 +68,7 @@ Blockly.Msg.DELETE_VARIABLE_CONFIRMATION = "Delete %1 uses of the '%2' variable?
 Blockly.Msg.DELETE_X_BLOCKS = "မွတ်ႇလွင်ႈႁႄႉတတ်း %1";
 Blockly.Msg.DISABLE_BLOCK = "ဢိုတ်းၸႂ်ႉ လွင်ႈႁႄႉတတ်း";
 Blockly.Msg.DUPLICATE_BLOCK = "ထုတ်ႇ";
+Blockly.Msg.DUPLICATE_COMMENT = "Duplicate Comment";  // untranslated
 Blockly.Msg.ENABLE_BLOCK = "ပိုတ်ႇၸႂ်ႉ လွင်ႈႁႄႉတတ်း";
 Blockly.Msg.EXPAND_ALL = "ၶႂၢၵ်ႈၸိူဝ်းႁႄႉတတ်း";
 Blockly.Msg.EXPAND_BLOCK = "ၶႂၢၵ်ႈလွင်ႈႁႄႉတတ်း";
