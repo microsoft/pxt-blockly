@@ -307,6 +307,10 @@ Blockly.WidgetDiv.calculateY_ = function(viewportBBox, anchorBBox, widgetSize) {
   // Flip the widget vertically if off the bottom.
   if (anchorBBox.bottom + widgetSize.height >=
       viewportBBox.bottom) {
+    if (anchorBBox.bottom - widgetSize.height <= viewportBBox.top) {
+      // The top of the widget is at the top of the viewport.
+      return viewportBBox.top;
+    }
     // The bottom of the widget is at the top of the field.
     return anchorBBox.top - widgetSize.height;
     // The widget could go off the top of the window, but it would also go off
