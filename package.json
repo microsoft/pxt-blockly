@@ -18,7 +18,7 @@
   ],
   "scripts": {
     "deploy": "gh-pages -t -d gh-pages -m \"Build for $(git log --pretty=format:%H -n1)\"",
-    "prepublish": "node_modules/.bin/gulp build && webpack",
+    "prepare": "node_modules/.bin/gulp build && webpack",
     "lint": "eslint .",
     "pretest": "tests/scripts/test_setup.sh",
     "test": "node tests/jsunit/test_runner.js",
@@ -33,26 +33,26 @@
     "msg/**"
   ],
   "devDependencies": {
-    "jshint": "latest",
     "async": "2.6.0",
     "copy-webpack-plugin": "4.5.1",
-    "eslint": "^4.16",
+    "eslint": "^5.4.0",
     "event-stream": "3.3.4",
     "gh-pages": "0.12.0",
     "glob": "7.1.2",
-    "google-closure-compiler": "20180402.0.0",
-    "google-closure-library": "20180204.0.0",
+    "google-closure-compiler": "^20180805.0.0",
+    "google-closure-library": "^20180805.0.0",
     "graceful-fs": "4.1.11",
+    "gulp": "^3.9.1",
+    "gulp-bump": "^2.7.0",
+    "jshint": "^2.9.5",
     "json": "9.0.4",
+    "merge-stream": "^1.0.0",
     "rimraf": "2.6.2",
     "travis-after-all": "1.4.4",
     "uglifyjs-webpack-plugin": "^1.2.5",
-    "webdriverio": "4.8.0",
-    "webpack": "^4.8.0",
-    "webpack-cli": "^2.0.15",
-    "gulp": "^3.9.1",
-    "gulp-bump": "^2.7.0",
-    "merge-stream": "^1.0.0"
+    "webdriverio": "^4.13.2",
+    "webpack": "^4.20.2",
+    "webpack-cli": "^2.0.15"
   },
   "jshintConfig": {
     "globalstrict": true,
@@ -69,10 +69,7 @@
     "unused": true
   },
   "dependencies": {
-    "google-closure-library": "^20180204.0.0",
-    "install": "^0.8.8",
-    "npm": "^4.4.4",
-    "webdriverio": "^4.6.2",
+    "jsdom": "^12.0.0",
     "exports-loader": "0.6.3",
     "imports-loader": "0.6.5"
   }
