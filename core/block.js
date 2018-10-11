@@ -612,13 +612,16 @@ Blockly.Block.prototype.setParent = function(newParent) {
  * Excludes any connection on an output tab or any preceding statements.
  * Blocks are optionally sorted by position; top to bottom.
  * @param {boolean} ordered Sort the list if true.
+ * @param {boolean=} opt_ignoreShadows If set, don't include shadow blocks.
  * @return {!Array.<!Blockly.Block>} Flattened array of blocks.
  */
-Blockly.Block.prototype.getDescendants = function(ordered) {
+Blockly.Block.prototype.getDescendants = function(ordered, opt_ignoreShadows) {
   var blocks = [this];
   var childBlocks = this.getChildren(ordered);
   for (var child, i = 0; child = childBlocks[i]; i++) {
-    blocks.push.apply(blocks, child.getDescendants(ordered));
+    if (!opt_ignoreShadows || !child.isShadow_) {
+      blocks.push.apply(blocks, child.getDescendants(ordered, opt_ignoreShadows));
+    }
   }
   return blocks;
 };
