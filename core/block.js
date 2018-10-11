@@ -257,6 +257,13 @@ Blockly.Block.prototype.colourSecondary_ = '#000000';
 Blockly.Block.prototype.colourTertiary_ = '#000000';
 
 /**
+ * Fill colour used to override default shadow colour behaviour.
+ * @type {string}
+ * @private
+ */
+Blockly.Block.prototype.shadowColour_ = null;
+
+/**
  * Colour of the block as HSV hue value (0-360)
  * @type {?number}
  * @private
@@ -817,6 +824,35 @@ Blockly.Block.prototype.getColourSecondary = function() {
  */
 Blockly.Block.prototype.getColourTertiary = function() {
   return this.colourTertiary_;
+};
+
+/**
+ * Get the shadow colour of a block.
+ * @return {string} #RRGGBB string.
+ */
+Blockly.Block.prototype.getShadowColour = function() {
+  return this.shadowColour_;
+};
+
+/**
+ * Set the shadow colour of a block.
+ * @param {number|string} colour HSV hue value, or #RRGGBB string.
+ */
+Blockly.Block.prototype.setShadowColour = function(colour) {
+  this.shadowColour_ = this.makeColour_(colour);
+  if (this.rendered) {
+    this.updateColour();
+  }
+};
+
+/**
+ * Clear the shadow colour of a block.
+ */
+Blockly.Block.prototype.clearShadowColour = function() {
+  this.shadowColour_ = null;
+  if (this.rendered) {
+    this.updateColour();
+  }
 };
 
 /**

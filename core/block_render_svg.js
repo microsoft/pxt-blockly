@@ -482,8 +482,7 @@ Blockly.BlockSvg.SHAPE_IN_SHAPE_PADDING = {
  */
 Blockly.BlockSvg.prototype.updateColour = function() {
   var strokeColour = this.getColourTertiary();
-  var renderShadowed =
-      this.isShadow() && !Blockly.utils.isShadowArgumentReporter(this);
+  var renderShadowed = this.isShadow() && !Blockly.utils.isShadowArgumentReporter(this);
 
   if (renderShadowed && this.parentBlock_) {
     // Pull shadow block stroke colour from parent block's tertiary if possible.
@@ -503,6 +502,10 @@ Blockly.BlockSvg.prototype.updateColour = function() {
   // Render block fill
   if (this.isGlowingBlock_ || renderShadowed) {
     var fillColour = this.getColourSecondary();
+    // Special case: if we have set a shadow colour on the block, use that instead
+    if (this.getShadowColour()) {
+      fillColour = this.getShadowColour();
+    }
   } else {
     var fillColour = this.getColour();
   }
