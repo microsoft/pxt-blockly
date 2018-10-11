@@ -39,6 +39,7 @@ goog.require('goog.events');
 goog.require('goog.style');
 goog.require('goog.ui.Menu');
 goog.require('goog.ui.MenuItem');
+goog.require('goog.ui.MenuSeparator');
 goog.require('goog.userAgent');
 
 
@@ -95,7 +96,8 @@ Blockly.ContextMenu.populate_ = function(options, rtl) {
   var menu = new goog.ui.Menu();
   menu.setRightToLeft(rtl);
   for (var i = 0, option; option = options[i]; i++) {
-    var menuItem = new goog.ui.MenuItem(option.text);
+    var menuItem = option.separator ? new goog.ui.MenuSeparator()
+      : new goog.ui.MenuItem(option.text);
     menuItem.setRightToLeft(rtl);
     menu.addChild(menuItem, true);
     menuItem.setEnabled(option.enabled);

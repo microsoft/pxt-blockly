@@ -76,7 +76,7 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
     "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
     "helpUrl": "%{BKY_VARIABLES_GET_HELPURL}",
     "tooltip": "%{BKY_VARIABLES_GET_TOOLTIP}",
-    "extensions": ["contextMenu_variableSetterGetter"]
+    "extensions": ["contextMenu_variableReporter"]
   },
   // Block for variable setter.
   {
@@ -118,29 +118,119 @@ Blockly.Constants.Variables.CUSTOM_CONTEXT_MENU_VARIABLE_GETTER_SETTER_MIXIN = {
    * @this Blockly.Block
    */
   customContextMenu: function(options) {
-    if (this.isInFlyout){
+    if (this.isCollapsed()) {
       return;
     }
-    // Getter blocks have the option to create a setter block, and vice versa.
-    if (this.type == 'variables_get' || this.type == 'variables_get_reporter') {
-      var opposite_type = 'variables_set';
-      var contextMenuMsg = Blockly.Msg.VARIABLES_GET_CREATE_SET;
-    } else {
-      var opposite_type = 'variables_get';
-      var contextMenuMsg = Blockly.Msg.VARIABLES_SET_CREATE_GET;
-    }
+    if (!this.isInFlyout) {
+      // Getter blocks have the option to create a setter block, and vice versa.
+      if (this.type == 'variables_get' || this.type == 'variables_get_reporter') {
+        var opposite_type = 'variables_set';
+        var contextMenuMsg = Blockly.Msg.VARIABLES_GET_CREATE_SET;
+      } else {
+        var opposite_type = 'variables_get';
+        var contextMenuMsg = Blockly.Msg.VARIABLES_SET_CREATE_GET;
+      }
 
-    var option = {enabled: this.workspace.remainingCapacity() > 0};
-    var name = this.getField('VAR').getText();
-    option.text = contextMenuMsg.replace('%1', name);
-    var xmlField = goog.dom.createDom('field', null, name);
-    xmlField.setAttribute('name', 'VAR');
-    var xmlBlock = goog.dom.createDom('block', null, xmlField);
-    xmlBlock.setAttribute('type', opposite_type);
-    option.callback = Blockly.ContextMenu.callbackFactory(this, xmlBlock);
-    options.push(option);
+      var option = {enabled: this.workspace.remainingCapacity() > 0};
+      var name = this.getField('VAR').getText();
+      option.text = contextMenuMsg.replace('%1', name);
+      var xmlField = goog.dom.createDom('field', null, name);
+      xmlField.setAttribute('name', 'VAR');
+      var xmlBlock = goog.dom.createDom('block', null, xmlField);
+      xmlBlock.setAttribute('type', opposite_type);
+      option.callback = Blockly.ContextMenu.callbackFactory(this, xmlBlock);
+      options.push(option);
+    } else {
+      var renameOption = {
+        text: Blockly.Msg.RENAME_VARIABLE,
+        enabled: true,
+        callback: Blockly.Constants.Variables.RENAME_OPTION_CALLBACK_FACTORY(this)
+      };
+      options.unshift(renameOption);
+    }
   }
+};
+
+/**
+ * Mixin to add context menu items to select a different variable
+ * setter/getter.
+ * Used by blocks 'variables_get_reporter'.
+ * @mixin
+ * @augments Blockly.Block
+ * @package
+ * @readonly
+ */
+Blockly.Constants.Variables.CUSTOM_CONTEXT_MENU_VARIABLE_REPORTER_MIXIN = {
+  /**
+   * Add menu option to create getter/setter block for this setter/getter.
+   * @param {!Array} options List of menu options to add to.
+   * @this Blockly.Block
+   */
+  customContextMenu: function(options) {
+    if (this.isCollapsed()) {
+      return;
+    }
+    var renameOption = {
+      text: Blockly.Msg.RENAME_VARIABLE,
+      enabled: true,
+      callback: Blockly.Constants.Variables.RENAME_OPTION_CALLBACK_FACTORY(this)
+    };
+    options.unshift(renameOption);
+    if (!this.isInFlyout) {
+      var variablesList = this.workspace.getVariablesOfType('');
+      if (variablesList.length > 0) {
+        var separator = {separator: true};
+        options.unshift(separator);
+      }
+      for (var i = variablesList.length - 1; i >= 0; i--) {
+        var option = {enabled: true};
+        option.text = variablesList[i].name;
+
+        option.callback =
+            Blockly.Constants.Variables.VARIABLE_OPTION_CALLBACK_FACTORY(this,
+                option.text, variablesList[i].getId());
+        options.unshift(option);
+      }
+    }
+  }
+};
+
+/**
+ * Callback factory for dropdown menu options associated with a variable getter
+ * reporter block.  Each variable on the workspace gets its own item in the dropdown
+ * menu, and clicking on that item changes the text of the field on the source
+ * block.
+ * @param {!Blockly.Block} block The block to update.
+ * @param {string} name The new name to display on the block.
+ * @param {string} id The new id of the variable.
+ * @return {!function()} A function that updates the block with the new name.
+ */
+Blockly.Constants.Variables.VARIABLE_OPTION_CALLBACK_FACTORY = function(block, name, id) {
+  return function() {
+    var variableField = block.getField('VAR');
+    if (!variableField) {
+      console.log("Tried to get a variable field on the wrong type of block.");
+    }
+    variableField.setValue(id);
+  };
+};
+
+/**
+ * Callback for rename variable dropdown menu option associated with a
+ * variable getter block.
+ * @param {!Blockly.Block} block The block with the variable to rename.
+ * @return {!function()} A function that renames the variable.
+ */
+Blockly.Constants.Variables.RENAME_OPTION_CALLBACK_FACTORY = function(block) {
+  return function() {
+    var workspace = block.workspace;
+    var variable = block.getField('VAR').getVariable();
+    Blockly.Variables.renameVariable(workspace, variable);
+  };
 };
 
 Blockly.Extensions.registerMixin('contextMenu_variableSetterGetter',
     Blockly.Constants.Variables.CUSTOM_CONTEXT_MENU_VARIABLE_GETTER_SETTER_MIXIN);
+
+Blockly.Extensions.registerMixin('contextMenu_variableReporter',
+    Blockly.Constants.Variables.CUSTOM_CONTEXT_MENU_VARIABLE_REPORTER_MIXIN);

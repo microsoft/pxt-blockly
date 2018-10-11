@@ -162,7 +162,7 @@ Blockly.FieldTextDropdown.prototype.showDropdown_ = Blockly.FieldDropdown.protot
 Blockly.FieldTextDropdown.prototype.onHide = function() {
   Blockly.WidgetDiv.hide();
   Blockly.FieldDropdown.prototype.onHide.call(this);
-}
+};
 
 /**
  * Handle the selection of an item in the dropdown menu.
@@ -176,7 +176,8 @@ Blockly.FieldTextDropdown.prototype.onItemSelected = function(menu, menuItem) {
     value = this.callValidator(value);
   }
   if (value !== null) {
-    // pxtblockly: FieldTextInput's widgetDispose sets the value of the field on dispose, set the htmlInput value instead 
+    // pxtblockly: FieldTextInput's widgetDispose sets the value of the field on dispose,
+    // set the htmlInput value instead
     var htmlInput = Blockly.FieldTextInput.htmlInput_;
     if (htmlInput) htmlInput.value = value;
     this.setValue(value);
