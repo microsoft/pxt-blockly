@@ -60,7 +60,7 @@ Blockly.Blocks['controls_if'] = {
     this.appendStatementInput('DO0');
     this.updateShape_();
     this.setInputsInline(true);
-    this.setColour(Blockly.Constants.Logic.HUE);
+    this.setColour(Blockly.Msg.LOGIC_HUE);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     Blockly.Constants.Logic.CONTROLS_IF_TOOLTIP_EXTENSION.call(this);
