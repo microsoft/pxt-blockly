@@ -3,19 +3,16 @@
 This is a fork of [Blockly](https://github.com/google/blockly/), an open source visual programming environment.
 
 Major additions and changes in this fork:
-
-* Note field editor
-* Slider for the number field editor
-* Edge / IE fixes
-
-Minor changes:
-
-* Blockly zoom with Ctrl / Cmd + mousewheel scroll, and scroll workspace with just mousewheel scroll
-* Support icons in toolbox
-* Inverted and coloured toolbox mode
-* Disabled blocks keep a faded colour of their category, inorder to distinguish between them.
-* Support disabled categories
-
+* [scratch-blocks](https://github.com/llk/scratch-blocks) rendering of the blocks [block_render_svg.js](https://github.com/Microsoft/pxt-blockly/blob/develop/core/block_render_svg.js)
+* Using insertion markers instead of dragged connections [insertion_marker_manager.js](https://github.com/Microsoft/pxt-blockly/blob/develop/core/insertion_marker_manager.js)
+* Inverted and coloured toolbox modes [toolbox.js](https://github.com/Microsoft/pxt-blockly/blob/develop/core/toolbox.js#L428) 
+* Supports disabled categories [toolbox.js](https://github.com/Microsoft/pxt-blockly/blob/develop/core/toolbox.js#L360)
+* Supports icons in the toolbox
+* Adds a number slider field [field_slider.js](https://github.com/Microsoft/pxt-blockly/blob/develop/core/field_slider.js)
+* Zoom in / out with touch gestures [touch_gesture.js](https://github.com/Microsoft/pxt-blockly/blob/develop/core/touch_gesture.js)
+* Workspace comments that appear like sticky notes [workspace_comment.js](https://github.com/Microsoft/pxt-blockly/blob/develop/core/workspace_comment.js)
+* A number of Edge & IE fixes
+* Support underlining and icons in flyout labels [flyout_button.js](https://github.com/Microsoft/pxt-blockly/blob/develop/core/flyout_button.js#L203)
 
 ### Prerequisites
 
@@ -27,11 +24,10 @@ Minor changes:
 * `git clone https://github.com/Microsoft/pxt-blockly`
 * `cd pxt-blockly`
 * `npm install .`
-* `npm run watch` to compile Typescript files
 
 ## Building
 
-* `python build.py` to build blockly
+* `gulp build` to build blockly
 
 ## Playground
 
@@ -43,4 +39,4 @@ There is a playground manual testing page at [tests/playground.html](./tests/pla
 
 The original Google/Blockly is licensed under Apache License (Version 2.0).
 
-The new code is licensed under MIT.
+New code is licensed under MIT.
