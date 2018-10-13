@@ -16,7 +16,7 @@ Major additions and changes in this fork:
 * A number of Edge & IE fixes
 * Support underlining and icons in flyout labels [flyout_button.js](https://github.com/Microsoft/pxt-blockly/blob/develop/core/flyout_button.js#L203)
 
-### Prerequisites
+## Prerequisites
 
 * node, npm
 * python
