@@ -2,6 +2,8 @@
 
 This is a fork of [Blockly](https://github.com/google/blockly/), an open source visual programming environment.
 
+This fork is maintained by the Microsoft MakeCode team, and is used to power the blocks environment in [PXT](https://github.com/Microsoft/pxt).
+
 Major additions and changes in this fork:
 * [scratch-blocks](https://github.com/llk/scratch-blocks) rendering of the blocks [block_render_svg.js](https://github.com/Microsoft/pxt-blockly/blob/develop/core/block_render_svg.js)
 * Using insertion markers instead of dragged connections [insertion_marker_manager.js](https://github.com/Microsoft/pxt-blockly/blob/develop/core/insertion_marker_manager.js)
