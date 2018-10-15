@@ -221,7 +221,8 @@ Blockly.Blocks['controls_if'] = {
           .appendField(Blockly.Msg.CONTROLS_IF_MSG_THEN);
       this.appendDummyInput('IFBUTTONS' + i)
           .appendField(
-              new Blockly.FieldImage(this.REMOVE_IMAGE_DATAURI, 24, 24, false, "*", removeElseIf));
+              new Blockly.FieldImage(this.REMOVE_IMAGE_DATAURI, 24, 24, false, "*", removeElseIf))
+          .setAlign(Blockly.ALIGN_RIGHT);
       this.appendStatementInput('DO' + i);
     }
     if (this.elseCount_) {
