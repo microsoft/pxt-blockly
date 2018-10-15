@@ -212,6 +212,10 @@ Blockly.Css.CONTENT = [
     'z-index: 50;', /* Display above the toolbox */
   '}',
 
+  '.blocklyBlockCanvas.blocklyTransitioning {',
+    'transition: all 0.5s ease-in-out;',
+  '}',
+
   '.blocklyTooltipDiv {',
     'background-color: #ffffc7;',
     'border: 1px solid #ddc;',

@@ -61,5 +61,7 @@ Blockly.Colours = {
   "numPadActiveBackground": "#435F91",
   "numPadText": "#FFFFFF",
   "valueReportBackground": "#FFFFFF",
-  "valueReportBorder": "#AAAAAA"
+  "valueReportBorder": "#AAAAAA",
+  // Center on block transition
+  "canvasTransitionLength": 500
 };
