@@ -346,16 +346,16 @@ Blockly.Css.CONTENT = [
 
   '.blocklyResizeSE {',
     'cursor: se-resize;',
-    'fill: #aaa;',
+    'fill: transparent;',
   '}',
 
   '.blocklyResizeSW {',
     'cursor: sw-resize;',
-    'fill: #aaa;',
+    'fill: transparent;',
   '}',
 
   '.blocklyResizeLine {',
-    'stroke: #515A5A;',
+    'stroke: #888;',
     'stroke-width: 1;',
   '}',
 
@@ -377,12 +377,8 @@ Blockly.Css.CONTENT = [
   '}',
 
   '.blocklySelected>.blocklyPath {',
-    //  'stroke: #FFF200;',
-    //  'stroke-width: 2px;',
-  '}',
-
-  '.blocklySelected>.blocklyPathLight {',
-    'display: none;',
+     //'stroke: #FFF200;',
+     //'stroke-width: 1px;',
   '}',
 
   '.blocklyDraggable {',
@@ -432,8 +428,7 @@ Blockly.Css.CONTENT = [
     'cursor: -webkit-grabbing;',
   '}',
 
-  '.blocklyDragging>.blocklyPath,',
-  '.blocklyDragging>.blocklyPathLight {',
+  '.blocklyDragging>.blocklyPath {',
     'fill-opacity: 1.0;',
     'stroke-opacity: 1.0;',
   '}',
