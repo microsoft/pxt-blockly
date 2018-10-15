@@ -1499,16 +1499,21 @@ Blockly.BlockSvg.prototype.bindHoverEvents_ = function() {
   var that = this;
   Blockly.bindEvent_(this.svgGroup_, 'mouseover', null, function(e) {
     var target = that;
+    if (target.isInFlyout) return;
+
     if (that.isShadow_ && that.parentBlock_) {
       target = that.parentBlock_;
     }
     if (target.parentBlock_ && target.outputConnection) {
       Blockly.utils.addClass(/** @type {!Element} */ (target.svgPath_), 'hover-emphasis');
+      e.stopPropagation();
     }
-    e.stopPropagation();
   });
 
   Blockly.bindEvent_(this.svgGroup_, 'mouseout', null, function(/*e*/) {
+    var target = that;
+    if (target.isInFlyout) return;
+
     Blockly.utils.removeClass(/** @type {!Element} */ (that.svgPath_), 'hover-emphasis');
   });
 };

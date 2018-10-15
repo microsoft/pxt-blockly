@@ -544,13 +544,13 @@ Blockly.Flyout.prototype.addBlockListeners_ = function(root, block, rect) {
       this.blockMouseDown_(block)));
   this.listeners_.push(Blockly.bindEventWithChecks_(rect, 'mousedown', null,
       this.blockMouseDown_(block)));
-  this.listeners_.push(Blockly.bindEvent_(root, 'mouseover', block,
+  this.listeners_.push(Blockly.bindEvent_(root, 'mouseenter', block,
       block.addSelect));
-  this.listeners_.push(Blockly.bindEvent_(root, 'mouseout', block,
+  this.listeners_.push(Blockly.bindEvent_(root, 'mouseleave', block,
       block.removeSelect));
-  this.listeners_.push(Blockly.bindEvent_(rect, 'mouseover', block,
+  this.listeners_.push(Blockly.bindEvent_(rect, 'mouseenter', block,
       block.addSelect));
-  this.listeners_.push(Blockly.bindEvent_(rect, 'mouseout', block,
+  this.listeners_.push(Blockly.bindEvent_(rect, 'mouseleave', block,
       block.removeSelect));
 };
 
@@ -698,12 +698,10 @@ Blockly.Flyout.prototype.moveRectToBlock_ = function(rect, block) {
     block.moveBy(0, hatOffset);
   }
 
-  // Blocks with output tabs are shifted a bit.
-  var tab = block.outputConnection ? Blockly.BlockSvg.TAB_WIDTH : 0;
   var blockXY = block.getRelativeToSurfaceXY();
   rect.setAttribute('y', blockXY.y);
   rect.setAttribute('x',
-      this.RTL ? blockXY.x - blockHW.width + tab : blockXY.x - tab);
+      this.RTL ? blockXY.x - blockHW.width : blockXY.x);
 };
 
 /**
