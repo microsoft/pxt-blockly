@@ -1705,9 +1705,10 @@ Blockly.WorkspaceSvg.prototype.scrollCenter = function() {
 /**
  * Scroll the workspace to center on the given block.
  * @param {?string} id ID of block center on.
+ * @param {boolean} animate If true, transition to the block.
  * @public
  */
-Blockly.WorkspaceSvg.prototype.centerOnBlock = function(id) {
+Blockly.WorkspaceSvg.prototype.centerOnBlock = function(id, animate) {
   if (!this.scrollbar) {
     console.warn('Tried to scroll a non-scrollable workspace.');
     return;
@@ -1716,6 +1717,11 @@ Blockly.WorkspaceSvg.prototype.centerOnBlock = function(id) {
   var block = this.getBlockById(id);
   if (!block) {
     return;
+  }
+
+  // If we're animating, apply a transition class to the workspace
+  if (animate) {
+    Blockly.utils.addClass(this.svgBlockCanvas_, 'blocklyTransitioning');
   }
 
   // XY is in workspace coordinates.
@@ -1755,6 +1761,11 @@ Blockly.WorkspaceSvg.prototype.centerOnBlock = function(id) {
 
   Blockly.hideChaff();
   this.scrollbar.set(scrollToCenterX, scrollToCenterY);
+
+  var blockCanvas = this.svgBlockCanvas_;
+  setTimeout(function() {
+    Blockly.utils.removeClass(blockCanvas, 'blocklyTransitioning');
+  }, Blockly.Colours.canvasTransitionLength);
 };
 
 /**
