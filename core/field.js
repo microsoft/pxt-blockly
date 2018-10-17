@@ -284,7 +284,7 @@ Blockly.Field.prototype.updateEditable = function() {
   if (!this.EDITABLE || !group) {
     return;
   }
-  if (this.sourceBlock_.isEditable()) {
+  if (this.sourceBlock_.isEditable() && !this.sourceBlock_.isInFlyout) {
     Blockly.utils.addClass(group, 'blocklyEditableText');
     Blockly.utils.removeClass(group, 'blocklyNonEditableText');
     this.fieldGroup_.style.cursor = this.CURSOR;
