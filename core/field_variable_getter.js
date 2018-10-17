@@ -72,6 +72,11 @@ Blockly.FieldVariableGetter.fromJson = function(options) {
 };
 
 /**
+ * Mouse cursor style when over the hotspot that initiates the editor.
+ */
+Blockly.FieldVariableGetter.prototype.CURSOR = 'copy';
+
+/**
  * Editable fields usually show some sort of UI for the user to change them.
  * This field should be serialized, but only edited programmatically.
  * @type {boolean}
@@ -99,6 +104,13 @@ Blockly.FieldVariableGetter.prototype.init = function() {
 
   // TODO (blockly #1010): Change from init/initModel to initView/initModel
   this.initModel();
+
+  this.mouseOverWrapper_ =
+      Blockly.bindEvent_(
+          this.getClickTarget_(), 'mouseover', this, this.onMouseOver_);
+  this.mouseOutWrapper_ =
+      Blockly.bindEvent_(
+          this.getClickTarget_(), 'mouseout', this, this.onMouseOut_);
 };
 
 /**
@@ -126,10 +138,58 @@ Blockly.FieldVariableGetter.prototype.initModel = function() {
 };
 
 /**
+ * Handle a mouse over event on a input field.
+ * @param {!Event} e Mouse over event.
+ * @private
+ */
+Blockly.FieldVariableGetter.prototype.onMouseOver_ = function(e) {
+  if (this.sourceBlock_.isInFlyout) return;
+  var gesture = this.sourceBlock_.workspace.getGesture(e);
+  if (gesture && gesture.isDragging()) return;
+  if (this.sourceBlock_.svgPath_) {
+    this.sourceBlock_.svgPath_.style.strokeWidth = '2px';
+    this.sourceBlock_.svgPath_.style.stroke = '#fff';
+    this.sourceBlock_.svgPath_.style.strokeDasharray = '2';
+  }
+};
+
+/**
+ * Clear hover effect on the block
+ * @param {!Event} e Clear hover effect
+ */
+Blockly.FieldVariableGetter.prototype.clearHover = function() {
+  if (this.sourceBlock_.svgPath_) {
+    this.sourceBlock_.svgPath_.style.strokeWidth = '1px';
+    this.sourceBlock_.svgPath_.style.stroke = this.sourceBlock_.getColourTertiary();
+    this.sourceBlock_.svgPath_.style.strokeDasharray = '';
+  }
+};
+
+/**
+ * Handle a mouse out event on a input field.
+ * @param {!Event} e Mouse out event.
+ * @private
+ */
+Blockly.FieldVariableGetter.prototype.onMouseOut_ = function(e) {
+  if (this.sourceBlock_.isInFlyout) return;
+  var gesture = this.sourceBlock_.workspace.getGesture(e);
+  if (gesture && gesture.isDragging()) return;
+  this.clearHover();
+};
+
+/**
  * Dispose of this field.
  * @public
  */
 Blockly.FieldVariableGetter.dispose = function() {
+  if (this.mouseOverWrapper_) {
+    Blockly.unbindEvent_(this.mouseOverWrapper_);
+    this.mouseOverWrapper_ = null;
+  }
+  if (this.mouseOutWrapper_) {
+    Blockly.unbindEvent_(this.mouseOutWrapper_);
+    this.mouseOutWrapper_ = null;
+  }
   Blockly.FieldVariableGetter.superClass_.dispose.call(this);
   this.workspace_ = null;
   this.variableMap_ = null;
@@ -296,7 +356,9 @@ Blockly.FieldVariableGetter.prototype.showEditor_ = function() {
  * Suppress default editable behaviour.
  */
 Blockly.FieldVariableGetter.prototype.updateEditable = function() {
-  // nop.
+  if (!this.sourceBlock_.isInFlyout) {
+    this.fieldGroup_.style.cursor = this.CURSOR;
+  }
 };
 
 Blockly.Field.register('field_variable_getter', Blockly.FieldVariableGetter);
