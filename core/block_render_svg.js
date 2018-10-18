@@ -1279,6 +1279,9 @@ Blockly.BlockSvg.prototype.renderDrawRight_ = function(steps,
           input.connection.setOffsetInBlock(connectionX, connectionY);
           this.renderInputShape_(input, cursorX, cursorY + connectionYOffset);
           cursorX += input.renderWidth + Blockly.BlockSvg.SEP_SPACE_X;
+
+          // pxtblockly: Used for calculating multiple connection points
+          input.connection.renderedWidth_ = input.renderWidth;
         }
       }
       // Remove final separator and replace it with right-padding.
