@@ -1004,6 +1004,7 @@ Blockly.Gesture.prototype.duplicateOnDrag_ = function() {
       newVariableField.textContent = xmlBlockField.textContent;
       newVariableBlock.appendChild(newVariableField);
       xmlBlock = newVariableBlock;
+      this.targetBlock_.inputList[0].fieldRow[0].clearHover();
     }
     newBlock = Blockly.Xml.domToBlock(xmlBlock, this.startWorkspace_);
 
