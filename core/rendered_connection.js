@@ -56,7 +56,15 @@ goog.inherits(Blockly.RenderedConnection, Blockly.Connection);
  * @return {number} The distance between connections, in workspace units.
  */
 Blockly.RenderedConnection.prototype.distanceFrom = function(otherConnection) {
+  // pxtblockly: Multiple connection points for wide inputs
+  if (otherConnection.renderedWidth_ && (!this.renderedWidth_ || otherConnection.renderedWidth_ > this.renderedWidth_)) {
+    return otherConnection.distanceFrom(this);
+  }
+
   var xDiff = this.x_ - otherConnection.x_;
+  if (this.renderedWidth_ > 100) {
+    xDiff = Math.min(Math.abs(xDiff), Math.abs(xDiff + (this.renderedWidth_ >> 1)), Math.abs(xDiff + this.renderedWidth_));
+  }
   var yDiff = this.y_ - otherConnection.y_;
   return Math.sqrt(xDiff * xDiff + yDiff * yDiff);
 };

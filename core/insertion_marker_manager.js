@@ -389,11 +389,12 @@ Blockly.InsertionMarkerManager.prototype.getCandidate_ = function(dxy) {
     var myConnection = this.availableConnections_[i];
 
     // pxtblockly: for output connections select the target based on the user's "handle"
+    var offsetxy = dxy;
     if (this.topBlock_.outputConnection === myConnection) {
-      dxy = goog.math.Coordinate.sum(dxy, this.handleDXY);
+      offsetxy = goog.math.Coordinate.sum(dxy, this.handleDXY);
     }
 
-    var neighbour = myConnection.closest(radius, dxy);
+    var neighbour = myConnection.closest(radius, offsetxy);
     if (neighbour.connection) {
       candidateClosest = neighbour.connection;
       candidateLocal = myConnection;
