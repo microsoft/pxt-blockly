@@ -82,13 +82,6 @@ Blockly.FieldNumber.fromJson = function(options) {
 Blockly.FieldNumber.DROPDOWN_WIDTH = 168;
 
 /**
- * Extra padding to add between the block and the num-pad drop-down, in px.
- * @type {number}
- * @const
- */
-Blockly.FieldNumber.DROPDOWN_Y_PADDING = 8;
-
-/**
  * Buttons for the num-pad, in order from the top left.
  * Values are strings of the number or symbol will be added to the field text
  * when the button is pressed.
@@ -210,18 +203,22 @@ Blockly.FieldNumber.prototype.showNumPad_ = function() {
  * @private
  */
 Blockly.FieldNumber.prototype.position_ = function() {
-  // Calculate positioning based on the field position.
+  // Calculate positioning for the drop-down
+  // sourceBlock_ is the rendered shadow field input box
   var scale = this.sourceBlock_.workspace.scale;
-  var bBox = {width: this.size_.width, height: this.size_.height};
+  var bBox = this.sourceBlock_.getHeightWidth();
   bBox.width *= scale;
   bBox.height *= scale;
-  var position = this.fieldGroup_.getBoundingClientRect();
-  var primaryX = position.left + bBox.width / 2;
-  var primaryY = position.top + bBox.height;
+  var position = this.getAbsoluteXY_();
+  // If we can fit it, render below the shadow block
+  var primaryX = position.x + bBox.width / 2;
+  var primaryY = position.y + bBox.height;
+  // If we can't fit it, render above the entire parent block
   var secondaryX = primaryX;
-  var secondaryY = position.top;
-  // Set bounds to workspace; show the drop-down.
-  Blockly.DropDownDiv.setBoundsElement(this.sourceBlock_.workspace.getParentSvg().parentNode);
+  var secondaryY = position.y;
+
+  Blockly.DropDownDiv.setBoundsElement(
+      this.sourceBlock_.workspace.getParentSvg().parentNode);
   Blockly.DropDownDiv.show(this, primaryX, primaryY, secondaryX, secondaryY,
       this.onHide_.bind(this));
 };
