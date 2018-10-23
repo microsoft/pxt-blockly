@@ -138,7 +138,8 @@ Blockly.FieldTextInput.prototype.init = function() {
     this.fieldGroup_.insertBefore(this.box_, this.textElement_);
   }
 
-  if (this.sourceBlock_.isEditable()) {
+  if (this.sourceBlock_.isEditable() &&
+    this.sourceBlock_.getOutputShape() == Blockly.OUTPUT_SHAPE_ROUND) {
     this.mouseOverWrapper_ =
         Blockly.bindEvent_(
             this.getClickTarget_(), 'mouseover', this, this.onMouseOver_);
