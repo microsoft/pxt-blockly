@@ -275,9 +275,11 @@ Blockly.DropDownDiv.getPositionMetrics = function(primaryX, primaryY, secondaryX
   // renderX, renderY will eventually be the final rendered position of the box.
   var renderX, renderY, renderedSecondary;
   // Can the div fit inside the bounds if we render below the primary point?
-  if (primaryY + divSize.height > boundPosition.top + boundSize.height) {
+  var belowOverflow = primaryY + divSize.height - (boundPosition.top + boundSize.height)
+  if (belowOverflow > 0) {
     // We can't fit below in terms of y. Can we fit above?
-    if (secondaryY - divSize.height < boundPosition.top) {
+    var aboveOverflow = secondaryY - divSize.height - boundPosition.top
+    if (belowOverflow < aboveOverflow) {
       // We also can't fit above, so just render below anyway.
       renderX = primaryX;
       renderY = primaryY + Blockly.DropDownDiv.PADDING_Y;
