@@ -160,7 +160,7 @@ Blockly.FieldDropdown.prototype.init = function() {
   this.text_ = null;
   this.setText(text);
 
-  if (this.sourceBlock_.isEditable()) {
+  if (this.sourceBlock_.isEditable() && this.shouldShowRect_()) {
     this.mouseOverWrapper_ =
         Blockly.bindEvent_(
             this.getClickTarget_(), 'mouseover', this, this.onMouseOver_);
