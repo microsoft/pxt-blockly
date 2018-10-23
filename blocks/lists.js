@@ -456,6 +456,7 @@ Blockly.Blocks['lists_getIndex'] = {
         ];
     this.setHelpUrl(Blockly.Msg.LISTS_GET_INDEX_HELPURL);
     this.setColour(Blockly.Msg.LISTS_HUE);
+    this.setOutputShape(Blockly.OUTPUT_SHAPE_ROUND);
     var modeMenu = new Blockly.FieldDropdown(MODE, function(value) {
       var isStatement = (value == 'REMOVE');
       this.sourceBlock_.updateStatement_(isStatement);
