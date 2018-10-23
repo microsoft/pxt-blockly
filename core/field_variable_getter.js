@@ -105,12 +105,14 @@ Blockly.FieldVariableGetter.prototype.init = function() {
   // TODO (blockly #1010): Change from init/initModel to initView/initModel
   this.initModel();
 
-  this.mouseOverWrapper_ =
-      Blockly.bindEvent_(
-          this.getClickTarget_(), 'mouseover', this, this.onMouseOver_);
-  this.mouseOutWrapper_ =
-      Blockly.bindEvent_(
-          this.getClickTarget_(), 'mouseout', this, this.onMouseOut_);
+  if (this.sourceBlock_.isEditable()) {
+    this.mouseOverWrapper_ =
+        Blockly.bindEvent_(
+            this.getClickTarget_(), 'mouseover', this, this.onMouseOver_);
+    this.mouseOutWrapper_ =
+        Blockly.bindEvent_(
+            this.getClickTarget_(), 'mouseout', this, this.onMouseOut_);
+  }
 };
 
 /**
@@ -356,7 +358,7 @@ Blockly.FieldVariableGetter.prototype.showEditor_ = function() {
  * Suppress default editable behaviour.
  */
 Blockly.FieldVariableGetter.prototype.updateEditable = function() {
-  if (!this.sourceBlock_.isInFlyout) {
+  if (!this.sourceBlock_.isInFlyout && this.sourceBlock_.isEditable()) {
     this.fieldGroup_.style.cursor = this.CURSOR;
   }
 };

@@ -80,7 +80,7 @@ Blockly.BlockSvg = function(workspace, prototypeName, opt_id) {
   Blockly.BlockSvg.superClass_.constructor.call(this,
       workspace, prototypeName, opt_id);
 
-  this.bindHoverEvents_();
+  if (!workspace.options.readOnly) this.bindHoverEvents_();
 
   // Expose this block's ID on its top-level SVG group.
   if (this.svgGroup_.dataset) {
