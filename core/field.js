@@ -789,14 +789,6 @@ Blockly.Field.prototype.getClickTarget_ = function() {
   }
 };
 
-Blockly.Field.prototype.getTotalFields_ = function() {
-  var nFields = 0;
-  for (var i = 0, input; input = this.sourceBlock_.inputList[i]; i++) {
-    nFields += input.fieldRow.length;
-  }
-  return nFields;
-};
-
 /**
  * Return the absolute coordinates of the top-left corner of this field.
  * The origin (0,0) is the top-left corner of the page body.

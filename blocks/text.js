@@ -51,7 +51,7 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
     "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
     "colour": Blockly.Colours.textField,
     "colourSecondary": Blockly.Colours.textField,
-    "colourTertiary": "%{BKY_TEXTS_HUE}",
+    "colourTertiary": Blockly.Colours.textField,
     "helpUrl": "%{BKY_TEXT_TEXT_HELPURL}",
     "tooltip": "%{BKY_TEXT_TEXT_TOOLTIP}",
     "extensions": [
@@ -174,7 +174,6 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
       }
     ],
     "output": "Number",
-    "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
     "colour": "%{BKY_TEXTS_HUE}",
     "helpUrl": "%{BKY_TEXT_INDEXOF_HELPURL}",
     "inputsInline": true,

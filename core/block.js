@@ -1739,7 +1739,7 @@ Blockly.Block.prototype.setOutputShape = function(outputShape) {
  * @return {?number} Value representing output shape (see constants.js).
  */
 Blockly.Block.prototype.getOutputShape = function() {
-  return this.outputShape_ || Blockly.OUTPUT_SHAPE_SQUARE;
+  return this.outputShape_ || Blockly.OUTPUT_SHAPE_ROUND;
 };
 
 /**
