@@ -86,12 +86,14 @@ Blockly.FieldSlider.prototype.init = function() {
   Blockly.FieldTextInput.superClass_.init.call(this);
   this.setValue(this.getValue());
 
-  this.mouseOverWrapper_ =
-      Blockly.bindEvent_(
-          this.getClickTarget_(), 'mouseover', this, this.onMouseOver_);
-  this.mouseOutWrapper_ =
-      Blockly.bindEvent_(
-          this.getClickTarget_(), 'mouseout', this, this.onMouseOut_);
+  if (this.sourceBlock_.isEditable()) {
+    this.mouseOverWrapper_ =
+        Blockly.bindEvent_(
+            this.getClickTarget_(), 'mouseover', this, this.onMouseOver_);
+    this.mouseOutWrapper_ =
+        Blockly.bindEvent_(
+            this.getClickTarget_(), 'mouseout', this, this.onMouseOut_);
+  }
 };
 
 /**

@@ -80,8 +80,6 @@ Blockly.BlockSvg = function(workspace, prototypeName, opt_id) {
   Blockly.BlockSvg.superClass_.constructor.call(this,
       workspace, prototypeName, opt_id);
 
-  this.bindHoverEvents_();
-
   // Expose this block's ID on its top-level SVG group.
   if (this.svgGroup_.dataset) {
     this.svgGroup_.dataset.id = this.id;
@@ -184,6 +182,11 @@ Blockly.BlockSvg.prototype.initSvg = function() {
 
   if (!this.getSvgRoot().parentNode) {
     this.workspace.getCanvas().appendChild(this.getSvgRoot());
+  }
+
+  if (!this.workspace.options.readOnly && this.outputConnection) {
+    // Add hover events for reporter blocks
+    this.bindReporterHoverEvents_();
   }
 };
 
@@ -1495,14 +1498,14 @@ Blockly.BlockSvg.prototype.scheduleSnapAndBump = function() {
  * Binds mouse events to handle the highlighting of reporter blocks
  * @private
  */
-Blockly.BlockSvg.prototype.bindHoverEvents_ = function() {
+Blockly.BlockSvg.prototype.bindReporterHoverEvents_ = function() {
   var that = this;
   Blockly.bindEvent_(this.svgGroup_, 'mouseover', null, function(e) {
     var target = that;
     if (target.isInFlyout) return;
 
-    if (that.isShadow_ && that.parentBlock_) {
-      target = that.parentBlock_;
+    while (target.isShadow_ && target.parentBlock_) {
+      target = target.parentBlock_;
     }
     if (target.parentBlock_ && target.outputConnection) {
       Blockly.utils.addClass(/** @type {!Element} */ (target.svgPath_), 'hover-emphasis');
