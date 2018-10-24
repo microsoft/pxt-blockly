@@ -1470,7 +1470,7 @@ Blockly.BlockSvg.prototype.bindReporterHoverEvents_ = function() {
       target = target.parentBlock_;
     }
     if (target.parentBlock_ && target.outputConnection) {
-      Blockly.utils.addClass(/** @type {!Element} */ (target.svgPath_), 'hover-emphasis');
+      Blockly.utils.addClass(/** @type {!Element} */ (target.svgPath_), 'blocklyReporterHover');
       e.stopPropagation();
     }
   });
@@ -1479,7 +1479,7 @@ Blockly.BlockSvg.prototype.bindReporterHoverEvents_ = function() {
     var target = that;
     if (target.isInFlyout) return;
 
-    Blockly.utils.removeClass(/** @type {!Element} */ (that.svgPath_), 'hover-emphasis');
+    Blockly.utils.removeClass(/** @type {!Element} */ (that.svgPath_), 'blocklyReporterHover');
   });
 };
 
