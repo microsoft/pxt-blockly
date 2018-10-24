@@ -134,6 +134,11 @@ function start() {
     logEvents(false);
   }
   taChange();
+
+  // Register help icon handler
+  workspace.registerButtonCallback('GROUP_HELP', function(button) {
+    alert("Help icon triggered")
+  });
 }
 
 function setBackgroundColor() {
@@ -347,7 +352,7 @@ var spaghettiXml = [
 
 </script>
 
-<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
 <style>
 html, body {
   height: 100%;
@@ -374,17 +379,64 @@ h1 {
   font-style: italic;
 }
 
+.blocklyFlyoutLabelText {
+  fill: white;
+}
+.blocklyFlyoutHeading>.blocklyFlyoutLabelText {
+  font-size: 1.5rem;
+}
+line.blocklyFlyoutLine {
+  stroke: white;
+}
+.blocklyFlyoutLabelIcon {
+  font-family: 'Font Awesome\ 5 Free';
+  font-size: 1.5rem;
+  font-weight: 900;
+  fill: white;
+}
+
+.blocklyTreeRow {
+  height: 45px;
+}
+
 .blocklyTreeIconCustom {
   background: none;
-  font-family: 'FontAwesome';
-  margin: -0.2em 0.25em 0.0em 0.25em;
-  width: 1.18em;
-}
-.blocklyFlyoutHeading {
-  font-family: 'FontAwesome';
+  font-family: 'Font Awesome\ 5 Free';
+  font-weight: 900;
+  font-size: 1.3rem;
+  margin: 0 .25em;
+  width: 30px;
+  height: 100%;
+  line-height: 45px;
+  min-height: 45px;
+  vertical-align: middle;
 }
 .blocklyTreeIconCustom::before {
   content: "\f12e";
+}
+.blocklyTreeIconCustom.logic::before {
+  content: "\f074";
+}
+.blocklyTreeIconCustom.loops::before {
+  content: "\f01e";
+}
+.blocklyTreeIconCustom.math::before {
+  content: "\f1ec";
+}
+.blocklyTreeIconCustom.text::before {
+  content: "\f031";
+}
+.blocklyTreeIconCustom.lists::before {
+  content: "\f0ca";
+}
+.blocklyTreeIconCustom.colour::before {
+  content: "\f53f";
+}
+.blocklyTreeIconCustom.variables::before {
+  content: "\f0c9";
+}
+.blocklyTreeIconCustom.functions::before {
+  content: "\f141";
 }
 
 </style>
@@ -512,7 +564,8 @@ h1 {
   Variables category uses untyped variable blocks.
   See https://developers.google.com/blockly/guides/create-custom-blocks/variables#untyped_variable_blocks for more information. -->
   <xml id="toolbox-categories" style="display: none">
-    <category name="Logic" colour="210" iconclass="blocklyTreeIconCustom">
+    <category name="Logic" colour="210" iconclass="blocklyTreeIconCustom logic">
+      <label text="Logic" web-icon="" web-class="blocklyFlyoutHeading"></label>
       <block type="controls_if">
         <value name="IF0">
           <shadow type="logic_boolean">
@@ -544,7 +597,9 @@ h1 {
       <block type="logic_null" disabled="true"></block>
       <block type="logic_ternary"></block>
     </category>
-    <category name="Loops" colour="120" iconclass="blocklyTreeIconCustom">
+    <category name="Loops" colour="120" iconclass="blocklyTreeIconCustom loops">
+      <label text="Loops" web-icon="" web-class="blocklyFlyoutHeading"></label>
+      <label text="Basic" web-line="1.0"></label>
       <block type="controls_repeat_ext">
         <value name="TIMES">
           <shadow type="math_number">
@@ -554,6 +609,7 @@ h1 {
       </block>
       <block type="controls_repeat" disabled="true"></block>
       <block type="controls_whileUntil" disabled="true"></block>
+      <label text="Advanced" web-line="1.0"></label>
       <block type="controls_for">
         <value name="VAR">
           <shadow type="variables_get_reporter">
@@ -561,8 +617,17 @@ h1 {
           </shadow>
         </value>
         <value name="FROM">
-          <shadow type="math_number">
-            <field name="NUM">1</field>
+          <shadow type="math_arithmetic">
+            <value name="A">
+              <shadow type="math_number">
+                <field name="NUM">1</field>
+              </shadow>
+            </value>
+            <value name="B">
+              <shadow type="math_number">
+                <field name="NUM">1</field>
+              </shadow>
+            </value>
           </shadow>
         </value>
         <value name="TO">
@@ -585,13 +650,15 @@ h1 {
       </block>
       <block type="controls_flow_statements"></block>
     </category>
-    <category name="Math" colour="230" iconclass="blocklyTreeIconCustom">
+    <category name="Math" colour="230" iconclass="blocklyTreeIconCustom math">
+      <label text="Math" web-icon="" web-class="blocklyFlyoutHeading"></label>
       <block type="math_number" gap="32">
         <field name="NUM">123</field>
       </block>
       <block type="math_number_minmax" gap="32">
         <mutation min="0" max="100"></mutation>
       </block>
+      <label text="Arithmetic" web-line="0.0"></label>
       <block type="math_arithmetic">
         <value name="A">
           <shadow type="math_number">
@@ -626,6 +693,7 @@ h1 {
           </shadow>
         </value>
       </block>
+      <label text="Advanced" web-line="2.0" web-line-width="200"></label>
       <block type="math_round">
         <value name="NUM">
           <shadow type="math_number">
@@ -663,6 +731,7 @@ h1 {
           </shadow>
         </value>
       </block>
+      <label text="Random" web-line="4.0"></label>
       <block type="math_random_int">
         <value name="FROM">
           <shadow type="math_number">
@@ -677,7 +746,8 @@ h1 {
       </block>
       <block type="math_random_float"></block>
     </category>
-    <category name="Text" colour="160" iconclass="blocklyTreeIconCustom">
+    <category name="Text" colour="160" iconclass="blocklyTreeIconCustom text">
+      <label text="Text" web-icon="" web-class="blocklyFlyoutHeading"></label>
       <block type="text"></block>
       <block type="text_join"></block>
       <!--<block type="text_append">
@@ -711,6 +781,7 @@ h1 {
           </shadow>
         </value>
       </block>
+      <label text="Group with help" web-help-button="true" callbackkey="GROUP_HELP" web-line="1.0"></label>
       <block type="text_charAt">
         <value name="VALUE">
           <block type="variables_get">
@@ -779,7 +850,8 @@ h1 {
         </value>
       </block>
     </category>
-    <category name="Lists" colour="260" iconclass="blocklyTreeIconCustom">
+    <category name="Lists" colour="260" iconclass="blocklyTreeIconCustom lists">
+      <label text="Lists" web-icon="" web-class="blocklyFlyoutHeading"></label>
       <block type="lists_create_with">
         <mutation items="0" type="math_number"></mutation>
       </block>
@@ -837,7 +909,8 @@ h1 {
       <block type="lists_sort"></block>
       <block type="lists_reverse"></block>
     </category>
-    <category name="Colour" colour="20" iconclass="blocklyTreeIconCustom">
+    <category name="Colour" colour="20" iconclass="blocklyTreeIconCustom colour">
+      <label text="Colour" web-icon="" web-class="blocklyFlyoutHeading"></label>
       <block type="colour_picker"></block>
       <block type="colour_random"></block>
       <block type="colour_rgb">
@@ -876,8 +949,8 @@ h1 {
       </block>
     </category>
     <sep></sep>
-    <category name="Variables" colour="330" custom="VARIABLE"></category>
-    <category name="Functions" colour="290" custom="PROCEDURE"></category>
+    <category name="Variables" colour="330" custom="VARIABLE" iconclass="blocklyTreeIconCustom variables"></category>
+    <category name="Functions" colour="290" custom="PROCEDURE" iconclass="blocklyTreeIconCustom functions"></category>
   </xml>
 
   <!-- toolbox-categories-typed-variables has a category menu and an
