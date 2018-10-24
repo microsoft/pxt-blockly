@@ -286,7 +286,7 @@ Blockly.FieldTextInput.prototype.showEditor_ = function(
   if (opt_withArrow) {
     // Move text in input to account for displayed drop-down arrow.
     if (this.sourceBlock_.RTL) {
-      htmlInput.style.paddingLeft = (this.arrowSize_+ Blockly.BlockSvg.DROPDOWN_ARROW_PADDING) + 'px';
+      htmlInput.style.paddingLeft = (this.arrowSize_ + Blockly.BlockSvg.DROPDOWN_ARROW_PADDING) + 'px';
     } else {
       htmlInput.style.paddingRight = (this.arrowSize_ + Blockly.BlockSvg.DROPDOWN_ARROW_PADDING) + 'px';
     }
@@ -399,14 +399,14 @@ Blockly.FieldTextInput.prototype.onHtmlInputKeyDown_ = function(e) {
   var htmlInput = Blockly.FieldTextInput.htmlInput_;
   var tabKey = 9, enterKey = 13, escKey = 27;
   if (e.keyCode == enterKey) {
-    Blockly.WidgetDiv.hide();
+    Blockly.WidgetDiv.hide(true);
     Blockly.DropDownDiv.hideWithoutAnimation();
   } else if (e.keyCode == escKey) {
     htmlInput.value = htmlInput.defaultValue;
-    Blockly.WidgetDiv.hide();
+    Blockly.WidgetDiv.hide(true);
     Blockly.DropDownDiv.hideWithoutAnimation();
   } else if (e.keyCode == tabKey) {
-    Blockly.WidgetDiv.hide();
+    Blockly.WidgetDiv.hide(true);
     Blockly.DropDownDiv.hideWithoutAnimation();
     this.sourceBlock_.tab(this, !e.shiftKey);
     e.preventDefault();
@@ -427,35 +427,35 @@ Blockly.FieldTextInput.GECKO_KEYCODE_WHITELIST = [
 
 /**
  * Handle a change to the editor.
- * @param {!Event} _e Keyboard event.
+ * @param {!Event} e Keyboard event.
  * @private
  */
-Blockly.FieldTextInput.prototype.onHtmlInputChange_ = function(_e) {
+Blockly.FieldTextInput.prototype.onHtmlInputChange_ = function(e) {
   // Check if the key matches the restrictor.
-  if (_e.type === 'keypress' && this.restrictor_) {
+  if (e.type === 'keypress' && this.restrictor_) {
     var keyCode;
     var isWhitelisted = false;
     if (goog.userAgent.GECKO) {
       // e.keyCode is not available in Gecko.
-      keyCode = _e.charCode;
+      keyCode = e.charCode;
       // Gecko reports control characters (e.g., left, right, copy, paste)
       // in the key event - whitelist these from being restricted.
       // < 32 and 127 (delete) are control characters.
       // See: http://www.theasciicode.com.ar/ascii-control-characters/delete-ascii-code-127.html
       if (keyCode < 32 || keyCode == 127) {
         isWhitelisted = true;
-      } else if (_e.metaKey || _e.ctrlKey) {
+      } else if (e.metaKey || e.ctrlKey) {
         // For combos (ctrl-v, ctrl-c, etc.), Gecko reports the ASCII letter
         // and the metaKey/ctrlKey flags.
         isWhitelisted = Blockly.FieldTextInput.GECKO_KEYCODE_WHITELIST.indexOf(keyCode) > -1;
       }
     } else {
-      keyCode = _e.keyCode;
+      keyCode = e.keyCode;
     }
     var char = String.fromCharCode(keyCode);
-    if (!isWhitelisted && !this.restrictor_.test(char) && _e.preventDefault) {
+    if (!isWhitelisted && !this.restrictor_.test(char) && e.preventDefault) {
       // Failed to pass restrictor.
-      _e.preventDefault();
+      e.preventDefault();
       return;
     }
   }
@@ -502,7 +502,12 @@ Blockly.FieldTextInput.prototype.resizeEditor_ = function() {
   var scale = this.sourceBlock_.workspace.scale;
   var div = Blockly.WidgetDiv.DIV;
 
-  var initialWidth = this.sourceBlock_.getHeightWidth().width * scale;
+  var initialWidth;
+  if (this.sourceBlock_.isShadow() || this.getTotalFields_() == 1) {
+    initialWidth = this.sourceBlock_.getHeightWidth().width * scale;
+  } else {
+    initialWidth = this.size_.width * scale;
+  }
 
   var width;
   if (Blockly.BlockSvg.FIELD_TEXTINPUT_EXPAND_PAST_TRUNCATION) {
@@ -525,7 +530,8 @@ Blockly.FieldTextInput.prototype.resizeEditor_ = function() {
   width = Math.max(width, Blockly.BlockSvg.FIELD_WIDTH_MIN_EDIT * scale);
   width = Math.min(width, Blockly.BlockSvg.FIELD_WIDTH_MAX_EDIT * scale);
 
-  var inputHeight = this.sourceBlock_.isShadow() ? Blockly.BlockSvg.FIELD_HEIGHT_MAX_EDIT : this.sourceBlock_.getHeightWidth().height;
+  var inputHeight = this.getTotalFields_() == 1 ?
+    this.sourceBlock_.getHeightWidth().height : Blockly.BlockSvg.FIELD_HEIGHT_MAX_EDIT;
 
   // Add 1px to width and height to account for border (pre-scale)
   div.style.width = (width / scale + 1) + 'px';
@@ -540,7 +546,7 @@ Blockly.FieldTextInput.prototype.resizeEditor_ = function() {
   // Add 0.5px to account for slight difference between SVG and CSS border
   var borderRadius = this.getBorderRadius() + 0.5;
   div.style.borderRadius = borderRadius + 'px';
-  Blockly.FieldTextInput.htmlInput_.style.borderRadius = borderRadius + 'px';
+  //Blockly.FieldTextInput.htmlInput_.style.borderRadius = borderRadius + 'px';
   // Pull stroke colour from the existing shadow block
   var strokeColour = this.sourceBlock_.getColourTertiary();
   div.style.borderColor = strokeColour;
