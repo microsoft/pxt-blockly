@@ -150,16 +150,15 @@ Blockly.Variables.flyoutCategory = function(workspace) {
  */
 Blockly.Variables.flyoutCategoryBlocks = function(workspace) {
   var variableModelList = workspace.getVariablesOfType('');
-  variableModelList.sort(Blockly.VariableModel.compareByName);
 
   var xmlList = [];
   if (variableModelList.length > 0) {
-    var firstVariable = variableModelList[0];
+    var mostRecentVariable = variableModelList[variableModelList.length - 1];
     if (Blockly.Blocks['variables_set']) {
       var gap = Blockly.Blocks['math_change'] ? 8 : 24;
       var blockText = '<xml>' +
             '<block type="variables_set" gap="' + gap + '">' +
-            Blockly.Variables.generateVariableFieldXmlString(firstVariable) +
+            Blockly.Variables.generateVariableFieldXmlString(mostRecentVariable) +
             '</block>' +
             '</xml>';
       var block = Blockly.Xml.textToDom(blockText).firstChild;
@@ -169,7 +168,7 @@ Blockly.Variables.flyoutCategoryBlocks = function(workspace) {
       var gap = Blockly.Blocks['variables_get'] ? 20 : 8;
       var blockText = '<xml>' +
           '<block type="math_change" gap="' + gap + '">' +
-          Blockly.Variables.generateVariableFieldXmlString(firstVariable) +
+          Blockly.Variables.generateVariableFieldXmlString(mostRecentVariable) +
           '<value name="DELTA">' +
           '<shadow type="math_number">' +
           '<field name="NUM">1</field>' +
@@ -181,6 +180,7 @@ Blockly.Variables.flyoutCategoryBlocks = function(workspace) {
       xmlList.push(block);
     }
 
+    variableModelList.sort(Blockly.VariableModel.compareByName);
     for (var i = 0, variable; variable = variableModelList[i]; i++) {
       if (Blockly.Blocks['variables_get']) {
         var blockText = '<xml>' +
