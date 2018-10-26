@@ -375,7 +375,7 @@ Blockly.Css.CONTENT = [
   '}',
 
   // pxtblockly: highlight reporter blocks on hover
-  '.blocklyPath.blocklyReporterHover {',
+  '.blocklyDraggable:not(.blocklySelected)>.blocklyPath.blocklyReporterHover {',
     'stroke-width: 2px;',
     'stroke: white;',
   '}',
