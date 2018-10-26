@@ -160,7 +160,7 @@ Blockly.FieldDropdown.prototype.init = function() {
   this.text_ = null;
   this.setText(text);
 
-  if (this.sourceBlock_.isEditable() && this.shouldShowRect_()) {
+  if (this.sourceBlock_.isEditable()) {
     this.mouseOverWrapper_ =
         Blockly.bindEvent_(
             this.getClickTarget_(), 'mouseover', this, this.onMouseOver_);
@@ -180,12 +180,10 @@ Blockly.FieldDropdown.prototype.onMouseOver_ = function(e) {
   var gesture = this.sourceBlock_.workspace.getGesture(e);
   if (gesture && gesture.isDragging()) return;
   if (this.box_) {
-    this.box_.style.strokeWidth = '2px';
-    this.box_.style.stroke = '#fff';
+    Blockly.utils.addClass(this.box_, 'blocklyFieldHover');
   }
   else if (this.sourceBlock_.svgPath_) {
-    this.sourceBlock_.svgPath_.style.strokeWidth = '2px';
-    this.sourceBlock_.svgPath_.style.stroke = '#fff';
+    Blockly.utils.addClass(this.sourceBlock_.svgPath_, 'blocklyFieldHover');
   }
 };
 
@@ -199,12 +197,10 @@ Blockly.FieldDropdown.prototype.onMouseOut_ = function(e) {
   var gesture = this.sourceBlock_.workspace.getGesture(e);
   if (gesture && gesture.isDragging()) return;
   if (this.box_) {
-    this.box_.style.strokeWidth = '1px';
-    this.box_.style.stroke = this.sourceBlock_.getColourTertiary();
+    Blockly.utils.removeClass(this.box_, 'blocklyFieldHover');
   }
   else if (this.sourceBlock_.svgPath_) {
-    this.sourceBlock_.svgPath_.style.strokeWidth = '1px';
-    this.sourceBlock_.svgPath_.style.stroke = this.sourceBlock_.getColourTertiary();
+    Blockly.utils.removeClass(this.sourceBlock_.svgPath_, 'blocklyFieldHover');
   }
 };
 

@@ -149,8 +149,7 @@ Blockly.FieldVariableGetter.prototype.onMouseOver_ = function(e) {
   var gesture = this.sourceBlock_.workspace.getGesture(e);
   if (gesture && gesture.isDragging()) return;
   if (this.sourceBlock_.svgPath_) {
-    this.sourceBlock_.svgPath_.style.strokeWidth = '2px';
-    this.sourceBlock_.svgPath_.style.stroke = '#fff';
+    Blockly.utils.addClass(this.sourceBlock_.svgPath_, 'blocklyFieldHover');
     this.sourceBlock_.svgPath_.style.strokeDasharray = '2';
   }
 };
@@ -161,8 +160,7 @@ Blockly.FieldVariableGetter.prototype.onMouseOver_ = function(e) {
  */
 Blockly.FieldVariableGetter.prototype.clearHover = function() {
   if (this.sourceBlock_.svgPath_) {
-    this.sourceBlock_.svgPath_.style.strokeWidth = '1px';
-    this.sourceBlock_.svgPath_.style.stroke = this.sourceBlock_.getColourTertiary();
+    Blockly.utils.removeClass(this.sourceBlock_.svgPath_, 'blocklyFieldHover');
     this.sourceBlock_.svgPath_.style.strokeDasharray = '';
   }
 };
