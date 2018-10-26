@@ -123,6 +123,27 @@ Blockly.WidgetDiv.show = function(newOwner, rtl, opt_dispose,
 };
 
 /**
+ *  Repositions the widgetDiv on window resize. If it doesn't know how to
+ *  calculate the new position, it wll just hide it instead.
+ */
+Blockly.WidgetDiv.repositionForWindowResize = function() {
+  // This condition mainly catches the widget div when it is being used as a
+  // text input.  It is important not to close it in this case because on Android,
+  // when a field is focused, the soft keyboard opens triggering a window resize
+  // event and we want the widget div to stick around so users can type into it.
+  if (Blockly.WidgetDiv.owner_
+      && Blockly.WidgetDiv.owner_.getScaledBBox_
+      && Blockly.WidgetDiv.owner_.getSize) {
+    var widgetScaledBBox = Blockly.WidgetDiv.owner_.getScaledBBox_();
+    var widgetSize = Blockly.WidgetDiv.owner_.getSize();
+    Blockly.WidgetDiv.positionInternal_(widgetScaledBBox.left, widgetScaledBBox.top,
+        widgetSize.height);
+  } else {
+    Blockly.WidgetDiv.hide();
+  }
+};
+
+/**
  * Destroy the widget and hide the div.
  * @param {boolean=} opt_noAnimate If set, animation will not be run for the hide.
  */
@@ -146,8 +167,8 @@ Blockly.WidgetDiv.hide = function(opt_noAnimate) {
     // If we want to animate out, set the appropriate timer for final dispose.
     if (Blockly.WidgetDiv.disposeAnimationFinished_ && !opt_noAnimate) {
       Blockly.WidgetDiv.disposeAnimationTimer_ = window.setTimeout(
-        Blockly.WidgetDiv.hide, // Come back to hide and take the first branch.
-        Blockly.WidgetDiv.disposeAnimationTimerLength_ * 1000
+          Blockly.WidgetDiv.hide, // Come back to hide and take the first branch.
+          Blockly.WidgetDiv.disposeAnimationTimerLength_ * 1000
       );
     } else {
       // No timer provided (or no animation desired) - auto-hide the DOM now.
