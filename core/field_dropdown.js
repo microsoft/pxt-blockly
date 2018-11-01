@@ -130,12 +130,12 @@ Blockly.FieldDropdown.prototype.init = function() {
   this.arrowX_ = 0;
   /** @type {Number} */
   this.arrowY_ = 11;
-  this.arrow_ = Blockly.utils.createSvgElement('image', {
+  this.arrow_ = Blockly.utils.createSvgElement('use', {
     'height': this.arrowSize_ + 'px',
     'width': this.arrowSize_ + 'px'
   });
   this.arrow_.setAttributeNS('http://www.w3.org/1999/xlink',
-      'xlink:href', Blockly.FieldDropdown.DROPDOWN_SVG_DATAURI);
+      'xlink:href', '#blocklyDropdownArrow');
   this.className_ += ' blocklyDropdownText';
 
   Blockly.FieldDropdown.superClass_.init.call(this);

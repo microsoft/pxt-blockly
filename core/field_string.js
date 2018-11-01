@@ -94,17 +94,17 @@ Blockly.FieldString.prototype.init = function() {
   this.quoteRightX_ = 0;
   this.quoteY_ = 8;
   if (this.quoteLeft_) this.quoteLeft_.parentNode.removeChild(this.quoteLeft_);
-  this.quoteLeft_ = Blockly.utils.createSvgElement('image', {
+  this.quoteLeft_ = Blockly.utils.createSvgElement('use', {
     'height': this.quoteSize_ + 'px',
     'width': this.quoteSize_ + 'px'
   });
   if (this.quoteRight_) this.quoteRight_.parentNode.removeChild(this.quoteRight_);
-  this.quoteRight_ = Blockly.utils.createSvgElement('image', {
+  this.quoteRight_ = Blockly.utils.createSvgElement('use', {
     'height': this.quoteSize_ + 'px',
     'width': this.quoteSize_ + 'px'
   });
-  var quoteLeft = this.sourceBlock_.RTL ? Blockly.FieldString.QUOTE_1_DATA_URI : Blockly.FieldString.QUOTE_0_DATA_URI;
-  var quoteRight = this.sourceBlock_.RTL ? Blockly.FieldString.QUOTE_0_DATA_URI : Blockly.FieldString.QUOTE_1_DATA_URI;
+  var quoteLeft = this.sourceBlock_.RTL ? '#blocklyStringQuote1' : '#blocklyStringQuote0';
+  var quoteRight = this.sourceBlock_.RTL ? '#blocklyStringQuote0' : '#blocklyStringQuote1';
   this.quoteLeft_.setAttributeNS('http://www.w3.org/1999/xlink',
       'xlink:href', quoteLeft);
   this.quoteRight_.setAttributeNS('http://www.w3.org/1999/xlink',
