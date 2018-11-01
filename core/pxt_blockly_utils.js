@@ -52,32 +52,3 @@ Blockly.pxtBlocklyUtils.isShadowArgumentReporter = function(block) {
   return (block.type == 'variables_get_reporter');
 };
 
-/**
- * Determine if this block can be recycled in the flyout.  Blocks that have no
- * variablees and are not dynamic shadows can be recycled.
- * @param {Blockly.Block} block The block to check.
- * @return {boolean} True if the block can be recycled.
- * @package
- */
-Blockly.pxtBlocklyUtils.blockIsRecyclable = function(block) {
-  // If the block needs to parse mutations, never recycle.
-  for (var i = 0; i < block.inputList.length; i++) {
-    var input = block.inputList[i];
-    for (var j = 0; j < input.fieldRow.length; j++) {
-      var field = input.fieldRow[j];
-      // No variables.
-      if (field instanceof Blockly.FieldVariable ||
-          field instanceof Blockly.FieldVariableGetter) {
-        return false;
-      }
-    }
-    // Check children.
-    if (input.connection) {
-      var child = input.connection.targetBlock();
-      if (child && !Blockly.pxtBlocklyUtils.blockIsRecyclable(child)) {
-        return false;
-      }
-    }
-  }
-  return true;
-};
