@@ -770,8 +770,14 @@ Blockly.Field.prototype.getClickTarget_ = function() {
 
   var nFields = 0;
 
+  var nFields = 0;
+  // Count the number of fields, excluding text fields
   for (var i = 0, input; input = this.sourceBlock_.inputList[i]; i++) {
-    nFields += input.fieldRow.length;
+    for (var j = 0, field; field = input.fieldRow[j]; j++) {
+      if (!(field instanceof Blockly.FieldLabel)) {
+        nFields ++;
+      }
+    }
   }
 
   if (nFields <= 1 && this.sourceBlock_.outputConnection
