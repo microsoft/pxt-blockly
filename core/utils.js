@@ -474,7 +474,7 @@ Blockly.utils.checkMessageReferences = function(message) {
           match[1] + '}.');
       validSoFar = false;  // Continue to report other errors.
     } else if (msgTable[msgKey.substr(4)] == undefined) {
-      console.log('WARNING: No message string for %{' + match[1] + '}.');
+      //console.log('WARNING: No message string for %{' + match[1] + '}.');
       validSoFar = false;  // Continue to report other errors.
     }
 
