@@ -33,6 +33,7 @@ goog.require('Blockly.Events.Ui');
 goog.require('Blockly.Events.BlockMove');
 goog.require('Blockly.Grid');
 goog.require('Blockly.RenderedConnection');
+goog.require('Blockly.pxtBlocklyUtils');
 goog.require('Blockly.Tooltip');
 goog.require('Blockly.Touch');
 goog.require('Blockly.utils');
@@ -784,7 +785,7 @@ Blockly.BlockSvg.prototype.showContextMenu_ = function(e) {
     }
     menuOptions.push(Blockly.ContextMenu.blockDeleteOption(block));
   } else if (this.parentBlock_ && (this.isShadow_
-      && !Blockly.utils.isShadowArgumentReporter(block))) {
+      && !Blockly.pxtBlocklyUtils.isShadowArgumentReporter(block))) {
     this.parentBlock_.showContextMenu_(e);
     return;
   }

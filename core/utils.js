@@ -29,28 +29,13 @@
 /**
  * @name Blockly.utils
  * @namespace
- **/
+ */
 goog.provide('Blockly.utils');
 
-goog.require('Blockly.Touch');
 goog.require('goog.dom');
-goog.require('goog.events.BrowserFeature');
 goog.require('goog.math.Coordinate');
 goog.require('goog.userAgent');
 
-
-/**
- * To allow ADVANCED_OPTIMIZATIONS, combining variable.name and variable['name']
- * is not possible. To access the exported Blockly.Msg.Something it needs to be
- * accessed through the exact name that was exported. Note, that all the exports
- * are happening as the last thing in the generated js files, so they won't be
- * accessible before JavaScript loads!
- * @return {!Object.<string, string>} The message array.
- * @private
- */
-Blockly.utils.getMessageArray_ = function() {
-  return goog.global['Blockly']['Msg'];
-};
 
 /**
  * Remove an attribute from a element even if it's in IE 10.
@@ -127,6 +112,16 @@ Blockly.utils.removeClass = function(element, className) {
 Blockly.utils.hasClass = function(element, className) {
   var classes = element.getAttribute('class');
   return (' ' + classes + ' ').indexOf(' ' + className + ' ') != -1;
+};
+
+/**
+ * Removes a node from its parent. No-op if not attached to a parent.
+ * @param {Node} node The node to remove.
+ * @return {Node} The node removed if removed; else, null.
+ */
+// Copied from Closure goog.dom.removeNode
+Blockly.utils.removeNode = function(node) {
+  return node && node.parentNode ? node.parentNode.removeChild(node) : null;
 };
 
 /**
@@ -436,6 +431,7 @@ Blockly.utils.tokenizeInterpolation = function(message) {
   return Blockly.utils.tokenizeInterpolation_(message, true);
 };
 
+
 /**
  * Replaces string table references in a message, if the message is a string.
  * For example, "%{bky_my_msg}" and "%{BKY_MY_MSG}" will both be replaced with
@@ -445,7 +441,7 @@ Blockly.utils.tokenizeInterpolation = function(message) {
  * @return {!string} String with message references replaced.
  */
 Blockly.utils.replaceMessageReferences = function(message) {
-  if (!goog.isString(message)) {
+  if (typeof message != 'string') {
     return message;
   }
   var interpolatedResult = Blockly.utils.tokenizeInterpolation_(message, false);
@@ -462,15 +458,24 @@ Blockly.utils.replaceMessageReferences = function(message) {
  *     Otherwise, false.
  */
 Blockly.utils.checkMessageReferences = function(message) {
-  var isValid = true;  // True until a bad reference is found.
+  var validSoFar = true;
 
-  var regex = /%{BKY_([a-zA-Z][a-zA-Z0-9_]*)}/g;
+  var msgTable = Blockly.Msg;
+
+  // TODO (#1169): Implement support for other string tables,
+  // prefixes other than BKY_.
+  var regex = /%{(BKY_[A-Z][A-Z0-9_]*)}/gi;
   var match = regex.exec(message);
   while (match) {
     var msgKey = match[1];
-    if (Blockly.utils.getMessageArray_()[msgKey] == undefined) {
-      //console.log('WARNING: No message string for %{BKY_' + msgKey + '}.');
-      isValid = false;
+    msgKey = msgKey.toUpperCase();
+    if (msgKey.substr(0, 4) != 'BKY_') {
+      console.log('WARNING: Unsupported message table prefix in %{' +
+          match[1] + '}.');
+      validSoFar = false;  // Continue to report other errors.
+    } else if (msgTable[msgKey.substr(4)] == undefined) {
+      console.log('WARNING: No message string for %{' + match[1] + '}.');
+      validSoFar = false;  // Continue to report other errors.
     }
 
     // Re-run on remainder of string.
@@ -478,7 +483,7 @@ Blockly.utils.checkMessageReferences = function(message) {
     match = regex.exec(message);
   }
 
-  return isValid;
+  return validSoFar;
 };
 
 /**
@@ -546,9 +551,9 @@ Blockly.utils.tokenizeInterpolation_ = function(message,
     } else if (state == 3) {  // String table reference
       if (c == '') {
         // Premature end before closing '}'
-        buffer.splice(0, 0, '%{'); // Re-insert leading delimiter
+        buffer.splice(0, 0, '%{');  // Re-insert leading delimiter
         i--;  // Parse this char again.
-        state = 0; // and parse as string literal.
+        state = 0;  // and parse as string literal.
       } else if (c != '}') {
         buffer.push(c);
       } else  {
@@ -558,13 +563,13 @@ Blockly.utils.tokenizeInterpolation_ = function(message,
           var keyUpper = rawKey.toUpperCase();
 
           // BKY_ is the prefix used to namespace the strings used in Blockly
-          // core files and the predefined blocks in ../blocks/. These strings
-          // are defined in ../msgs/ files.
-          var bklyKey = goog.string.startsWith(keyUpper, 'BKY_') ?
+          // core files and the predefined blocks in ../blocks/.
+          // These strings are defined in ../msgs/ files.
+          var bklyKey = Blockly.utils.startsWith(keyUpper, 'BKY_') ?
               keyUpper.substring(4) : null;
-          if (bklyKey && bklyKey in Blockly.utils.getMessageArray_()) {
-            var rawValue = Blockly.utils.getMessageArray_()[bklyKey];
-            if (goog.isString(rawValue)) {
+          if (bklyKey && bklyKey in Blockly.Msg) {
+            var rawValue = Blockly.Msg[bklyKey];
+            if (typeof rawValue == 'string') {
               // Attempt to dereference substrings, too, appending to the end.
               Array.prototype.push.apply(tokens,
                   Blockly.utils.tokenizeInterpolation_(
@@ -586,7 +591,7 @@ Blockly.utils.tokenizeInterpolation_ = function(message,
         } else {
           tokens.push('%{' + rawKey + '}');
           buffer.length = 0;
-          state = 0; // and parse as string literal.
+          state = 0;  // and parse as string literal.
         }
       }
     }
@@ -814,36 +819,6 @@ Blockly.utils.wrapToText_ = function(words, wordBreaks) {
 };
 
 /**
- * Measure some text using a canvas in-memory.
- * Does not exist in Blockly, but needed in scratch-blocks
- * @param {string} fontSize E.g., '10pt'
- * @param {string} fontFamily E.g., 'Arial'
- * @param {string} fontWeight E.g., '600'
- * @param {string} text The actual text to measure
- * @return {number} Width of the text in px.
- */
-Blockly.utils.measureText = function(fontSize, fontFamily, fontWeight, text) {
-  var canvas = document.createElement('canvas');
-  var context = canvas.getContext('2d');
-  context.font = fontWeight + ' ' + fontSize + ' ' + fontFamily;
-  return context.measureText(text).width;
-};
-
-/**
- * Encode a string's HTML entities.
- * E.g., <a> -> &lt;a&gt;
- * Does not exist in Blockly, but needed in scratch-blocks
- * @param {string} rawStr Unencoded raw string to encode.
- * @return {string} String with HTML entities encoded.
- */
-Blockly.utils.encodeEntities = function(rawStr) {
-  // CC-BY-SA https://stackoverflow.com/questions/18749591/encode-html-entities-in-javascript
-  return rawStr.replace(/[\u00A0-\u9999<>\&]/gim, function(i) {
-    return '&#' + i.charCodeAt(0) + ';';
-  });
-};
-
-/**
  * Check if 3D transforms are supported by adding an element
  * and attempting to set the property.
  * @return {boolean} true if 3D transforms are supported.
@@ -898,13 +873,13 @@ Blockly.utils.is3dSupported = function() {
  * Contrast with node.insertBefore function.
  * @param {!Element} newNode New element to insert.
  * @param {!Element} refNode Existing element to precede new node.
- * @private
+ * @package
  */
-Blockly.utils.insertAfter_ = function(newNode, refNode) {
+Blockly.utils.insertAfter = function(newNode, refNode) {
   var siblingNode = refNode.nextSibling;
   var parentNode = refNode.parentNode;
   if (!parentNode) {
-    throw 'Reference node has no parent.';
+    throw Error('Reference node has no parent.');
   }
   if (siblingNode) {
     parentNode.insertBefore(newNode, siblingNode);
@@ -920,14 +895,14 @@ Blockly.utils.insertAfter_ = function(newNode, refNode) {
  */
 Blockly.utils.runAfterPageLoad = function(fn) {
   if (typeof document != 'object') {
-    throw new Error('Blockly.utils.runAfterPageLoad() requires browser document.');
+    throw Error('Blockly.utils.runAfterPageLoad() requires browser document.');
   }
-  if (document.readyState === 'complete') {
+  if (document.readyState == 'complete') {
     fn();  // Page has already loaded. Call immediately.
   } else {
     // Poll readyState.
     var readyStateCheckInterval = setInterval(function() {
-      if (document.readyState === 'complete') {
+      if (document.readyState == 'complete') {
         clearInterval(readyStateCheckInterval);
         fn();
       }
@@ -945,42 +920,6 @@ Blockly.utils.runAfterPageLoad = function(fn) {
 Blockly.utils.setCssTransform = function(node, transform) {
   node.style['transform'] = transform;
   node.style['-webkit-transform'] = transform;
-};
-
-/**
- * Re-assign obscured shadow blocks new IDs to prevent collisions
- * Scratch specific to help the VM handle deleting obscured shadows.
- * @param {Blockly.Block} block the root block to be processed.
- */
-Blockly.utils.changeObscuredShadowIds = function(block) {
-  var blocks = block.getDescendants();
-  for (var i = blocks.length - 1; i >= 0; i--) {
-    var descendant = blocks[i];
-    for (var j = 0; j < descendant.inputList.length; j++) {
-      var connection = descendant.inputList[j].connection;
-      if (connection) {
-        var shadowDom = connection.getShadowDom();
-        if (shadowDom) {
-          shadowDom.setAttribute('id', Blockly.utils.genUid());
-          connection.setShadowDom(shadowDom);
-        }
-      }
-    }
-  }
-};
-
-/**
- * Whether a block is both a shadow block and an argument reporter.  These
- * blocks have special behaviour in scratch-blocks: they're duplicated when
- * dragged, and they are rendered slightly differently from normal shadow
- * blocks.
- * @param {!Blockly.BlockSvg} block The block that should be used to make this
- *     decision.
- * @return {boolean} True if the block should be duplicated on drag.
- * @package
- */
-Blockly.utils.isShadowArgumentReporter = function(block) {
-  return (block.type == 'variables_get_reporter');
 };
 
 /**
@@ -1002,3 +941,67 @@ Blockly.utils.getViewportBBox = function() {
     left: scrollOffset.x
   };
 };
+
+/**
+ * Fast prefix-checker.
+ * Copied from Closure's goog.string.startsWith.
+ * @param {string} str The string to check.
+ * @param {string} prefix A string to look for at the start of `str`.
+ * @return {boolean} True if `str` begins with `prefix`.
+ * @package
+ */
+Blockly.utils.startsWith = function(str, prefix) {
+  return str.lastIndexOf(prefix, 0) == 0;
+};
+
+/**
+ * Removes the first occurrence of a particular value from an array.
+ * @param {!Array} arr Array from which to remove
+ *     value.
+ * @param {*} obj Object to remove.
+ * @return {boolean} True if an element was removed.
+ * @package
+ */
+Blockly.utils.arrayRemove = function(arr, obj) {
+  var i = arr.indexOf(obj);
+  if (i == -1) {
+    return false;
+  }
+  arr.splice(i, 1);
+  return true;
+};
+
+/**
+ * Converts degrees to radians.
+ * Copied from Closure's goog.math.toRadians.
+ * @param {number} angleDegrees Angle in degrees.
+ * @return {number} Angle in radians.
+ * @package
+ */
+Blockly.utils.toRadians = function(angleDegrees) {
+  return angleDegrees * Math.PI / 180;
+};
+
+/**
+ * Converts radians to degrees.
+ * Copied from Closure's goog.math.toDegrees.
+ * @param {number} angleRadians Angle in radians.
+ * @return {number} Angle in degrees.
+ * @package
+ */
+Blockly.utils.toDegrees = function(angleRadians) {
+  return angleRadians * 180 / Math.PI;
+};
+
+/**
+ * Whether a node contains another node.
+ * @param {!Node} parent The node that should contain the other node.
+ * @param {!Node} descendant The node to test presence of.
+ * @return {boolean} Whether the parent node contains the descendant node.
+ * @package
+ */
+Blockly.utils.containsNode = function(parent, descendant) {
+  return !!(parent.compareDocumentPosition(descendant) &
+            Node.DOCUMENT_POSITION_CONTAINED_BY);
+};
+

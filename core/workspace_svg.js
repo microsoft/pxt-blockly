@@ -312,7 +312,14 @@ Blockly.WorkspaceSvg.prototype.targetWorkspace = null;
  * @type {SVGMatrix}
  * @private
  */
-Blockly.WorkspaceSvg.prototype.inverseScreenCTM_ = Blockly.DIRTY;
+Blockly.WorkspaceSvg.prototype.inverseScreenCTM_ = null;
+
+/**
+ * Inverted screen CTM is dirty.
+ * @type {Boolean}
+ * @private
+ */
+Blockly.WorkspaceSvg.prototype.inverseScreenCTMDirty_ = true;
 
 /**
  * Getter for the inverted screen CTM.
@@ -322,13 +329,11 @@ Blockly.WorkspaceSvg.prototype.getInverseScreenCTM = function() {
 
   // Defer getting the screen CTM until we actually need it, this should
   // avoid forced reflows from any calls to updateInverseScreenCTM.
-  if (this.inverseScreenCTM_ == Blockly.DIRTY) {
+  if (this.inverseScreenCTMDirty_) {
     var ctm = this.getParentSvg().getScreenCTM();
     if (ctm) {
       this.inverseScreenCTM_ = ctm.inverse();
-    } else {
-      // When dirty, and we can't get a CTM, set it to null.
-      this.inverseScreenCTM_ = null;
+      this.inverseScreenCTMDirty_ = false;
     }
   }
 
@@ -339,9 +344,8 @@ Blockly.WorkspaceSvg.prototype.getInverseScreenCTM = function() {
  * Mark the inverse screen CTM as dirty.
  */
 Blockly.WorkspaceSvg.prototype.updateInverseScreenCTM = function() {
-  this.inverseScreenCTM_ = Blockly.DIRTY;
+  this.inverseScreenCTMDirty_ = true;
 };
-
 /**
  * Return the absolute coordinates of the top-left corner of this element,
  * scales that after canvas SVG element, if it's a descendant.
@@ -968,31 +972,6 @@ Blockly.WorkspaceSvg.prototype.glowStack = function(id, isGlowingStack) {
     }
   }
   block.setGlowStack(isGlowingStack);
-};
-
-/**
- * Visually report a value associated with a block.
- * In Scratch, appears as a pop-up next to the block when a reporter block is clicked.
- * @param {?string} id ID of block to report associated value.
- * @param {?string} value String value to visually report.
- */
-Blockly.WorkspaceSvg.prototype.reportValue = function(id, value) {
-  var block = this.getBlockById(id);
-  if (!block) {
-    throw 'Tried to report value on block that does not exist.';
-  }
-  Blockly.DropDownDiv.hideWithoutAnimation();
-  Blockly.DropDownDiv.clearContent();
-  var contentDiv = Blockly.DropDownDiv.getContentDiv();
-  var valueReportBox = goog.dom.createElement('div');
-  valueReportBox.setAttribute('class', 'valueReportBox');
-  valueReportBox.innerHTML = Blockly.utils.encodeEntities(value);
-  contentDiv.appendChild(valueReportBox);
-  Blockly.DropDownDiv.setColour(
-      Blockly.Colours.valueReportBackground,
-      Blockly.Colours.valueReportBorder
-  );
-  Blockly.DropDownDiv.showPositionedByBlock(this, block);
 };
 
 /**

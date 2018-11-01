@@ -27,6 +27,7 @@
 goog.provide('Blockly.BlockSvg.render');
 
 goog.require('Blockly.BlockSvg');
+goog.require('Blockly.pxtBlocklyUtils');
 goog.require('Blockly.utils');
 
 
@@ -482,7 +483,7 @@ Blockly.BlockSvg.SHAPE_IN_SHAPE_PADDING = {
  */
 Blockly.BlockSvg.prototype.updateColour = function() {
   var strokeColour = this.getColourTertiary();
-  var renderShadowed = this.isShadow() && !Blockly.utils.isShadowArgumentReporter(this);
+  var renderShadowed = this.isShadow() && !Blockly.pxtBlocklyUtils.isShadowArgumentReporter(this);
 
   if (renderShadowed && this.parentBlock_) {
     // Pull shadow block stroke colour from parent block's tertiary if possible.
@@ -503,9 +504,9 @@ Blockly.BlockSvg.prototype.updateColour = function() {
   if (this.isGlowingBlock_ || renderShadowed) {
     // Use the block's shadow colour if possible.
     if (this.getShadowColour()) {
-      fillColour = this.getShadowColour();
+      var fillColour = this.getShadowColour();
     } else {
-      fillColour = this.getColourSecondary();
+      var fillColour = this.getColourSecondary();
     }
   } else {
     var fillColour = this.getColour();
@@ -943,7 +944,7 @@ Blockly.BlockSvg.prototype.computeRightEdge_ = function(curEdge, hasStatement) {
     // Blocks with notches
     edge = Math.max(edge, Blockly.BlockSvg.MIN_BLOCK_X);
   } else if (this.outputConnection) {
-    if (this.isShadow() && !Blockly.utils.isShadowArgumentReporter(this)) {
+    if (this.isShadow() && !Blockly.pxtBlocklyUtils.isShadowArgumentReporter(this)) {
       // Single-fields
       edge = Math.max(edge, Blockly.BlockSvg.MIN_BLOCK_X_SHADOW_OUTPUT);
     } else {
@@ -973,7 +974,7 @@ Blockly.BlockSvg.prototype.computeRightEdge_ = function(curEdge, hasStatement) {
 Blockly.BlockSvg.prototype.computeOutputPadding_ = function(inputRows) {
   // Only apply to blocks with outputs and not single fields (shadows).
   if (!this.getOutputShape() || !this.outputConnection ||
-      (this.isShadow() && !Blockly.utils.isShadowArgumentReporter(this))) {
+      (this.isShadow() && !Blockly.pxtBlocklyUtils.isShadowArgumentReporter(this))) {
     return;
   }
   // Blocks with outputs must have single row to be padded.
