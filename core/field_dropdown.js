@@ -130,12 +130,18 @@ Blockly.FieldDropdown.prototype.init = function() {
   this.arrowX_ = 0;
   /** @type {Number} */
   this.arrowY_ = 11;
-  this.arrow_ = Blockly.utils.createSvgElement('image', {
+
+  // IE has issues with the <use> element, place the image inline instead
+  // https://developer.mozilla.org/en-US/docs/Web/SVG/Element/use#Browser_compatibility
+  var arrowElement = goog.userAgent.IE ? 'image' : 'use';
+  var arrowHref = goog.userAgent.IE ? Blockly.FieldDropdown.DROPDOWN_SVG_DATAURI : '#blocklyDropdownArrowSvg';
+
+  this.arrow_ = Blockly.utils.createSvgElement(arrowElement, {
     'height': this.arrowSize_ + 'px',
     'width': this.arrowSize_ + 'px'
   });
   this.arrow_.setAttributeNS('http://www.w3.org/1999/xlink',
-      'xlink:href', Blockly.FieldDropdown.DROPDOWN_SVG_DATAURI);
+      'xlink:href', arrowHref);
   this.className_ += ' blocklyDropdownText';
 
   Blockly.FieldDropdown.superClass_.init.call(this);
