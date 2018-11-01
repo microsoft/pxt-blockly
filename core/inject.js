@@ -402,7 +402,7 @@ Blockly.createDom_ = function(container, options) {
   var arrowSize = 12;
   var dropdownArrowImage = Blockly.utils.createSvgElement('image',
       {
-        'id': 'blocklyDropdownArrow',
+        'id': 'blocklyDropdownArrowSvg',
         'height': arrowSize + 'px',
         'width': arrowSize + 'px'
       }, defs);
@@ -412,7 +412,7 @@ Blockly.createDom_ = function(container, options) {
   var quoteSize = 12;
   var leftQuoteImage = Blockly.utils.createSvgElement('image',
       {
-        'id': 'blocklyStringQuote0',
+        'id': 'blocklyStringQuote0Svg',
         'height': quoteSize + 'px',
         'width': quoteSize + 'px'
       }, defs);
@@ -420,7 +420,7 @@ Blockly.createDom_ = function(container, options) {
       'xlink:href', Blockly.FieldString.QUOTE_0_DATA_URI);
   var rightQuoteImage = Blockly.utils.createSvgElement('image',
       {
-        'id': 'blocklyStringQuote1',
+        'id': 'blocklyStringQuote1Svg',
         'height': quoteSize + 'px',
         'width': quoteSize + 'px'
       }, defs);
