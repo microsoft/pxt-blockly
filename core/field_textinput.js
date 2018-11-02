@@ -30,6 +30,7 @@ goog.require('Blockly.BlockSvg.render');
 goog.require('Blockly.Colours');
 goog.require('Blockly.Field');
 goog.require('Blockly.Msg');
+goog.require('Blockly.pxtBlocklyUtils');
 goog.require('Blockly.utils');
 goog.require('goog.asserts');
 goog.require('goog.dom');
@@ -513,7 +514,7 @@ Blockly.FieldTextInput.prototype.resizeEditor_ = function() {
   var width;
   if (Blockly.BlockSvg.FIELD_TEXTINPUT_EXPAND_PAST_TRUNCATION) {
     // Resize the box based on the measured width of the text, pre-truncation
-    var textWidth = Blockly.utils.measureText(
+    var textWidth = Blockly.pxtBlocklyUtils.measureText(
         Blockly.FieldTextInput.htmlInput_.style.fontSize,
         Blockly.FieldTextInput.htmlInput_.style.fontFamily,
         Blockly.FieldTextInput.htmlInput_.style.fontWeight,
@@ -667,6 +668,9 @@ Blockly.FieldTextInput.prototype.maybeSaveEdit_ = function() {
   }
   this.setText(text);
   this.sourceBlock_.rendered && this.sourceBlock_.render();
+  // pxtblockly: Fire a UI event that an edit was complete
+  Blockly.Events.fire(new Blockly.Events.Ui(
+      this.sourceBlock_, 'saveEdit', undefined, text));
 };
 
 /**

@@ -287,11 +287,11 @@ Blockly.Field.prototype.updateEditable = function() {
   if (this.sourceBlock_.isEditable()) {
     Blockly.utils.addClass(group, 'blocklyEditableText');
     Blockly.utils.removeClass(group, 'blocklyNonEditableText');
-    this.fieldGroup_.style.cursor = this.CURSOR;
+    this.getClickTarget_().style.cursor = this.CURSOR;
   } else {
     Blockly.utils.addClass(group, 'blocklyNonEditableText');
     Blockly.utils.removeClass(group, 'blocklyEditableText');
-    this.fieldGroup_.style.cursor = '';
+    this.getClickTarget_().style.cursor = '';
   }
 };
 
@@ -422,9 +422,7 @@ Blockly.Field.prototype.getSvgRoot = function() {
 Blockly.Field.prototype.render_ = function() {
   if (this.visible_ && this.textElement_) {
     // Replace the text.
-    goog.dom.removeChildren(/** @type {!Element} */ (this.textElement_));
-    var textNode = document.createTextNode(this.getDisplayText_());
-    this.textElement_.appendChild(textNode);
+    this.textElement_.textContent = this.getDisplayText_();
     this.updateWidth();
 
     // Update text centering, based on newly calculated width.
@@ -768,25 +766,27 @@ Blockly.Field.prototype.setTooltip = function(_newTip) {
  * @private
  */
 Blockly.Field.prototype.getClickTarget_ = function() {
-  var nFields = 0;
-  var onlyDropdown = -1;
+  if (this.clickTarget_) return this.clickTarget_;
 
+  var nFields = 0;
+
+  var nFields = 0;
+  // Count the number of fields, excluding text fields
   for (var i = 0, input; input = this.sourceBlock_.inputList[i]; i++) {
-    for (var j = 0; j < input.fieldRow.length; j++) {
-      if (onlyDropdown < 0 && input.fieldRow[j] instanceof Blockly.FieldDropdown) {
-        onlyDropdown = 1;
-      } else if (!(input.fieldRow[j] instanceof Blockly.FieldLabel)) {
-        onlyDropdown = 0;
+    for (var j = 0, field; field = input.fieldRow[j]; j++) {
+      if (!(field instanceof Blockly.FieldLabel)) {
+        nFields ++;
       }
     }
-    nFields += input.fieldRow.length;
   }
 
-  if ((nFields <= 1 || onlyDropdown) && this.sourceBlock_.outputConnection) {
-    return this.sourceBlock_.getSvgRoot();
+  if (nFields <= 1 && this.sourceBlock_.outputConnection
+    && !this.sourceBlock_.childBlocks_.length) {
+    this.clickTarget_ = this.sourceBlock_.getSvgRoot();
   } else {
-    return this.getSvgRoot();
+    this.clickTarget_ = this.getSvgRoot();
   }
+  return this.clickTarget_;
 };
 
 Blockly.Field.prototype.getTotalFields_ = function() {

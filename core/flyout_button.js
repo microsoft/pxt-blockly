@@ -211,7 +211,7 @@ Blockly.FlyoutButton.prototype.createDom = function() {
     svgIcon.setAttribute('x', this.targetWorkspace_.RTL ? this.width + Blockly.FlyoutButton.MARGIN : 0);
     svgIcon.setAttribute('y', this.height / 2);
 
-    this.width += svgIcon.getComputedTextLength() + Blockly.FlyoutButton.MARGIN;
+    this.width += Blockly.Field.getCachedWidth(svgIcon) + Blockly.FlyoutButton.MARGIN;
   }
 
   if (this.helpButtonIcon_) {

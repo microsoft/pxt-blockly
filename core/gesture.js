@@ -33,6 +33,7 @@ goog.require('Blockly.BubbleDragger');
 goog.require('Blockly.constants');
 goog.require('Blockly.Events.Ui');
 goog.require('Blockly.FlyoutDragger');
+goog.require('Blockly.pxtBlocklyUtils');
 goog.require('Blockly.Tooltip');
 goog.require('Blockly.Touch');
 goog.require('Blockly.WorkspaceDragger');
@@ -827,7 +828,7 @@ Blockly.Gesture.prototype.setStartBlock = function(block) {
   if (!this.startBlock_ && !this.startBubble_) {
     this.startBlock_ = block;
     this.shouldDuplicateOnDrag_ = !block.disabled && !block.getInheritedDisabled()
-        && !block.isInFlyout && Blockly.utils.isShadowArgumentReporter(block);
+        && !block.isInFlyout && Blockly.pxtBlocklyUtils.isShadowArgumentReporter(block);
     if (block.isInFlyout && block != block.getRootBlock()) {
       this.setTargetBlock_(block.getRootBlock());
     } else {

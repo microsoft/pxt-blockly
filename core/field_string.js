@@ -21,6 +21,7 @@ goog.require('goog.math');
 goog.require('goog.dom');
 goog.require('goog.events');
 goog.require('goog.style');
+goog.require('goog.userAgent');
 
 /**
  * Class for an editable text field.
@@ -93,18 +94,29 @@ Blockly.FieldString.prototype.init = function() {
   this.quoteLeftX_ = 0;
   this.quoteRightX_ = 0;
   this.quoteY_ = 8;
+  var quoteElement = goog.userAgent.IE ? 'image' : 'use';
   if (this.quoteLeft_) this.quoteLeft_.parentNode.removeChild(this.quoteLeft_);
-  this.quoteLeft_ = Blockly.utils.createSvgElement('image', {
+  this.quoteLeft_ = Blockly.utils.createSvgElement(quoteElement, {
     'height': this.quoteSize_ + 'px',
     'width': this.quoteSize_ + 'px'
   });
   if (this.quoteRight_) this.quoteRight_.parentNode.removeChild(this.quoteRight_);
-  this.quoteRight_ = Blockly.utils.createSvgElement('image', {
+  this.quoteRight_ = Blockly.utils.createSvgElement(quoteElement, {
     'height': this.quoteSize_ + 'px',
     'width': this.quoteSize_ + 'px'
   });
-  var quoteLeft = this.sourceBlock_.RTL ? Blockly.FieldString.QUOTE_1_DATA_URI : Blockly.FieldString.QUOTE_0_DATA_URI;
-  var quoteRight = this.sourceBlock_.RTL ? Blockly.FieldString.QUOTE_0_DATA_URI : Blockly.FieldString.QUOTE_1_DATA_URI;
+  var quoteLeft = this.sourceBlock_.RTL ? '#blocklyStringQuote1Svg' : '#blocklyStringQuote0Svg';
+  var quoteRight = this.sourceBlock_.RTL ? '#blocklyStringQuote0Svg' : '#blocklyStringQuote1Svg';
+  if (goog.userAgent.IE) {
+    // IE has issues with the <use> element, place the image inline instead
+    // https://developer.mozilla.org/en-US/docs/Web/SVG/Element/use#Browser_compatibility
+    quoteLeft = this.sourceBlock_.RTL ?
+      Blockly.FieldString.QUOTE_1_DATA_URI :
+      Blockly.FieldString.QUOTE_0_DATA_URI;
+    quoteRight = this.sourceBlock_.RTL ?
+      Blockly.FieldString.QUOTE_0_DATA_URI :
+      Blockly.FieldString.QUOTE_1_DATA_URI;
+  }
   this.quoteLeft_.setAttributeNS('http://www.w3.org/1999/xlink',
       'xlink:href', quoteLeft);
   this.quoteRight_.setAttributeNS('http://www.w3.org/1999/xlink',

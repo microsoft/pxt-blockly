@@ -42,16 +42,13 @@ goog.require('goog.math.Coordinate');
  * @constructor
  */
 Blockly.Events.Ui = function(block, element, oldValue, newValue) {
-  if (!block) {
-    return;  // Blank event to be populated by fromJson.
-  }
-
   Blockly.Events.Ui.superClass_.constructor.call(this);
-  this.blockId = block.id;
-  this.workspaceId = block.workspace.id;
+  this.blockId = block ? block.id : null;
+  this.workspaceId = block ? block.workspace.id : null;
   this.element = element;
   this.oldValue = oldValue;
   this.newValue = newValue;
+  // UI events do not undo or redo.
   this.recordUndo = false;
 };
 goog.inherits(Blockly.Events.Ui, Blockly.Events.Abstract);

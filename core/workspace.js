@@ -122,6 +122,13 @@ Blockly.Workspace = function(opt_options) {
 Blockly.Workspace.prototype.rendered = false;
 
 /**
+ * Returns `true` if the workspace is currently in the process of a bulk clear.
+ * @type {boolean}
+ * @package
+ */
+Blockly.Workspace.prototype.isClearing = false;
+
+/**
  * Maximum number of undo events in stack. `0` turns off undo, `Infinity` sets it to unlimited.
  * @type {number}
  */
@@ -259,29 +266,34 @@ Blockly.Workspace.prototype.getAllBlocks = function(ordered) {
  * Dispose of all blocks and comments in workspace.
  */
 Blockly.Workspace.prototype.clear = function() {
-  var existingGroup = Blockly.Events.getGroup();
-  if (!existingGroup) {
-    Blockly.Events.setGroup(true);
-  }
-  while (this.topBlocks_.length) {
-    this.topBlocks_[0].dispose();
-  }
-  while (this.topComments_.length) {
-    this.topComments_[this.topComments_.length - 1].dispose();
-  }
-  if (!existingGroup) {
-    Blockly.Events.setGroup(false);
-  }
-  this.variableMap_.clear();
-  // Any block with a drop-down or WidgetDiv was disposed.
-  if (Blockly.DropDownDiv) {
-    Blockly.DropDownDiv.hideWithoutAnimation();
-  }
-  if (Blockly.WidgetDiv) {
-    Blockly.WidgetDiv.hide(true);
-  }
-  if (this.potentialVariableMap_) {
-    this.potentialVariableMap_.clear();
+  this.isClearing = true;
+  try {
+    var existingGroup = Blockly.Events.getGroup();
+    if (!existingGroup) {
+      Blockly.Events.setGroup(true);
+    }
+    while (this.topBlocks_.length) {
+      this.topBlocks_[0].dispose();
+    }
+    while (this.topComments_.length) {
+      this.topComments_[this.topComments_.length - 1].dispose();
+    }
+    if (!existingGroup) {
+      Blockly.Events.setGroup(false);
+    }
+    this.variableMap_.clear();
+    // Any block with a drop-down or WidgetDiv was disposed.
+    if (Blockly.DropDownDiv) {
+      Blockly.DropDownDiv.hideWithoutAnimation();
+    }
+    if (Blockly.WidgetDiv) {
+      Blockly.WidgetDiv.hide(true);
+    }
+    if (this.potentialVariableMap_) {
+      this.potentialVariableMap_.clear();
+    }
+  } finally {
+    this.isClearing = false;
   }
 };
 

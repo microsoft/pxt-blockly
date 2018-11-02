@@ -59,7 +59,7 @@ Blockly.ScrollbarPair = function(workspace) {
         'class': 'blocklyScrollbarBackground'
       },
       null);
-  Blockly.utils.insertAfter_(this.corner_, workspace.getBubbleCanvas());
+  Blockly.utils.insertAfter(this.corner_, workspace.getBubbleCanvas());
 };
 
 /**
@@ -639,7 +639,7 @@ Blockly.Scrollbar.prototype.createDom_ = function(opt_class) {
         'ry': radius
       },
       this.svgGroup_);
-  Blockly.utils.insertAfter_(this.outerSvg_, this.workspace_.getParentSvg());
+  Blockly.utils.insertAfter(this.outerSvg_, this.workspace_.getParentSvg());
 };
 
 /**

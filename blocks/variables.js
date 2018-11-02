@@ -141,12 +141,22 @@ Blockly.Constants.Variables.CUSTOM_CONTEXT_MENU_VARIABLE_GETTER_SETTER_MIXIN = {
       option.callback = Blockly.ContextMenu.callbackFactory(this, xmlBlock);
       options.push(option);
     } else {
-      var renameOption = {
-        text: Blockly.Msg.RENAME_VARIABLE,
-        enabled: true,
-        callback: Blockly.Constants.Variables.RENAME_OPTION_CALLBACK_FACTORY(this)
-      };
-      options.unshift(renameOption);
+      // Getter blocks have the option to rename or delete that variable.
+      if (this.type == 'variables_get' || this.type == 'variables_get_reporter') {
+        var renameOption = {
+          text: Blockly.Msg.RENAME_VARIABLE,
+          enabled: true,
+          callback: Blockly.Constants.Variables.RENAME_OPTION_CALLBACK_FACTORY(this)
+        };
+        var name = this.getField('VAR').getText();
+        var deleteOption = {
+          text: Blockly.Msg.DELETE_VARIABLE.replace('%1', name),
+          enabled: true,
+          callback: Blockly.Constants.Variables.DELETE_OPTION_CALLBACK_FACTORY(this)
+        };
+        options.unshift(renameOption);
+        options.unshift(deleteOption);
+      }
     }
   }
 };
@@ -226,6 +236,22 @@ Blockly.Constants.Variables.RENAME_OPTION_CALLBACK_FACTORY = function(block) {
     var workspace = block.workspace;
     var variable = block.getField('VAR').getVariable();
     Blockly.Variables.renameVariable(workspace, variable);
+  };
+};
+
+/**
+ * Callback for delete variable dropdown menu option associated with a
+ * variable getter block.
+ * @param {!Blockly.Block} block The block with the variable to delete.
+ * @return {!function()} A function that deletes the variable.
+ */
+Blockly.Constants.Variables.DELETE_OPTION_CALLBACK_FACTORY = function(block) {
+  return function() {
+    var workspace = block.workspace;
+    var variable = block.getField('VAR').getVariable();
+    workspace.deleteVariableById(variable.getId());
+
+    workspace.refreshToolboxSelection();
   };
 };
 
