@@ -23,7 +23,7 @@ Major additions and changes in this fork:
 
 ## Development
 
-* `git clone https://github.com/google/closure-library
+* `git clone https://github.com/google/closure-library`
 * `cd closure-library`
 * `git checkout v20180805`
 * `cd ../`
