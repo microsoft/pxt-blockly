@@ -37,6 +37,14 @@ npm install .
 
 * `gulp build` to build blockly (install ``gulp`` if needed ``npm install -g gulp``)
 
+## Integrating in PXT
+
+* `gulp publish` from the ``develop`` branch.
+
+**Make sure you've checked out the correct closure-library (see above)**
+
+See [more tips about **pxt+pxt-blockly** testing](https://github.com/Microsoft/pxt/tree/master/scripts).
+
 ## Playground
 
 There is a playground manual testing page at [tests/playground.html](./tests/playground.html), which requires no build step or server running.
