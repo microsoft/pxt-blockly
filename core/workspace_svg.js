@@ -1665,10 +1665,10 @@ Blockly.WorkspaceSvg.prototype.centerOnBlock = function(id, animate) {
 
   // XY is in workspace coordinates.
   var xy = block.getRelativeToSurfaceXY();
-  // Height/width is in workspace units.
-  var heightWidth = block.getHeightWidth();
+  // Height/width is in workspace units. Note that getHeightWidth returns the block height AND all subsequent blocks.
+  var heightWidth = { height: block.height, width: block.width };
 
-  // Find the enter of the block in workspace units.
+  // Find the center of the block in workspace units.
   var blockCenterY = xy.y + heightWidth.height / 2;
 
   // In RTL the block's position is the top right of the block, not top left.
