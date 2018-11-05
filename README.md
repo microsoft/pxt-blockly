@@ -23,6 +23,10 @@ Major additions and changes in this fork:
 
 ## Development
 
+* `git clone https://github.com/google/closure-library
+* `cd closure-library`
+* `git checkout v20180805`
+* `cd ../`
 * `git clone https://github.com/Microsoft/pxt-blockly`
 * `cd pxt-blockly`
 * `npm install .`
