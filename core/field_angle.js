@@ -137,10 +137,10 @@ Blockly.FieldAngle.ARROW_SVG_DATAURI = 'data:image/svg+xml;base64,PD94bWwgdmVyc2
  * @return {!Function} Closure to call on destruction of the WidgetDiv.
  * @private
  */
-Blockly.FieldAngle.prototype.dispose_ = function() {
+Blockly.FieldAngle.prototype.dispose = function() {
   var thisField = this;
   return function() {
-    Blockly.FieldAngle.superClass_.dispose_.call(thisField)();
+    Blockly.FieldAngle.superClass_.dispose.call(thisField)();
     thisField.gauge_ = null;
     if (thisField.mouseDownWrapper_) {
       Blockly.unbindEvent_(thisField.mouseDownWrapper_);
