@@ -11,12 +11,23 @@ var rimraf = require('rimraf');
 var fs = require('fs');
 var spawn = require('child_process').spawn;
 
+const USE_PY_LAUNCHER = false;
+
+function spawnPython(args, opts) {
+	var cmd = 'python';
+	if (USE_PY_LAUNCHER) {
+		cmd = 'py';
+		args.unshift('-2');
+	}
+	return spawn(cmd, args, opts);
+}
+
 // Default task
 gulp.task("default", ["python-build-core"]);
 
 gulp.task("python-build-core", function (cb) {
 	console.info('Starting python build');
-	var python = spawn('python', ['build.py', 'core'], { stdio: 'inherit' });
+	var python = spawnPython(['build.py', 'core'], { stdio: 'inherit' });
 	python.on('close', function (code) {
 		console.log('python exited with code ' + code);
 		cb(code);
@@ -25,7 +36,7 @@ gulp.task("python-build-core", function (cb) {
 
 gulp.task("python-build", function (cb) {
 	console.info('Starting python build');
-	var python = spawn('python', ['build.py', 'core'], { stdio: 'inherit' });
+	var python = spawnPython(['build.py', 'core'], { stdio: 'inherit' });
 	python.on('close', function (code) {
 		console.log('python exited with code ' + code);
 		cb(code);
@@ -34,7 +45,7 @@ gulp.task("python-build", function (cb) {
 
 gulp.task("python-build-all", function (cb) {
 	console.info('Starting python build all');
-	var python = spawn('python', ['build.py'], { stdio: 'inherit' });
+	var python = spawnPython(['build.py'], { stdio: 'inherit' });
 	python.on('close', function (code) {
 		console.log('python exited with code ' + code);
 		cb(code);
