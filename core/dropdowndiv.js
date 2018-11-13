@@ -183,13 +183,13 @@ Blockly.DropDownDiv.setCategory = function(category) {
  * by a particular block. The primary position will be below the block,
  * and the secondary position above the block. Drop-down will be
  * constrained to the block's workspace.
- * @param {Object} owner The object showing the drop-down
+ * @param {!Blockly.Field} field The field showing the drop-down
  * @param {!Blockly.Block} block Block to position the drop-down around.
  * @param {Function=} opt_onHide Optional callback for when the drop-down is hidden.
  * @param {Number} opt_secondaryYOffset Optional Y offset for above-block positioning.
  * @return {boolean} True if the menu rendered below block; false if above.
  */
-Blockly.DropDownDiv.showPositionedByBlock = function(owner, block,
+Blockly.DropDownDiv.showPositionedByBlock = function(field, block,
     opt_onHide, opt_secondaryYOffset) {
   var scale = block.workspace.scale;
   var bBox = {width: block.width, height: block.height};
@@ -207,7 +207,7 @@ Blockly.DropDownDiv.showPositionedByBlock = function(owner, block,
   }
   // Set bounds to workspace; show the drop-down.
   Blockly.DropDownDiv.setBoundsElement(block.workspace.getParentSvg().parentNode);
-  return Blockly.DropDownDiv.show(owner, primaryX, primaryY, secondaryX, secondaryY, opt_onHide);
+  return Blockly.DropDownDiv.show(field, primaryX, primaryY, secondaryX, secondaryY, opt_onHide);
 };
 
 
