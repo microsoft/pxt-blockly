@@ -1175,7 +1175,7 @@ declare namespace Blockly {
         function hideIfOwner(owner: any): void;
         function hideWithoutAnimation(): void;
         function showPositionedByBlock(owner: any, block: Blockly.Block, opt_onHide?: Function, opt_secondaryYOffset?: number): void;
-        function showPositionedByField(owner: any, opt_onHide?: Function, opt_secondaryYOffset?: number): void;
+        function showPositionedByField(field: Blockly.Field, opt_onHide?: Function, opt_secondaryYOffset?: number): void;
         function clearContent(): void;
         function getContentDiv(): HTMLElement;
         function setColour(backgroundColour: string, borderColour: string): void;
