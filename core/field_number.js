@@ -195,32 +195,7 @@ Blockly.FieldNumber.prototype.showNumPad_ = function() {
       this.sourceBlock_.getColourTertiary());
   contentDiv.style.width = Blockly.FieldNumber.DROPDOWN_WIDTH + 'px';
 
-  this.position_();
-};
-
-/**
- * Figure out where to place the drop-down, and move it there.
- * @private
- */
-Blockly.FieldNumber.prototype.position_ = function() {
-  // Calculate positioning for the drop-down
-  // sourceBlock_ is the rendered shadow field input box
-  var scale = this.sourceBlock_.workspace.scale;
-  var bBox = this.sourceBlock_.getHeightWidth();
-  bBox.width *= scale;
-  bBox.height *= scale;
-  var position = this.getAbsoluteXY_();
-  // If we can fit it, render below the shadow block
-  var primaryX = position.x + bBox.width / 2;
-  var primaryY = position.y + bBox.height;
-  // If we can't fit it, render above the entire parent block
-  var secondaryX = primaryX;
-  var secondaryY = position.y;
-
-  Blockly.DropDownDiv.setBoundsElement(
-      this.sourceBlock_.workspace.getParentSvg().parentNode);
-  Blockly.DropDownDiv.show(this, primaryX, primaryY, secondaryX, secondaryY,
-      this.onHide_.bind(this));
+  Blockly.DropDownDiv.showPositionedByField(this, this.onHide_.bind(this));
 };
 
 /**

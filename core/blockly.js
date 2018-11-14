@@ -318,6 +318,7 @@ Blockly.onContextMenu_ = function(e) {
 Blockly.hideChaff = function(opt_allowToolbox) {
   Blockly.hideChaffInternal_(opt_allowToolbox);
   Blockly.WidgetDiv.hide(true);
+  Blockly.DropDownDiv.hideWithoutAnimation();
 };
 
 /**
@@ -329,6 +330,7 @@ Blockly.hideChaff = function(opt_allowToolbox) {
 Blockly.hideChaffOnResize = function(opt_allowToolbox) {
   Blockly.hideChaffInternal_(opt_allowToolbox);
   Blockly.WidgetDiv.repositionForWindowResize();
+  Blockly.DropDownDiv.repositionForWindowResize();
 };
 
 /**
@@ -339,7 +341,6 @@ Blockly.hideChaffOnResize = function(opt_allowToolbox) {
  */
 Blockly.hideChaffInternal_ = function(opt_allowToolbox) {
   Blockly.Tooltip.hide();
-  Blockly.DropDownDiv.hideWithoutAnimation();
   if (!opt_allowToolbox) {
     var workspace = Blockly.getMainWorkspace();
     if (workspace.toolbox_ &&
