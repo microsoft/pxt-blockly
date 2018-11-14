@@ -174,7 +174,7 @@ Blockly.FieldSlider.prototype.addSlider_ = function(contentDiv) {
           thisField.setValue(val);
           var htmlInput = Blockly.FieldTextInput.htmlInput_;
           htmlInput.value = val;
-          htmlInput.focus();
+          Blockly.FieldTextInput.focus();
         }
       });
 
@@ -182,8 +182,7 @@ Blockly.FieldSlider.prototype.addSlider_ = function(contentDiv) {
       goog.ui.Component.EventType.FOCUS,
       function(/*event*/) {
         // Switch focus to the HTML input field
-        var htmlInput = Blockly.FieldTextInput.htmlInput_;
-        htmlInput.focus();
+        Blockly.FieldTextInput.focus();
       });
 };
 

@@ -50,10 +50,10 @@ Blockly.FieldNumberDropdown = function(value, menuGenerator, opt_min, opt_max,
   this.setConstraints_ = Blockly.FieldNumber.prototype.setConstraints_;
 
   var numRestrictor = Blockly.FieldNumber.prototype.getNumRestrictor.call(
-    this, opt_min, opt_max, opt_precision
+      this, opt_min, opt_max, opt_precision
   );
   Blockly.FieldNumberDropdown.superClass_.constructor.call(
-    this, value, menuGenerator, opt_validator, numRestrictor
+      this, value, menuGenerator, opt_validator, numRestrictor
   );
   this.addArgType('numberdropdown');
 };
@@ -69,8 +69,8 @@ goog.inherits(Blockly.FieldNumberDropdown, Blockly.FieldTextDropdown);
  */
 Blockly.FieldNumberDropdown.fromJson = function(options) {
   return new Blockly.FieldNumberDropdown(
-    element['value'], element['options'],
-    element['min'], element['max'], element['precision']
+      options['value'], options['options'],
+      options['min'], options['max'], options['precision']
   );
 };
 
