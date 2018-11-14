@@ -192,8 +192,11 @@ Blockly.FieldNumber.prototype.showNumPad_ = function() {
   this.addButtons_(contentDiv);
 
   // Set colour and size of drop-down
-  Blockly.DropDownDiv.setColour(this.sourceBlock_.parentBlock_.getColour(),
-      this.sourceBlock_.getColourTertiary());
+  var numPadBackground = this.sourceBlock_.parentBlock_ ?
+    this.sourceBlock_.parentBlock_.getColour() : Blockly.Colours.numPadBackground;
+  var numPadBorder = this.sourceBlock_.parentBlock_ ?
+    this.sourceBlock_.getColourTertiary() : Blockly.Colours.numPadBorder;
+  Blockly.DropDownDiv.setColour(numPadBackground, numPadBorder);
   contentDiv.style.width = Blockly.FieldNumber.DROPDOWN_WIDTH + 'px';
 
   Blockly.DropDownDiv.showPositionedByField(this, this.onHide_.bind(this));
@@ -206,8 +209,10 @@ Blockly.FieldNumber.prototype.showNumPad_ = function() {
  * @private
  */
 Blockly.FieldNumber.prototype.addButtons_ = function(contentDiv) {
-  var buttonColour = this.sourceBlock_.parentBlock_.getColour();
-  var buttonBorderColour = this.sourceBlock_.parentBlock_.getColourTertiary();
+  var buttonColour = this.sourceBlock_.parentBlock_ ?
+    this.sourceBlock_.parentBlock_.getColour() : Blockly.Colours.numPadBackground;
+  var buttonBorderColour = this.sourceBlock_.parentBlock_ ?
+    this.sourceBlock_.parentBlock_.getColourTertiary() : this.sourceBlock_.getColourTertiary();
 
   // Add numeric keypad buttons
   var buttons = Blockly.FieldNumber.NUMPAD_BUTTONS;
