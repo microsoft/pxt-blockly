@@ -158,6 +158,7 @@ Blockly.DropDownDiv.getContentDiv = function() {
  */
 Blockly.DropDownDiv.clearContent = function() {
   Blockly.DropDownDiv.content_.innerHTML = '';
+  Blockly.DropDownDiv.content_.style.width = '';
 };
 
 /**
