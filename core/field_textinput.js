@@ -684,8 +684,10 @@ Blockly.FieldTextInput.prototype.maybeSaveEdit_ = function() {
   this.setText(text);
   this.sourceBlock_.rendered && this.sourceBlock_.render();
   // pxtblockly: Fire a UI event that an edit was complete
-  Blockly.Events.fire(new Blockly.Events.Ui(
-      this.sourceBlock_, 'saveEdit', undefined, text));
+  if (this.sourceBlock_.workspace) {
+    Blockly.Events.fire(new Blockly.Events.Ui(
+        this.sourceBlock_, 'saveEdit', undefined, text));
+  }
 };
 
 /**
