@@ -340,8 +340,10 @@ Blockly.FieldDropdown.prototype.onItemSelected = function(menu, menuItem) {
     this.setValue(value);
 
     // pxtblockly: Fire a UI event that an edit was complete
-    Blockly.Events.fire(new Blockly.Events.Ui(
-        this.sourceBlock_, 'itemSelected', undefined, value));
+    if (this.sourceBlock_.workspace) {
+      Blockly.Events.fire(new Blockly.Events.Ui(
+          this.sourceBlock_, 'itemSelected', undefined, value));
+    }
   }
 };
 
