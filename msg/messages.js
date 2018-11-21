@@ -1188,6 +1188,24 @@ Blockly.Msg.PROCEDURES_HIGHLIGHT_DEF = 'Highlight function definition';
 /// Selecting it creates a block to call the function.\n\nParameters:\n* %1 - the name of the function.\n{{Identical|Create}}
 Blockly.Msg.PROCEDURES_CREATE_DO = 'Create "%1"';
 
+/// pxt-blockly: Context menu option to edit functions
+Blockly.Msg.EDIT_FUNCTION = 'Edit';
+
+/// pxt-blockly: Label on function_call blocks that appears before the name of the function to call
+Blockly.Msg.PROCEDURES_CALLNORETURN_TITLE = 'call function'
+
+/// pxt-blockly: Default name for a boolean arg on a function declaration
+Blockly.Msg.DEFAULT_BOOLEAN_ARG_NAME = 'bool'
+
+/// pxt-blockly: Default name for a string arg on a function declaration
+Blockly.Msg.DEFAULT_STRING_ARG_NAME = 'text'
+
+/// pxt-blockly: Default name for a number arg on a function declaration
+Blockly.Msg.DEFAULT_NUMBER_ARG_NAME = 'num'
+
+/// pxt-blockly: Default name for a non-literal arg on a function declaration
+Blockly.Msg.DEFAULT_CUSTOM_ARG_NAME = 'arg'
+
 /// tooltip - If the first value is true, this causes the second value to be returned
 /// immediately from the enclosing function.
 Blockly.Msg.PROCEDURES_IFRETURN_TOOLTIP = 'If a value is true, then return a second value.';
