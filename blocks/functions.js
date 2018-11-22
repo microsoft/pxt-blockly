@@ -33,10 +33,15 @@
  */
 'use strict';
 
+// TODO GUJEN deal with invalid arg names (which we will allow in blocks but not in TS)
+// TODO GUJEN deal with invalid function names (which we will allow in blocks but not in TS)
+// TODO GUJEN deal with duplicate param names (including variables)
+// TODO GUJEN deal with duplicate function names (including variables)
+
 /**
  * Type to represent a function parameter
  * @typedef {Object} FunctionParameter
- * @property {string} id The blockly ID of the param // TODO GUJEN is this really needed?
+ * @property {string} id The blockly ID of the param
  * @property {string} name the name of the param
  * @property {string} type the type of the param (string, number, boolean or a custom type)
  */
@@ -95,6 +100,15 @@ Blockly.PXTBlockly.FunctionUtils.domToMutation = function (xmlElement) {
 Blockly.PXTBlockly.FunctionUtils.getName = function () {
   return this.name_;
 };
+
+/**
+ * Returns the list of arguments for this function.
+ * @return {FunctionParameter[]} The arguments of this function.
+ * @this Blockly.Block
+ */
+Blockly.PXTBlockly.FunctionUtils.getArguments = function () {
+  return this.arguments_;
+}
 
 /**
  * Add or remove the statement block from this function definition.
@@ -205,7 +219,7 @@ Blockly.PXTBlockly.FunctionUtils.createAllInputs_ = function (connectionMap) {
   var labelText = '';
   switch (this.type) {
     case Blockly.FUNCTION_CALL_BLOCK_TYPE:
-      labelText = Blockly.Msg.PROCEDURES_CALLNORETURN_TITLE;
+      labelText = Blockly.Msg.FUNCTIONS_CALL_TITLE;
       break;
     case Blockly.FUNCTION_DEFINITION_BLOCK_TYPE:
     case Blockly.FUNCTION_DECLARATION_BLOCK_TYPE:
@@ -278,7 +292,7 @@ Blockly.PXTBlockly.FunctionUtils.deleteShadows_ = function (connectionMap) {
  */
 Blockly.PXTBlockly.FunctionUtils.addLabelEditor_ = function (text) {
   if (text) {
-    this.appendDummyInput('function_name').appendField(new Blockly.FieldTextInput(text), 'NAME'); // TODO GUJEN mimick scratch blocks behavior of having solid background while not editing
+    this.appendDummyInput('function_name').appendField(new Blockly.FieldTextInput(text), 'function_name'); // TODO GUJEN mimick scratch blocks behavior of having solid background while not editing
   }
 };
 
@@ -289,7 +303,7 @@ Blockly.PXTBlockly.FunctionUtils.addLabelEditor_ = function (text) {
  * @private
  */
 Blockly.PXTBlockly.FunctionUtils.addLabelField_ = function (text) {
-  this.appendDummyInput('function_name').appendField(text, 'NAME');
+  this.appendDummyInput('function_name').appendField(text, 'function_name');
 };
 
 /**
@@ -350,7 +364,7 @@ Blockly.PXTBlockly.FunctionUtils.buildShadowDom_ = function (argumentType) {
  * @this Blockly.Block
  */
 Blockly.PXTBlockly.FunctionUtils.attachShadow_ = function (input, argumentType) {
-  // TODO GUJEN ensure this works for all types
+  // TODO GUJEN figure out custom types
   var [blockType, fieldName, fieldValue] = Blockly.PXTBlockly.FunctionUtils.getShadowBlockInfoFromType_(argumentType);
   Blockly.Events.disable();
   var newBlock = null;
@@ -491,27 +505,13 @@ Blockly.PXTBlockly.FunctionUtils.populateArgumentOnDefinition_ = function (arg, 
 * @this Blockly.Block
 */
 Blockly.PXTBlockly.FunctionUtils.populateArgumentOnDeclaration_ = function (arg, connectionMap, input) {
-  // TODO GUJEN complete this
   var oldBlock = null;
   if (connectionMap && (arg.id in connectionMap)) {
     var saveInfo = connectionMap[arg.id];
     oldBlock = saveInfo['block'];
   }
 
-  // TODO GUJEN fix this
-  // TODO: This always returns false, because it checks for argument reporter
-  // blocks instead of argument editor blocks. Create a new version for argument
-  // editors.
-  var oldTypeMatches = Blockly.PXTBlockly.FunctionUtils.checkOldTypeMatches_(oldBlock, arg.type);
-
-  // Decide which block to attach.
-  if (oldBlock && oldTypeMatches) {
-    var argumentEditor = oldBlock;
-    oldBlock.setFieldValue(arg.name, 'TEXT');
-    connectionMap[input.name] = null;
-  } else {
-    var argumentEditor = this.createArgumentEditor_(arg.type, arg.name);
-  }
+  var argumentEditor = this.createArgumentEditor_(arg.type, arg.name);
 
   // Attach the block.
   input.connection.connect(argumentEditor.outputConnection);
@@ -552,7 +552,6 @@ Blockly.PXTBlockly.FunctionUtils.checkOldTypeMatches_ = function (oldBlock, type
  * @this Blockly.Block
  */
 Blockly.PXTBlockly.FunctionUtils.createArgumentEditor_ = function (argumentType, displayName) {
-  // TODO GUJEN complete this
   Blockly.Events.disable();
   var newBlock;
   try {
@@ -587,7 +586,6 @@ Blockly.PXTBlockly.FunctionUtils.createArgumentEditor_ = function (argumentType,
  * existing inputs and their text.
  */
 Blockly.PXTBlockly.FunctionUtils.updateDeclarationMutation_ = function () {
-  // TODO GUJEN deal with invalid arg names, duplicate arg names, duplicate function names, etc
   this.arguments_ = [];
   // Start iterating at 1 to skip the function label
   for (var i = 1; i < this.inputList.length; i++) {
@@ -680,7 +678,7 @@ Blockly.PXTBlockly.FunctionUtils.addParam_ = function (typeName, defaultName) {
  * @public
  */
 Blockly.PXTBlockly.FunctionUtils.addBooleanExternal = function () {
-  this.addParam_('boolean', Blockly.Msg.DEFAULT_BOOLEAN_ARG_NAME);
+  this.addParam_('boolean', Blockly.Msg.FUNCTIONS_DEFAULT_BOOLEAN_ARG_NAME);
 };
 
 /**
@@ -689,7 +687,7 @@ Blockly.PXTBlockly.FunctionUtils.addBooleanExternal = function () {
  * @public
  */
 Blockly.PXTBlockly.FunctionUtils.addStringExternal = function () {
-  this.addParam_('string', Blockly.Msg.DEFAULT_STRING_ARG_NAME);
+  this.addParam_('string', Blockly.Msg.FUNCTIONS_DEFAULT_STRING_ARG_NAME);
 };
 
 /**
@@ -698,7 +696,7 @@ Blockly.PXTBlockly.FunctionUtils.addStringExternal = function () {
  * @public
  */
 Blockly.PXTBlockly.FunctionUtils.addNumberExternal = function () {
-  this.addParam_('number', Blockly.Msg.DEFAULT_NUMBER_ARG_NAME);
+  this.addParam_('number', Blockly.Msg.FUNCTIONS_DEFAULT_NUMBER_ARG_NAME);
 };
 
 /**
@@ -709,7 +707,7 @@ Blockly.PXTBlockly.FunctionUtils.addNumberExternal = function () {
  * @public
  */
 Blockly.PXTBlockly.FunctionUtils.addCustomExternal = function (typeName) {
-  this.addParam_(typeName, Blockly.Msg.DEFAULT_CUSTOM_ARG_NAME);
+  this.addParam_(typeName, Blockly.Msg.FUNCTIONS_DEFAULT_CUSTOM_ARG_NAME);
 };
 
 /**
@@ -779,6 +777,7 @@ Blockly.Blocks['function_declaration'] = {
   mutationToDom: Blockly.PXTBlockly.FunctionUtils.mutationToDom,
   domToMutation: Blockly.PXTBlockly.FunctionUtils.domToMutation,
   getName: Blockly.PXTBlockly.FunctionUtils.getName,
+  getArguments: Blockly.PXTBlockly.FunctionUtils.getArguments,
   removeAllInputs_: Blockly.PXTBlockly.FunctionUtils.removeAllInputs_,
   disconnectOldBlocks_: Blockly.PXTBlockly.FunctionUtils.disconnectOldBlocks_,
   deleteShadows_: Blockly.PXTBlockly.FunctionUtils.deleteShadows_,
@@ -833,6 +832,7 @@ Blockly.Blocks['function_definition'] = {
   mutationToDom: Blockly.PXTBlockly.FunctionUtils.mutationToDom,
   domToMutation: Blockly.PXTBlockly.FunctionUtils.domToMutation,
   getName: Blockly.PXTBlockly.FunctionUtils.getName,
+  getArguments: Blockly.PXTBlockly.FunctionUtils.getArguments,
   removeAllInputs_: Blockly.PXTBlockly.FunctionUtils.removeAllInputs_,
   disconnectOldBlocks_: Blockly.PXTBlockly.FunctionUtils.disconnectOldBlocks_,
   deleteShadows_: Blockly.PXTBlockly.FunctionUtils.deleteShadows_,
@@ -871,6 +871,7 @@ Blockly.Blocks['function_call'] = {
   mutationToDom: Blockly.PXTBlockly.FunctionUtils.mutationToDom,
   domToMutation: Blockly.PXTBlockly.FunctionUtils.domToMutation,
   getName: Blockly.PXTBlockly.FunctionUtils.getName,
+  getArguments: Blockly.PXTBlockly.FunctionUtils.getArguments,
   removeAllInputs_: Blockly.PXTBlockly.FunctionUtils.removeAllInputs_,
   disconnectOldBlocks_: Blockly.PXTBlockly.FunctionUtils.disconnectOldBlocks_,
   deleteShadows_: Blockly.PXTBlockly.FunctionUtils.deleteShadows_,

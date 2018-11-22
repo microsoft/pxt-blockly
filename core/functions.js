@@ -36,7 +36,7 @@
 /**
  * Type to represent a function parameter
  * @typedef {Object} FunctionParameter
- * @property {string} id The blockly ID of the param // TODO GUJEN is this really needed?
+ * @property {string} id The blockly ID of the param
  * @property {string} name the name of the param
  * @property {string} type the type of the param (string, number, boolean or a custom type)
  */
@@ -67,53 +67,19 @@ Blockly.Functions.NAME_TYPE = Blockly.PROCEDURE_CATEGORY_NAME;
  * @return {!Array.<!Element>} Array of XML block elements.
  */
 Blockly.Functions.flyoutCategory = function (workspace) {
-  // TODO GUJEN fix / complete this
   var xmlList = [];
-  if (Blockly.Blocks['procedures_defnoreturn']) {
-    // <block type="procedures_defnoreturn" gap="16">
-    //     <field name="NAME">do something</field>
-    // </block>
-    var block = goog.dom.createDom('block');
-    block.setAttribute('type', 'procedures_defnoreturn');
-    block.setAttribute('gap', 16);
-    var nameField = goog.dom.createDom('field', null,
-      Blockly.Msg.PROCEDURES_DEFNORETURN_PROCEDURE);
-    nameField.setAttribute('name', 'NAME');
-    block.appendChild(nameField);
-    xmlList.push(block);
-  }
-  if (Blockly.Blocks['procedures_defreturn']) {
-    // <block type="procedures_defreturn" gap="16">
-    //     <field name="NAME">do something</field>
-    // </block>
-    var block = goog.dom.createDom('block');
-    block.setAttribute('type', 'procedures_defreturn');
-    block.setAttribute('gap', 16);
-    var nameField = goog.dom.createDom('field', null,
-      Blockly.Msg.PROCEDURES_DEFRETURN_PROCEDURE);
-    nameField.setAttribute('name', 'NAME');
-    block.appendChild(nameField);
-    xmlList.push(block);
-  }
-  if (Blockly.Blocks['procedures_ifreturn']) {
-    // <block type="procedures_ifreturn" gap="16"></block>
-    var block = goog.dom.createDom('block');
-    block.setAttribute('type', 'procedures_ifreturn');
-    block.setAttribute('gap', 16);
-    xmlList.push(block);
-  }
-  if (xmlList.length) {
-    // Add slightly larger gap between system blocks and user calls.
-    xmlList[xmlList.length - 1].setAttribute('gap', 24);
-  }
 
-  function populateProcedures(procedureList, templateName) {
-    for (var i = 0; i < procedureList.length; i++) {
-      var name = procedureList[i][0];
-      var args = procedureList[i][1];
-      // <block type="procedures_callnoreturn" gap="16">
-      //   <mutation name="do something">
-      //     <arg name="x"></arg>
+  Blockly.Functions.addCreateButton_(workspace, xmlList);
+
+  function populateFunctions(functionList, templateName) {
+    for (var i = 0; i < functionList.length; i++) {
+      var name = functionList[i].getName();
+      var args = functionList[i].getArguments();
+      // <block type="function_call" x="25" y="25">
+      //   <mutation name="myFunc">
+      //     <arg name="bool" type="boolean" id="..."></arg>
+      //     <arg name="text" type="string" id="..."></arg>
+      //     <arg name="num" type="number" id="..."></arg>
       //   </mutation>
       // </block>
       var block = goog.dom.createDom('block');
@@ -124,17 +90,37 @@ Blockly.Functions.flyoutCategory = function (workspace) {
       block.appendChild(mutation);
       for (var j = 0; j < args.length; j++) {
         var arg = goog.dom.createDom('arg');
-        arg.setAttribute('name', args[j]);
+        arg.setAttribute('name', args[j].name);
+        arg.setAttribute('type', args[j].type);
+        arg.setAttribute('id', args[j].id);
         mutation.appendChild(arg);
       }
       xmlList.push(block);
     }
   }
 
-  var tuple = Blockly.Procedures.allProcedures(workspace);
-  populateProcedures(tuple[0], 'procedures_callnoreturn');
-  populateProcedures(tuple[1], 'procedures_callreturn');
+  var existingFunctions = Blockly.Functions.getAllFunctionDefinitionBlocks(workspace);
+  populateFunctions(existingFunctions, 'function_call');
   return xmlList;
+};
+
+/**
+ * Create the "Make a Block..." button.
+ * @param {!Blockly.Workspace} workspace The workspace contianing procedures.
+ * @param {!Array.<!Element>} xmlList Array of XML block elements to add to.
+ * @private
+ */
+Blockly.Functions.addCreateButton_ = function(workspace, xmlList) {
+  var button = goog.dom.createDom('button');
+  var msg = Blockly.Msg.FUNCTION_CREATE_NEW;
+  var callbackKey = 'CREATE_FUNCTION';
+  var callback = function() {
+    Blockly.Functions.createFunctionCallback_(workspace);
+  };
+  button.setAttribute('text', msg);
+  button.setAttribute('callbackKey', callbackKey);
+  workspace.registerButtonCallback(callbackKey, callback);
+  xmlList.push(button);
 };
 
 /**
@@ -181,6 +167,41 @@ Blockly.Functions.getDefinition = function (name, workspace) {
 };
 
 /**
+ * Find all user-created function definitions in a workspace.
+ * @param {!Blockly.Workspace} root Root workspace.
+ * @return {!Array.<Blockly.Block>} An array of function definition blocks.
+ */
+Blockly.Functions.getAllFunctionDefinitionBlocks = function(root) {
+  // Assume that a function definition is a top block.
+  var blocks = root.getTopBlocks(false);
+  var allFunctions = [];
+  for (var i = 0; i < blocks.length; i++) {
+    if (blocks[i].type === Blockly.FUNCTION_DEFINITION_BLOCK_TYPE) {
+      allFunctions.push(blocks[i]);
+    }
+  }
+  return allFunctions;
+};
+
+/**
+ * Create a mutation for a brand new function.
+ * @return {Element} The mutation for a new function.
+ * @package
+ */
+Blockly.Functions.newFunctionMutation = function() {
+  // <block type="function_definition">
+  //   <mutation name="myFunc"></mutation>
+  // </block>
+  var mutationText =
+      '<xml>' +
+      '<mutation name="' + Blockly.Msg.FUNCTIONS_DEFAULT_FUNCTION_NAME + '"></mutation>' +
+      '</xml>';
+  var mutation = Blockly.Xml.textToDom(mutationText).firstChild;
+  mutation.removeAttribute('xmlns');
+  return mutation;
+};
+
+/**
  * Returns a unique parameter name based on the given name (using a numbered
  * suffix).
  * @param {string} name Initial name.
@@ -219,7 +240,6 @@ Blockly.Functions.isUniqueParamName = function (name, paramNames) {
  * @private
  */
 Blockly.Functions.createFunctionCallback_ = function (workspace) {
-  // TODO GUJEN complete this
   Blockly.Functions.externalFunctionCallback(
     Blockly.Functions.newFunctionMutation(),
     Blockly.Functions.createFunctionCallbackFactory_(workspace)
@@ -233,17 +253,17 @@ Blockly.Functions.createFunctionCallback_ = function (workspace) {
  * @private
  */
 Blockly.Functions.createFunctionCallbackFactory_ = function (workspace) {
-  // TODO GUJEN complete this
   return function (mutation) {
     if (mutation) {
-      var blockText = '<xml>' +
-        '<block type="' + Blockly.Functions_PROTOTYPE_BLOCK_TYPE + '">' +
+      var blockText =
+        '<xml>' +
+        '<block type="' + Blockly.FUNCTION_DEFINITION_BLOCK_TYPE + '">' +
         Blockly.Xml.domToText(mutation) +
         '</block>' +
         '</xml>';
       var blockDom = Blockly.Xml.textToDom(blockText);
       Blockly.Events.setGroup(true);
-      var block = Blockly.Xml.domToBlock(blockDom, workspace);
+      var block = Blockly.Xml.domToBlock(blockDom.firstChild, workspace);
       var scale = workspace.scale; // To convert from pixel units to workspace units
       // Position the block so that it is at the top left of the visible workspace,
       // padded from the edge by 30 units. Position in the top right if RTL.
@@ -314,7 +334,7 @@ Blockly.Functions.externalFunctionCallback = function (/** mutator, callback */)
 Blockly.Functions.makeEditOption = function (block) {
   var editOption = {
     enabled: true,
-    text: Blockly.Msg.EDIT_FUNCTION,
+    text: Blockly.Msg.FUNCTIONS_EDIT_OPTION,
     callback: function () {
       Blockly.Functions.editFunctionCallback_(block);
     }

@@ -1189,22 +1189,28 @@ Blockly.Msg.PROCEDURES_HIGHLIGHT_DEF = 'Highlight function definition';
 Blockly.Msg.PROCEDURES_CREATE_DO = 'Create "%1"';
 
 /// pxt-blockly: Context menu option to edit functions
-Blockly.Msg.EDIT_FUNCTION = 'Edit';
+Blockly.Msg.FUNCTIONS_EDIT_OPTION = 'Edit';
 
 /// pxt-blockly: Label on function_call blocks that appears before the name of the function to call
-Blockly.Msg.PROCEDURES_CALLNORETURN_TITLE = 'call function'
+Blockly.Msg.FUNCTIONS_CALL_TITLE = 'call function'
+
+/// pxt-blockly: Label on the "Create Function" button in the flyout.
+Blockly.Msg.FUNCTION_CREATE_NEW = 'Create a Function'
+
+/// pxt-blockly: Default function name
+Blockly.Msg.FUNCTIONS_DEFAULT_FUNCTION_NAME = 'do something'
 
 /// pxt-blockly: Default name for a boolean arg on a function declaration
-Blockly.Msg.DEFAULT_BOOLEAN_ARG_NAME = 'bool'
+Blockly.Msg.FUNCTIONS_DEFAULT_BOOLEAN_ARG_NAME = 'bool'
 
 /// pxt-blockly: Default name for a string arg on a function declaration
-Blockly.Msg.DEFAULT_STRING_ARG_NAME = 'text'
+Blockly.Msg.FUNCTIONS_DEFAULT_STRING_ARG_NAME = 'text'
 
 /// pxt-blockly: Default name for a number arg on a function declaration
-Blockly.Msg.DEFAULT_NUMBER_ARG_NAME = 'num'
+Blockly.Msg.FUNCTIONS_DEFAULT_NUMBER_ARG_NAME = 'num'
 
 /// pxt-blockly: Default name for a non-literal arg on a function declaration
-Blockly.Msg.DEFAULT_CUSTOM_ARG_NAME = 'arg'
+Blockly.Msg.FUNCTIONS_DEFAULT_CUSTOM_ARG_NAME = 'arg'
 
 /// tooltip - If the first value is true, this causes the second value to be returned
 /// immediately from the enclosing function.
