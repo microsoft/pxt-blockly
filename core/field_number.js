@@ -157,13 +157,14 @@ Blockly.FieldNumber.prototype.setConstraints_ = function(opt_min, opt_max,
  * Show the inline free-text editor on top of the text and the num-pad if
  * appropriate.
  * @param {!Event} e A mouse down or touch start event.
+ * @param {boolean=} opt_showNumPad If true, show the num pad.
  * @private
  */
-Blockly.FieldNumber.prototype.showEditor_ = function(e) {
+Blockly.FieldNumber.prototype.showEditor_ = function(e, opt_showNumPad) {
   Blockly.FieldNumber.activeField_ = this;
   // Do not focus on mobile devices so we can show the num-pad
-  var showNumPad =
-      goog.userAgent.MOBILE || goog.userAgent.ANDROID || goog.userAgent.IPAD;
+  var showNumPad = (typeof opt_showNumPad !== "undefined") ? opt_showNumPad :
+      (goog.userAgent.MOBILE || goog.userAgent.ANDROID || goog.userAgent.IPAD);
   Blockly.FieldNumber.superClass_.showEditor_.call(this, e, false, showNumPad);
 
   // Show a numeric keypad in the drop-down on touch
@@ -191,36 +192,14 @@ Blockly.FieldNumber.prototype.showNumPad_ = function() {
   this.addButtons_(contentDiv);
 
   // Set colour and size of drop-down
-  Blockly.DropDownDiv.setColour(this.sourceBlock_.parentBlock_.getColour(),
-      this.sourceBlock_.getColourTertiary());
+  var numPadBackground = this.sourceBlock_.parentBlock_ ?
+    this.sourceBlock_.parentBlock_.getColour() : Blockly.Colours.numPadBackground;
+  var numPadBorder = this.sourceBlock_.parentBlock_ ?
+    this.sourceBlock_.getColourTertiary() : Blockly.Colours.numPadBorder;
+  Blockly.DropDownDiv.setColour(numPadBackground, numPadBorder);
   contentDiv.style.width = Blockly.FieldNumber.DROPDOWN_WIDTH + 'px';
 
-  this.position_();
-};
-
-/**
- * Figure out where to place the drop-down, and move it there.
- * @private
- */
-Blockly.FieldNumber.prototype.position_ = function() {
-  // Calculate positioning for the drop-down
-  // sourceBlock_ is the rendered shadow field input box
-  var scale = this.sourceBlock_.workspace.scale;
-  var bBox = this.sourceBlock_.getHeightWidth();
-  bBox.width *= scale;
-  bBox.height *= scale;
-  var position = this.getAbsoluteXY_();
-  // If we can fit it, render below the shadow block
-  var primaryX = position.x + bBox.width / 2;
-  var primaryY = position.y + bBox.height;
-  // If we can't fit it, render above the entire parent block
-  var secondaryX = primaryX;
-  var secondaryY = position.y;
-
-  Blockly.DropDownDiv.setBoundsElement(
-      this.sourceBlock_.workspace.getParentSvg().parentNode);
-  Blockly.DropDownDiv.show(this, primaryX, primaryY, secondaryX, secondaryY,
-      this.onHide_.bind(this));
+  Blockly.DropDownDiv.showPositionedByField(this, this.onHide_.bind(this));
 };
 
 /**
@@ -230,8 +209,10 @@ Blockly.FieldNumber.prototype.position_ = function() {
  * @private
  */
 Blockly.FieldNumber.prototype.addButtons_ = function(contentDiv) {
-  var buttonColour = this.sourceBlock_.parentBlock_.getColour();
-  var buttonBorderColour = this.sourceBlock_.parentBlock_.getColourTertiary();
+  var buttonColour = this.sourceBlock_.parentBlock_ ?
+    this.sourceBlock_.parentBlock_.getColour() : Blockly.Colours.numPadBackground;
+  var buttonBorderColour = this.sourceBlock_.parentBlock_ ?
+    this.sourceBlock_.parentBlock_.getColourTertiary() : this.sourceBlock_.getColourTertiary();
 
   // Add numeric keypad buttons
   var buttons = Blockly.FieldNumber.NUMPAD_BUTTONS;

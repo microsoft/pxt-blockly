@@ -293,20 +293,7 @@ Blockly.FieldDropdown.prototype.showEditor_ = function() {
     this.sourceBlock_.parentBlock_.getCategory() : this.sourceBlock_.getCategory();
   Blockly.DropDownDiv.setCategory(category);
 
-  // Calculate positioning based on the field position.
-  var scale = this.sourceBlock_.workspace.scale;
-  var bBox = {width: this.size_.width, height: this.size_.height};
-  bBox.width *= scale;
-  bBox.height *= scale;
-  var position = this.fieldGroup_.getBoundingClientRect();
-  var primaryX = position.left + bBox.width / 2;
-  var primaryY = position.top + bBox.height;
-  var secondaryX = primaryX;
-  var secondaryY = position.top;
-  // Set bounds to workspace; show the drop-down.
-  Blockly.DropDownDiv.setBoundsElement(this.sourceBlock_.workspace.getParentSvg().parentNode);
-  Blockly.DropDownDiv.show(this, primaryX, primaryY, secondaryX, secondaryY,
-      this.onHide.bind(this));
+  Blockly.DropDownDiv.showPositionedByField(this, this.onHide.bind(this));
 
   menu.setAllowAutoFocus(true);
   menuDom.focus();
@@ -353,8 +340,10 @@ Blockly.FieldDropdown.prototype.onItemSelected = function(menu, menuItem) {
     this.setValue(value);
 
     // pxtblockly: Fire a UI event that an edit was complete
-    Blockly.Events.fire(new Blockly.Events.Ui(
-        this.sourceBlock_, 'itemSelected', undefined, value));
+    if (this.sourceBlock_.workspace) {
+      Blockly.Events.fire(new Blockly.Events.Ui(
+          this.sourceBlock_, 'itemSelected', undefined, value));
+    }
   }
 };
 

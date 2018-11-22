@@ -319,11 +319,12 @@ Blockly.FieldTextInput.prototype.showEditor_ = function(
   htmlInput.oldValue_ = null;
   this.validate_();
   this.resizeEditor_();
+  // pxtblockly: execute the arrow callback when the editor is opened as well
+  if (opt_arrowCallback) {
+    opt_arrowCallback.call(this);
+  }
   if (!quietInput) {
-    htmlInput.focus();
-    htmlInput.select();
-    // For iOS only
-    htmlInput.setSelectionRange(0, 99999);
+    Blockly.FieldTextInput.focusAndSelect();
   }
 
   this.bindEvents_(htmlInput);
@@ -341,12 +342,26 @@ Blockly.FieldTextInput.prototype.showEditor_ = function(
   // The animated properties themselves
   htmlInput.style.fontSize = Blockly.BlockSvg.FIELD_TEXTINPUT_FONTSIZE_FINAL + 'pt';
   div.style.boxShadow = '0px 0px 0px 4px ' + Blockly.Colours.fieldShadow;
-  // pxtblockly: execute the arrow callback when the editor is opened as well
-  if (opt_arrowCallback) {
-    opt_arrowCallback.call(this);
-    htmlInput.focus();
-    htmlInput.select();
-  }
+};
+
+
+/**
+ * Focus and select the html text field of this input.
+ */
+Blockly.FieldTextInput.focusAndSelect = function() {
+  Blockly.FieldTextInput.focus();
+  var htmlInput = Blockly.FieldTextInput.htmlInput_;
+  htmlInput.select();
+  // For iOS only
+  htmlInput.setSelectionRange(0, 99999);
+};
+
+/**
+ * Focus the html text field of this input.
+ */
+Blockly.FieldTextInput.focus = function() {
+  var htmlInput = Blockly.FieldTextInput.htmlInput_;
+  htmlInput.focus();
 };
 
 /**
@@ -669,8 +684,10 @@ Blockly.FieldTextInput.prototype.maybeSaveEdit_ = function() {
   this.setText(text);
   this.sourceBlock_.rendered && this.sourceBlock_.render();
   // pxtblockly: Fire a UI event that an edit was complete
-  Blockly.Events.fire(new Blockly.Events.Ui(
-      this.sourceBlock_, 'saveEdit', undefined, text));
+  if (this.sourceBlock_.workspace) {
+    Blockly.Events.fire(new Blockly.Events.Ui(
+        this.sourceBlock_, 'saveEdit', undefined, text));
+  }
 };
 
 /**
