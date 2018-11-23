@@ -63,8 +63,6 @@ Blockly.PXTBlockly.FunctionUtils.mutationToDom = function () {
     argNode.setAttribute('id', arg.id);
     argNode.setAttribute('type', arg.type);
     container.appendChild(argNode);
-
-    // TODO GUJEN Does LTR affect arg order here?
   });
 
   return container;
@@ -80,7 +78,7 @@ Blockly.PXTBlockly.FunctionUtils.domToMutation = function (xmlElement) {
   var args = [];
   xmlElement.childNodes.forEach(c => {
     args.push({
-      id: c.getAttribute('id'), // TODO GUJEN this crashed at some point, try to repro
+      id: c.getAttribute('id'),
       name: c.getAttribute('name'),
       type: c.getAttribute('type')
     });
@@ -141,7 +139,7 @@ Blockly.PXTBlockly.FunctionUtils.updateDisplay_ = function () {
   this.removeAllInputs_();
 
   this.createAllInputs_(connectionMap);
-  this.deleteShadows_(connectionMap); // TODO GUJEN is this needed?
+  this.deleteShadows_(connectionMap);
 
   this.rendered = wasRendered;
   if (wasRendered && !this.isInsertionMarker()) {
@@ -175,8 +173,6 @@ Blockly.PXTBlockly.FunctionUtils.disconnectOldBlocks_ = function () {
       // Remove the shadow DOM, then disconnect the block. Otherwise a shadow
       // block will respawn instantly, and we'd have to remove it when we remove
       // the input.
-
-      // TODO GUJEN is this needed?
       input.connection.setShadowDom(null);
       if (target) {
         input.connection.disconnect();
@@ -237,14 +233,13 @@ Blockly.PXTBlockly.FunctionUtils.createAllInputs_ = function (connectionMap) {
     // For custom types, the parameter type is appended to the UUID in the
     // input name. This is needed to retrieve the function signature from the
     // block inputs when the declaration block is modified.
-    // TODO GUJEN ensure this works
     var inputName = arg.id;
     if (arg.type !== 'boolean' && arg.type !== 'string' && arg.type !== 'number') {
       inputName = arg.id + '_' + arg.type;
     }
     var input = this.appendValueInput(inputName);
     if (arg.type === 'boolean') {
-      // input.setCheck('Boolean'); // TODO GUJEN uncomment this when we have the real reporters on definition blocks
+      input.setCheck('Boolean');
       // TODO GUJEN add other checks for other param types?
     }
     this.populateArgument_(arg, connectionMap, input);
@@ -265,7 +260,6 @@ Blockly.PXTBlockly.FunctionUtils.createAllInputs_ = function (connectionMap) {
  * @this Blockly.Block
  */
 Blockly.PXTBlockly.FunctionUtils.deleteShadows_ = function (connectionMap) {
-  // TODO GUJEN is this needed?
   // Get rid of all of the old shadow blocks if they aren't connected.
   if (connectionMap) {
     for (var id in connectionMap) {
@@ -307,7 +301,10 @@ Blockly.PXTBlockly.FunctionUtils.addLabelField_ = function (text) {
 };
 
 /**
- * TODO GUJEN jsdoc
+ * Returns the block type, the field name and the field value of the shadow
+ * block to use for the given argument type.
+ * @param {string} argumentType the type of the argument.
+ * @return {!Array<string>} An array of block type, field name and field value.
  */
 Blockly.PXTBlockly.FunctionUtils.getShadowBlockInfoFromType_ = function (argumentType) {
   var shadowType = '';
@@ -315,17 +312,17 @@ Blockly.PXTBlockly.FunctionUtils.getShadowBlockInfoFromType_ = function (argumen
   var fieldValue = '';
   switch (argumentType) {
     case 'boolean':
-      shadowType = 'logic_boolean'; // TODO GUJEN verify this is ok
+      shadowType = 'logic_boolean';
       fieldName = 'BOOL';
       fieldValue = 'TRUE';
       break;
     case 'number':
-      shadowType = 'math_number'; // TODO GUJEN verify this is ok
+      shadowType = 'math_number';
       fieldName = 'NUM';
       fieldValue = '1';
       break;
     case 'string':
-      shadowType = 'text'; // TODO GUJEN verify this is ok
+      shadowType = 'text';
       fieldName = 'TEXT';
       fieldValue = 'abc';
       break;
@@ -346,7 +343,7 @@ Blockly.PXTBlockly.FunctionUtils.getShadowBlockInfoFromType_ = function (argumen
  * @this Blockly.Block
  */
 Blockly.PXTBlockly.FunctionUtils.buildShadowDom_ = function (argumentType) {
-  // TODO GUJEN ensure this works for all types
+  // TODO GUJEN ensure this works for all arg types
   var shadowDom = goog.dom.createDom('shadow');
   var [shadowType, fieldName, fieldValue] = Blockly.PXTBlockly.FunctionUtils.getShadowBlockInfoFromType_(argumentType);
   shadowDom.setAttribute('type', shadowType);
@@ -364,7 +361,6 @@ Blockly.PXTBlockly.FunctionUtils.buildShadowDom_ = function (argumentType) {
  * @this Blockly.Block
  */
 Blockly.PXTBlockly.FunctionUtils.attachShadow_ = function (input, argumentType) {
-  // TODO GUJEN figure out custom types
   var [blockType, fieldName, fieldValue] = Blockly.PXTBlockly.FunctionUtils.getShadowBlockInfoFromType_(argumentType);
   Blockly.Events.disable();
   var newBlock = null;
@@ -398,23 +394,23 @@ Blockly.PXTBlockly.FunctionUtils.createArgumentReporter_ = function (argumentTyp
   var blockType = '';
   switch (argumentType) {
     case 'boolean':
-      blockType = 'text'; // TODO GUJEN
+      blockType = 'argument_reporter_boolean';
       break;
     case 'number':
-      blockType = 'text'; // TODO GUJEN
+      blockType = 'argument_reporter_number';
       break;
     case 'string':
-      blockType = 'text'; // TODO GUJEN
+      blockType = 'argument_reporter_string';
       break;
     default:
       // TODO GUJEN figure out how to have draggable custom types
-      blockType = 'text';
+      blockType = 'argument_reporter_custom';
   }
   Blockly.Events.disable();
   try {
     var newBlock = this.workspace.newBlock(blockType);
     newBlock.setShadow(true);
-    newBlock.setFieldValue(displayName, 'TEXT');
+    newBlock.setFieldValue(displayName, 'VAR');
     if (!this.isInsertionMarker()) {
       newBlock.initSvg();
       newBlock.render(false);
@@ -436,7 +432,7 @@ Blockly.PXTBlockly.FunctionUtils.createArgumentReporter_ = function (argumentTyp
  * @this Blockly.Block
  */
 Blockly.PXTBlockly.FunctionUtils.populateArgumentOnCaller_ = function (arg, connectionMap, input) {
-  // TODO GUJEN ensure this works for all types
+  // TODO GUJEN figure out custom types
   var oldBlock = null;
   var oldShadow = null;
   if (connectionMap && (arg.id in connectionMap)) {
@@ -469,7 +465,6 @@ Blockly.PXTBlockly.FunctionUtils.populateArgumentOnCaller_ = function (arg, conn
  */
 Blockly.PXTBlockly.FunctionUtils.populateArgumentOnDefinition_ = function (arg, connectionMap, input) {
   // TODO GUJEN complete this
-  // TODO GUJEN ensure this works when modifying with existing arguments
   var oldBlock = null;
   if (connectionMap && (arg.id in connectionMap)) {
     var saveInfo = connectionMap[arg.id];
@@ -716,18 +711,18 @@ Blockly.PXTBlockly.FunctionUtils.addCustomExternal = function (typeName) {
  * @public
  */
 Blockly.PXTBlockly.FunctionUtils.removeFieldCallback = function (field) {
-  // TODO GUJEN complete this
-  // Do not delete if there is only one input
-  if (this.inputList.length === 1) {
-    // TODO GUJEN update check to account for the title, the name and the stack
-    return;
-  }
   var inputNameToRemove = null;
   for (var n = 0; n < this.inputList.length; n++) {
+    if (inputNameToRemove) {
+      break;
+    }
     var input = this.inputList[n];
     if (input.connection) {
       var target = input.connection.targetBlock();
-      if (target.getField(field.name) == field) {
+      if (!target) {
+        continue;
+      }
+      if (target.getField(field.name) === field) {
         inputNameToRemove = input.name;
       }
     } else {
@@ -966,4 +961,69 @@ Blockly.Blocks['argument_editor_custom'] = {
     });
   },
   removeFieldCallback: Blockly.PXTBlockly.FunctionUtils.removeArgumentCallback_
+};
+
+
+Blockly.Blocks['argument_reporter_boolean'] = {
+  init: function() {
+    this.jsonInit({ "message0": " %1",
+      "args0": [
+        {
+          "type": "field_label_serializable",
+          "name": "VAR",
+          "text": ""
+        }
+      ],
+      "colour": "%{BKY_VARIABLES_HUE}",
+      "extensions": ["output_boolean"]
+    });
+  }
+};
+
+Blockly.Blocks['argument_reporter_number'] = {
+  init: function() {
+    this.jsonInit({ "message0": " %1",
+      "args0": [
+        {
+          "type": "field_label_serializable",
+          "name": "VAR",
+          "text": ""
+        }
+      ],
+      "colour": "%{BKY_VARIABLES_HUE}",
+      "extensions": ["output_number"]
+    });
+  }
+};
+
+Blockly.Blocks['argument_reporter_string'] = {
+  init: function() {
+    this.jsonInit({ "message0": " %1",
+      "args0": [
+        {
+          "type": "field_label_serializable",
+          "name": "VAR",
+          "text": ""
+        }
+      ],
+      "colour": "%{BKY_VARIABLES_HUE}",
+      "extensions": ["output_string"]
+    });
+  }
+};
+
+Blockly.Blocks['argument_reporter_custom'] = {
+  init: function() {
+    this.jsonInit({ "message0": " %1",
+      "args0": [
+        {
+          "type": "field_label_serializable",
+          "name": "VAR",
+          "text": ""
+        }
+      ],
+      "colour": "%{BKY_VARIABLES_HUE}",
+      "extensions": ["output_string"]
+    });
+  }
 };

@@ -984,13 +984,18 @@ Blockly.Gesture.prototype.forceStartBlockDrag = function(fakeEvent, block) {
 Blockly.Gesture.prototype.duplicateOnDrag_ = function() {
   var newBlock = null;
   Blockly.Events.disable();
+  // TODO GUJEN figure out why only the 1st param on functions creates a variable when dragged, while other params result in that same variable as the 1st param being created
   try {
     // Note: targetBlock_ should have no children.  If it has children we would
     // need to update shadow block IDs to avoid problems in the VM.
     // Resizes will be reenabled at the end of the drag.
     this.startWorkspace_.setResizesEnabled(false);
     var xmlBlock = Blockly.Xml.blockToDom(this.targetBlock_);
-    if (xmlBlock.getAttribute('type') == 'variables_get_reporter') {
+    if (xmlBlock.getAttribute('type') == 'variables_get_reporter' ||
+      xmlBlock.getAttribute('type') == 'argument_reporter_boolean' ||
+      xmlBlock.getAttribute('type') == 'argument_reporter_number' ||
+      xmlBlock.getAttribute('type') == 'argument_reporter_string' ||
+      xmlBlock.getAttribute('type') == 'argument_reporter_custom') {
       // pxtblockly: special case, convert into a variable_get block with the same id
       var xmlBlockField = xmlBlock.firstChild;
       if (!xmlBlockField) {
@@ -1005,7 +1010,9 @@ Blockly.Gesture.prototype.duplicateOnDrag_ = function() {
       newVariableField.textContent = xmlBlockField.textContent;
       newVariableBlock.appendChild(newVariableField);
       xmlBlock = newVariableBlock;
-      this.targetBlock_.inputList[0].fieldRow[0].clearHover();
+      if (this.targetBlock_.inputList[0].fieldRow[0].clearHover) {
+        this.targetBlock_.inputList[0].fieldRow[0].clearHover();
+      }
     }
     newBlock = Blockly.Xml.domToBlock(xmlBlock, this.startWorkspace_);
 
