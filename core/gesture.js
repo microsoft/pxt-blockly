@@ -991,11 +991,7 @@ Blockly.Gesture.prototype.duplicateOnDrag_ = function() {
     // Resizes will be reenabled at the end of the drag.
     this.startWorkspace_.setResizesEnabled(false);
     var xmlBlock = Blockly.Xml.blockToDom(this.targetBlock_);
-    if (xmlBlock.getAttribute('type') == 'variables_get_reporter' ||
-      xmlBlock.getAttribute('type') == 'argument_reporter_boolean' ||
-      xmlBlock.getAttribute('type') == 'argument_reporter_number' ||
-      xmlBlock.getAttribute('type') == 'argument_reporter_string' ||
-      xmlBlock.getAttribute('type') == 'argument_reporter_custom') {
+    if (xmlBlock.getAttribute('type') == 'variables_get_reporter') {
       // pxtblockly: special case, convert into a variable_get block with the same id
       var xmlBlockField = xmlBlock.firstChild;
       if (!xmlBlockField) {

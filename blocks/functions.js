@@ -963,10 +963,13 @@ Blockly.Blocks['argument_editor_custom'] = {
   removeFieldCallback: Blockly.PXTBlockly.FunctionUtils.removeArgumentCallback_
 };
 
-
+// TODO GUJEN make arg reporters darker (make it obvious they're a shadow block)
+// TODO GUJEN dotted border on hover around arg reporters
+// TODO GUJEN do we really need 1 reporter of each kind? why not just bool / everything else, like scratch?
 Blockly.Blocks['argument_reporter_boolean'] = {
-  init: function() {
-    this.jsonInit({ "message0": " %1",
+  init: function () {
+    this.jsonInit({
+      "message0": " %1",
       "args0": [
         {
           "type": "field_label_serializable",
@@ -974,15 +977,16 @@ Blockly.Blocks['argument_reporter_boolean'] = {
           "text": ""
         }
       ],
-      "colour": "%{BKY_VARIABLES_HUE}",
+      "colour": Blockly.Msg.PROCEDURES_HUE,
       "extensions": ["output_boolean"]
     });
   }
 };
 
 Blockly.Blocks['argument_reporter_number'] = {
-  init: function() {
-    this.jsonInit({ "message0": " %1",
+  init: function () {
+    this.jsonInit({
+      "message0": " %1",
       "args0": [
         {
           "type": "field_label_serializable",
@@ -990,15 +994,16 @@ Blockly.Blocks['argument_reporter_number'] = {
           "text": ""
         }
       ],
-      "colour": "%{BKY_VARIABLES_HUE}",
+      "colour": Blockly.Msg.PROCEDURES_HUE,
       "extensions": ["output_number"]
     });
   }
 };
 
 Blockly.Blocks['argument_reporter_string'] = {
-  init: function() {
-    this.jsonInit({ "message0": " %1",
+  init: function () {
+    this.jsonInit({
+      "message0": " %1",
       "args0": [
         {
           "type": "field_label_serializable",
@@ -1006,15 +1011,16 @@ Blockly.Blocks['argument_reporter_string'] = {
           "text": ""
         }
       ],
-      "colour": "%{BKY_VARIABLES_HUE}",
+      "colour": Blockly.Msg.PROCEDURES_HUE,
       "extensions": ["output_string"]
     });
   }
 };
 
 Blockly.Blocks['argument_reporter_custom'] = {
-  init: function() {
-    this.jsonInit({ "message0": " %1",
+  init: function () {
+    this.jsonInit({
+      "message0": " %1",
       "args0": [
         {
           "type": "field_label_serializable",
@@ -1022,7 +1028,7 @@ Blockly.Blocks['argument_reporter_custom'] = {
           "text": ""
         }
       ],
-      "colour": "%{BKY_VARIABLES_HUE}",
+      "colour": Blockly.Msg.PROCEDURES_HUE,
       "extensions": ["output_string"]
     });
   }
