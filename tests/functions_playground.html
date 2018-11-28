@@ -186,6 +186,7 @@
             <button id="number" onclick="addNumber()">Add number</button>
             <button id="text" onclick="addText()">Add text</button>
             <button id="boolean" onclick="addBoolean()">Add boolean</button>
+            <button id="custom" onclick="addCustom()">Add custom</button>
             <button id="cancel" onclick="closeDeclarationWorkspace()">Cancel</button>
             <button id="done" onclick="applyMutation()">Done</button>
         </div>
@@ -251,7 +252,9 @@
             mutationRoot.addStringExternal();
         }
 
-        // TODO GUJEN add controls to test custom types
+        function addCustom() {
+            mutationRoot.addCustomExternal('CustomType');
+        }
 
         function removeRandomInput() {
             var rnd = Math.floor(Math.random() * mutationRoot.inputList.length);

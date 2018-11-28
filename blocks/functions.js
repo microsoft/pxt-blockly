@@ -37,6 +37,7 @@
 // TODO GUJEN deal with invalid function names (which we will allow in blocks but not in TS)
 // TODO GUJEN deal with duplicate param names (including variables)
 // TODO GUJEN deal with duplicate function names (including variables)
+// TODO GUJEN delete all callers when definition is deleted
 
 /**
  * Type to represent a function parameter
@@ -238,9 +239,16 @@ Blockly.PXTBlockly.FunctionUtils.createAllInputs_ = function (connectionMap) {
       inputName = arg.id + '_' + arg.type;
     }
     var input = this.appendValueInput(inputName);
-    if (arg.type === 'boolean') {
-      input.setCheck('Boolean');
-      // TODO GUJEN add other checks for other param types?
+    switch (arg.type) {
+      case 'boolean':
+        input.setCheck('Boolean');
+        break;
+      case 'string':
+        input.setCheck('String');
+        break;
+      case 'number':
+        input.setCheck('Number');
+        break;
     }
     this.populateArgument_(arg, connectionMap, input);
   });
@@ -303,10 +311,11 @@ Blockly.PXTBlockly.FunctionUtils.addLabelField_ = function (text) {
 /**
  * Returns the block type, the field name and the field value of the shadow
  * block to use for the given argument type.
- * @param {string} argumentType the type of the argument.
+ * @param {string} argumentType The type of the argument.
+ * @param {Blockly.Workspace} ws The workspace of the function call block.
  * @return {!Array<string>} An array of block type, field name and field value.
  */
-Blockly.PXTBlockly.FunctionUtils.getShadowBlockInfoFromType_ = function (argumentType) {
+Blockly.PXTBlockly.FunctionUtils.getShadowBlockInfoFromType_ = function (argumentType, ws) {
   var shadowType = '';
   var fieldName = '';
   var fieldValue = '';
@@ -327,10 +336,10 @@ Blockly.PXTBlockly.FunctionUtils.getShadowBlockInfoFromType_ = function (argumen
       fieldValue = 'abc';
       break;
     default:
-      // TODO GUJEN figure out how to come up with the right shadow block for custom types
-      shadowType = 'text';
-      fieldName = 'TEXT';
-      fieldValue = 'abc';
+      // This is probably a custom type. Use a variable as the shadow.
+      shadowType = 'variables_get';
+      fieldName = 'VAR';
+      fieldValue = Blockly.Variables.getOrCreateVariablePackage(ws, null, Blockly.Msg.VARIABLES_DEFAULT_NAME, '').getId();
   }
   return [shadowType, fieldName, fieldValue];
 }
@@ -345,7 +354,7 @@ Blockly.PXTBlockly.FunctionUtils.getShadowBlockInfoFromType_ = function (argumen
 Blockly.PXTBlockly.FunctionUtils.buildShadowDom_ = function (argumentType) {
   // TODO GUJEN ensure this works for all arg types
   var shadowDom = goog.dom.createDom('shadow');
-  var [shadowType, fieldName, fieldValue] = Blockly.PXTBlockly.FunctionUtils.getShadowBlockInfoFromType_(argumentType);
+  var [shadowType, fieldName, fieldValue] = Blockly.PXTBlockly.FunctionUtils.getShadowBlockInfoFromType_(argumentType, this.workspace);
   shadowDom.setAttribute('type', shadowType);
   var fieldDom = goog.dom.createDom('field', null, fieldValue);
   fieldDom.setAttribute('name', fieldName);
@@ -361,7 +370,7 @@ Blockly.PXTBlockly.FunctionUtils.buildShadowDom_ = function (argumentType) {
  * @this Blockly.Block
  */
 Blockly.PXTBlockly.FunctionUtils.attachShadow_ = function (input, argumentType) {
-  var [blockType, fieldName, fieldValue] = Blockly.PXTBlockly.FunctionUtils.getShadowBlockInfoFromType_(argumentType);
+  var [blockType, fieldName, fieldValue] = Blockly.PXTBlockly.FunctionUtils.getShadowBlockInfoFromType_(argumentType, this.workspace);
   Blockly.Events.disable();
   var newBlock = null;
   try {
@@ -390,7 +399,6 @@ Blockly.PXTBlockly.FunctionUtils.attachShadow_ = function (input, argumentType) 
  * @this Blockly.Block
  */
 Blockly.PXTBlockly.FunctionUtils.createArgumentReporter_ = function (argumentType, displayName) {
-  // TODO GUJEN finish this, and use correct reporter block for draggable args
   var blockType = '';
   switch (argumentType) {
     case 'boolean':
@@ -403,7 +411,6 @@ Blockly.PXTBlockly.FunctionUtils.createArgumentReporter_ = function (argumentTyp
       blockType = 'argument_reporter_string';
       break;
     default:
-      // TODO GUJEN figure out how to have draggable custom types
       blockType = 'argument_reporter_custom';
   }
   Blockly.Events.disable();
@@ -432,7 +439,6 @@ Blockly.PXTBlockly.FunctionUtils.createArgumentReporter_ = function (argumentTyp
  * @this Blockly.Block
  */
 Blockly.PXTBlockly.FunctionUtils.populateArgumentOnCaller_ = function (arg, connectionMap, input) {
-  // TODO GUJEN figure out custom types
   var oldBlock = null;
   var oldShadow = null;
   if (connectionMap && (arg.id in connectionMap)) {
@@ -464,7 +470,6 @@ Blockly.PXTBlockly.FunctionUtils.populateArgumentOnCaller_ = function (arg, conn
  * @this Blockly.Block
  */
 Blockly.PXTBlockly.FunctionUtils.populateArgumentOnDefinition_ = function (arg, connectionMap, input) {
-  // TODO GUJEN complete this
   var oldBlock = null;
   if (connectionMap && (arg.id in connectionMap)) {
     var saveInfo = connectionMap[arg.id];
@@ -561,8 +566,7 @@ Blockly.PXTBlockly.FunctionUtils.createArgumentEditor_ = function (argumentType,
         newBlock = this.workspace.newBlock('argument_editor_number');
         break;
       default:
-        // TODO GUJEN figure out how to handle custom types
-        newBlock = this.workspace.newBlock('argument_editor_string');
+        newBlock = this.workspace.newBlock('argument_editor_custom');
     }
     newBlock.setFieldValue(displayName, 'TEXT');
     newBlock.setShadow(true);
@@ -613,7 +617,6 @@ Blockly.PXTBlockly.FunctionUtils.updateDeclarationMutation_ = function () {
             // For custom types, the name of the input looks like UUID_TYPE,
             // where UUID is 20 characters. Parse the input name into the ID
             // and the type.
-            // TODO GUJEN Figure out end-to-end design for custom types and adjust here
             argId = input.name.substr(0, 20);
             typeName = input.name.substr(21);
             break;
@@ -650,8 +653,8 @@ Blockly.PXTBlockly.FunctionUtils.focusLastEditor_ = function () {
 
 /**
  * Common logic to add an argument to the function declaration.
- * @param {string} typeName The custom type of the param, as would be emitted
- *  to Typescript.
+ * @param {string} typeName The type of the param, as would be emitted to
+ *  Typescript.
  * @param {string} defaultName the default name of the parameter.
  * @private
  */
@@ -747,7 +750,6 @@ Blockly.PXTBlockly.FunctionUtils.removeFieldCallback = function (field) {
  * @public
  */
 Blockly.PXTBlockly.FunctionUtils.removeArgumentCallback_ = function (field) {
-  // TODO GUJEN complete this
   if (this.parentBlock_ && this.parentBlock_.removeFieldCallback) {
     this.parentBlock_.removeFieldCallback(field);
   }
@@ -883,6 +885,8 @@ Blockly.Blocks['function_call'] = {
   buildShadowDom_: Blockly.PXTBlockly.FunctionUtils.buildShadowDom_
 };
 
+// Argument editors
+
 Blockly.Blocks['argument_editor_boolean'] = {
   init: function () {
     this.jsonInit({
@@ -963,9 +967,45 @@ Blockly.Blocks['argument_editor_custom'] = {
   removeFieldCallback: Blockly.PXTBlockly.FunctionUtils.removeArgumentCallback_
 };
 
+// Argument reporters
+
+Blockly.PXTBlockly.FunctionUtils.argumentType = function () {
+
+}
+
+// /**
+//  * Parse XML to restore the argument type of an argument reporter block.
+//  * @param {!Element} xmlElement XML storage element.
+//  * @this Blockly.Block
+//  */
+// Blockly.PXTBlockly.FunctionUtils.argReporterDomToMutation = function (xmlElement) {
+//   this.argumentType_ = xmlElement.getAttribute('argumentType');
+// }
+
+// /**
+//  * Create XML to represent the argument type of an argument reporter block.
+//  * @return {!Element} XML storage element.
+//  * @this Blockly.Block
+//  */
+// Blockly.PXTBlockly.FunctionUtils.argReporterMutationToDom = function () {
+//   var container = document.createElement('mutation');
+//   container.setAttribute('argumentType', this.argumentType_);
+//   return container;
+// }
+
+// /**
+//  * Returns the argument type for this reporter
+//  * @return {!Element} XML storage element.
+//  * @this Blockly.Block
+//  */
+// Blockly.PXTBlockly.FunctionUtils.argReporterMutationToDom = function () {
+//   var container = document.createElement('mutation');
+//   container.setAttribute('argumentType', this.argumentType_);
+//   return container;
+// }
+
 // TODO GUJEN make arg reporters darker (make it obvious they're a shadow block)
 // TODO GUJEN dotted border on hover around arg reporters
-// TODO GUJEN do we really need 1 reporter of each kind? why not just bool / everything else, like scratch?
 Blockly.Blocks['argument_reporter_boolean'] = {
   init: function () {
     this.jsonInit({
@@ -1029,7 +1069,9 @@ Blockly.Blocks['argument_reporter_custom'] = {
         }
       ],
       "colour": Blockly.Msg.PROCEDURES_HUE,
-      "extensions": ["output_string"]
+      "inputsInline": true,
+      "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
+      "output": null
     });
   }
 };

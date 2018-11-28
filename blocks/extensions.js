@@ -40,8 +40,6 @@ Blockly.PXTBlockly.Extensions.FUNCTION_CONTEXTMENU_EDIT = {
    */
   customContextMenu: function (menuOptions) {
     menuOptions.push(Blockly.Functions.makeEditOption(this));
-
-    // TODO GUJEN do we want to hijack the Delete option so we can warn users if they try to delete a function still in use?
   }
 };
 

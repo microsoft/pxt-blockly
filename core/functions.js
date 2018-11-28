@@ -62,6 +62,12 @@ goog.require('Blockly.Workspace');
 Blockly.Functions.NAME_TYPE = Blockly.PROCEDURE_CATEGORY_NAME;
 
 /**
+ * Map of custom function argument types to the shadow block type to use for
+ * function calls using this argument type. To be overriden by the consumer.
+ */
+Blockly.Functions.ArgumentShadowTypes = {};
+
+/**
  * Construct the blocks required by the flyout for the functions category.
  * @param {!Blockly.Workspace} workspace The workspace containing functions.
  * @return {!Array.<!Element>} Array of XML block elements.
@@ -110,11 +116,11 @@ Blockly.Functions.flyoutCategory = function (workspace) {
  * @param {!Array.<!Element>} xmlList Array of XML block elements to add to.
  * @private
  */
-Blockly.Functions.addCreateButton_ = function(workspace, xmlList) {
+Blockly.Functions.addCreateButton_ = function (workspace, xmlList) {
   var button = goog.dom.createDom('button');
   var msg = Blockly.Msg.FUNCTION_CREATE_NEW;
   var callbackKey = 'CREATE_FUNCTION';
-  var callback = function() {
+  var callback = function () {
     Blockly.Functions.createFunctionCallback_(workspace);
   };
   button.setAttribute('text', msg);
@@ -171,7 +177,7 @@ Blockly.Functions.getDefinition = function (name, workspace) {
  * @param {!Blockly.Workspace} root Root workspace.
  * @return {!Array.<Blockly.Block>} An array of function definition blocks.
  */
-Blockly.Functions.getAllFunctionDefinitionBlocks = function(root) {
+Blockly.Functions.getAllFunctionDefinitionBlocks = function (root) {
   // Assume that a function definition is a top block.
   var blocks = root.getTopBlocks(false);
   var allFunctions = [];
@@ -184,18 +190,30 @@ Blockly.Functions.getAllFunctionDefinitionBlocks = function(root) {
 };
 
 /**
+ * Determines whether the specified type is custom or a built-in literal.
+ * @param {string} argumentType The argument type to check,
+ * @return {boolean} Whether the argument type is a custom type. A return value
+ *  of false means the argument is a built-in literal.
+ */
+Blockly.Functions.isCustomType = function (argumentType) {
+  return !(argumentType === 'boolean' ||
+    argumentType === 'string' ||
+    argumentType === 'number');
+}
+
+/**
  * Create a mutation for a brand new function.
  * @return {Element} The mutation for a new function.
  * @package
  */
-Blockly.Functions.newFunctionMutation = function() {
+Blockly.Functions.newFunctionMutation = function () {
   // <block type="function_definition">
   //   <mutation name="myFunc"></mutation>
   // </block>
   var mutationText =
-      '<xml>' +
-      '<mutation name="' + Blockly.Msg.FUNCTIONS_DEFAULT_FUNCTION_NAME + '"></mutation>' +
-      '</xml>';
+    '<xml>' +
+    '<mutation name="' + Blockly.Msg.FUNCTIONS_DEFAULT_FUNCTION_NAME + '"></mutation>' +
+    '</xml>';
   var mutation = Blockly.Xml.textToDom(mutationText).firstChild;
   mutation.removeAttribute('xmlns');
   return mutation;
