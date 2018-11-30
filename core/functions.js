@@ -161,7 +161,7 @@ Blockly.Functions.getDefinition = function (name, workspace) {
   // Assume that a function definition is a top block.
   var blocks = workspace.getTopBlocks(false);
   for (var i = 0; i < blocks.length; i++) {
-    if (blocks[i].getName) {
+    if (blocks[i].type === Blockly.FUNCTION_DEFINITION_BLOCK_TYPE && blocks[i].getName) {
       var funcName = blocks[i].getName();
       // Function name may be null if the block is only half-built.
       if (funcName && Blockly.Names.equals(funcName, name)) {
@@ -387,6 +387,6 @@ Blockly.Functions.mutateCallersAndDefinition = function (name, ws, mutation) {
     }
     Blockly.Events.setGroup(false);
   } else {
-    console.warn('Attempted to rename function ' + name + ', but no definition block was found on the workspace');
+    console.warn('Attempted to change function ' + name + ', but no definition block was found on the workspace');
   }
 };

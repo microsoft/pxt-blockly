@@ -452,7 +452,6 @@ Blockly.PXTBlockly.FunctionUtils.populateArgumentOnCaller_ = function (arg, conn
     connectionMap[input.name] = null;
     oldBlock.outputConnection.connect(input.connection);
     var shadowDom = oldShadow || this.buildShadowDom_(arg.type);
-    console.log("setting shadow dom: " + shadowDom);
     input.connection.setShadowDom(shadowDom);
   } else {
     this.attachShadow_(input, arg.type);
@@ -755,6 +754,67 @@ Blockly.PXTBlockly.FunctionUtils.removeArgumentCallback_ = function (field) {
   }
 };
 
+/**
+ * Function calls cannot exist without the corresponding function definition.
+ * Enforce this link whenever an event is fired.
+ * @param {!Blockly.Events.Abstract} event Change event.
+ * @this Blockly.Block
+ */
+Blockly.PXTBlockly.FunctionUtils.onCallerChange = function (event) {
+  if (!this.workspace || this.workspace.isFlyout) {
+    // Block is deleted or is in a flyout.
+    return;
+  }
+  if (event.type == Blockly.Events.BLOCK_CREATE && event.ids.indexOf(this.id) != -1) {
+    // Check whether there is a matching function definition for this caller.
+    var name = this.getName();
+    var def = Blockly.Functions.getDefinition(name, this.workspace);
+    if (def) {
+      // The function definition exists, ensure the signatures match.
+      var defArgs = def.getArguments().slice();
+      defArgs.sort((a, b) => a.name.localeCompare(b.name));
+      var thisArgs = this.arguments_.slice();
+      thisArgs.sort((a, b) => a.name.localeCompare(b.name));
+      if (JSON.stringify(thisArgs) !== JSON.stringify(defArgs)) {
+        // The function signature has changed since this block was copied,
+        // update it.
+        Blockly.Functions.mutateCallersAndDefinition(def.getName(), this.workspace, def.mutationToDom());
+      }
+    } else {
+      // There is no function definition for this function, create an empty one
+      // that matches the signature of the caller.
+      Blockly.Events.setGroup(event.group);
+      var xml = goog.dom.createDom('xml');
+      var block = goog.dom.createDom('block');
+      block.setAttribute('type', Blockly.FUNCTION_DEFINITION_BLOCK_TYPE);
+      var xy = this.getRelativeToSurfaceXY();
+      var x = xy.x + Blockly.SNAP_RADIUS * (this.RTL ? -1 : 1);
+      var y = xy.y + Blockly.SNAP_RADIUS * 2;
+      block.setAttribute('x', x);
+      block.setAttribute('y', y);
+      var mutation = this.mutationToDom();
+      block.appendChild(mutation);
+      // var field = goog.dom.createDom('field');
+      // field.setAttribute('name', 'function_title');
+      // field.appendChild(document.createTextNode(this.getProcedureCall()));
+      // block.appendChild(field);
+      xml.appendChild(block);
+      Blockly.Xml.domToWorkspace(xml, this.workspace);
+      Blockly.Events.setGroup(false);
+    }
+  } else if (event.type == Blockly.Events.BLOCK_DELETE) {
+    // If the deleted block was the function definition for this caller, delete
+    // this caller.
+    var name = this.getName();
+    var def = Blockly.Functions.getDefinition(name, this.workspace);
+    if (!def) {
+      Blockly.Events.setGroup(event.group);
+      this.dispose(true, false);
+      Blockly.Events.setGroup(false);
+    }
+  }
+}
+
 Blockly.Blocks['function_declaration'] = {
   /**
    * The preview block in the function editor dialog.
@@ -882,7 +942,8 @@ Blockly.Blocks['function_call'] = {
 
   // Only exists on function_call.
   attachShadow_: Blockly.PXTBlockly.FunctionUtils.attachShadow_,
-  buildShadowDom_: Blockly.PXTBlockly.FunctionUtils.buildShadowDom_
+  buildShadowDom_: Blockly.PXTBlockly.FunctionUtils.buildShadowDom_,
+  onchange: Blockly.PXTBlockly.FunctionUtils.onCallerChange
 };
 
 // Argument editors
