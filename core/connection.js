@@ -478,8 +478,12 @@ Blockly.Connection.prototype.isConnectionAllowed = function(candidate) {
 
       // pxt-blockly: don't allow connecting a block to a function argument
       // shadow reporter.
-      if (candidate.targetConnection && Blockly.pxtBlocklyUtils.isShadowArgumentReporter(candidate.targetBlock())) {
-        return false;
+      if (candidate.targetConnection) {
+        var targetBlock = candidate.targetBlock();
+        if (Blockly.pxtBlocklyUtils.isShadowArgumentReporter(targetBlock) &&
+          targetBlock.getParent().type === Blockly.FUNCTION_DEFINITION_BLOCK_TYPE) {
+          return false;
+        }
       }
       break;
     }

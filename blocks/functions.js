@@ -37,7 +37,6 @@
 // TODO GUJEN deal with invalid function names (which we will allow in blocks but not in TS)
 // TODO GUJEN deal with duplicate param names (including variables)
 // TODO GUJEN deal with duplicate function names (including variables)
-// TODO GUJEN delete all callers when definition is deleted
 
 /**
  * Type to represent a function parameter
@@ -352,7 +351,6 @@ Blockly.PXTBlockly.FunctionUtils.getShadowBlockInfoFromType_ = function (argumen
  * @this Blockly.Block
  */
 Blockly.PXTBlockly.FunctionUtils.buildShadowDom_ = function (argumentType) {
-  // TODO GUJEN ensure this works for all arg types
   var shadowDom = goog.dom.createDom('shadow');
   var [shadowType, fieldName, fieldValue] = Blockly.PXTBlockly.FunctionUtils.getShadowBlockInfoFromType_(argumentType, this.workspace);
   shadowDom.setAttribute('type', shadowType);
@@ -417,7 +415,7 @@ Blockly.PXTBlockly.FunctionUtils.createArgumentReporter_ = function (argumentTyp
   try {
     var newBlock = this.workspace.newBlock(blockType);
     newBlock.setShadow(true);
-    newBlock.setFieldValue(displayName, 'VAR');
+    newBlock.setFieldValue(displayName, 'VALUE');
     if (!this.isInsertionMarker()) {
       newBlock.initSvg();
       newBlock.render(false);
@@ -474,12 +472,10 @@ Blockly.PXTBlockly.FunctionUtils.populateArgumentOnDefinition_ = function (arg, 
     var saveInfo = connectionMap[arg.id];
     oldBlock = saveInfo['block'];
   }
-
-  var oldTypeMatches = Blockly.PXTBlockly.FunctionUtils.checkOldTypeMatches_(oldBlock, arg.type);
   var displayName = arg.name;
 
   // Decide which block to attach.
-  if (connectionMap && oldBlock && oldTypeMatches) {
+  if (connectionMap && oldBlock) {
     // Update the text if needed. The old argument reporter is the same type,
     // and on the same input, but the argument's display name may have changed.
     var argumentReporter = oldBlock;
@@ -514,28 +510,6 @@ Blockly.PXTBlockly.FunctionUtils.populateArgumentOnDeclaration_ = function (arg,
 
   // Attach the block.
   input.connection.connect(argumentEditor.outputConnection);
-};
-
-/**
-* Check whether the type of the old block corresponds to the given argument
-* type.
-* @param {Blockly.BlockSvg} oldBlock The old block to check.
-* @param {string} type The argument type. One of 'n', 'n', or 's'.
-* @return {boolean} True if the type matches, false otherwise.
-*/
-Blockly.PXTBlockly.FunctionUtils.checkOldTypeMatches_ = function (oldBlock, type) {
-  // TODO GUJEN fix this; might have to check the old mutation to decide whether arg type is still correct
-  if (!oldBlock) {
-    return false;
-  }
-  if ((type == 'n' || type == 's') &&
-    oldBlock.type == 'argument_reporter_string_number') {
-    return true;
-  }
-  if (type == 'b' && oldBlock.type == 'argument_reporter_boolean') {
-    return true;
-  }
-  return false;
 };
 
 /**
@@ -1029,52 +1003,14 @@ Blockly.Blocks['argument_editor_custom'] = {
 };
 
 // Argument reporters
-
-Blockly.PXTBlockly.FunctionUtils.argumentType = function () {
-
-}
-
-// /**
-//  * Parse XML to restore the argument type of an argument reporter block.
-//  * @param {!Element} xmlElement XML storage element.
-//  * @this Blockly.Block
-//  */
-// Blockly.PXTBlockly.FunctionUtils.argReporterDomToMutation = function (xmlElement) {
-//   this.argumentType_ = xmlElement.getAttribute('argumentType');
-// }
-
-// /**
-//  * Create XML to represent the argument type of an argument reporter block.
-//  * @return {!Element} XML storage element.
-//  * @this Blockly.Block
-//  */
-// Blockly.PXTBlockly.FunctionUtils.argReporterMutationToDom = function () {
-//   var container = document.createElement('mutation');
-//   container.setAttribute('argumentType', this.argumentType_);
-//   return container;
-// }
-
-// /**
-//  * Returns the argument type for this reporter
-//  * @return {!Element} XML storage element.
-//  * @this Blockly.Block
-//  */
-// Blockly.PXTBlockly.FunctionUtils.argReporterMutationToDom = function () {
-//   var container = document.createElement('mutation');
-//   container.setAttribute('argumentType', this.argumentType_);
-//   return container;
-// }
-
-// TODO GUJEN make arg reporters darker (make it obvious they're a shadow block)
-// TODO GUJEN dotted border on hover around arg reporters
 Blockly.Blocks['argument_reporter_boolean'] = {
   init: function () {
     this.jsonInit({
       "message0": " %1",
       "args0": [
         {
-          "type": "field_label_serializable",
-          "name": "VAR",
+          "type": "field_label_hover",
+          "name": "VALUE",
           "text": ""
         }
       ],
@@ -1090,8 +1026,8 @@ Blockly.Blocks['argument_reporter_number'] = {
       "message0": " %1",
       "args0": [
         {
-          "type": "field_label_serializable",
-          "name": "VAR",
+          "type": "field_label_hover",
+          "name": "VALUE",
           "text": ""
         }
       ],
@@ -1107,8 +1043,8 @@ Blockly.Blocks['argument_reporter_string'] = {
       "message0": " %1",
       "args0": [
         {
-          "type": "field_label_serializable",
-          "name": "VAR",
+          "type": "field_label_hover",
+          "name": "VALUE",
           "text": ""
         }
       ],
@@ -1124,8 +1060,8 @@ Blockly.Blocks['argument_reporter_custom'] = {
       "message0": " %1",
       "args0": [
         {
-          "type": "field_label_serializable",
-          "name": "VAR",
+          "type": "field_label_hover",
+          "name": "VALUE",
           "text": ""
         }
       ],

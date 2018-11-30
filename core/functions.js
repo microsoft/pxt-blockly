@@ -374,7 +374,7 @@ Blockly.Functions.mutateCallersAndDefinition = function (name, ws, mutation) {
     var callers = Blockly.Functions.getCallers(name, definitionBlock.workspace);
     callers.push(definitionBlock);
     Blockly.Events.setGroup(true);
-    for (var i = 0, caller; caller = callers[i]; i++) {
+    callers.forEach(caller => {
       var oldMutationDom = caller.mutationToDom();
       var oldMutation = oldMutationDom && Blockly.Xml.domToText(oldMutationDom);
       caller.domToMutation(mutation);
@@ -384,7 +384,11 @@ Blockly.Functions.mutateCallersAndDefinition = function (name, ws, mutation) {
         Blockly.Events.fire(new Blockly.Events.BlockChange(
           caller, 'mutation', null, oldMutation, newMutation));
       }
-    }
+      // Bump any blocks that were connected to deleted arguments on callers.
+      setTimeout(function () {
+        caller.bumpNeighbours_();
+      }, Blockly.BUMP_DELAY);
+    });
     Blockly.Events.setGroup(false);
   } else {
     console.warn('Attempted to change function ' + name + ', but no definition block was found on the workspace');
