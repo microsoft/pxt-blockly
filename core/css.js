@@ -1262,8 +1262,7 @@ Blockly.Css.CONTENT = [
   '}',
 
   '.blocklyWidgetDiv.fieldTextInput.removableTextInput {',
-    'overflow-y: visible;',
-    'overflow-x: visible;',
+    'overflow: visible;',
   '}',
 
   ''

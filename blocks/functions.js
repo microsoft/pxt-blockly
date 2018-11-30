@@ -611,9 +611,8 @@ Blockly.PXTBlockly.FunctionUtils.updateDeclarationMutation_ = function () {
 * @private
 */
 Blockly.PXTBlockly.FunctionUtils.focusLastEditor_ = function () {
-  // TODO GUJEN fix this
   if (this.inputList.length > 0) {
-    var newInput = this.inputList[this.inputList.length - 1];
+    var newInput = this.inputList[this.inputList.length - 2];
     if (newInput.type == Blockly.DUMMY_INPUT) {
       newInput.fieldRow[0].showEditor_();
     } else if (newInput.type == Blockly.INPUT_VALUE) {
