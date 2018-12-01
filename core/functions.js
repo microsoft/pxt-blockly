@@ -394,3 +394,16 @@ Blockly.Functions.mutateCallersAndDefinition = function (name, ws, mutation) {
     console.warn('Attempted to change function ' + name + ', but no definition block was found on the workspace');
   }
 };
+
+/**
+ * Whether a block is a function argument reporter.
+ * @param {!Blockly.BlockSvg} block The block that should be used to make this
+ *     decision.
+ * @return {boolean} True if the block is a function argument reporter.
+ */
+Blockly.Functions.isShadowArgumentReporter = function (block) {
+  return block.type === 'argument_reporter_boolean' ||
+    block.type === 'argument_reporter_number' ||
+    block.type === 'argument_reporter_string' ||
+    block.type === 'argument_reporter_custom';
+};

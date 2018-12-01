@@ -1197,8 +1197,11 @@ Blockly.Msg.FUNCTIONS_CALL_TITLE = 'call function'
 /// pxt-blockly: Label on the "Create Function" button in the flyout.
 Blockly.Msg.FUNCTION_CREATE_NEW = 'Create a Function'
 
+/// pxt-blockly: Tooltip for function calls.
+Blockly.Msg.FUNCTION_CALL_TOOLTIP = 'Call a function that was previously defined.'
+
 /// pxt-blockly: Default function name
-Blockly.Msg.FUNCTIONS_DEFAULT_FUNCTION_NAME = 'do something'
+Blockly.Msg.FUNCTIONS_DEFAULT_FUNCTION_NAME = 'do_something'
 
 /// pxt-blockly: Default name for a boolean arg on a function declaration
 Blockly.Msg.FUNCTIONS_DEFAULT_BOOLEAN_ARG_NAME = 'bool'

@@ -476,13 +476,31 @@ Blockly.Connection.prototype.isConnectionAllowed = function(candidate) {
         return false;
       }
 
-      // pxt-blockly: don't allow connecting a block to a function argument
-      // shadow reporter.
       if (candidate.targetConnection) {
+        // pxt-blockly: don't allow connecting a block to a function argument
+        // shadow reporter.
         var targetBlock = candidate.targetBlock();
         if (Blockly.pxtBlocklyUtils.isShadowArgumentReporter(targetBlock) &&
           targetBlock.getParent().type === Blockly.FUNCTION_DEFINITION_BLOCK_TYPE) {
           return false;
+        }
+
+        // pxt-blockly: don't allow putting argument reporters outside their
+        // respective function.
+        if (Blockly.Functions.isShadowArgumentReporter(this.sourceBlock_)) {
+          // Ensure the root block of this stack is a function definition that
+          // has this argument name in its signature.
+          var rootBlock = candidate.targetBlock().getRootBlock();
+          if (rootBlock.type !== Blockly.FUNCTION_DEFINITION_BLOCK_TYPE) {
+            return false;
+          }
+
+          // rootBlock is a function definition, but we still need to make
+          // sure it has a matching argument in its signature.
+          var thisArgName = this.sourceBlock_.getFieldValue('VALUE');
+          if (!rootBlock.hasArgumentWithName(thisArgName)) {
+            return false;
+          }
         }
       }
       break;

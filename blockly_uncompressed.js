@@ -96,6 +96,7 @@ goog.addDependency("../../../" + dir + "/core/mutator.js", ['Blockly.Mutator'], 
 goog.addDependency("../../../" + dir + "/core/names.js", ['Blockly.Names'], []);
 goog.addDependency("../../../" + dir + "/core/options.js", ['Blockly.Options'], ['Blockly.Colours']);
 goog.addDependency("../../../" + dir + "/core/procedures.js", ['Blockly.Procedures'], ['Blockly.Blocks', 'Blockly.constants', 'Blockly.Events.BlockChange', 'Blockly.Field', 'Blockly.Names', 'Blockly.Workspace']);
+goog.addDependency("../../../" + dir + "/core/pxt_blockly_events.js", ['Blockly.Events.EndBlockDrag'], ['Blockly.Events', 'Blockly.Events.BlockBase']);
 goog.addDependency("../../../" + dir + "/core/pxt_blockly_utils.js", ['Blockly.pxtBlocklyUtils'], []);
 goog.addDependency("../../../" + dir + "/core/pxt_utils.js", ['Blockly.PXTUtils'], ['goog.ui.Menu', 'goog.ui.MenuItem', 'goog.positioning.ClientPosition', 'goog.ui.Tooltip', 'goog.ui.CustomButton']);
 goog.addDependency("../../../" + dir + "/core/rendered_connection.js", ['Blockly.RenderedConnection'], ['Blockly.Connection']);
@@ -1760,6 +1761,7 @@ goog.require('Blockly.Events.CommentDelete');
 goog.require('Blockly.Events.CommentMove');
 goog.require('Blockly.Events.Create');
 goog.require('Blockly.Events.Delete');
+goog.require('Blockly.Events.EndBlockDrag');
 goog.require('Blockly.Events.Move');
 goog.require('Blockly.Events.Ui');
 goog.require('Blockly.Events.VarBase');

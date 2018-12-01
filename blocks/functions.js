@@ -109,6 +109,23 @@ Blockly.PXTBlockly.FunctionUtils.getArguments = function () {
 }
 
 /**
+ * Returns whether or not the specified argument name exists on this function
+ * signature.
+ * @param {string} argName The name of the argument to check.
+ * @return {boolean} Whether the argument name exists for this function.
+ * @this Blockly.Block
+ */
+Blockly.PXTBlockly.FunctionUtils.hasArgumentWithName = function (argName) {
+  var args = this.getArguments();
+  for (var i = 0; i < args.length; ++i) {
+    if (args[i].name === argName) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
  * Add or remove the statement block from this function definition.
  * @param {boolean} hasStatements True if a statement block is needed.
  * @this Blockly.Block
@@ -293,7 +310,7 @@ Blockly.PXTBlockly.FunctionUtils.deleteShadows_ = function (connectionMap) {
  */
 Blockly.PXTBlockly.FunctionUtils.addLabelEditor_ = function (text) {
   if (text) {
-    this.appendDummyInput('function_name').appendField(new Blockly.FieldTextInput(text), 'function_name'); // TODO GUJEN mimick scratch blocks behavior of having solid background while not editing
+    this.appendDummyInput('function_name').appendField(new Blockly.FieldTextInput(text), 'function_name');
   }
 };
 
@@ -389,16 +406,15 @@ Blockly.PXTBlockly.FunctionUtils.attachShadow_ = function (input, argumentType) 
 
 /**
  * Create a new argument reporter block.
- * @param {string} argumentType The type of the argument.
- * @param {string} displayName The name of the argument as provided by the
- *     user, which becomes the text of the label on the argument reporter block.
+ * @param {FunctionParameter} arg The argument we are building this reporter
+ *  for.
  * @return {!Blockly.BlockSvg} The newly created argument reporter block.
  * @private
  * @this Blockly.Block
  */
-Blockly.PXTBlockly.FunctionUtils.createArgumentReporter_ = function (argumentType, displayName) {
+Blockly.PXTBlockly.FunctionUtils.createArgumentReporter_ = function (arg) {
   var blockType = '';
-  switch (argumentType) {
+  switch (arg.type) {
     case 'boolean':
       blockType = 'argument_reporter_boolean';
       break;
@@ -415,7 +431,7 @@ Blockly.PXTBlockly.FunctionUtils.createArgumentReporter_ = function (argumentTyp
   try {
     var newBlock = this.workspace.newBlock(blockType);
     newBlock.setShadow(true);
-    newBlock.setFieldValue(displayName, 'VALUE');
+    newBlock.setFieldValue(arg.name, 'VALUE');
     if (!this.isInsertionMarker()) {
       newBlock.initSvg();
       newBlock.render(false);
@@ -472,17 +488,16 @@ Blockly.PXTBlockly.FunctionUtils.populateArgumentOnDefinition_ = function (arg, 
     var saveInfo = connectionMap[arg.id];
     oldBlock = saveInfo['block'];
   }
-  var displayName = arg.name;
 
   // Decide which block to attach.
   if (connectionMap && oldBlock) {
     // Update the text if needed. The old argument reporter is the same type,
     // and on the same input, but the argument's display name may have changed.
     var argumentReporter = oldBlock;
-    argumentReporter.setFieldValue(displayName, 'VALUE');
+    argumentReporter.setFieldValue(arg.name, 'VALUE');
     connectionMap[input.name] = null;
   } else {
-    var argumentReporter = this.createArgumentReporter_(arg.type, displayName);
+    var argumentReporter = this.createArgumentReporter_(arg);
   }
 
   // Attach the block.
@@ -788,6 +803,46 @@ Blockly.PXTBlockly.FunctionUtils.onCallerChange = function (event) {
   }
 }
 
+/**
+ * Function argument reporters cannot exist outside functions that define them
+ * as arguments. Enforce this link whenever an event is fired.
+ * @param {!Blockly.Events.Abstract} event Change event.
+ * @this Blockly.Block
+ */
+Blockly.PXTBlockly.FunctionUtils.onReporterChange = function (event) {
+  if (!this.workspace || this.workspace.isFlyout) {
+    // Block is deleted or is in a flyout.
+    return;
+  }
+
+  var thisWasCreated = event.type === Blockly.Events.BLOCK_CREATE && event.ids.indexOf(this.id) != -1;
+  var thisWasDragged = event.type === Blockly.Events.END_DRAG && event.allNestedIds.indexOf(this.id) != -1;
+
+  if (thisWasCreated || thisWasDragged) {
+    var rootBlock = this.getRootBlock();
+    var thisArgName = this.getFieldValue('VALUE');
+
+    if (!Blockly.Functions.isShadowArgumentReporter(rootBlock) &&
+      (rootBlock.type !== Blockly.FUNCTION_DEFINITION_BLOCK_TYPE ||
+        !rootBlock.hasArgumentWithName(thisArgName))) {
+      Blockly.Events.setGroup(event.group);
+      // TODO Do we want to unplug, or delete?
+      this.dispose();
+      // var parent = this.getParent();
+      // this.unplug();
+
+      // if (parent) {
+      //   setTimeout(function () {
+      //     Blockly.Events.setGroup(event.group);
+      //     parent.bumpNeighbours_();
+      //     Blockly.Events.setGroup(false);
+      //   }, Blockly.BUMP_DELAY);
+      // }
+      Blockly.Events.setGroup(false);
+    }
+  }
+}
+
 Blockly.Blocks['function_declaration'] = {
   /**
    * The preview block in the function editor dialog.
@@ -875,7 +930,8 @@ Blockly.Blocks['function_definition'] = {
   addFunctionLabel_: Blockly.PXTBlockly.FunctionUtils.addLabelField_,
 
   // Only exists on function_definition.
-  createArgumentReporter_: Blockly.PXTBlockly.FunctionUtils.createArgumentReporter_
+  createArgumentReporter_: Blockly.PXTBlockly.FunctionUtils.createArgumentReporter_,
+  hasArgumentWithName: Blockly.PXTBlockly.FunctionUtils.hasArgumentWithName
 };
 
 Blockly.Blocks['function_call'] = {
@@ -894,8 +950,8 @@ Blockly.Blocks['function_call'] = {
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.setColour(Blockly.Msg.PROCEDURES_HUE);
-    // Tooltip is set in renameProcedure.
-    this.setHelpUrl(Blockly.Msg.PROCEDURES_CALLNORETURN_HELPURL); // TODO GUJEN ensure tooltip is set
+    this.setHelpUrl(Blockly.Msg.PROCEDURES_CALLNORETURN_HELPURL);
+    this.setTooltip(Blockly.Msg.FUNCTION_CALL_TOOLTIP);
   },
   // Shared.
   mutationToDom: Blockly.PXTBlockly.FunctionUtils.mutationToDom,
@@ -1002,6 +1058,7 @@ Blockly.Blocks['argument_editor_custom'] = {
 };
 
 // Argument reporters
+
 Blockly.Blocks['argument_reporter_boolean'] = {
   init: function () {
     this.jsonInit({
@@ -1016,7 +1073,8 @@ Blockly.Blocks['argument_reporter_boolean'] = {
       "colour": Blockly.Msg.PROCEDURES_HUE,
       "extensions": ["output_boolean"]
     });
-  }
+  },
+  onchange: Blockly.PXTBlockly.FunctionUtils.onReporterChange
 };
 
 Blockly.Blocks['argument_reporter_number'] = {
@@ -1033,7 +1091,8 @@ Blockly.Blocks['argument_reporter_number'] = {
       "colour": Blockly.Msg.PROCEDURES_HUE,
       "extensions": ["output_number"]
     });
-  }
+  },
+  onchange: Blockly.PXTBlockly.FunctionUtils.onReporterChange
 };
 
 Blockly.Blocks['argument_reporter_string'] = {
@@ -1050,7 +1109,8 @@ Blockly.Blocks['argument_reporter_string'] = {
       "colour": Blockly.Msg.PROCEDURES_HUE,
       "extensions": ["output_string"]
     });
-  }
+  },
+  onchange: Blockly.PXTBlockly.FunctionUtils.onReporterChange
 };
 
 Blockly.Blocks['argument_reporter_custom'] = {
@@ -1069,5 +1129,6 @@ Blockly.Blocks['argument_reporter_custom'] = {
       "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
       "output": null
     });
-  }
+  },
+  onchange: Blockly.PXTBlockly.FunctionUtils.onReporterChange
 };
