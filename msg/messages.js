@@ -135,8 +135,8 @@ Blockly.Msg.NEW_COLOUR_VARIABLE = 'Create colour variable...';
 Blockly.Msg.NEW_VARIABLE_TYPE_TITLE = 'New variable type:';
 /// prompt - Prompts the user to enter the name for a new variable.  See [https://github.com/google/blockly/wiki/Variables#dropdown-menu https://github.com/google/blockly/wiki/Variables#dropdown-menu].
 Blockly.Msg.NEW_VARIABLE_TITLE = 'New variable name:';
-/// alert - Tells the user that the name they entered is already in use.
-Blockly.Msg.VARIABLE_ALREADY_EXISTS = 'A variable named "%1" already exists.';
+/// alert - Tells the user that the name they entered is already in use. pxt-blockly: also mention that a function can be the source of the name conflict.
+Blockly.Msg.VARIABLE_ALREADY_EXISTS = 'A variable or function named "%1" already exists.';
 /// alert - Tells the user that the name they entered is already in use for another type.
 Blockly.Msg.VARIABLE_ALREADY_EXISTS_FOR_ANOTHER_TYPE = 'A variable named "%1" already exists for another type: "%2".';
 
@@ -1199,6 +1199,12 @@ Blockly.Msg.FUNCTION_CREATE_NEW = 'Create a Function'
 
 /// pxt-blockly: Tooltip for function calls.
 Blockly.Msg.FUNCTION_CALL_TOOLTIP = 'Call a function that was previously defined.'
+
+/// pxt-blockly: Warning for duplicate argument names on a function definition.
+Blockly.Msg.FUNCTION_WARNING_DUPLICATE_ARG = 'Functions cannot use the same argument name more than once.'
+
+/// pxt-blockly: Warning for argument names being the same as the function name.
+Blockly.Msg.FUNCTION_WARNING_ARG_NAME_IS_FUNCTION_NAME = 'Argument names must not be the same as the function name.'
 
 /// pxt-blockly: Default function name
 Blockly.Msg.FUNCTIONS_DEFAULT_FUNCTION_NAME = 'do_something'

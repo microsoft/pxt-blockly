@@ -208,11 +208,11 @@ Blockly.Functions.isCustomType = function (argumentType) {
  */
 Blockly.Functions.newFunctionMutation = function () {
   // <block type="function_definition">
-  //   <mutation name="myFunc"></mutation>
+  //   <mutation name="myFunc" functionId="..."></mutation>
   // </block>
   var mutationText =
     '<xml>' +
-    '<mutation name="' + Blockly.Msg.FUNCTIONS_DEFAULT_FUNCTION_NAME + '"></mutation>' +
+    '<mutation name="' + Blockly.Msg.FUNCTIONS_DEFAULT_FUNCTION_NAME + '" functionId="' + Blockly.utils.genUid() + '"></mutation>' +
     '</xml>';
   var mutation = Blockly.Xml.textToDom(mutationText).firstChild;
   mutation.removeAttribute('xmlns');
@@ -280,6 +280,7 @@ Blockly.Functions.createFunctionCallbackFactory_ = function (workspace) {
         '</block>' +
         '</xml>';
       var blockDom = Blockly.Xml.textToDom(blockText);
+      // TODO GUJEN fix the block placement logic
       Blockly.Events.setGroup(true);
       var block = Blockly.Xml.domToBlock(blockDom.firstChild, workspace);
       var scale = workspace.scale; // To convert from pixel units to workspace units
@@ -359,6 +360,62 @@ Blockly.Functions.makeEditOption = function (block) {
   };
   return editOption;
 };
+
+/**
+ * Validate the given function mutation to ensure that:
+ *  1) the function name is globally unique in the specified workspace
+ *  2) the parameter names are unique among themselves
+ *  3) the argument names are not the same as the function name
+ * @param {!Element} mutation The proposed function mutation.
+ * @param {!Blockly.Workspace} destinationWs The workspace to check for name uniqueness.
+ * @return {boolean} Whether the function passes name validation or not.
+ */
+Blockly.Functions.validateFunctionExternal = function (mutation, destinationWs) {
+  var argNames = [];
+  mutation.childNodes.forEach(arg => argNames.push(arg.getAttribute('name')));
+  var seen = {};
+
+  // Check for duplicate arg names.
+  for (var i = 0; i < argNames.length; ++i) {
+    var arg = argNames[i].toLowerCase();
+    if (seen[arg]) {
+      Blockly.alert(Blockly.Msg.FUNCTION_WARNING_DUPLICATE_ARG);
+      return false;
+    }
+    seen[arg] = true;
+  }
+
+  // Check for function name also being an argument name.
+  var funcName = mutation.getAttribute('name');
+  var lowerCase = funcName.toLowerCase();
+  if (seen[lowerCase]) {
+    Blockly.alert(Blockly.Msg.FUNCTION_WARNING_ARG_NAME_IS_FUNCTION_NAME);
+    return false;
+  }
+
+  // Check if function name is in use by a variable.
+  var allVarNames = destinationWs.getAllVariables().map(v => v.name.toLowerCase());
+  if (allVarNames.indexOf(lowerCase) !== -1) {
+    Blockly.alert(Blockly.Msg.VARIABLE_ALREADY_EXISTS.replace('%1', lowerCase));
+    return false;
+  }
+
+  // Check if function name is in use by a different function (it's ok if the
+  // name is in use by the function we're editing - that means we've changed
+  // the arguments without renaming the function).
+  var funcId = mutation.getAttribute('functionId');
+  var allFunctions = Blockly.Functions.getAllFunctionDefinitionBlocks(destinationWs);
+  for (var i = 0; i < allFunctions.length; ++i) {
+    if (allFunctions[i].getName().toLowerCase() === lowerCase &&
+      allFunctions[i].getFunctionId() !== funcId) {
+      Blockly.alert(Blockly.Msg.VARIABLE_ALREADY_EXISTS.replace('%1', lowerCase));
+      return false;
+    }
+  }
+
+  // Looks good.
+  return true;
+}
 
 /**
  * Creates a map of argument name -> argument ID based on the specified

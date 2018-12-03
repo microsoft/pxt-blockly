@@ -35,8 +35,6 @@
 
 // TODO GUJEN deal with invalid arg names (which we will allow in blocks but not in TS)
 // TODO GUJEN deal with invalid function names (which we will allow in blocks but not in TS)
-// TODO GUJEN deal with duplicate param names (including variables)
-// TODO GUJEN deal with duplicate function names (including variables)
 
 /**
  * Type to represent a function parameter
@@ -57,6 +55,7 @@ Blockly.PXTBlockly.FunctionUtils = {};
 Blockly.PXTBlockly.FunctionUtils.mutationToDom = function () {
   var container = document.createElement('mutation');
   container.setAttribute('name', this.name_);
+  container.setAttribute('functionId', this.functionId_);
   this.arguments_.forEach((arg) => {
     var argNode = document.createElement('arg');
     argNode.setAttribute('name', arg.name);
@@ -86,6 +85,7 @@ Blockly.PXTBlockly.FunctionUtils.domToMutation = function (xmlElement) {
 
   this.arguments_ = args;
   this.name_ = xmlElement.getAttribute('name');
+  this.functionId_ = xmlElement.getAttribute('functionId');
   this.updateDisplay_();
 };
 
@@ -97,6 +97,17 @@ Blockly.PXTBlockly.FunctionUtils.domToMutation = function (xmlElement) {
  */
 Blockly.PXTBlockly.FunctionUtils.getName = function () {
   return this.name_;
+};
+
+/**
+ * Returns the function ID of this function, or the empty string if it has not
+ * yet been set. This is different from the block ID and is the same across all
+ * function calls, definition and declaration for a given function.
+ * @return {string} Function ID.
+ * @this Blockly.Block
+ */
+Blockly.PXTBlockly.FunctionUtils.getFunctionId = function () {
+  return this.functionId_;
 };
 
 /**
@@ -850,8 +861,9 @@ Blockly.Blocks['function_declaration'] = {
    */
   init: function () {
     /* Data known about the function. */
-    this.name_ = ""; // The name of the function
-    this.arguments_ = []; // The argument objects
+    this.name_ = ""; // The name of the function.
+    this.arguments_ = []; // The arguments of this function.
+    this.functionId_ = ""; // An ID, independent from the block ID, to track a function across its call, definition and declaration blocks.
 
     this.createAllInputs_();
     this.setColour(Blockly.Msg.PROCEDURES_HUE);
@@ -862,6 +874,7 @@ Blockly.Blocks['function_declaration'] = {
   mutationToDom: Blockly.PXTBlockly.FunctionUtils.mutationToDom,
   domToMutation: Blockly.PXTBlockly.FunctionUtils.domToMutation,
   getName: Blockly.PXTBlockly.FunctionUtils.getName,
+  getFunctionId: Blockly.PXTBlockly.FunctionUtils.getFunctionId,
   getArguments: Blockly.PXTBlockly.FunctionUtils.getArguments,
   removeAllInputs_: Blockly.PXTBlockly.FunctionUtils.removeAllInputs_,
   disconnectOldBlocks_: Blockly.PXTBlockly.FunctionUtils.disconnectOldBlocks_,
@@ -897,8 +910,9 @@ Blockly.Blocks['function_definition'] = {
     });
 
     /* Data known about the function. */
-    this.name_ = ""; // The name of the function
-    this.arguments_ = []; // The argument objects
+    this.name_ = ""; // The name of the function.
+    this.arguments_ = []; // The arguments of this function.
+    this.functionId_ = ""; // An ID, independent from the block ID, to track a function across its call, definition and declaration blocks.
 
     this.createAllInputs_();
     if ((this.workspace.options.comments ||
@@ -917,6 +931,7 @@ Blockly.Blocks['function_definition'] = {
   mutationToDom: Blockly.PXTBlockly.FunctionUtils.mutationToDom,
   domToMutation: Blockly.PXTBlockly.FunctionUtils.domToMutation,
   getName: Blockly.PXTBlockly.FunctionUtils.getName,
+  getFunctionId: Blockly.PXTBlockly.FunctionUtils.getFunctionId,
   getArguments: Blockly.PXTBlockly.FunctionUtils.getArguments,
   removeAllInputs_: Blockly.PXTBlockly.FunctionUtils.removeAllInputs_,
   disconnectOldBlocks_: Blockly.PXTBlockly.FunctionUtils.disconnectOldBlocks_,
@@ -944,8 +959,9 @@ Blockly.Blocks['function_call'] = {
       "extensions": ["function_contextmenu_edit"]
     });
     /* Data known about the function. */
-    this.name_ = ""; // The name of the function
-    this.arguments_ = []; // The argument objects
+    this.name_ = ""; // The name of the function.
+    this.arguments_ = []; // The arguments of this function.
+    this.functionId_ = ""; // An ID, independent from the block ID, to track a function across its call, definition and declaration blocks.
 
     this.setPreviousStatement(true);
     this.setNextStatement(true);
@@ -957,6 +973,7 @@ Blockly.Blocks['function_call'] = {
   mutationToDom: Blockly.PXTBlockly.FunctionUtils.mutationToDom,
   domToMutation: Blockly.PXTBlockly.FunctionUtils.domToMutation,
   getName: Blockly.PXTBlockly.FunctionUtils.getName,
+  getFunctionId: Blockly.PXTBlockly.FunctionUtils.getFunctionId,
   getArguments: Blockly.PXTBlockly.FunctionUtils.getArguments,
   removeAllInputs_: Blockly.PXTBlockly.FunctionUtils.removeAllInputs_,
   disconnectOldBlocks_: Blockly.PXTBlockly.FunctionUtils.disconnectOldBlocks_,
