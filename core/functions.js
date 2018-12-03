@@ -361,6 +361,25 @@ Blockly.Functions.makeEditOption = function (block) {
 };
 
 /**
+ * Creates a map of argument name -> argument ID based on the specified
+ * function mutation. If specified, can also to the inverse map:
+ * argument ID -> argument name.
+ * @param {!Element} mutation The function mutation to parse.
+ * @param {boolean} inverse Whether to make the inverse map, ID -> name.
+ * @return {!Object} A map of name -> ID, or ID -> name if inverse was true.
+ * @package
+ */
+Blockly.Functions.getArgMap = function (mutation, inverse) {
+  var map = {};
+  mutation.childNodes.forEach(arg => {
+    var key = inverse ? arg.getAttribute('id') : arg.getAttribute('name');
+    var val = inverse ? arg.getAttribute('name') : arg.getAttribute('id');
+    map[key] = val;
+  });
+  return map;
+}
+
+/**
  * Find and edit all callers and the definition of a function using a new
  * mutation.
  * @param {string} name Name of function.
@@ -380,14 +399,48 @@ Blockly.Functions.mutateCallersAndDefinition = function (name, ws, mutation) {
       caller.domToMutation(mutation);
       var newMutationDom = caller.mutationToDom();
       var newMutation = newMutationDom && Blockly.Xml.domToText(newMutationDom);
+
       if (oldMutation != newMutation) {
-        Blockly.Events.fire(new Blockly.Events.BlockChange(
-          caller, 'mutation', null, oldMutation, newMutation));
+        // Fire a mutation event to force the block to update.
+        Blockly.Events.fire(new Blockly.Events.BlockChange(caller, 'mutation', null, oldMutation, newMutation));
+
+        // For the definition, we also need to update all arguments that are
+        // used inside the function.
+        if (caller.id === definitionBlock.id) {
+          // First, build a map of oldArgName -> argId from the old mutation,
+          // and a map of argId -> newArgName from the new mutation.
+          var oldArgNamesToIds = Blockly.Functions.getArgMap(oldMutationDom);
+          var idsToNewArgNames = Blockly.Functions.getArgMap(newMutationDom, true);
+
+          // Then, go through all descendants of the function definition and
+          // look for argument reporters to update.
+          definitionBlock.getDescendants().forEach(d => {
+            if (!Blockly.Functions.isShadowArgumentReporter(d)) {
+              return;
+            }
+
+            // Find the argument ID corresponding to this old argument name.
+            var argName = d.getFieldValue('VALUE');
+            var argId = oldArgNamesToIds[argName];
+
+            if (!idsToNewArgNames[argId]) {
+              // That arg ID no longer exists on the new mutation, delete this
+              // arg reporter.
+              d.dispose();
+            } else if (idsToNewArgNames[argId] !== argName) {
+              // That arg ID still exists, but the name was changed, so update
+              // this reporter's display text.
+              d.setFieldValue(idsToNewArgNames[argId], 'VALUE');
+            }
+          });
+        } else {
+          // For the callers, we need to bump blocks that were connected to any
+          // argument that has since been deleted.
+          setTimeout(function () {
+            caller.bumpNeighbours_();
+          }, Blockly.BUMP_DELAY);
+        }
       }
-      // Bump any blocks that were connected to deleted arguments on callers.
-      setTimeout(function () {
-        caller.bumpNeighbours_();
-      }, Blockly.BUMP_DELAY);
     });
     Blockly.Events.setGroup(false);
   } else {
