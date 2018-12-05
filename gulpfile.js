@@ -5,9 +5,6 @@
 
 var gulp = require('gulp');
 var bump = require('gulp-bump');
-var merge = require('merge-stream');
-var path = require('path');
-var rimraf = require('rimraf');
 var fs = require('fs');
 var spawn = require('child_process').spawn;
 
