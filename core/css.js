@@ -1046,7 +1046,8 @@ Blockly.Css.CONTENT = [
     'list-style: none;',
     'margin: 0;',
      /* 28px on the left for icon or checkbox; 7em on the right for shortcut. */
-    'padding: 5px 7em 5px 28px;',
+    'min-width: 7em;',
+    'padding: 5px 5px 5px 28px;',
     'white-space: nowrap;',
   '}',
 
@@ -1203,8 +1204,8 @@ Blockly.Css.CONTENT = [
 
   '.blocklyWidgetDiv .goog-menuseparator, ',
   '.blocklyDropDownDiv .goog-menuseparator {',
-    'border-top: 1px solid #ccc;',
-    'margin: 4px 0;',
+    'border-top: 1px solid #ddd;',
+    'margin: 8px;',
     'padding: 0;',
   '}',
 

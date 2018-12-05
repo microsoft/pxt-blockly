@@ -252,6 +252,15 @@ Blockly.FieldDropdown.prototype.showEditor_ = function() {
   var menu = new goog.ui.Menu();
   menu.setRightToLeft(this.sourceBlock_.RTL);
   for (var i = 0; i < options.length; i++) {
+    var separator = options[i] == 'SEPARATOR';
+    if (separator) {
+      // pxtblockly: render separator
+      var menuItem = new goog.ui.MenuSeparator();
+      menuItem.setRightToLeft(this.sourceBlock_.RTL);
+      menu.addChild(menuItem, true);
+      menuItem.getElement().style.borderColor = this.sourceBlock_.getColourTertiary();
+      continue;
+    }
     var content = options[i][0]; // Human-readable text or image.
     var value = options[i][1];   // Language-neutral value.
     if (typeof content == 'object') {
