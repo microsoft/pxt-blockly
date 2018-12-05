@@ -17,7 +17,7 @@
     "pxt"
   ],
   "scripts": {
-    "deploy": "gh-pages -t -d gh-pages -m \"Build for $(git log --pretty=format:%H -n1)\"",
+    "deploy": "gh-pages -t -d gh-pages -e $(git branch | grep \\* | cut -d ' ' -f2) -m \"Build for $(git log --pretty=format:%H -n1)\"",
     "prepare": "node_modules/.bin/gulp build && webpack",
     "lint": "eslint .",
     "pretest": "tests/scripts/test_setup.sh",
