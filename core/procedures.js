@@ -161,6 +161,8 @@ Blockly.Procedures.rename = function(name) {
   // Ensure two identically-named procedures don't exist.
   var legalName = Blockly.Procedures.findLegalName(name, this.sourceBlock_);
   var oldName = this.text_;
+  //pxtblockly: ensure no empty procedure name is set
+  if (!legalName) return oldName;
   if (oldName != name && oldName != legalName) {
     // Rename any callers.
     var blocks = this.sourceBlock_.workspace.getAllBlocks();
@@ -170,8 +172,6 @@ Blockly.Procedures.rename = function(name) {
       }
     }
   }
-  //pxtblockly: ensure no empty procedure name is set
-  if (!legalName) return oldName;
   return legalName;
 };
 

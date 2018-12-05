@@ -22,6 +22,7 @@ tests/compile/*compiler*.jar
 /dist
 /msg/json/synonyms.json
 /msg/json/qqq.json
+/gh-pages/main.js
 /gh-pages/playgrounds
 /gh-pages/Gemfile.lock
 /gh-pages/closure-library
