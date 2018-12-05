@@ -120,9 +120,10 @@ Blockly.WorkspaceSvg = function(options, opt_blockDragSurface, opt_wsDragSurface
     this.registerToolboxCategoryCallback(Blockly.VARIABLE_DYNAMIC_CATEGORY_NAME,
         Blockly.VariablesDynamic.flyoutCategory);
   }
-  if (Blockly.Procedures && Blockly.Procedures.flyoutCategory) {
+  // pxt-blockly: use the new Functions implementation for custom procedures.
+  if (Blockly.Functions && Blockly.Functions.flyoutCategory) {
     this.registerToolboxCategoryCallback(Blockly.PROCEDURE_CATEGORY_NAME,
-        Blockly.Procedures.flyoutCategory);
+        Blockly.Functions.flyoutCategory);
   }
 };
 goog.inherits(Blockly.WorkspaceSvg, Blockly.Workspace);

@@ -302,3 +302,22 @@ Blockly.RENAME_VARIABLE_ID = 'RENAME_VARIABLE_ID';
  * @const {string}
  */
 Blockly.DELETE_VARIABLE_ID = 'DELETE_VARIABLE_ID';
+
+
+/**
+ * The type of all procedure definition blocks.
+ * @const {string}
+ */
+Blockly.FUNCTION_DEFINITION_BLOCK_TYPE = 'function_definition';
+
+/**
+ * The type of all procedure declaration blocks.
+ * @const {string}
+ */
+Blockly.FUNCTION_DECLARATION_BLOCK_TYPE = 'function_declaration';
+
+/**
+ * The type of all procedure call blocks.
+ * @const {string}
+ */
+Blockly.FUNCTION_CALL_BLOCK_TYPE = 'function_call';

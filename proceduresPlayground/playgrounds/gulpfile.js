@@ -11,7 +11,7 @@ var rimraf = require('rimraf');
 var fs = require('fs');
 var spawn = require('child_process').spawn;
 
-const USE_PY_LAUNCHER = false;
+const USE_PY_LAUNCHER = true;
 
 function spawnPython(args, opts) {
 	var cmd = 'python';

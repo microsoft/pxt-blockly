@@ -135,8 +135,8 @@ Blockly.Msg.NEW_COLOUR_VARIABLE = 'Create colour variable...';
 Blockly.Msg.NEW_VARIABLE_TYPE_TITLE = 'New variable type:';
 /// prompt - Prompts the user to enter the name for a new variable.  See [https://github.com/google/blockly/wiki/Variables#dropdown-menu https://github.com/google/blockly/wiki/Variables#dropdown-menu].
 Blockly.Msg.NEW_VARIABLE_TITLE = 'New variable name:';
-/// alert - Tells the user that the name they entered is already in use.
-Blockly.Msg.VARIABLE_ALREADY_EXISTS = 'A variable named "%1" already exists.';
+/// alert - Tells the user that the name they entered is already in use. pxt-blockly: also mention that a function can be the source of the name conflict.
+Blockly.Msg.VARIABLE_ALREADY_EXISTS = 'A variable or function named "%1" already exists.';
 /// alert - Tells the user that the name they entered is already in use for another type.
 Blockly.Msg.VARIABLE_ALREADY_EXISTS_FOR_ANOTHER_TYPE = 'A variable named "%1" already exists for another type: "%2".';
 
@@ -1187,6 +1187,39 @@ Blockly.Msg.PROCEDURES_HIGHLIGHT_DEF = 'Highlight function definition';
 /// context menu - This appears on the context menu for function definitions.
 /// Selecting it creates a block to call the function.\n\nParameters:\n* %1 - the name of the function.\n{{Identical|Create}}
 Blockly.Msg.PROCEDURES_CREATE_DO = 'Create "%1"';
+
+/// pxt-blockly: Context menu option to edit functions
+Blockly.Msg.FUNCTIONS_EDIT_OPTION = 'Edit';
+
+/// pxt-blockly: Label on function_call blocks that appears before the name of the function to call
+Blockly.Msg.FUNCTIONS_CALL_TITLE = 'call function'
+
+/// pxt-blockly: Label on the "Create Function" button in the flyout.
+Blockly.Msg.FUNCTION_CREATE_NEW = 'Create a Function'
+
+/// pxt-blockly: Tooltip for function calls.
+Blockly.Msg.FUNCTION_CALL_TOOLTIP = 'Call a function that was previously defined.'
+
+/// pxt-blockly: Warning for duplicate argument names on a function definition.
+Blockly.Msg.FUNCTION_WARNING_DUPLICATE_ARG = 'Functions cannot use the same argument name more than once.'
+
+/// pxt-blockly: Warning for argument names being the same as the function name.
+Blockly.Msg.FUNCTION_WARNING_ARG_NAME_IS_FUNCTION_NAME = 'Argument names must not be the same as the function name.'
+
+/// pxt-blockly: Default function name
+Blockly.Msg.FUNCTIONS_DEFAULT_FUNCTION_NAME = 'do_something'
+
+/// pxt-blockly: Default name for a boolean arg on a function declaration
+Blockly.Msg.FUNCTIONS_DEFAULT_BOOLEAN_ARG_NAME = 'bool'
+
+/// pxt-blockly: Default name for a string arg on a function declaration
+Blockly.Msg.FUNCTIONS_DEFAULT_STRING_ARG_NAME = 'text'
+
+/// pxt-blockly: Default name for a number arg on a function declaration
+Blockly.Msg.FUNCTIONS_DEFAULT_NUMBER_ARG_NAME = 'num'
+
+/// pxt-blockly: Default name for a non-literal arg on a function declaration
+Blockly.Msg.FUNCTIONS_DEFAULT_CUSTOM_ARG_NAME = 'arg'
 
 /// tooltip - If the first value is true, this causes the second value to be returned
 /// immediately from the enclosing function.

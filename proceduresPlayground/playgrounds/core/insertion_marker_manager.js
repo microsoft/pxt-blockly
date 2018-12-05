@@ -285,11 +285,16 @@ Blockly.InsertionMarkerManager.prototype.createMarkerBlock_ = function(sourceBlo
   Blockly.Events.disable();
   try {
     var result = this.workspace_.newBlock(imType);
+    // pxt-blockly: (taken from Scratch Blocks) must set insertion marker to
+    // true before the mutationToDom() is called because the functions
+    // rendering is affected by whether or not we are the insertionMarker.
+    result.setInsertionMarker(true, sourceBlock.width);
     if (sourceBlock.mutationToDom) {
       var oldMutationDom = sourceBlock.mutationToDom();
-      result.domToMutation(oldMutationDom);
+      if (oldMutationDom) {
+        result.domToMutation(oldMutationDom);
+      }
     }
-    result.setInsertionMarker(true, sourceBlock.width);
     result.initSvg();
   } finally {
     Blockly.Events.enable();

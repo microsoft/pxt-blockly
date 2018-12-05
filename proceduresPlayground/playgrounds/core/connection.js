@@ -171,7 +171,7 @@ Blockly.Connection.prototype.connect_ = function(childConnection) {
       shadowDom = Blockly.Xml.blockToDom(orphanBlock);
       orphanBlock.dispose();
       orphanBlock = null;
-      
+
     } /*else if (parentConnection.type == Blockly.INPUT_VALUE) {
       // Value connections.
       // If female block is already connected, disconnect and bump the male.
@@ -330,6 +330,7 @@ Blockly.Connection.prototype.canConnectWithReason_ = function(target) {
   } else if (!this.checkType_(target)) {
     return Blockly.Connection.REASON_CHECKS_FAILED;
   // } else if (blockA.isShadow() && !blockB.isShadow()) {
+  //   // pxtblockly: check removed to support nested shadow blocks
   //   return Blockly.Connection.REASON_SHADOW_PARENT;
   // } else if (blockA.type == 'procedures_defnoreturn' &&
   //     blockB.type != 'procedures_callnoreturn_internal' &&
@@ -337,10 +338,7 @@ Blockly.Connection.prototype.canConnectWithReason_ = function(target) {
   //   // Hack to fix #1127: Fail attempts to connect to the custom_block input
   //   // on a defnoreturn block, unless the connecting block is a specific type.
   //   return Blockly.Connection.REASON_CUSTOM_PROCEDURE;
-  // }
-  // pxtblockly: disabled to support nested shadow blocks
-  // else if (blockA.isShadow() && !blockB.isShadow()) {
-  //   return Blockly.Connection.REASON_SHADOW_PARENT;
+  //
   }
   return Blockly.Connection.CAN_CONNECT;
 };
@@ -476,6 +474,34 @@ Blockly.Connection.prototype.isConnectionAllowed = function(candidate) {
           !candidate.targetBlock().isMovable() &&
           !candidate.targetBlock().isShadow()) {
         return false;
+      }
+
+      if (candidate.targetConnection) {
+        // pxt-blockly: don't allow connecting a block to a function argument
+        // shadow reporter.
+        var targetBlock = candidate.targetBlock();
+        if (Blockly.pxtBlocklyUtils.isShadowArgumentReporter(targetBlock) &&
+          targetBlock.getParent().type === Blockly.FUNCTION_DEFINITION_BLOCK_TYPE) {
+          return false;
+        }
+
+        // pxt-blockly: don't allow putting argument reporters outside their
+        // respective function.
+        if (Blockly.Functions.isShadowArgumentReporter(this.sourceBlock_)) {
+          // Ensure the root block of this stack is a function definition that
+          // has this argument name in its signature.
+          var rootBlock = candidate.targetBlock().getRootBlock();
+          if (rootBlock.type !== Blockly.FUNCTION_DEFINITION_BLOCK_TYPE) {
+            return false;
+          }
+
+          // rootBlock is a function definition, but we still need to make
+          // sure it has a matching argument in its signature.
+          var thisArgName = this.sourceBlock_.getFieldValue('VALUE');
+          if (!rootBlock.hasArgumentWithName(thisArgName)) {
+            return false;
+          }
+        }
       }
       break;
     }

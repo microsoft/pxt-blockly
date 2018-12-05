@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Functions Playground</title>
+    <script src="../blockly_uncompressed.js"></script>
+    <script src="../msg/messages.js"></script>
+    <script src="../blocks/extensions.js"></script>
+    <script src="../blocks/logic.js"></script>
+    <script src="../blocks/loops.js"></script>
+    <script src="../blocks/math.js"></script>
+    <script src="../blocks/text.js"></script>
+    <script src="../blocks/lists.js"></script>
+    <script src="../blocks/colour.js"></script>
+    <script src="../blocks/variables.js"></script>
+    <script src="../blocks/variables_dynamic.js"></script>
+    <script src="../blocks/functions.js"></script>
+    <script src="blocks/test_blocks.js"></script>
+
+    <style>
+        body {
+            background-color: #fff;
+            font-family: sans-serif;
+        }
+
+        h1 {
+            font-weight: normal;
+            font-size: 140%;
+        }
+
+        button {
+            margin: 8px;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: 50% 50%;
+            grid-template-rows: 50% 5% 40% 5%;
+            grid-gap: 3px;
+            min-height: 600px;
+            height: 98vh;
+            width: 98vw;
+        }
+
+        #blockly {
+            grid-row: 1 / 3;
+            grid-column: 1;
+        }
+
+        #declaration {
+            grid-row: 1;
+            grid-column: 2;
+        }
+
+        #declaration-controls {
+            grid-row: 2;
+            grid-column: 2;
+        }
+
+        #blockly-xml {
+            grid-row: 3;
+            grid-column: 1;
+            resize: none;
+        }
+
+        #declaration-xml {
+            grid-row: 3;
+            grid-column: 2;
+            resize: none;
+        }
+
+        #blockly-xml-controls {
+            grid-row: 4;
+            grid-column: 1;
+        }
+
+        #declaration-xml-controls {
+            grid-row: 4;
+            grid-column: 2;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- toolbox-categories has a category menu and an auto-closing flyout.  The
+    Variables category uses untyped variable blocks.
+    See https://developers.google.com/blockly/guides/create-custom-blocks/variables#untyped_variable_blocks for more information. -->
+    <xml id="toolbox-categories" style="display: none">
+        <category name="Logic" colour="210" iconclass="blocklyTreeIconCustom logic">
+            <label text="Logic" web-icon="" web-class="blocklyFlyoutHeading"></label>
+            <block type="controls_if">
+                <value name="IF0">
+                    <shadow type="logic_boolean">
+                    </shadow>
+                </value>
+            </block>
+            <block type="controls_if">
+                <mutation else="1"></mutation>
+                <value name="IF0">
+                    <shadow type="logic_boolean">
+                    </shadow>
+                </value>
+            </block>
+            <block type="logic_compare">
+                <value name="A">
+                    <shadow type="math_number">
+                        <field name="NUM">10</field>
+                    </shadow>
+                </value>
+                <value name="B">
+                    <shadow type="math_number">
+                        <field name="NUM">10</field>
+                    </shadow>
+                </value>
+            </block>
+            <block type="logic_operation"></block>
+            <block type="logic_negate"></block>
+            <block type="logic_boolean"></block>
+        </category>
+        <category name="Loops" colour="120" iconclass="blocklyTreeIconCustom loops">
+            <label text="Loops" web-icon="" web-class="blocklyFlyoutHeading"></label>
+            <label text="Basic" web-line="1.0"></label>
+            <block type="controls_repeat_ext">
+                <value name="TIMES">
+                    <shadow type="math_number">
+                        <field name="NUM">10</field>
+                    </shadow>
+                </value>
+            </block>
+            <block type="controls_forEach">
+                <value name="VAR">
+                    <shadow type="variables_get_reporter">
+                        <field name="VAR">item</field>
+                    </shadow>
+                </value>
+            </block>
+        </category>
+        <category name="Math" colour="230" iconclass="blocklyTreeIconCustom math">
+            <label text="Math" web-icon="" web-class="blocklyFlyoutHeading"></label>
+            <block type="math_number" gap="32">
+                <field name="NUM">123</field>
+            </block>
+            <block type="math_arithmetic">
+                <value name="A">
+                    <shadow type="math_number">
+                        <field name="NUM">1</field>
+                    </shadow>
+                </value>
+                <value name="B">
+                    <shadow type="math_number">
+                        <field name="NUM">1</field>
+                    </shadow>
+                </value>
+            </block>
+            <block type="math_single">
+                <value name="NUM">
+                    <shadow type="math_number">
+                        <field name="NUM">9</field>
+                    </shadow>
+                </value>
+            </block>
+        </category>
+        <category name="Text" colour="160" iconclass="blocklyTreeIconCustom text">
+            <label text="Text" web-icon="" web-class="blocklyFlyoutHeading"></label>
+            <block type="text"></block>
+            <block type="text_join"></block>
+            <block type="text_length">
+                <value name="VALUE">
+                    <shadow type="text">
+                        <field name="TEXT">abc</field>
+                    </shadow>
+                </value>
+            </block>
+        </category>
+        <sep></sep>
+        <category name="Variables" colour="330" custom="VARIABLE" iconclass="blocklyTreeIconCustom variables"></category>
+        <category name="Functions" colour="290" custom="PROCEDURE" iconclass="blocklyTreeIconCustom functions"></category>
+    </xml>
+
+    <div class="grid-container">
+        <div id="blockly"></div>
+        <div id="declaration"></div>
+        <div id="declaration-controls">
+            <button id="number" onclick="addNumber()">Add number</button>
+            <button id="text" onclick="addText()">Add text</button>
+            <button id="boolean" onclick="addBoolean()">Add boolean</button>
+            <button id="custom" onclick="addCustom()">Add custom</button>
+            <button id="cancel" onclick="closeDeclarationWorkspace()">Cancel</button>
+            <button id="done" onclick="applyMutation()">Done</button>
+        </div>
+        <textarea id="blockly-xml"></textarea>
+        <textarea id="declaration-xml"></textarea>
+        <div id="blockly-xml-controls">
+            <button onclick="injectXml()">Inject XML</button>
+            <button onclick="resetXml()">Reset XML</button>
+        </div>
+        <div id="declaration-xml-controls">
+            <button onclick="injectXml(true)">Inject XML</button>
+            <button onclick="resetXml(true)">Reset XML</button>
+        </div>
+    </div>
+
+    <script>
+        function clearWorkspaceAndLoadFromXml(xml, workspace) {
+            workspace.setResizesEnabled(false);
+            workspace.clear();
+            Blockly.Xml.domToWorkspace(xml, workspace);
+            workspace.setResizesEnabled(true);
+        }
+
+        function resetXml(isDeclaration) {
+            var ws = isDeclaration ? declarationWorkspace : definitionWorkspace;
+            var ta = isDeclaration ? declarationXmlArea : blocklyXmlArea;
+            var dom = Blockly.Xml.workspaceToDom(ws, true);
+            var text = Blockly.Xml.domToPrettyText(dom);
+            ta.value = text;
+        };
+
+        function injectXml(isDeclaration) {
+            var ws = isDeclaration ? declarationWorkspace : definitionWorkspace;
+            var ta = isDeclaration ? declarationXmlArea : blocklyXmlArea;
+            var textToInject = ta.value;
+            var xmlToInject = Blockly.Xml.textToDom(textToInject);
+            clearWorkspaceAndLoadFromXml(xmlToInject, ws);
+        }
+
+        function closeDeclarationWorkspace() {
+            callback = null;
+            mutationRoot = null;
+            declarationWorkspace.clear();
+            definitionWorkspace.refreshToolboxSelection()
+            disableDeclarationControls();
+        }
+
+        function applyMutation() {
+            var mutation = mutationRoot.mutationToDom();
+            if (Blockly.Functions.validateFunctionExternal(mutation, definitionWorkspace)) {
+                callback(mutation);
+                closeDeclarationWorkspace();
+            }
+        }
+
+        function addBoolean() {
+            mutationRoot.addBooleanExternal();
+        }
+
+        function addNumber() {
+            mutationRoot.addNumberExternal();
+        }
+
+        function addText() {
+            mutationRoot.addStringExternal();
+        }
+
+        function addCustom() {
+            mutationRoot.addCustomExternal('CustomType');
+        }
+
+        function removeRandomInput() {
+            var rnd = Math.floor(Math.random() * mutationRoot.inputList.length);
+            mutationRoot.removeInput(mutationRoot.inputList[rnd].name);
+            mutationRoot.onChangeFn();
+            mutationRoot.updateDisplay_();
+        }
+
+        function addRandomInput() {
+            var rnd = Math.floor(Math.random() * 3);
+            switch (rnd) {
+                case 0:
+                    addText();
+                    break;
+                case 1:
+                    addNumber();
+                    break;
+                case 2:
+                    addBoolean();
+                    break;
+            }
+        }
+
+        function enableDeclarationControls() {
+            document.querySelectorAll(allDeclarationElementsSelector).forEach(b => {
+                b.removeAttribute("disabled");
+            });
+            isEditingDeclaration = true;
+        }
+
+        function disableDeclarationControls() {
+            document.querySelectorAll(allDeclarationElementsSelector).forEach(b => {
+                b.setAttribute("disabled", "");
+            });
+            declarationXmlArea.value = "";
+            isEditingDeclaration = false;
+        }
+
+        var allDeclarationElementsSelector = "#declaration-controls button, #declaration-xml-controls button, #declaration-xml";
+        var isEditingDeclaration = false;
+        var callback = null;
+        var mutationRoot = null;
+        var blocklyXmlArea = document.getElementById("blockly-xml");
+        var declarationXmlArea = document.getElementById("declaration-xml");
+        var declarationWorkspace = Blockly.inject('declaration', {
+            media: '../media/',
+            scrollbars: true
+        });
+        var toolbox = document.getElementById('toolbox-categories');
+        var definitionWorkspace = Blockly.inject('blockly', {
+            media: '../media/',
+            toolbox,
+            toolboxOptions: {
+                color: true,
+                inverted: true
+            },
+            toolboxPosition: 'start',
+            trashcan: false,
+            zoom: {
+                startScale: 0.75
+            }
+        });
+        var initialContent = `
+<xml xmlns="http://www.w3.org/1999/xhtml">
+    <block type="function_definition" x="25" y="25">
+        <mutation name="myFunc" functionId="S-K/H.HR!;+la~V+gT*6"><arg type="boolean" name="myBool" id="$J[@GtUSc~eo!]Y?wT{;"></arg></mutation>
+    </block>
+    <block type="function_call" x="25" y="200">
+        <mutation name="myFunc"><arg type="boolean" name="myBool" id="$J[@GtUSc~eo!]Y?wT{;"></arg></mutation>
+    </block>
+</xml>`
+
+        Blockly.Msg.PROCEDURES_DEFNORETURN_TITLE = "function";
+        declarationWorkspace.addChangeListener(function () {
+            if (isEditingDeclaration) {
+                resetXml(true);
+            }
+
+            if (mutationRoot) {
+                mutationRoot.onChangeFn();
+            }
+        });
+        definitionWorkspace.addChangeListener(() => resetXml(false));
+        Blockly.Functions.externalFunctionCallback = function (mutation, cb) {
+            enableDeclarationControls();
+            callback = cb;
+            declarationWorkspace.clear();
+            mutationRoot = declarationWorkspace.newBlock('function_declaration');
+            mutationRoot.domToMutation(mutation);
+            mutationRoot.initSvg();
+            mutationRoot.render(false);
+            declarationWorkspace.centerOnBlock(mutationRoot.id);
+        }
+        clearWorkspaceAndLoadFromXml(Blockly.Xml.textToDom(initialContent), definitionWorkspace);
+        disableDeclarationControls();
+    </script>
+</body>
+
+</html>

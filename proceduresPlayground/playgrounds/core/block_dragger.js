@@ -229,6 +229,7 @@ Blockly.BlockDragger.prototype.endBlockDrag = function(e, currentDragDeltaXY) {
     this.draggedConnectionManager_.applyConnections();
     this.draggingBlock_.render();
     this.fireMoveEvent_();
+    this.fireEndDragEvent_();
     this.draggingBlock_.scheduleSnapAndBump();
   }
   this.workspace_.setResizesEnabled(true);
@@ -250,6 +251,18 @@ Blockly.BlockDragger.prototype.fireMoveEvent_ = function() {
   var event = new Blockly.Events.BlockMove(this.draggingBlock_);
   event.oldCoordinate = this.startXY_;
   event.recordNew();
+  Blockly.Events.fire(event);
+};
+
+/**
+ * pxt-blockly: Fire an end_drag event at the end of a block drag. We need this
+ * in addition to the move event because the move event is fired in multiple
+ * other places, so it can't be relied on to listen for drag end specifically.
+ *  or also for all its children and stack descendents.
+ * @private
+ */
+Blockly.BlockDragger.prototype.fireEndDragEvent_ = function() {
+  var event = new Blockly.Events.EndBlockDrag(this.draggingBlock_);
   Blockly.Events.fire(event);
 };
 
