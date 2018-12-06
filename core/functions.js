@@ -208,11 +208,11 @@ Blockly.Functions.isCustomType = function (argumentType) {
  */
 Blockly.Functions.newFunctionMutation = function () {
   // <block type="function_definition">
-  //   <mutation name="myFunc" functionId="..."></mutation>
+  //   <mutation name="myFunc" functionid="..."></mutation>
   // </block>
   var mutationText =
     '<xml>' +
-    '<mutation name="' + Blockly.Msg.FUNCTIONS_DEFAULT_FUNCTION_NAME + '" functionId="' + Blockly.utils.genUid() + '"></mutation>' +
+    '<mutation name="' + Blockly.Msg.FUNCTIONS_DEFAULT_FUNCTION_NAME + '" functionid="' + Blockly.utils.genUid() + '"></mutation>' +
     '</xml>';
   var mutation = Blockly.Xml.textToDom(mutationText).firstChild;
   mutation.removeAttribute('xmlns');
@@ -258,7 +258,7 @@ Blockly.Functions.isUniqueParamName = function (name, paramNames) {
  * @private
  */
 Blockly.Functions.createFunctionCallback_ = function (workspace) {
-  Blockly.Functions.externalFunctionCallback(
+  Blockly.Functions.editFunctionExternalHandler(
     Blockly.Functions.newFunctionMutation(),
     Blockly.Functions.createFunctionCallbackFactory_(workspace)
   );
@@ -314,7 +314,7 @@ Blockly.Functions.editFunctionCallback_ = function (block) {
     block = Blockly.Functions.getDefinition(block.getName(), workspaceToSearch);
   }
   // "block" now refers to the function definition block, it is safe to proceed.
-  Blockly.Functions.externalFunctionCallback(
+  Blockly.Functions.editFunctionExternalHandler(
     block.mutationToDom(),
     Blockly.Functions.editFunctionCallbackFactory_(block)
   );
@@ -338,8 +338,8 @@ Blockly.Functions.editFunctionCallbackFactory_ = function (block) {
  * Callback to create a new function custom command block.
  * @public
  */
-Blockly.Functions.externalFunctionCallback = function (/** mutator, callback */) {
-  console.warn('External function editor must be overriden: Blockly.Functions.externalFunctionCallback');
+Blockly.Functions.editFunctionExternalHandler = function (/** mutator, callback */) {
+  console.warn('External function editor must be overriden: Blockly.Functions.editFunctionExternalHandler');
 };
 
 /**
@@ -362,6 +362,28 @@ Blockly.Functions.makeEditOption = function (block) {
 };
 
 /**
+ * Returns whether or not the specified argument reporter type matches the
+ * specified type. For literal types, the reporter must be of type
+ * 'argument_reporter_[literal]'. For non-literal types, the reporter must be
+ * of type 'argument_reporter_custom'.
+ * @param {string} argType The desired argument type.
+ * @param {string} reporterType The reporter block type to compare.
+ * @return {boolean} Whether the specified reporter type is compatible with the
+ *  specified type.
+ * @package
+ */
+Blockly.Functions.isReporterOfType = function (argType, reporterType) {
+  switch (argType) {
+    case 'boolean':
+    case 'string':
+    case 'number':
+      return reporterType.substr(18) === argType;
+    default:
+      return reporterType === 'argument_reporter_custom';
+  }
+}
+
+/**
  * Validate the given function mutation to ensure that:
  *  1) the function name is globally unique in the specified workspace
  *  2) the parameter names are unique among themselves
@@ -369,6 +391,7 @@ Blockly.Functions.makeEditOption = function (block) {
  * @param {!Element} mutation The proposed function mutation.
  * @param {!Blockly.Workspace} destinationWs The workspace to check for name uniqueness.
  * @return {boolean} Whether the function passes name validation or not.
+ * @package
  */
 Blockly.Functions.validateFunctionExternal = function (mutation, destinationWs) {
   var argNames = [];
@@ -403,7 +426,7 @@ Blockly.Functions.validateFunctionExternal = function (mutation, destinationWs) 
   // Check if function name is in use by a different function (it's ok if the
   // name is in use by the function we're editing - that means we've changed
   // the arguments without renaming the function).
-  var funcId = mutation.getAttribute('functionId');
+  var funcId = mutation.getAttribute('functionid');
   var allFunctions = Blockly.Functions.getAllFunctionDefinitionBlocks(destinationWs);
   for (var i = 0; i < allFunctions.length; ++i) {
     if (allFunctions[i].getName().toLowerCase() === lowerCase &&

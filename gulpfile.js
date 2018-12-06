@@ -5,9 +5,6 @@
 
 var gulp = require('gulp');
 var bump = require('gulp-bump');
-var merge = require('merge-stream');
-var path = require('path');
-var rimraf = require('rimraf');
 var fs = require('fs');
 var spawn = require('child_process').spawn;
 
@@ -78,6 +75,8 @@ gulp.task('publish', ['python-build-core'], pxtPublishTask);
 gulp.task('publishall', ['python-build-all'], pxtPublishTask);
 
 gulp.task('publishts', [], pxtPublishTsTask);
+
+gulp.task('only-publishall', [], pxtPublishTask);
 
 gulp.task('release', ['python-build-all'], function (done) {
 	spawn('npm', ['publish'], { stdio: 'inherit' }).on('close', done);

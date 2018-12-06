@@ -5,7 +5,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Functions Playground</title>
-    <script src="../blockly_uncompressed.js"></script>
+    <script src="../blockly_compressed.js"></script>
+    <!-- <script src="../blockly_uncompressed.js"></script> -->
     <script src="../msg/messages.js"></script>
     <script src="../blocks/extensions.js"></script>
     <script src="../blocks/logic.js"></script>
@@ -230,7 +231,7 @@
             callback = null;
             mutationRoot = null;
             declarationWorkspace.clear();
-            definitionWorkspace.refreshToolboxSelection()
+            definitionWorkspace.refreshToolboxSelection();
             disableDeclarationControls();
         }
 
@@ -261,7 +262,7 @@
         function removeRandomInput() {
             var rnd = Math.floor(Math.random() * mutationRoot.inputList.length);
             mutationRoot.removeInput(mutationRoot.inputList[rnd].name);
-            mutationRoot.onChangeFn();
+            mutationRoot.updateFunctionSignature();
             mutationRoot.updateDisplay_();
         }
 
@@ -322,7 +323,7 @@
         var initialContent = `
 <xml xmlns="http://www.w3.org/1999/xhtml">
     <block type="function_definition" x="25" y="25">
-        <mutation name="myFunc" functionId="S-K/H.HR!;+la~V+gT*6"><arg type="boolean" name="myBool" id="$J[@GtUSc~eo!]Y?wT{;"></arg></mutation>
+        <mutation name="myFunc" functionid="S-K/H.HR!;+la~V+gT*6"><arg type="boolean" name="myBool" id="$J[@GtUSc~eo!]Y?wT{;"></arg></mutation>
     </block>
     <block type="function_call" x="25" y="200">
         <mutation name="myFunc"><arg type="boolean" name="myBool" id="$J[@GtUSc~eo!]Y?wT{;"></arg></mutation>
@@ -336,11 +337,11 @@
             }
 
             if (mutationRoot) {
-                mutationRoot.onChangeFn();
+                mutationRoot.updateFunctionSignature();
             }
         });
         definitionWorkspace.addChangeListener(() => resetXml(false));
-        Blockly.Functions.externalFunctionCallback = function (mutation, cb) {
+        Blockly.Functions.editFunctionExternalHandler = function (mutation, cb) {
             enableDeclarationControls();
             callback = cb;
             declarationWorkspace.clear();

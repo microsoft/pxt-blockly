@@ -29,6 +29,7 @@ goog.provide('Blockly.BlockDragger');
 goog.require('Blockly.BlockAnimations');
 goog.require('Blockly.InsertionMarkerManager');
 goog.require('Blockly.Events.BlockMove');
+goog.require('Blockly.Events.EndBlockDrag');
 
 goog.require('goog.math.Coordinate');
 goog.require('goog.asserts');
@@ -258,7 +259,6 @@ Blockly.BlockDragger.prototype.fireMoveEvent_ = function() {
  * pxt-blockly: Fire an end_drag event at the end of a block drag. We need this
  * in addition to the move event because the move event is fired in multiple
  * other places, so it can't be relied on to listen for drag end specifically.
- *  or also for all its children and stack descendents.
  * @private
  */
 Blockly.BlockDragger.prototype.fireEndDragEvent_ = function() {

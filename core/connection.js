@@ -171,7 +171,6 @@ Blockly.Connection.prototype.connect_ = function(childConnection) {
       shadowDom = Blockly.Xml.blockToDom(orphanBlock);
       orphanBlock.dispose();
       orphanBlock = null;
-
     } /*else if (parentConnection.type == Blockly.INPUT_VALUE) {
       // Value connections.
       // If female block is already connected, disconnect and bump the male.
@@ -498,7 +497,7 @@ Blockly.Connection.prototype.isConnectionAllowed = function(candidate) {
           // rootBlock is a function definition, but we still need to make
           // sure it has a matching argument in its signature.
           var thisArgName = this.sourceBlock_.getFieldValue('VALUE');
-          if (!rootBlock.hasArgumentWithName(thisArgName)) {
+          if (!rootBlock.hasArgument(thisArgName, this.sourceBlock_.type)) {
             return false;
           }
         }

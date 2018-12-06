@@ -55,7 +55,7 @@ Blockly.PXTBlockly.FunctionUtils = {};
 Blockly.PXTBlockly.FunctionUtils.mutationToDom = function () {
   var container = document.createElement('mutation');
   container.setAttribute('name', this.name_);
-  container.setAttribute('functionId', this.functionId_);
+  container.setAttribute('functionid', this.functionId_);
   this.arguments_.forEach((arg) => {
     var argNode = document.createElement('arg');
     argNode.setAttribute('name', arg.name);
@@ -85,7 +85,7 @@ Blockly.PXTBlockly.FunctionUtils.domToMutation = function (xmlElement) {
 
   this.arguments_ = args;
   this.name_ = xmlElement.getAttribute('name');
-  this.functionId_ = xmlElement.getAttribute('functionId');
+  this.functionId_ = xmlElement.getAttribute('functionid');
   this.updateDisplay_();
 };
 
@@ -120,16 +120,17 @@ Blockly.PXTBlockly.FunctionUtils.getArguments = function () {
 }
 
 /**
- * Returns whether or not the specified argument name exists on this function
+ * Returns whether or not the specified argument exists on this function
  * signature.
  * @param {string} argName The name of the argument to check.
- * @return {boolean} Whether the argument name exists for this function.
+ * @param {string} reporterType The reporter type of the argument.
+ * @return {boolean} Whether the argument exists on this function.
  * @this Blockly.Block
  */
-Blockly.PXTBlockly.FunctionUtils.hasArgumentWithName = function (argName) {
+Blockly.PXTBlockly.FunctionUtils.hasArgument = function (argName, reporterType) {
   var args = this.getArguments();
   for (var i = 0; i < args.length; ++i) {
-    if (args[i].name === argName) {
+    if (args[i].name === argName && Blockly.Functions.isReporterOfType(args[i].type, reporterType)) {
       return true;
     }
   }
@@ -737,7 +738,7 @@ Blockly.PXTBlockly.FunctionUtils.removeFieldCallback = function (field) {
   if (inputNameToRemove) {
     Blockly.WidgetDiv.hide(true);
     this.removeInput(inputNameToRemove);
-    this.onChangeFn();
+    this.updateFunctionSignature();
     this.updateDisplay_();
   }
 };
@@ -835,7 +836,7 @@ Blockly.PXTBlockly.FunctionUtils.onReporterChange = function (event) {
 
     if (!Blockly.Functions.isShadowArgumentReporter(rootBlock) &&
       (rootBlock.type !== Blockly.FUNCTION_DEFINITION_BLOCK_TYPE ||
-        !rootBlock.hasArgumentWithName(thisArgName))) {
+        !rootBlock.hasArgument(thisArgName, this.type))) {
       Blockly.Events.setGroup(event.group);
       // TODO Do we want to unplug, or delete?
       this.dispose();
@@ -896,7 +897,7 @@ Blockly.Blocks['function_declaration'] = {
   addStringExternal: Blockly.PXTBlockly.FunctionUtils.addStringExternal,
   addNumberExternal: Blockly.PXTBlockly.FunctionUtils.addNumberExternal,
   addCustomExternal: Blockly.PXTBlockly.FunctionUtils.addCustomExternal,
-  onChangeFn: Blockly.PXTBlockly.FunctionUtils.updateDeclarationMutation_
+  updateFunctionSignature: Blockly.PXTBlockly.FunctionUtils.updateDeclarationMutation_
 };
 
 Blockly.Blocks['function_definition'] = {
@@ -946,7 +947,7 @@ Blockly.Blocks['function_definition'] = {
 
   // Only exists on function_definition.
   createArgumentReporter_: Blockly.PXTBlockly.FunctionUtils.createArgumentReporter_,
-  hasArgumentWithName: Blockly.PXTBlockly.FunctionUtils.hasArgumentWithName
+  hasArgument: Blockly.PXTBlockly.FunctionUtils.hasArgument
 };
 
 Blockly.Blocks['function_call'] = {
