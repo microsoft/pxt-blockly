@@ -110,7 +110,8 @@ function test_fieldVariable_dropdownCreateVariablesExist() {
   var result_options = Blockly.FieldVariable.dropdownCreate.call(
       fieldVariable);
 
-  assertEquals(result_options.length, 3);
+  // pxtblockly: add an extra two to the length here to account for CREATE_VARIABLE and the SEPARATOR
+  assertEquals(result_options.length, 5);
   isEqualArrays(result_options[0], ['name1', 'id1']);
   isEqualArrays(result_options[1], ['name2', 'id2']);
 
