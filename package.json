@@ -24,7 +24,7 @@
     "pretest": "tests/scripts/test_setup.sh",
     "test": "node tests/jsunit/test_runner.js",
     "watch": "node_modules/.bin/gulp watch",
-    "publish": "node_modules/.bin/gulp release"
+    "publish": "node_modules/.bin/gulp publish"
   },
   "files": [
     "README.md",
