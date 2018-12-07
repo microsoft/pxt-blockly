@@ -33,8 +33,10 @@
  */
 'use strict';
 
-// TODO GUJEN deal with invalid arg names (which we will allow in blocks but not in TS)
-// TODO GUJEN deal with invalid function names (which we will allow in blocks but not in TS)
+// TODO GUJEN support external validators for function names
+// TODO GUJEN support external validators for param names
+// TODO GUJEN make function names look different than arguments / labels on declaration / definition / call
+// TODO GUJEN fix function insertion placement logic
 
 /**
  * Type to represent a function parameter
@@ -321,9 +323,7 @@ Blockly.PXTBlockly.FunctionUtils.deleteShadows_ = function (connectionMap) {
  * @private
  */
 Blockly.PXTBlockly.FunctionUtils.addLabelEditor_ = function (text) {
-  if (text) {
-    this.appendDummyInput('function_name').appendField(new Blockly.FieldTextInput(text), 'function_name');
-  }
+  this.appendDummyInput('function_name').appendField(new Blockly.FieldTextInput(text || ''), 'function_name');
 };
 
 /**
@@ -586,6 +586,7 @@ Blockly.PXTBlockly.FunctionUtils.createArgumentEditor_ = function (argumentType,
  */
 Blockly.PXTBlockly.FunctionUtils.updateDeclarationMutation_ = function () {
   this.arguments_ = [];
+
   // Start iterating at 1 to skip the function label
   for (var i = 1; i < this.inputList.length; i++) {
     var input = this.inputList[i];
@@ -641,10 +642,12 @@ Blockly.PXTBlockly.FunctionUtils.focusLastEditor_ = function () {
   if (this.inputList.length > 0) {
     var newInput = this.inputList[this.inputList.length - 2];
     if (newInput.type == Blockly.DUMMY_INPUT) {
+      this.workspace.centerOnBlock(this.id);
       newInput.fieldRow[0].showEditor_();
     } else if (newInput.type == Blockly.INPUT_VALUE) {
       // Inspect the argument editor.
       var target = newInput.connection.targetBlock();
+      target.workspace.centerOnBlock(target.id);
       target.getField('TEXT').showEditor_();
     }
   }
@@ -794,10 +797,6 @@ Blockly.PXTBlockly.FunctionUtils.onCallerChange = function (event) {
       block.setAttribute('y', y);
       var mutation = this.mutationToDom();
       block.appendChild(mutation);
-      // var field = goog.dom.createDom('field');
-      // field.setAttribute('name', 'function_title');
-      // field.appendChild(document.createTextNode(this.getProcedureCall()));
-      // block.appendChild(field);
       xml.appendChild(block);
       Blockly.Xml.domToWorkspace(xml, this.workspace);
       Blockly.Events.setGroup(false);
@@ -838,18 +837,7 @@ Blockly.PXTBlockly.FunctionUtils.onReporterChange = function (event) {
       (rootBlock.type !== Blockly.FUNCTION_DEFINITION_BLOCK_TYPE ||
         !rootBlock.hasArgument(thisArgName, this.type))) {
       Blockly.Events.setGroup(event.group);
-      // TODO Do we want to unplug, or delete?
       this.dispose();
-      // var parent = this.getParent();
-      // this.unplug();
-
-      // if (parent) {
-      //   setTimeout(function () {
-      //     Blockly.Events.setGroup(event.group);
-      //     parent.bumpNeighbours_();
-      //     Blockly.Events.setGroup(false);
-      //   }, Blockly.BUMP_DELAY);
-      // }
       Blockly.Events.setGroup(false);
     }
   }
@@ -869,6 +857,10 @@ Blockly.Blocks['function_declaration'] = {
     this.createAllInputs_();
     this.setColour(Blockly.Msg.PROCEDURES_HUE);
     this.setStatements_(true);
+    this.setDeletable(false);
+    this.setMovable(false);
+    this.contextMenu = false;
+    this.setStartHat(true);
     this.statementConnection_ = null;
   },
   // Shared.
@@ -926,6 +918,7 @@ Blockly.Blocks['function_definition'] = {
     this.setTooltip(Blockly.Msg.PROCEDURES_DEFNORETURN_TOOLTIP);
     this.setHelpUrl(Blockly.Msg.PROCEDURES_DEFNORETURN_HELPURL);
     this.setStatements_(true);
+    this.setStartHat(true);
     this.statementConnection_ = null;
   },
   // Shared.

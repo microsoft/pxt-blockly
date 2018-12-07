@@ -303,12 +303,11 @@
         var blocklyXmlArea = document.getElementById("blockly-xml");
         var declarationXmlArea = document.getElementById("declaration-xml");
         var declarationWorkspace = Blockly.inject('declaration', {
-            media: '../media/',
             scrollbars: true
         });
+        declarationWorkspace.showContextMenu_ = () => {};
         var toolbox = document.getElementById('toolbox-categories');
         var definitionWorkspace = Blockly.inject('blockly', {
-            media: '../media/',
             toolbox,
             toolboxOptions: {
                 color: true,

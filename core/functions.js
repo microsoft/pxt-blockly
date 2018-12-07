@@ -258,6 +258,10 @@ Blockly.Functions.isUniqueParamName = function (name, paramNames) {
  * @private
  */
 Blockly.Functions.createFunctionCallback_ = function (workspace) {
+  Blockly.hideChaff();
+  if (Blockly.selected) {
+    Blockly.selected.unselect();
+  }
   Blockly.Functions.editFunctionExternalHandler(
     Blockly.Functions.newFunctionMutation(),
     Blockly.Functions.createFunctionCallbackFactory_(workspace)
@@ -314,6 +318,10 @@ Blockly.Functions.editFunctionCallback_ = function (block) {
     block = Blockly.Functions.getDefinition(block.getName(), workspaceToSearch);
   }
   // "block" now refers to the function definition block, it is safe to proceed.
+  Blockly.hideChaff();
+  if (Blockly.selected) {
+    Blockly.selected.unselect();
+  }
   Blockly.Functions.editFunctionExternalHandler(
     block.mutationToDom(),
     Blockly.Functions.editFunctionCallbackFactory_(block)
@@ -394,13 +402,26 @@ Blockly.Functions.isReporterOfType = function (argType, reporterType) {
  * @package
  */
 Blockly.Functions.validateFunctionExternal = function (mutation, destinationWs) {
+  // Check for empty function name.
+  var funcName = mutation.getAttribute('name');
+  var lowerCase = funcName.toLowerCase();
+
+  if (!lowerCase) {
+    Blockly.alert(Blockly.Msg.FUNCTION_WARNING_EMPTY_NAME);
+    return false;
+  }
+
+  // Check for duplicate arg names and empty arg names.
   var argNames = [];
   mutation.childNodes.forEach(arg => argNames.push(arg.getAttribute('name')));
   var seen = {};
 
-  // Check for duplicate arg names.
   for (var i = 0; i < argNames.length; ++i) {
     var arg = argNames[i].toLowerCase();
+    if (!arg) {
+      Blockly.alert(Blockly.Msg.FUNCTION_WARNING_EMPTY_NAME);
+      return false;
+    }
     if (seen[arg]) {
       Blockly.alert(Blockly.Msg.FUNCTION_WARNING_DUPLICATE_ARG);
       return false;
@@ -409,8 +430,6 @@ Blockly.Functions.validateFunctionExternal = function (mutation, destinationWs) 
   }
 
   // Check for function name also being an argument name.
-  var funcName = mutation.getAttribute('name');
-  var lowerCase = funcName.toLowerCase();
   if (seen[lowerCase]) {
     Blockly.alert(Blockly.Msg.FUNCTION_WARNING_ARG_NAME_IS_FUNCTION_NAME);
     return false;
