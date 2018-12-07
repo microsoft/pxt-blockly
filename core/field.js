@@ -769,8 +769,8 @@ Blockly.Field.prototype.getClickTarget_ = function() {
   if (this.clickTarget_) return this.clickTarget_;
 
   var nFields = 0;
+  var nConnections = 0;
 
-  var nFields = 0;
   // Count the number of fields, excluding text fields
   for (var i = 0, input; input = this.sourceBlock_.inputList[i]; i++) {
     for (var j = 0, field; field = input.fieldRow[j]; j++) {
@@ -778,10 +778,10 @@ Blockly.Field.prototype.getClickTarget_ = function() {
         nFields ++;
       }
     }
+    if (input.connection) nConnections++;
   }
 
-  if (nFields <= 1 && this.sourceBlock_.outputConnection
-    && !this.sourceBlock_.childBlocks_.length) {
+  if (nFields <= 1 && this.sourceBlock_.outputConnection && !nConnections) {
     this.clickTarget_ = this.sourceBlock_.getSvgRoot();
   } else {
     this.clickTarget_ = this.getSvgRoot();
