@@ -284,20 +284,16 @@ Blockly.Functions.createFunctionCallbackFactory_ = function (workspace) {
         '</block>' +
         '</xml>';
       var blockDom = Blockly.Xml.textToDom(blockText);
-      // TODO GUJEN fix the block placement logic
       Blockly.Events.setGroup(true);
-      var block = Blockly.Xml.domToBlock(blockDom.firstChild, workspace);
+      var highestBlock = workspace.getTopBlocks(true)[0];
+      var highestY = highestBlock.getBoundingRectangle().topLeft.y;
       var scale = workspace.scale; // To convert from pixel units to workspace units
-      // Position the block so that it is at the top left of the visible workspace,
-      // padded from the edge by 30 units. Position in the top right if RTL.
-      var posX = -workspace.scrollX;
-      if (workspace.RTL) {
-        posX += workspace.getMetrics().contentWidth - 30;
-      } else {
-        posX += 30;
-      }
-      block.moveBy(posX / scale, (-workspace.scrollY + 30) / scale);
+      var block = Blockly.Xml.domToBlock(blockDom.firstChild, workspace);
+      var height = highestBlock.getHeightWidth().height;
+      var moveY =  highestY - height - 20 / scale;
+      block.moveBy(0, moveY);
       block.scheduleSnapAndBump();
+      workspace.centerOnBlock(block.id);
       Blockly.Events.setGroup(false);
     }
   };

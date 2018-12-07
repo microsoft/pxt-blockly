@@ -36,7 +36,6 @@
 // TODO GUJEN support external validators for function names
 // TODO GUJEN support external validators for param names
 // TODO GUJEN make function names look different than arguments / labels on declaration / definition / call
-// TODO GUJEN fix function insertion placement logic
 
 /**
  * Type to represent a function parameter
