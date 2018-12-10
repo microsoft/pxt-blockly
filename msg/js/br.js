@@ -84,6 +84,7 @@ Blockly.Msg["FUNCTION_CALL_TOOLTIP"] = "Call a function that was previously defi
 Blockly.Msg["FUNCTION_CREATE_NEW"] = "Create a Function";  // untranslated
 Blockly.Msg["FUNCTION_WARNING_ARG_NAME_IS_FUNCTION_NAME"] = "Argument names must not be the same as the function name.";  // untranslated
 Blockly.Msg["FUNCTION_WARNING_DUPLICATE_ARG"] = "Functions cannot use the same argument name more than once.";  // untranslated
+Blockly.Msg["FUNCTION_WARNING_EMPTY_NAME"] = "Function and argument names cannot be empty.";  // untranslated
 Blockly.Msg["HELP"] = "Skoazell";
 Blockly.Msg["INLINE_INPUTS"] = "Monedoù enlinenn";
 Blockly.Msg["IOS_CANCEL"] = "Nullañ";

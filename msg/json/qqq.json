@@ -394,6 +394,7 @@
 	"FUNCTION_CREATE_NEW": "pxt-blockly: Label on the 'Create Function' button in the flyout.",
 	"FUNCTION_CALL_TOOLTIP": "pxt-blockly: Tooltip for function calls.",
 	"FUNCTION_WARNING_DUPLICATE_ARG": "pxt-blockly: Warning for duplicate argument names on a function definition.",
+	"FUNCTION_WARNING_EMPTY_NAME": "pxt-blockly: Warning for duplicate argument names on a function definition.",
 	"FUNCTION_WARNING_ARG_NAME_IS_FUNCTION_NAME": "pxt-blockly: Warning for argument names being the same as the function name.",
 	"FUNCTIONS_DEFAULT_FUNCTION_NAME": "pxt-blockly: Default function name",
 	"FUNCTIONS_DEFAULT_BOOLEAN_ARG_NAME": "pxt-blockly: Default name for a boolean arg on a function declaration",

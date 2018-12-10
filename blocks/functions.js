@@ -36,7 +36,7 @@
 // TODO GUJEN support external validators for function names
 // TODO GUJEN support external validators for param names
 // TODO GUJEN make function names look different than arguments / labels on declaration / definition / call
-// TODO GUJEN add setCheck for custom types
+// TODO GUJEN exception when creating a new function with custom arg and opening the flyout
 
 /**
  * Type to represent a function parameter
@@ -358,6 +358,9 @@ Blockly.PXTBlockly.FunctionUtils.getShadowBlockInfoFromType_ = function (argumen
       shadowType = 'variables_get';
       fieldName = 'VAR';
       fieldValue = Blockly.Variables.getOrCreateVariablePackage(ws, null, Blockly.Msg.VARIABLES_DEFAULT_NAME, '').getId();
+    // var realWs = ws.isFlyout ? ws.targetWorkspace : ws;
+    // var defaultVar = Blockly.Variables.getOrCreateVariablePackage(realWs, null, Blockly.Msg.VARIABLES_DEFAULT_NAME, '');
+    // fieldValue = defaultVar.getId();
   }
   return [shadowType, fieldName, fieldValue];
 }
@@ -1051,6 +1054,7 @@ Blockly.Blocks['argument_editor_custom'] = {
       "colourSecondary": Blockly.Colours.textField,
       "colourTertiary": Blockly.Colours.textField
     });
+    this.setOutputShape(Blockly.OUTPUT_SHAPE_ROUND);
   },
   removeFieldCallback: Blockly.PXTBlockly.FunctionUtils.removeArgumentCallback_
 };

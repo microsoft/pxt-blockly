@@ -756,6 +756,20 @@ Blockly.Flyout.prototype.placeNewBlock_ = function(oldBlock) {
     throw 'oldBlock is not rendered.';
   }
 
+  // pxt-blockly: special handling for function calls, where we must convert
+  // the flyout-workspace variable to a main-workspace variable if the function
+  // has custom argument types.
+  if (oldBlock.type == 'function_call') {
+    oldBlock.inputList.forEach(i => {
+      if (i.connection && i.connection.targetConnection && i.connection.targetBlock().type == 'variables_get') {
+        var varGetBlock = i.connection.targetBlock();
+        var varName = varGetBlock.inputList[0].fieldRow[0].getText();
+        var realVarId = Blockly.Variables.getOrCreateVariablePackage(targetWorkspace, null, varName, '').getId();
+        varGetBlock.setFieldValue(realVarId, 'VAR');
+      }
+    });
+  }
+
   // Create the new block by cloning the block in the flyout (via XML).
   var xml = Blockly.Xml.blockToDom(oldBlock);
   // The target workspace would normally resize during domToBlock, which will

@@ -286,13 +286,17 @@ Blockly.Functions.createFunctionCallbackFactory_ = function (workspace) {
       var blockDom = Blockly.Xml.textToDom(blockText);
       Blockly.Events.setGroup(true);
       var highestBlock = workspace.getTopBlocks(true)[0];
-      var highestY = highestBlock.getBoundingRectangle().topLeft.y;
-      var scale = workspace.scale; // To convert from pixel units to workspace units
       var block = Blockly.Xml.domToBlock(blockDom.firstChild, workspace);
-      var height = highestBlock.getHeightWidth().height;
-      var moveY =  highestY - height - 20 / scale;
-      block.moveBy(0, moveY);
-      block.scheduleSnapAndBump();
+
+      if (highestBlock) {
+        var highestY = highestBlock.getBoundingRectangle().topLeft.y;
+        var height = block.getHeightWidth().height;
+        var gap = 20 / workspace.scale;
+        var moveY =  highestY - height - gap;
+        block.moveTo(0, moveY);
+        block.scheduleSnapAndBump();
+      }
+
       workspace.centerOnBlock(block.id);
       Blockly.Events.setGroup(false);
     }
