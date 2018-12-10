@@ -36,6 +36,7 @@
 // TODO GUJEN support external validators for function names
 // TODO GUJEN support external validators for param names
 // TODO GUJEN make function names look different than arguments / labels on declaration / definition / call
+// TODO GUJEN add setCheck for custom types
 
 /**
  * Type to represent a function parameter
@@ -263,21 +264,11 @@ Blockly.PXTBlockly.FunctionUtils.createAllInputs_ = function (connectionMap) {
     // For custom types, the parameter type is appended to the UUID in the
     // input name. This is needed to retrieve the function signature from the
     // block inputs when the declaration block is modified.
-    var inputName = arg.id;
-    if (arg.type !== 'boolean' && arg.type !== 'string' && arg.type !== 'number') {
-      inputName = arg.id + '_' + arg.type;
-    }
-    var input = this.appendValueInput(inputName);
-    switch (arg.type) {
-      case 'boolean':
-        input.setCheck('Boolean');
-        break;
-      case 'string':
-        input.setCheck('String');
-        break;
-      case 'number':
-        input.setCheck('Number');
-        break;
+    var input = this.appendValueInput(arg.id);
+    if (Blockly.Functions.isCustomType(arg.type)) {
+      input.setCheck(arg.type);
+    } else {
+      input.setCheck(arg.type.charAt(0).toUpperCase() + arg.type.slice(1));
     }
     this.populateArgument_(arg, connectionMap, input);
   });
@@ -542,8 +533,7 @@ Blockly.PXTBlockly.FunctionUtils.populateArgumentOnDeclaration_ = function (arg,
  * Create an argument editor.
  * An argument editor is a shadow block with a single text field, which is used
  * to set the display name of the argument.
- * @param {string} argumentType One of 'b' (boolean), 's' (string) or
- *     'n' (number).
+ * @param {string} argumentType The type of this argument.
  * @param {string} displayName The display name of this argument, which is the
  *     text of the field on the shadow block.
  * @return {!Blockly.BlockSvg} The newly created argument editor block.
@@ -566,6 +556,7 @@ Blockly.PXTBlockly.FunctionUtils.createArgumentEditor_ = function (argumentType,
         break;
       default:
         newBlock = this.workspace.newBlock('argument_editor_custom');
+        newBlock.setOutput(true, argumentType);
     }
     newBlock.setFieldValue(displayName, 'TEXT');
     newBlock.setShadow(true);
@@ -614,11 +605,9 @@ Blockly.PXTBlockly.FunctionUtils.updateDeclarationMutation_ = function () {
             typeName = 'number';
             break;
           case 'argument_editor_custom':
-            // For custom types, the name of the input looks like UUID_TYPE,
-            // where UUID is 20 characters. Parse the input name into the ID
-            // and the type.
-            argId = input.name.substr(0, 20);
-            typeName = input.name.substr(21);
+            // For custom types, we use the input's check to read the argument
+            // type.
+            typeName = input.connection.getCheck();
             break;
         }
         this.arguments_.push({
@@ -1060,8 +1049,7 @@ Blockly.Blocks['argument_editor_custom'] = {
       ],
       "colour": Blockly.Colours.textField,
       "colourSecondary": Blockly.Colours.textField,
-      "colourTertiary": Blockly.Colours.textField,
-      "extensions": ["output_string"]
+      "colourTertiary": Blockly.Colours.textField
     });
   },
   removeFieldCallback: Blockly.PXTBlockly.FunctionUtils.removeArgumentCallback_

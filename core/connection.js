@@ -755,6 +755,14 @@ Blockly.Connection.prototype.setCheck = function(check) {
 };
 
 /**
+ * Reads a connection's compatibility type.
+ * @return {string} The connection type.
+ */
+Blockly.Connection.prototype.getCheck = function() {
+  return this.check_;
+};
+
+/**
  * Returns a shape enum for this connection.
  * Used in scratch-blocks to draw unoccupied inputs.
  * @return {number} Enum representing shape.
