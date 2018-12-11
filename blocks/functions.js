@@ -33,10 +33,10 @@
  */
 'use strict';
 
-// TODO GUJEN support external validators for function names
-// TODO GUJEN support external validators for param names
+// TODO GUJEN validators for function names
+// TODO GUJEN validators for param names
 // TODO GUJEN make function names look different than arguments / labels on declaration / definition / call
-// TODO GUJEN exception when creating a new function with custom arg and opening the flyout
+// TODO GUJEN prevent duplicate function definition
 
 /**
  * Type to represent a function parameter
@@ -122,21 +122,24 @@ Blockly.PXTBlockly.FunctionUtils.getArguments = function () {
 }
 
 /**
- * Returns whether or not the specified argument exists on this function
- * signature.
- * @param {string} argName The name of the argument to check.
- * @param {string} reporterType The reporter type of the argument.
- * @return {boolean} Whether the argument exists on this function.
+ * Finds and returns an argument reporter of the given name and type on this
+ * function definition, or null if none match.
+ * @param {string} argName The name of the argument to look for.
+ * @param {string} reporterType The type of the reporter to look for.
+ * @return {!Blockly.Block} Whether the argument exists on this function.
  * @this Blockly.Block
  */
-Blockly.PXTBlockly.FunctionUtils.hasArgument = function (argName, reporterType) {
-  var args = this.getArguments();
-  for (var i = 0; i < args.length; ++i) {
-    if (args[i].name === argName && Blockly.Functions.isReporterOfType(args[i].type, reporterType)) {
-      return true;
+Blockly.PXTBlockly.FunctionUtils.findMatchingArgumentReporter = function (argName, reporterType) {
+  for (var i = 0; i < this.inputList.length; ++i) {
+    var input = this.inputList[i];
+    if (input.type == Blockly.INPUT_VALUE) {
+      var definedArgReporter = input.connection.targetBlock();
+      var definedArgName = definedArgReporter && definedArgReporter.getFieldValue('VALUE');
+      if (definedArgName == argName && definedArgReporter.type == reporterType) {
+        return definedArgReporter;
+      }
     }
   }
-  return false;
 }
 
 /**
@@ -437,6 +440,11 @@ Blockly.PXTBlockly.FunctionUtils.createArgumentReporter_ = function (arg) {
     var newBlock = this.workspace.newBlock(blockType);
     newBlock.setShadow(true);
     newBlock.setFieldValue(arg.name, 'VALUE');
+
+    if (blockType == 'argument_reporter_custom') {
+      newBlock.setOutput(true, arg.type);
+    }
+
     if (!this.isInsertionMarker()) {
       newBlock.initSvg();
       newBlock.render(false);
@@ -807,7 +815,7 @@ Blockly.PXTBlockly.FunctionUtils.onCallerChange = function (event) {
 
 /**
  * Function argument reporters cannot exist outside functions that define them
- * as arguments. Enforce this link whenever an event is fired.
+ * as arguments. Enforce this whenever an event is fired.
  * @param {!Blockly.Events.Abstract} event Change event.
  * @this Blockly.Block
  */
@@ -822,14 +830,42 @@ Blockly.PXTBlockly.FunctionUtils.onReporterChange = function (event) {
 
   if (thisWasCreated || thisWasDragged) {
     var rootBlock = this.getRootBlock();
+    var isTopBlock = Blockly.Functions.isFunctionArgumentReporter(rootBlock);
     var thisArgName = this.getFieldValue('VALUE');
 
-    if (!Blockly.Functions.isShadowArgumentReporter(rootBlock) &&
-      (rootBlock.type !== Blockly.FUNCTION_DEFINITION_BLOCK_TYPE ||
-        !rootBlock.hasArgument(thisArgName, this.type))) {
+    if (isTopBlock || rootBlock.previousConnection != null) {
+      // Reporter is by itself on the workspace, or it is slotted into a
+      // stack of statements that is not attached to a function or event. Let
+      // it exist until it is connected to an event handler or function.
+      return;
+    }
+
+    if (rootBlock.type !== Blockly.FUNCTION_DEFINITION_BLOCK_TYPE) {
+      // Reporter is not inside a function definition. Delete it.
       Blockly.Events.setGroup(event.group);
       this.dispose();
       Blockly.Events.setGroup(false);
+    } else {
+      // Ensure an argument with this name and type is defined on this
+      // function.
+      var matchingArgReporter = rootBlock.findMatchingArgumentReporter(thisArgName, this.type);
+
+      if (matchingArgReporter) {
+        // An argument with this name and type exists on the function. In the
+        // case of custom types, update this reporter's output check to match
+        // the type of the defined arg.
+        if (matchingArgReporter.type == 'argument_reporter_custom') {
+          Blockly.Events.setGroup(event.group);
+          this.setOutput(true, matchingArgReporter.outputConnection.getCheck());
+          Blockly.Events.setGroup(false);
+        }
+      } else {
+        // No argument with this name is defined on this function; delete this
+        // reporter.
+        Blockly.Events.setGroup(event.group);
+        this.dispose();
+        Blockly.Events.setGroup(false);
+      }
     }
   }
 }
@@ -931,7 +967,7 @@ Blockly.Blocks['function_definition'] = {
 
   // Only exists on function_definition.
   createArgumentReporter_: Blockly.PXTBlockly.FunctionUtils.createArgumentReporter_,
-  hasArgument: Blockly.PXTBlockly.FunctionUtils.hasArgument
+  findMatchingArgumentReporter: Blockly.PXTBlockly.FunctionUtils.findMatchingArgumentReporter
 };
 
 Blockly.Blocks['function_call'] = {

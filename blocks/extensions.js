@@ -38,8 +38,18 @@ Blockly.PXTBlockly.Extensions.FUNCTION_CONTEXTMENU_EDIT = {
    * @param {!Array.<!Object>} menuOptions List of menu options to edit.
    * @this Blockly.Block
    */
-  customContextMenu: function (menuOptions) {
+  customContextMenu: function(menuOptions) {
     menuOptions.push(Blockly.Functions.makeEditOption(this));
+
+    // Find and remove the duplicate option for definitions
+    if (this.type == Blockly.FUNCTION_DEFINITION_BLOCK_TYPE) {
+      for (var i = 0, option; option = menuOptions[i]; i++) {
+        if (option.text == Blockly.Msg.DUPLICATE_BLOCK) {
+          menuOptions.splice(i, 1);
+          break;
+        }
+      }
+    }
   }
 };
 
@@ -50,7 +60,7 @@ Blockly.PXTBlockly.Extensions.FUNCTION_CONTEXTMENU_EDIT = {
  * @this {Blockly.Block}
  * @readonly
  */
-Blockly.PXTBlockly.Extensions.OUTPUT_NUMBER = function () {
+Blockly.PXTBlockly.Extensions.OUTPUT_NUMBER = function() {
   this.setInputsInline(true);
   this.setOutputShape(Blockly.OUTPUT_SHAPE_ROUND);
   this.setOutput(true, 'Number');
@@ -63,7 +73,7 @@ Blockly.PXTBlockly.Extensions.OUTPUT_NUMBER = function () {
  * @this {Blockly.Block}
  * @readonly
  */
-Blockly.PXTBlockly.Extensions.OUTPUT_STRING = function () {
+Blockly.PXTBlockly.Extensions.OUTPUT_STRING = function() {
   this.setInputsInline(true);
   this.setOutputShape(Blockly.OUTPUT_SHAPE_ROUND);
   this.setOutput(true, 'String');
@@ -76,7 +86,7 @@ Blockly.PXTBlockly.Extensions.OUTPUT_STRING = function () {
  * @this {Blockly.Block}
  * @readonly
  */
-Blockly.PXTBlockly.Extensions.OUTPUT_BOOLEAN = function () {
+Blockly.PXTBlockly.Extensions.OUTPUT_BOOLEAN = function() {
   this.setInputsInline(true);
   this.setOutputShape(Blockly.OUTPUT_SHAPE_HEXAGONAL);
   this.setOutput(true, 'Boolean');

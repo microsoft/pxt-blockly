@@ -486,7 +486,7 @@ Blockly.Connection.prototype.isConnectionAllowed = function(candidate) {
 
         // pxt-blockly: don't allow putting argument reporters outside their
         // respective function.
-        if (Blockly.Functions.isShadowArgumentReporter(this.sourceBlock_)) {
+        if (Blockly.Functions.isFunctionArgumentReporter(this.sourceBlock_)) {
           // Ensure the root block of this stack is a function definition that
           // has this argument name in its signature.
           var rootBlock = candidate.targetBlock().getRootBlock();
@@ -497,7 +497,7 @@ Blockly.Connection.prototype.isConnectionAllowed = function(candidate) {
           // rootBlock is a function definition, but we still need to make
           // sure it has a matching argument in its signature.
           var thisArgName = this.sourceBlock_.getFieldValue('VALUE');
-          if (!rootBlock.hasArgument(thisArgName, this.sourceBlock_.type)) {
+          if (!findMatchingArgumentReporter(thisArgName, this.sourceBlock_.type)) {
             return false;
           }
         }

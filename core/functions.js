@@ -155,7 +155,7 @@ Blockly.Functions.getCallers = function (name, workspace) {
  * Find the definition block for the named function.
  * @param {string} name Name of function.
  * @param {!Blockly.Workspace} workspace The workspace to search.
- * @return {Blockly.Block} The function definition block, or null if not found.
+ * @return {!Blockly.Block} The function definition block, or null if not found.
  */
 Blockly.Functions.getDefinition = function (name, workspace) {
   // Assume that a function definition is a top block.
@@ -292,8 +292,8 @@ Blockly.Functions.createFunctionCallbackFactory_ = function (workspace) {
         var highestY = highestBlock.getBoundingRectangle().topLeft.y;
         var height = block.getHeightWidth().height;
         var gap = 20 / workspace.scale;
-        var moveY =  highestY - height - gap;
-        block.moveTo(0, moveY);
+        var moveY = highestY - height - gap;
+        block.moveBy(0, moveY);
         block.scheduleSnapAndBump();
       }
 
@@ -370,24 +370,21 @@ Blockly.Functions.makeEditOption = function (block) {
 };
 
 /**
- * Returns whether or not the specified argument reporter type matches the
- * specified type. For literal types, the reporter must be of type
- * 'argument_reporter_[literal]'. For non-literal types, the reporter must be
- * of type 'argument_reporter_custom'.
- * @param {string} argType The desired argument type.
- * @param {string} reporterType The reporter block type to compare.
- * @return {boolean} Whether the specified reporter type is compatible with the
- *  specified type.
+ * Converts an argument reporter block's output type to its equivalent
+ * TypeScript type. For literal types, this means the output type in all lower
+ * case. For custom reporters, this the output type is taken as is.
+ * @param {string} reporterOutputType The reporter's output type.
+ * @return {string} The TypeScript type of the argument.
  * @package
  */
-Blockly.Functions.isReporterOfType = function (argType, reporterType) {
-  switch (argType) {
-    case 'boolean':
-    case 'string':
-    case 'number':
-      return reporterType.substr(18) === argType;
+Blockly.Functions.getReporterArgumentType = function (reporterOutputType) {
+  switch (reporterOutputType) {
+    case 'Boolean':
+    case 'Number':
+    case 'String':
+      return reporterOutputType.toLowerCase();
     default:
-      return reporterType === 'argument_reporter_custom';
+      return reporterOutputType;
   }
 }
 
@@ -514,7 +511,7 @@ Blockly.Functions.mutateCallersAndDefinition = function (name, ws, mutation) {
           // Then, go through all descendants of the function definition and
           // look for argument reporters to update.
           definitionBlock.getDescendants().forEach(d => {
-            if (!Blockly.Functions.isShadowArgumentReporter(d)) {
+            if (!Blockly.Functions.isFunctionArgumentReporter(d)) {
               return;
             }
 
@@ -553,7 +550,7 @@ Blockly.Functions.mutateCallersAndDefinition = function (name, ws, mutation) {
  *     decision.
  * @return {boolean} True if the block is a function argument reporter.
  */
-Blockly.Functions.isShadowArgumentReporter = function (block) {
+Blockly.Functions.isFunctionArgumentReporter = function (block) {
   return block.type === 'argument_reporter_boolean' ||
     block.type === 'argument_reporter_number' ||
     block.type === 'argument_reporter_string' ||
