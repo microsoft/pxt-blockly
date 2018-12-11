@@ -36,7 +36,6 @@
 // TODO GUJEN validators for function names
 // TODO GUJEN validators for param names
 // TODO GUJEN make function names look different than arguments / labels on declaration / definition / call
-// TODO GUJEN prevent duplicate function definition
 
 /**
  * Type to represent a function parameter
