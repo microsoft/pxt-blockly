@@ -1013,6 +1013,11 @@ Blockly.Gesture.prototype.duplicateOnDrag_ = function() {
     }
     newBlock = Blockly.Xml.domToBlock(xmlBlock, this.startWorkspace_);
 
+    // pxt-blockly: also duplicate custom output check for custom reporters.
+    if (this.targetBlock_.type == 'argument_reporter_custom') {
+      newBlock.setOutput(true, this.targetBlock_.outputConnection.getCheck());
+    }
+
     // Move the duplicate to original position.
     var xy = this.targetBlock_.getRelativeToSurfaceXY();
     newBlock.moveBy(xy.x, xy.y);

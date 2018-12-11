@@ -475,31 +475,24 @@ Blockly.Connection.prototype.isConnectionAllowed = function(candidate) {
         return false;
       }
 
+      // pxt-blockly: don't allow connecting a block to an argument reporter
+      // shadow.
       if (candidate.targetConnection) {
-        // pxt-blockly: don't allow connecting a block to a function argument
-        // shadow reporter.
         var targetBlock = candidate.targetBlock();
-        if (Blockly.pxtBlocklyUtils.isShadowArgumentReporter(targetBlock) &&
-          targetBlock.getParent().type === Blockly.FUNCTION_DEFINITION_BLOCK_TYPE) {
+        if (Blockly.pxtBlocklyUtils.isShadowArgumentReporter(targetBlock)) {
           return false;
         }
+      }
 
-        // pxt-blockly: don't allow putting argument reporters outside their
-        // respective function.
-        if (Blockly.Functions.isFunctionArgumentReporter(this.sourceBlock_)) {
-          // Ensure the root block of this stack is a function definition that
-          // has this argument name in its signature.
-          var rootBlock = candidate.targetBlock().getRootBlock();
-          if (rootBlock.type !== Blockly.FUNCTION_DEFINITION_BLOCK_TYPE) {
-            return false;
-          }
-
-          // rootBlock is a function definition, but we still need to make
-          // sure it has a matching argument in its signature.
-          var thisArgName = this.sourceBlock_.getFieldValue('VALUE');
-          if (!findMatchingArgumentReporter(thisArgName, this.sourceBlock_.type)) {
-            return false;
-          }
+      // pxt-blockly: don't allow putting argument reporters outside their
+      // respective function or event handler.
+      if (Blockly.Functions.isFunctionArgumentReporter(this.sourceBlock_)) {
+        // Ensure the root block of this stack has an argument reporter
+        // matching the name and the type of this reporter.
+        var rootBlock = candidate.sourceBlock_.getRootBlock();
+        var thisArgName = this.sourceBlock_.getFieldValue('VALUE');
+        if (!Blockly.pxtBlocklyUtils.findMatchingArgumentReporter(rootBlock, thisArgName, this.sourceBlock_.type)) {
+          return false;
         }
       }
       break;

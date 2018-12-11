@@ -176,16 +176,16 @@
             </block>
             <block type="text_indexOf">
                 <value name="VALUE">
-                  <block type="variables_get">
-                    <field name="VAR">text</field>
-                  </block>
+                    <block type="variables_get">
+                        <field name="VAR">text</field>
+                    </block>
                 </value>
                 <value name="FIND">
-                  <shadow type="text">
-                    <field name="TEXT">abc</field>
-                  </shadow>
+                    <shadow type="text">
+                        <field name="TEXT">abc</field>
+                    </shadow>
                 </value>
-              </block>
+            </block>
         </category>
         <sep></sep>
         <category name="Variables" colour="330" custom="VARIABLE" iconclass="blocklyTreeIconCustom variables"></category>
@@ -331,21 +331,21 @@
                 startScale: 0.75
             }
         });
+        var initialContent = `
+        <xml xmlns="http://www.w3.org/1999/xhtml">
+            <block type="function_definition" x="25" y="25">
+                <mutation name="myFunc" functionid="S-K/H.HR!;+la~V+gT*6"><arg type="boolean" name="myBool" id="$J[@GtUSc~eo!]Y?wT{;"></arg></mutation>
+            </block>
+            <block type="function_call" x="25" y="200">
+                <mutation name="myFunc"><arg type="boolean" name="myBool" id="$J[@GtUSc~eo!]Y?wT{;"></arg></mutation>
+            </block>
+        </xml>`
         //         var initialContent = `
         // <xml xmlns="http://www.w3.org/1999/xhtml">
         //     <block type="function_definition" x="25" y="25">
-        //         <mutation name="myFunc" functionid="S-K/H.HR!;+la~V+gT*6"><arg type="boolean" name="myBool" id="$J[@GtUSc~eo!]Y?wT{;"></arg></mutation>
-        //     </block>
-        //     <block type="function_call" x="25" y="200">
-        //         <mutation name="myFunc"><arg type="boolean" name="myBool" id="$J[@GtUSc~eo!]Y?wT{;"></arg></mutation>
+        //         <mutation name="myFunc" functionid="S-K/H.HR!;+la~V+gT*6"><arg type="CustomType" name="mySprite" id="$J[@GtUSc~eo!]Y?wT{;"></arg></mutation>
         //     </block>
         // </xml>`
-        var initialContent = `
-<xml xmlns="http://www.w3.org/1999/xhtml">
-    <block type="function_definition" x="25" y="25">
-        <mutation name="myFunc" functionid="S-K/H.HR!;+la~V+gT*6"><arg type="CustomType" name="mySprite" id="$J[@GtUSc~eo!]Y?wT{;"></arg></mutation>
-    </block>
-</xml>`
 
         Blockly.Msg.PROCEDURES_DEFNORETURN_TITLE = "function";
         declarationWorkspace.addChangeListener(function () {

@@ -289,11 +289,13 @@ Blockly.Functions.createFunctionCallbackFactory_ = function (workspace) {
       var block = Blockly.Xml.domToBlock(blockDom.firstChild, workspace);
 
       if (highestBlock) {
-        var highestY = highestBlock.getBoundingRectangle().topLeft.y;
+        var highestBlockTopLeft = highestBlock.getBoundingRectangle().topLeft;
+        var highestBlockY = highestBlockTopLeft.y;
+        var highestBlockX = highestBlockTopLeft.x;
         var height = block.getHeightWidth().height;
         var gap = 20 / workspace.scale;
-        var moveY = highestY - height - gap;
-        block.moveBy(0, moveY);
+        var moveY = highestBlockY - height - gap;
+        block.moveBy(highestBlockX, moveY);
         block.scheduleSnapAndBump();
       }
 

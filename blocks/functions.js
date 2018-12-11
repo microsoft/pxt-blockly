@@ -121,27 +121,6 @@ Blockly.PXTBlockly.FunctionUtils.getArguments = function () {
 }
 
 /**
- * Finds and returns an argument reporter of the given name and type on this
- * function definition, or null if none match.
- * @param {string} argName The name of the argument to look for.
- * @param {string} reporterType The type of the reporter to look for.
- * @return {!Blockly.Block} Whether the argument exists on this function.
- * @this Blockly.Block
- */
-Blockly.PXTBlockly.FunctionUtils.findMatchingArgumentReporter = function (argName, reporterType) {
-  for (var i = 0; i < this.inputList.length; ++i) {
-    var input = this.inputList[i];
-    if (input.type == Blockly.INPUT_VALUE) {
-      var definedArgReporter = input.connection.targetBlock();
-      var definedArgName = definedArgReporter && definedArgReporter.getFieldValue('VALUE');
-      if (definedArgName == argName && definedArgReporter.type == reporterType) {
-        return definedArgReporter;
-      }
-    }
-  }
-}
-
-/**
  * Add or remove the statement block from this function definition.
  * @param {boolean} hasStatements True if a statement block is needed.
  * @this Blockly.Block
@@ -839,32 +818,25 @@ Blockly.PXTBlockly.FunctionUtils.onReporterChange = function (event) {
       return;
     }
 
-    if (rootBlock.type !== Blockly.FUNCTION_DEFINITION_BLOCK_TYPE) {
-      // Reporter is not inside a function definition. Delete it.
+    // Ensure an argument with this name and reporter type is defined on the
+    // root block.
+    var matchingArgReporter = Blockly.pxtBlocklyUtils.findMatchingArgumentReporter(rootBlock, thisArgName, this.type);
+
+    if (matchingArgReporter) {
+      // An argument with this name and type exists on the root block. In the
+      // case of custom types, update this reporter's output check to match
+      // the type of the defined arg.
+      if (matchingArgReporter.type == 'argument_reporter_custom') {
+        Blockly.Events.setGroup(event.group);
+        this.setOutput(true, matchingArgReporter.outputConnection.getCheck());
+        Blockly.Events.setGroup(false);
+      }
+    } else {
+      // No argument with this name is defined on the root block; delete this
+      // reporter.
       Blockly.Events.setGroup(event.group);
       this.dispose();
       Blockly.Events.setGroup(false);
-    } else {
-      // Ensure an argument with this name and type is defined on this
-      // function.
-      var matchingArgReporter = rootBlock.findMatchingArgumentReporter(thisArgName, this.type);
-
-      if (matchingArgReporter) {
-        // An argument with this name and type exists on the function. In the
-        // case of custom types, update this reporter's output check to match
-        // the type of the defined arg.
-        if (matchingArgReporter.type == 'argument_reporter_custom') {
-          Blockly.Events.setGroup(event.group);
-          this.setOutput(true, matchingArgReporter.outputConnection.getCheck());
-          Blockly.Events.setGroup(false);
-        }
-      } else {
-        // No argument with this name is defined on this function; delete this
-        // reporter.
-        Blockly.Events.setGroup(event.group);
-        this.dispose();
-        Blockly.Events.setGroup(false);
-      }
     }
   }
 }
@@ -965,8 +937,7 @@ Blockly.Blocks['function_definition'] = {
   addFunctionLabel_: Blockly.PXTBlockly.FunctionUtils.addLabelField_,
 
   // Only exists on function_definition.
-  createArgumentReporter_: Blockly.PXTBlockly.FunctionUtils.createArgumentReporter_,
-  findMatchingArgumentReporter: Blockly.PXTBlockly.FunctionUtils.findMatchingArgumentReporter
+  createArgumentReporter_: Blockly.PXTBlockly.FunctionUtils.createArgumentReporter_
 };
 
 Blockly.Blocks['function_call'] = {
