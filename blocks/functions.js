@@ -415,14 +415,21 @@ Blockly.PXTBlockly.FunctionUtils.createArgumentReporter_ = function (arg) {
   }
   Blockly.Events.disable();
   try {
-    var newBlock = this.workspace.newBlock(blockType);
+    var newBlock;
+    if (blockType == 'argument_reporter_custom') {
+      var blockText =
+        '<xml>' +
+        '<block type="argument_reporter_custom">' +
+        '<mutation typename="' + arg.type + '"></mutation>' +
+        '</block>' +
+        '</xml>';
+      var blockDom = Blockly.Xml.textToDom(blockText);
+      newBlock = Blockly.Xml.domToBlock(blockDom.firstChild, this.workspace);
+    } else {
+      newBlock = this.workspace.newBlock(blockType);
+    }
     newBlock.setShadow(true);
     newBlock.setFieldValue(arg.name, 'VALUE');
-
-    if (blockType == 'argument_reporter_custom') {
-      newBlock.setOutput(true, arg.type);
-    }
-
     if (!this.isInsertionMarker()) {
       newBlock.initSvg();
       newBlock.render(false);
@@ -532,20 +539,33 @@ Blockly.PXTBlockly.FunctionUtils.populateArgumentOnDeclaration_ = function (arg,
 Blockly.PXTBlockly.FunctionUtils.createArgumentEditor_ = function (argumentType, displayName) {
   Blockly.Events.disable();
   var newBlock;
+
   try {
+    var blockType = '';
     switch (argumentType) {
       case 'boolean':
-        newBlock = this.workspace.newBlock('argument_editor_boolean');
-        break;
-      case 'string':
-        newBlock = this.workspace.newBlock('argument_editor_string');
+        blockType = 'argument_editor_boolean';
         break;
       case 'number':
-        newBlock = this.workspace.newBlock('argument_editor_number');
+        blockType = 'argument_editor_number';
+        break;
+      case 'string':
+        blockType = 'argument_editor_string';
         break;
       default:
-        newBlock = this.workspace.newBlock('argument_editor_custom');
-        newBlock.setOutput(true, argumentType);
+        blockType = 'argument_editor_custom';
+    }
+    if (blockType == 'argument_editor_custom') {
+      var blockText =
+        '<xml>' +
+        '<block type="argument_editor_custom">' +
+        '<mutation typename="' + argumentType + '"></mutation>' +
+        '</block>' +
+        '</xml>';
+      var blockDom = Blockly.Xml.textToDom(blockText);
+      newBlock = Blockly.Xml.domToBlock(blockDom.firstChild, this.workspace);
+    } else {
+      newBlock = this.workspace.newBlock(blockType);
     }
     newBlock.setFieldValue(displayName, 'TEXT');
     newBlock.setShadow(true);
@@ -580,29 +600,10 @@ Blockly.PXTBlockly.FunctionUtils.updateDeclarationMutation_ = function () {
       case Blockly.INPUT_VALUE:
         // Inspect the argument editor to add the argument to our mutation.
         var target = input.connection.targetBlock();
-        var typeName = '';
-        var argId = input.name;
-
-        switch (target.type) {
-          case 'argument_editor_boolean':
-            typeName = 'boolean';
-            break;
-          case 'argument_editor_string':
-            typeName = 'string';
-            break;
-          case 'argument_editor_number':
-            typeName = 'number';
-            break;
-          case 'argument_editor_custom':
-            // For custom types, we use the input's check to read the argument
-            // type.
-            typeName = input.connection.getCheck();
-            break;
-        }
         this.arguments_.push({
-          id: argId,
+          id: input.name,
           name: target.getFieldValue('TEXT'),
-          type: typeName
+          type: target.getTypeName()
         });
         break;
       default:
@@ -828,7 +829,7 @@ Blockly.PXTBlockly.FunctionUtils.onReporterChange = function (event) {
       // the type of the defined arg.
       if (matchingArgReporter.type == 'argument_reporter_custom') {
         Blockly.Events.setGroup(event.group);
-        this.setOutput(true, matchingArgReporter.outputConnection.getCheck());
+        this.setOutput(true, matchingArgReporter.getTypeName());
         Blockly.Events.setGroup(false);
       }
     } else {
@@ -983,7 +984,39 @@ Blockly.Blocks['function_call'] = {
   onchange: Blockly.PXTBlockly.FunctionUtils.onCallerChange
 };
 
-// Argument editors
+// Argument editor and reporter helpers
+
+/**
+ * Returns the TypeScript type associated with this reporter or editor.
+ * @return {string} This argument's type, as would be emitted to TypeScript.
+ * @this Blockly.Block
+ */
+Blockly.PXTBlockly.FunctionUtils.getTypeName = function () {
+  return this.typeName_;
+}
+
+/**
+ * Create XML to represent the type name of an argument editor or reporter.
+ * @return {!Element} XML storage element.
+ * @this Blockly.Block
+ */
+Blockly.PXTBlockly.FunctionUtils.argumentMutationToDom = function () {
+  var container = document.createElement('mutation');
+  container.setAttribute('typename', this.typeName_);
+  return container;
+};
+
+/**
+ * Parse XML to restore the type name of an argument editor or reporter.
+ * @param {!Element} xmlElement XML storage element.
+ * @this Blockly.Block
+ */
+Blockly.PXTBlockly.FunctionUtils.argumentDomToMutation = function (xmlElement) {
+  this.typeName_ = xmlElement.getAttribute('typename');
+  this.setOutput(true, this.typeName_);
+};
+
+// Argument editor blocks
 
 Blockly.Blocks['argument_editor_boolean'] = {
   init: function () {
@@ -1001,7 +1034,9 @@ Blockly.Blocks['argument_editor_boolean'] = {
       "colourTertiary": Blockly.Colours.textField,
       "extensions": ["output_boolean"]
     });
+    this.typeName_ = 'boolean';
   },
+  getTypeName: Blockly.PXTBlockly.FunctionUtils.getTypeName,
   removeFieldCallback: Blockly.PXTBlockly.FunctionUtils.removeArgumentCallback_
 };
 
@@ -1021,7 +1056,9 @@ Blockly.Blocks['argument_editor_string'] = {
       "colourTertiary": Blockly.Colours.textField,
       "extensions": ["output_string"]
     });
+    this.typeName_ = 'string';
   },
+  getTypeName: Blockly.PXTBlockly.FunctionUtils.getTypeName,
   removeFieldCallback: Blockly.PXTBlockly.FunctionUtils.removeArgumentCallback_
 };
 
@@ -1041,7 +1078,9 @@ Blockly.Blocks['argument_editor_number'] = {
       "colourTertiary": Blockly.Colours.textField,
       "extensions": ["output_number"]
     });
+    this.typeName_ = 'number';
   },
+  getTypeName: Blockly.PXTBlockly.FunctionUtils.getTypeName,
   removeFieldCallback: Blockly.PXTBlockly.FunctionUtils.removeArgumentCallback_
 };
 
@@ -1058,14 +1097,18 @@ Blockly.Blocks['argument_editor_custom'] = {
       ],
       "colour": Blockly.Colours.textField,
       "colourSecondary": Blockly.Colours.textField,
-      "colourTertiary": Blockly.Colours.textField
+      "colourTertiary": Blockly.Colours.textField,
+      "outputShape": Blockly.OUTPUT_SHAPE_ROUND
     });
-    this.setOutputShape(Blockly.OUTPUT_SHAPE_ROUND);
+    this.typeName_ = 'any';
   },
-  removeFieldCallback: Blockly.PXTBlockly.FunctionUtils.removeArgumentCallback_
+  getTypeName: Blockly.PXTBlockly.FunctionUtils.getTypeName,
+  removeFieldCallback: Blockly.PXTBlockly.FunctionUtils.removeArgumentCallback_,
+  mutationToDom: Blockly.PXTBlockly.FunctionUtils.argumentMutationToDom,
+  domToMutation: Blockly.PXTBlockly.FunctionUtils.argumentDomToMutation
 };
 
-// Argument reporters
+// Argument reporter blocks
 
 Blockly.Blocks['argument_reporter_boolean'] = {
   init: function () {
@@ -1081,8 +1124,10 @@ Blockly.Blocks['argument_reporter_boolean'] = {
       "colour": Blockly.Msg.PROCEDURES_HUE,
       "extensions": ["output_boolean"]
     });
+    this.typeName_ = 'boolean';
   },
-  onchange: Blockly.PXTBlockly.FunctionUtils.onReporterChange
+  onchange: Blockly.PXTBlockly.FunctionUtils.onReporterChange,
+  getTypeName: Blockly.PXTBlockly.FunctionUtils.getTypeName
 };
 
 Blockly.Blocks['argument_reporter_number'] = {
@@ -1099,8 +1144,10 @@ Blockly.Blocks['argument_reporter_number'] = {
       "colour": Blockly.Msg.PROCEDURES_HUE,
       "extensions": ["output_number"]
     });
+    this.typeName_ = 'number';
   },
-  onchange: Blockly.PXTBlockly.FunctionUtils.onReporterChange
+  onchange: Blockly.PXTBlockly.FunctionUtils.onReporterChange,
+  getTypeName: Blockly.PXTBlockly.FunctionUtils.getTypeName
 };
 
 Blockly.Blocks['argument_reporter_string'] = {
@@ -1117,8 +1164,10 @@ Blockly.Blocks['argument_reporter_string'] = {
       "colour": Blockly.Msg.PROCEDURES_HUE,
       "extensions": ["output_string"]
     });
+    this.typeName_ = 'string';
   },
-  onchange: Blockly.PXTBlockly.FunctionUtils.onReporterChange
+  onchange: Blockly.PXTBlockly.FunctionUtils.onReporterChange,
+  getTypeName: Blockly.PXTBlockly.FunctionUtils.getTypeName
 };
 
 Blockly.Blocks['argument_reporter_custom'] = {
@@ -1137,6 +1186,10 @@ Blockly.Blocks['argument_reporter_custom'] = {
       "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
       "output": null
     });
+    this.typeName_ = 'any';
   },
-  onchange: Blockly.PXTBlockly.FunctionUtils.onReporterChange
+  onchange: Blockly.PXTBlockly.FunctionUtils.onReporterChange,
+  getTypeName: Blockly.PXTBlockly.FunctionUtils.getTypeName,
+  mutationToDom: Blockly.PXTBlockly.FunctionUtils.argumentMutationToDom,
+  domToMutation: Blockly.PXTBlockly.FunctionUtils.argumentDomToMutation
 };
