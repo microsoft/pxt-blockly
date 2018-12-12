@@ -976,19 +976,21 @@ Blockly.WorkspaceSvg.prototype.glowStack = function(id, isGlowingStack) {
 
 /**
  * Paste the provided block onto the workspace.
- * @param {!Element} xmlBlock XML block element.
+ * @param {!Element} xmlBlocks XML blocks element.
  */
-Blockly.WorkspaceSvg.prototype.paste = function(xmlBlock) {
+Blockly.WorkspaceSvg.prototype.paste = function(xmlBlocks) {
   if (!this.rendered) {
     return;
   }
   if (this.currentGesture_) {
     this.currentGesture_.cancel();  // Dragging while pasting?  No.
   }
-  if (xmlBlock.tagName.toLowerCase() == 'comment') {
-    this.pasteWorkspaceComment_(xmlBlock);
-  } else {
-    this.pasteBlock_(xmlBlock);
+  for (var i = 0; i < xmlBlocks.length; i++) {
+    if (xmlBlocks[i].tagName.toLowerCase() == 'comment') {
+      this.pasteWorkspaceComment_(xmlBlocks[i]);
+    } else {
+      this.pasteBlock_(xmlBlocks[i]);
+    }
   }
 };
 

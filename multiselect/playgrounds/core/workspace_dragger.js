@@ -78,9 +78,7 @@ Blockly.WorkspaceDragger.prototype.dispose = function() {
  * @package
  */
 Blockly.WorkspaceDragger.prototype.startDrag = function() {
-  if (Blockly.selected) {
-    Blockly.selected.unselect();
-  }
+  Blockly.clearSelected();
   this.workspace_.setupDragSurface();
 };
 

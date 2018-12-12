@@ -43,7 +43,7 @@ goog.require('goog.math.Coordinate');
  * @constructor
  */
 Blockly.InsertionMarkerManager = function(block, handleXY) {
-  Blockly.selected = block;
+  Blockly.select(block, true);
 
   /**
    * The top block in the stack being dragged.

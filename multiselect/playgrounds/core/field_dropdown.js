@@ -254,6 +254,15 @@ Blockly.FieldDropdown.prototype.showEditor_ = function() {
   for (var i = 0; i < options.length; i++) {
     var content = options[i][0]; // Human-readable text or image.
     var value = options[i][1];   // Language-neutral value.
+    var separator = value === 'SEPARATOR';
+    if (separator) {
+      // pxtblockly: render separator
+      var menuItem = new goog.ui.MenuSeparator();
+      menuItem.setRightToLeft(this.sourceBlock_.RTL);
+      menu.addChild(menuItem, true);
+      menuItem.getElement().style.borderColor = this.sourceBlock_.getColourTertiary();
+      continue;
+    }
     if (typeof content == 'object') {
       // An image, not text.
       var image = new Image(content['width'], content['height']);

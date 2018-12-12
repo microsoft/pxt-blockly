@@ -289,6 +289,14 @@ Blockly.PROCEDURE_CATEGORY_NAME = 'PROCEDURE';
 
 /**
  * String for use in the dropdown created in field_variable.
+ * This string indicates that this option in the dropdown is 'Create
+ * a variable...' and if selected, should trigger the prompt to create a variable.
+ * @const {string}
+ */
+Blockly.CREATE_VARIABLE_ID = 'CREATE_VARIABLE';
+
+/**
+ * String for use in the dropdown created in field_variable.
  * This string indicates that this option in the dropdown is 'Rename
  * variable...' and if selected, should trigger the prompt to rename a variable.
  * @const {string}
