@@ -83,10 +83,10 @@ var CLOSURE_DEFINES = {'goog.DEBUG': false};
 Blockly.mainWorkspace = null;
 
 /**
- * Currently selected block.
- * @type {Blockly.Block}
+ * Currently selected block or workspace comment.
+ * @type {!Array.<!Blockly.Block | Blockly.WorkspaceComment>}
  */
-Blockly.selected = null;
+Blockly.selectedList = [];
 
 /**
  * All of the connections on blocks that are currently being dragged.
@@ -190,7 +190,7 @@ Blockly.onKeyDown_ = function(e) {
     // When focused on an HTML text input widget, don't trap any keys.
     return;
   }
-  var deleteBlock = false;
+  var deleteBlocks = [];
   if (e.keyCode == 27) {
     // Pressing esc closes the context menu and any drop-down
     Blockly.hideChaff();
@@ -203,30 +203,38 @@ Blockly.onKeyDown_ = function(e) {
     if (Blockly.mainWorkspace.isDragging()) {
       return;
     }
-    if (Blockly.selected && Blockly.selected.isDeletable()) {
-      deleteBlock = true;
+    for (var i = 0; i < Blockly.selectedList.length; i++) {
+      if (Blockly.selectedList[i].isDeletable()) {
+        deleteBlocks.push(Blockly.selectedList[i]);
+      }
     }
   } else if (e.altKey || e.ctrlKey || e.metaKey) {
     // Don't use meta keys during drags.
     if (Blockly.mainWorkspace.isDragging()) {
       return;
     }
-    if (Blockly.selected &&
-        Blockly.selected.isDeletable() && Blockly.selected.isMovable()) {
-      // Don't allow copying immovable or undeletable blocks. The next step
-      // would be to paste, which would create additional undeletable/immovable
-      // blocks on the workspace.
+    var copyableBlocks = [];
+    for (var i = 0; i < Blockly.selectedList.length; i++) {
+      var selectedBlock = Blockly.selectedList[i];
+      if (selectedBlock.isDeletable() && selectedBlock.isMovable()) {
+        // Don't allow copying immovable or undeletable blocks. The next step
+        // would be to paste, which would create additional undeletable/immovable
+        // blocks on the workspace.
+        copyableBlocks.push(selectedBlock);
+      }
+    }
+    if (copyableBlocks.length > 0) {
       if (e.keyCode == 67) {
         // 'c' for copy.
         Blockly.hideChaff();
-        Blockly.copy_(Blockly.selected);
-      } else if (e.keyCode == 88 && !Blockly.selected.workspace.isFlyout) {
+        Blockly.copy_(copyableBlocks);
+      } else if (e.keyCode == 88 && !copyableBlocks[0].workspace.isFlyout) {
         // 'x' for cut, but not in a flyout.
         // Don't even copy the selected item in the flyout.
-        Blockly.copy_(Blockly.selected);
-        deleteBlock = true;
+        Blockly.copy_(copyableBlocks);
+        deleteBlocks = copyableBlocks;
         Blockly.hideChaff();
-        Blockly.selected.dispose(/* heal */ true, true);
+        //Blockly.selected.dispose(/* heal */ true, true);
       }
     }
     if (e.keyCode == 86) {
@@ -250,10 +258,12 @@ Blockly.onKeyDown_ = function(e) {
   }
   // Common code for delete and cut.
   // Don't delete in the flyout.
-  if (deleteBlock && !Blockly.selected.workspace.isFlyout) {
+  if (deleteBlocks.length > 0 && !deleteBlocks[0].workspace.isFlyout) {
     Blockly.Events.setGroup(true);
     Blockly.hideChaff();
-    Blockly.selected.dispose(/* heal */ true, true);
+    for (var i = 0; i < deleteBlocks.length; i++) {
+      deleteBlocks[i].dispose(/* heal */ true, true);
+    }
     Blockly.Events.setGroup(false);
   }
 };
@@ -265,19 +275,26 @@ Blockly.onKeyDown_ = function(e) {
  * @private
  */
 Blockly.copy_ = function(toCopy) {
-  if (toCopy.isComment) {
-    var xml = toCopy.toXmlWithXY();
-  } else {
-    var xml = Blockly.Xml.blockToDom(toCopy);
-    // Copy only the selected block and internal blocks.
-    Blockly.Xml.deleteNext(xml);
-    // Encode start position in XML.
-    var xy = toCopy.getRelativeToSurfaceXY();
-    xml.setAttribute('x', toCopy.RTL ? -xy.x : xy.x);
-    xml.setAttribute('y', xy.y);
+  var xmlList = [];
+  for (var i = 0; i < toCopy.length; i++) {
+    var toCopyItem = toCopy[i];
+    if (toCopyItem.isComment) {
+      var xml = toCopyItem.toXmlWithXY();
+    } else {
+      var xml = Blockly.Xml.blockToDom(toCopyItem);
+      // Copy only the selected block and internal blocks.
+      Blockly.Xml.deleteNext(xml);
+      // Encode start position in XML.
+      var xy = toCopyItem.getRelativeToSurfaceXY();
+      xml.setAttribute('x', toCopyItem.RTL ? -xy.x : xy.x);
+      xml.setAttribute('y', xy.y);
+    }
+    xmlList.push(xml);
   }
-  Blockly.clipboardXml_ = xml;
-  Blockly.clipboardSource_ = toCopy.workspace;
+  if (xmlList.length > 0) {
+    Blockly.clipboardXml_ = xmlList;
+    Blockly.clipboardSource_ = toCopy[0].workspace;
+  }
 };
 
 /**
@@ -291,7 +308,7 @@ Blockly.duplicate_ = function(toDuplicate) {
   var clipboardSource = Blockly.clipboardSource_;
 
   // Create a duplicate via a copy/paste operation.
-  Blockly.copy_(toDuplicate);
+  Blockly.copy_([toDuplicate]);
   toDuplicate.workspace.paste(Blockly.clipboardXml_);
 
   // Restore the clipboard.
@@ -410,6 +427,66 @@ Blockly.confirm = function(message, callback) {
  */
 Blockly.prompt = function(message, defaultValue, callback) {
   callback(window.prompt(message, defaultValue));
+};
+
+/**
+ * Add a given block or comment to the selected list.
+ * @param {!Blockly.Block | Blockly.WorkspaceComment} block or comment.
+ * @param {boolean} opt_noMultiSelect True if we only want to select this block or comment.
+ */
+Blockly.select = function(block, opt_noMultiSelect) {
+  if (opt_noMultiSelect) {
+    Blockly.clearSelected(block);
+    Blockly.selectedList = [block];
+    return;
+  }
+  var index = Blockly.selectedList.indexOf(block);
+  if (index == -1) {
+    Blockly.selectedList.push(block);
+  }
+};
+
+/**
+ * Remove a given block or comment from the selected list.
+ * @param {!Blockly.Block | Blockly.WorkspaceComment} block or comment.
+ */
+Blockly.unselect = function(block) {
+  var index = Blockly.selectedList.indexOf(block);
+  if (index > -1) {
+    Blockly.selectedList.splice(index, 1);
+  }
+};
+
+/**
+ * Clear all selected blocks.
+ * @param {!Blockly.Block | Blockly.WorkspaceComment} skipBlock block or comment to skip.
+ * @returns {string} joined string of all cleared ids
+ */
+Blockly.clearSelected = function(skipBlock) {
+  var oldIds = [];
+  var selectedList = Blockly.selectedList.slice(0);
+  for (var i = 0; i < selectedList.length; i++) {
+    var selectedBlock = selectedList[i];
+    if (selectedBlock === skipBlock) continue;
+    oldIds.push(selectedBlock.id);
+    // Unselect any previously selected block.
+    Blockly.Events.disable();
+    try {
+      selectedBlock.unselect();
+    } finally {
+      Blockly.Events.enable();
+    }
+  }
+  return oldIds.join(', ');
+};
+
+/**
+ * Check if a given block or comment are currently selected.
+ * @param {!Blockly.Block|Blockly.WorkspaceComment} block or comment.
+ * @return {boolean} True if the block or comment are currently selected.
+ */
+Blockly.isSelected = function(block) {
+  return Blockly.selectedList.indexOf(block) > -1;
 };
 
 /**

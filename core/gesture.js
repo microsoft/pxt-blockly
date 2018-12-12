@@ -509,7 +509,7 @@ Blockly.Gesture.prototype.doStart = function(e) {
   Blockly.Tooltip.block();
 
   if (this.targetBlock_) {
-    this.targetBlock_.select();
+    this.targetBlock_.select(e.shiftKey);
   }
 
   if (Blockly.utils.isRightButton(e)) {
@@ -768,9 +768,7 @@ Blockly.Gesture.prototype.doBlockClick_ = function() {
  * @private
  */
 Blockly.Gesture.prototype.doWorkspaceClick_ = function() {
-  if (Blockly.selected) {
-    Blockly.selected.unselect();
-  }
+  Blockly.clearSelected();
 };
 
 

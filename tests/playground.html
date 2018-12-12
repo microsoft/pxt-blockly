@@ -230,62 +230,80 @@ function logger(e) {
 }
 
 function centerOnBlock() {
-  if (Blockly.selected) {
-    workspace.centerOnBlock(Blockly.selected.id, true);
+  if (Blockly.selectedList.length > 0) {
+    workspace.centerOnBlock(Blockly.selectedList[0].id, true);
   }
 }
 
 function highlightBlock() {
-  if (Blockly.selected) {
-    workspace.highlightBlock(Blockly.selected.id, true);
+  if (Blockly.selectedList.length > 0) {
+    for (var i = 0; i < Blockly.selectedList.length; i++) {
+      workspace.highlightBlock(Blockly.selectedList[i].id, true);
+    }
   }
 }
 
 function unhighlightBlock() {
-  if (Blockly.selected) {
-    workspace.highlightBlock(Blockly.selected.id, false);
+  if (Blockly.selectedList.length > 0) {
+    for (var i = 0; i < Blockly.selectedList.length; i++) {
+      workspace.highlightBlock(Blockly.selectedList[i].id, false);
+    }
   }
 }
 
 function highlightBlockWarning() {
-  if (Blockly.selected) {
-    var block = workspace.getBlockById(Blockly.selected.id);
-    if (block) {
-      block.setHighlightWarning(true);
+  if (Blockly.selectedList.length > 0) {
+    for (var i = 0; i < Blockly.selectedList.length; i++) {
+      var block = workspace.getBlockById(Blockly.selectedList[i].id);
+      if (block) {
+        block.setHighlightWarning(true);
+      }
     }
   }
 }
 
 function unhighlightBlockWarning() {
-  if (Blockly.selected) {
-    var block = workspace.getBlockById(Blockly.selected.id);
-    if (block) {
-      block.setHighlightWarning(false);
+  if (Blockly.selectedList.length > 0) {
+    for (var i = 0; i < Blockly.selectedList.length; i++) {
+      var block = workspace.getBlockById(Blockly.selectedList[i].id);
+      if (block) {
+        block.setHighlightWarning(false);
+      }
     }
   }
 }
 
 function glowBlock() {
-  if (Blockly.selected) {
-    workspace.glowBlock(Blockly.selected.id, true);
+  if (Blockly.selectedList.length > 0) {
+    for (var i = 0; i < Blockly.selectedList.length; i++) {
+      workspace.glowBlock(Blockly.selectedList[i].id, true);
+    }
   }
 }
 
 function unglowBlock() {
-  if (Blockly.selected) {
-    workspace.glowBlock(Blockly.selected.id, false);
+  if (Blockly.selectedList.length > 0) {
+  if (Blockly.selectedList.length > 0) {
+    for (var i = 0; i < Blockly.selectedList.length; i++) {
+      workspace.glowBlock(Blockly.selectedList[i].id, false);
+    }
+  }
   }
 }
 
 function glowStack() {
-  if (Blockly.selected) {
-    workspace.glowStack(Blockly.selected.id, true);
+  if (Blockly.selectedList.length > 0) {
+    for (var i = 0; i < Blockly.selectedList.length; i++) {
+      workspace.glowStack(Blockly.selectedList[i].id, true);
+    }
   }
 }
 
 function unglowStack() {
-  if (Blockly.selected) {
-    workspace.glowStack(Blockly.selected.id, false);
+  if (Blockly.selectedList.length > 0) {
+    for (var i = 0; i < Blockly.selectedList.length; i++) {
+      workspace.glowStack(Blockly.selectedList[i].id, false);
+    }
   }
 }
 

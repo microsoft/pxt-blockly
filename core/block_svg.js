@@ -193,31 +193,30 @@ Blockly.BlockSvg.prototype.initSvg = function() {
 
 /**
  * Select this block.  Highlight it visually.
+ * @param {boolean} multiSelect Whether or not to select multiple blocks.
  */
-Blockly.BlockSvg.prototype.select = function() {
+Blockly.BlockSvg.prototype.select = function(multiSelect) {
   if (this.isShadow() && this.getParent()) {
     // Shadow blocks should not be selected.
     this.getParent().select();
     return;
   }
-  if (Blockly.selected == this) {
+  if (Blockly.isSelected(this)) {
     return;
   }
-  var oldId = null;
-  if (Blockly.selected) {
-    oldId = Blockly.selected.id;
-    // Unselect any previously selected block.
-    Blockly.Events.disable();
-    try {
-      Blockly.selected.unselect();
-    } finally {
-      Blockly.Events.enable();
-    }
+  if (!multiSelect) {
+    var oldIds = Blockly.clearSelected();
+    var event = new Blockly.Events.Ui(null, 'selected', oldIds, this.id);
+    event.workspaceId = this.workspace.id;
+    Blockly.Events.fire(event);
+  } else {
+    // Multi select.
+    var oldIds = null;
+    var event = new Blockly.Events.Ui(null, 'multiselected', oldIds, this.id);
+    event.workspaceId = this.workspace.id;
+    Blockly.Events.fire(event);
   }
-  var event = new Blockly.Events.Ui(null, 'selected', oldId, this.id);
-  event.workspaceId = this.workspace.id;
-  Blockly.Events.fire(event);
-  Blockly.selected = this;
+  Blockly.select(this);
   this.addSelect();
 };
 
@@ -225,13 +224,13 @@ Blockly.BlockSvg.prototype.select = function() {
  * Unselect this block.  Remove its highlighting.
  */
 Blockly.BlockSvg.prototype.unselect = function() {
-  if (Blockly.selected != this) {
+  if (!Blockly.isSelected(this)) {
     return;
   }
   var event = new Blockly.Events.Ui(null, 'selected', this.id, null);
   event.workspaceId = this.workspace.id;
   Blockly.Events.fire(event);
-  Blockly.selected = null;
+  Blockly.unselect(this);
   this.removeSelect();
 };
 
@@ -417,7 +416,7 @@ Blockly.BlockSvg.prototype.setParent = function(newParent) {
   else if (oldParent) {
     // Avoid moving a block up the DOM if it's currently selected/dragging,
     // so as to avoid taking things off the drag surface.
-    if (Blockly.selected != this) {
+    if (!Blockly.isSelected(this)) {
       this.workspace.getCanvas().appendChild(svgRoot);
       this.translate(oldXY.x, oldXY.y);
     }
@@ -935,7 +934,7 @@ Blockly.BlockSvg.prototype.dispose = function(healStack, animate) {
   // contents once the block is disposed.
   var blockWorkspace = this.workspace;
   // If this block is being dragged, unlink the mouse events.
-  if (Blockly.selected == this) {
+  if (Blockly.isSelected(this)) {
     this.unselect();
     this.workspace.cancelCurrentGesture();
   }

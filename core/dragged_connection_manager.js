@@ -40,7 +40,7 @@ goog.require('goog.math.Coordinate');
  * @constructor
  */
 Blockly.DraggedConnectionManager = function(block) {
-  Blockly.selected = block;
+  Blockly.select(block, true);
 
   /**
    * The top block in the stack being dragged.
