@@ -58,22 +58,29 @@ Blockly.pxtBlocklyUtils.isShadowArgumentReporter = function(block) {
 };
 
 /**
- * Finds and returns an argument reporter of the given name and type on the
+ * Finds and returns an argument reporter of the given name, argument type name, and reporter type on the
  * given block, or null if none match.
  * @param {!Blockly.Block} targetBlock The block to search.
- * @param {string} argName The name of the argument to look for.
- * @param {string} reporterType The type of the reporter to look for.
- * @return {!Blockly.Block} The matching reporter block or null if none.
+ * @param {!Blockly.Block} reporter The reporter to try to match.
+ * @return {boolean} Whether there is a matching reporter or not.
  */
-Blockly.pxtBlocklyUtils.findMatchingArgumentReporter = function (targetBlock, argName, reporterType) {
+Blockly.pxtBlocklyUtils.hasMatchingArgumentReporter = function(targetBlock, reporter) {
+  var argName = reporter.getFieldValue('VALUE');
+  var argTypeName = reporter.getTypeName();
+  var reporterType = reporter.type;
   for (var i = 0; i < targetBlock.inputList.length; ++i) {
     var input = targetBlock.inputList[i];
     if (input.type == Blockly.INPUT_VALUE) {
-      var definedArgReporter = input.connection.targetBlock();
-      var definedArgName = definedArgReporter && definedArgReporter.getFieldValue('VALUE');
-      if (definedArgName == argName && definedArgReporter.type == reporterType) {
-        return definedArgReporter;
+      var potentialMatch = input.connection.targetBlock();
+      if (!potentialMatch || potentialMatch.type != reporter.type) {
+        continue;
+      }
+      var n = potentialMatch.getFieldValue('VALUE');
+      var tn = potentialMatch.getTypeName();
+      if (n == argName && argTypeName == tn) {
+        return true;
       }
     }
   }
+  return false;
 }

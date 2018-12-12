@@ -417,14 +417,7 @@ Blockly.PXTBlockly.FunctionUtils.createArgumentReporter_ = function (arg) {
   try {
     var newBlock;
     if (blockType == 'argument_reporter_custom') {
-      var blockText =
-        '<xml>' +
-        '<block type="argument_reporter_custom">' +
-        '<mutation typename="' + arg.type + '"></mutation>' +
-        '</block>' +
-        '</xml>';
-      var blockDom = Blockly.Xml.textToDom(blockText);
-      newBlock = Blockly.Xml.domToBlock(blockDom.firstChild, this.workspace);
+      newBlock = Blockly.PXTBlockly.FunctionUtils.createCustomArgumentReporter(arg.type, this.workspace);
     } else {
       newBlock = this.workspace.newBlock(blockType);
     }
@@ -556,14 +549,7 @@ Blockly.PXTBlockly.FunctionUtils.createArgumentEditor_ = function (argumentType,
         blockType = 'argument_editor_custom';
     }
     if (blockType == 'argument_editor_custom') {
-      var blockText =
-        '<xml>' +
-        '<block type="argument_editor_custom">' +
-        '<mutation typename="' + argumentType + '"></mutation>' +
-        '</block>' +
-        '</xml>';
-      var blockDom = Blockly.Xml.textToDom(blockText);
-      newBlock = Blockly.Xml.domToBlock(blockDom.firstChild, this.workspace);
+      newBlock = Blockly.PXTBlockly.FunctionUtils.createCustomArgumentEditor(argumentType, this.workspace);
     } else {
       newBlock = this.workspace.newBlock(blockType);
     }
@@ -810,29 +796,16 @@ Blockly.PXTBlockly.FunctionUtils.onReporterChange = function (event) {
   if (thisWasCreated || thisWasDragged) {
     var rootBlock = this.getRootBlock();
     var isTopBlock = Blockly.Functions.isFunctionArgumentReporter(rootBlock);
-    var thisArgName = this.getFieldValue('VALUE');
 
     if (isTopBlock || rootBlock.previousConnection != null) {
       // Reporter is by itself on the workspace, or it is slotted into a
       // stack of statements that is not attached to a function or event. Let
-      // it exist until it is connected to an event handler or function.
+      // it exist until it is connected to a function or event handler.
       return;
     }
 
-    // Ensure an argument with this name and reporter type is defined on the
-    // root block.
-    var matchingArgReporter = Blockly.pxtBlocklyUtils.findMatchingArgumentReporter(rootBlock, thisArgName, this.type);
-
-    if (matchingArgReporter) {
-      // An argument with this name and type exists on the root block. In the
-      // case of custom types, update this reporter's output check to match
-      // the type of the defined arg.
-      if (matchingArgReporter.type == 'argument_reporter_custom') {
-        Blockly.Events.setGroup(event.group);
-        this.setOutput(true, matchingArgReporter.getTypeName());
-        Blockly.Events.setGroup(false);
-      }
-    } else {
+    // Ensure an argument with this name and type is defined on the root block.
+    if (!Blockly.pxtBlocklyUtils.hasMatchingArgumentReporter(rootBlock, this)) {
       // No argument with this name is defined on the root block; delete this
       // reporter.
       Blockly.Events.setGroup(event.group);
@@ -1015,6 +988,48 @@ Blockly.PXTBlockly.FunctionUtils.argumentDomToMutation = function (xmlElement) {
   this.typeName_ = xmlElement.getAttribute('typename');
   this.setOutput(true, this.typeName_);
 };
+
+/**
+ * Creates a custom argument reporter or editor with the correct mutation for
+ * the specified type name.
+ * @param {string} blockType The block type, argument_editor_custom or
+ *  argument_reporter_custom.
+ * @param {string} typeName The TypeScript type of the argument.
+ * @param {!Blockly.Workspace} ws The workspace to create the block in.
+ * @return {!Blockly.block} The created block.
+ */
+Blockly.PXTBlockly.FunctionUtils.createCustomArgumentBlock = function (blockType, typeName, ws) {
+  var blockText =
+    '<xml>' +
+    '<block type="' + blockType + '">' +
+    '<mutation typename="' + typeName + '"></mutation>' +
+    '</block>' +
+    '</xml>';
+  var blockDom = Blockly.Xml.textToDom(blockText);
+  return Blockly.Xml.domToBlock(blockDom.firstChild, ws);
+}
+
+/**
+ * Creates an argument_editor_custom block with the correct mutation for the
+ * specified type name.
+ * @param {string} typeName The TypeScript type of the argument.
+ * @param {!Blockly.Workspace} ws The workspace to create the block in.
+ * @return {!Blockly.block} The created block.
+ */
+Blockly.PXTBlockly.FunctionUtils.createCustomArgumentEditor = function (typeName, ws) {
+  return Blockly.PXTBlockly.FunctionUtils.createCustomArgumentBlock('argument_editor_custom', typeName, ws);
+}
+
+/**
+ * Creates an argument_reporter_custom block with the correct mutation for the
+ * specified type name.
+ * @param {string} typeName The TypeScript type of the argument.
+ * @param {!Blockly.Workspace} ws The workspace to create the block in.
+ * @return {!Blockly.block} The created block.
+ */
+Blockly.PXTBlockly.FunctionUtils.createCustomArgumentReporter = function (typeName, ws) {
+  return Blockly.PXTBlockly.FunctionUtils.createCustomArgumentBlock('argument_reporter_custom', typeName, ws);
+}
 
 // Argument editor blocks
 

@@ -490,8 +490,7 @@ Blockly.Connection.prototype.isConnectionAllowed = function(candidate) {
         // Ensure the root block of this stack has an argument reporter
         // matching the name and the type of this reporter.
         var rootBlock = candidate.sourceBlock_.getRootBlock();
-        var thisArgName = this.sourceBlock_.getFieldValue('VALUE');
-        if (!Blockly.pxtBlocklyUtils.findMatchingArgumentReporter(rootBlock, thisArgName, this.sourceBlock_.type)) {
+        if (!Blockly.pxtBlocklyUtils.hasMatchingArgumentReporter(rootBlock, this.sourceBlock_)) {
           return false;
         }
       }
