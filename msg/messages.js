@@ -1192,7 +1192,7 @@ Blockly.Msg.PROCEDURES_CREATE_DO = 'Create "%1"';
 Blockly.Msg.FUNCTIONS_EDIT_OPTION = 'Edit';
 
 /// pxt-blockly: Label on function_call blocks that appears before the name of the function to call
-Blockly.Msg.FUNCTIONS_CALL_TITLE = 'call function'
+Blockly.Msg.FUNCTIONS_CALL_TITLE = 'call'
 
 /// pxt-blockly: Label on the "Create Function" button in the flyout.
 Blockly.Msg.FUNCTION_CREATE_NEW = 'Create a Function'

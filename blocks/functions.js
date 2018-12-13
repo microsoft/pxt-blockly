@@ -33,9 +33,10 @@
  */
 'use strict';
 
-// TODO GUJEN validators for function names
-// TODO GUJEN validators for param names
-// TODO GUJEN make function names look different than arguments / labels on declaration / definition / call
+// TODO GUJEN Make function name editable on the definition
+// TODO GUJEN Make function name bold on function calls
+// TODO GUJEN Have a single function_call block for parameterless functions, with a dropdown
+// TODO GUJEN Show function call preview in a separate workspace in the function editor
 
 /**
  * Type to represent a function parameter
