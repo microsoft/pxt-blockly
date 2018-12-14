@@ -25,7 +25,7 @@
  */
 'use strict';
 
-goog.provide('Blockly.FieldLabelHover');
+goog.provide('Blockly.FieldLabelSerializable');
 
 goog.require('Blockly.FieldLabel');
 
@@ -38,45 +38,25 @@ goog.require('Blockly.FieldLabel');
  * @constructor
  *
  */
-Blockly.FieldLabelHover = function(text, opt_class) {
-  Blockly.FieldLabelHover.superClass_.constructor.call(this, text,
+Blockly.FieldLabelSerializable = function(text, opt_class) {
+  Blockly.FieldLabelSerializable.superClass_.constructor.call(this, text,
       opt_class);
   // Used in base field rendering, but we don't need it.
   this.arrowWidth_ = 0;
 };
-goog.inherits(Blockly.FieldLabelHover, Blockly.FieldLabel);
+goog.inherits(Blockly.FieldLabelSerializable, Blockly.FieldLabel);
 
 /**
- * Install this field on a block.
- */
-Blockly.FieldLabelHover.prototype.init = function() {
-  if (this.fieldGroup_) {
-    // Field has already been initialized once.
-    return;
-  }
-  Blockly.FieldLabelHover.superClass_.init.call(this);
-
-  if (this.sourceBlock_.isEditable()) {
-    this.mouseOverWrapper_ =
-        Blockly.bindEvent_(
-            this.getClickTarget_(), 'mouseover', this, this.onMouseOver_);
-    this.mouseOutWrapper_ =
-        Blockly.bindEvent_(
-            this.getClickTarget_(), 'mouseout', this, this.onMouseOut_);
-  }
-};
-
-/**
- * Construct a FieldLabelHover from a JSON arg object,
+ * Construct a FieldLabelSerializable from a JSON arg object,
  * dereferencing any string table references.
  * @param {!Object} options A JSON object with options (text, and class).
- * @returns {!Blockly.FieldLabelHover} The new field instance.
+ * @returns {!Blockly.FieldLabelSerializable} The new field instance.
  * @package
  * @nocollapse
  */
-Blockly.FieldLabelHover.fromJson = function(options) {
+Blockly.FieldLabelSerializable.fromJson = function(options) {
   var text = Blockly.utils.replaceMessageReferences(options['text']);
-  return new Blockly.FieldLabelHover(text, options['class']);
+  return new Blockly.FieldLabelSerializable(text, options['class']);
 };
 
 /**
@@ -85,7 +65,7 @@ Blockly.FieldLabelHover.fromJson = function(options) {
  * @type {boolean}
  * @public
  */
-Blockly.FieldLabelHover.prototype.EDITABLE = false;
+Blockly.FieldLabelSerializable.prototype.EDITABLE = false;
 
 /**
  * Serializable fields are saved by the XML renderer, non-serializable fields
@@ -93,14 +73,14 @@ Blockly.FieldLabelHover.prototype.EDITABLE = false;
  * @type {boolean}
  * @public
  */
-Blockly.FieldLabelHover.prototype.SERIALIZABLE = true;
+Blockly.FieldLabelSerializable.prototype.SERIALIZABLE = true;
 
 /**
  * Updates the width of the field. This calls getCachedWidth which won't cache
  * the approximated width on IE/Edge when `getComputedTextLength` fails. Once
  * it eventually does succeed, the result will be cached.
  **/
-Blockly.FieldLabelHover.prototype.updateWidth = function() {
+Blockly.FieldLabelSerializable.prototype.updateWidth = function() {
   // Set width of the field.
   // Unlike the base Field class, this doesn't add space to editable fields.
   this.size_.width = Blockly.Field.getCachedWidth(this.textElement_);
@@ -111,7 +91,7 @@ Blockly.FieldLabelHover.prototype.updateWidth = function() {
  * Saves the computed width in a property.
  * @private
  */
-Blockly.FieldLabelHover.prototype.render_ = function() {
+Blockly.FieldLabelSerializable.prototype.render_ = function() {
   if (this.visible_ && this.textElement_) {
     // Replace the text.
     goog.dom.removeChildren(/** @type {!Element} */ (this.textElement_));
@@ -141,60 +121,5 @@ Blockly.FieldLabelHover.prototype.render_ = function() {
   }
 };
 
-/**
- * Handle a mouse over event on a input field.
- * @param {!Event} e Mouse over event.
- * @private
- */
-Blockly.FieldLabelHover.prototype.onMouseOver_ = function(e) {
-  if (this.sourceBlock_.isInFlyout || !this.sourceBlock_.isShadow()) return;
-  var gesture = this.sourceBlock_.workspace.getGesture(e);
-  if (gesture && gesture.isDragging()) return;
-  if (this.sourceBlock_.svgPath_) {
-    Blockly.utils.addClass(this.sourceBlock_.svgPath_, 'blocklyFieldHover');
-    this.sourceBlock_.svgPath_.style.strokeDasharray = '2';
-  }
-};
-
-/**
- * Clear hover effect on the block
- * @param {!Event} e Clear hover effect
- */
-Blockly.FieldLabelHover.prototype.clearHover = function() {
-  if (this.sourceBlock_.svgPath_) {
-    Blockly.utils.removeClass(this.sourceBlock_.svgPath_, 'blocklyFieldHover');
-    this.sourceBlock_.svgPath_.style.strokeDasharray = '';
-  }
-};
-
-/**
- * Handle a mouse out event on a input field.
- * @param {!Event} e Mouse out event.
- * @private
- */
-Blockly.FieldLabelHover.prototype.onMouseOut_ = function(e) {
-  if (this.sourceBlock_.isInFlyout || !this.sourceBlock_.isShadow()) return;
-  var gesture = this.sourceBlock_.workspace.getGesture(e);
-  if (gesture && gesture.isDragging()) return;
-  this.clearHover();
-};
-
-/**
- * Dispose of this field.
- * @public
- */
-Blockly.FieldLabelHover.dispose = function() {
-  if (this.mouseOverWrapper_) {
-    Blockly.unbindEvent_(this.mouseOverWrapper_);
-    this.mouseOverWrapper_ = null;
-  }
-  if (this.mouseOutWrapper_) {
-    Blockly.unbindEvent_(this.mouseOutWrapper_);
-    this.mouseOutWrapper_ = null;
-  }
-  Blockly.FieldLabelHover.superClass_.dispose.call(this);
-  this.workspace_ = null;
-  this.variableMap_ = null;
-};
-
-Blockly.Field.register('field_label_hover', Blockly.FieldLabelHover);
+Blockly.Field.register(
+    'field_label_serializable', Blockly.FieldLabelSerializable);

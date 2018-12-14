@@ -656,10 +656,7 @@ Blockly.FieldTextInput.prototype.widgetDisposeAnimationFinished_ = function() {
     style.height = 'auto';
     style.fontSize = '';
     // Reset class
-    // pxt-blockly keep the functioneditor class if present, so the widgetdiv
-    // can appear above modals when editing functions.
-    var wasFunctionEditor = Blockly.WidgetDiv.DIV.classList.contains('functioneditor');
-    Blockly.WidgetDiv.DIV.className = 'blocklyWidgetDiv' + (wasFunctionEditor ? ' functioneditor' : '');
+    Blockly.WidgetDiv.DIV.className = 'blocklyWidgetDiv';
     // Remove all styles
     Blockly.WidgetDiv.DIV.removeAttribute('style');
     Blockly.FieldTextInput.htmlInput_.style.transition = '';

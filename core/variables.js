@@ -272,12 +272,9 @@ Blockly.Variables.createVariableButtonHandler = function(
           if (text) {
             var existing =
                 Blockly.Variables.nameUsedWithAnyType_(text, workspace);
-            // pxt-blockly: also check function names
-            var existingFunction =
-                Blockly.Functions.getDefinition(text, workspace);
-            if (existing || existingFunction) {
+            if (existing) {
               var lowerCase = text.toLowerCase();
-              if (existingFunction || existing.type == type) {
+              if (existing.type == type) {
                 var msg = Blockly.Msg.VARIABLE_ALREADY_EXISTS.replace(
                     '%1', lowerCase);
               } else {
