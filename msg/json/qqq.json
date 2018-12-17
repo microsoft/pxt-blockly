@@ -27,6 +27,8 @@
 	"NEW_STRING_VARIABLE": "button text - Text on the button used to launch the variable creation dialogue.",
 	"NEW_NUMBER_VARIABLE": "button text - Text on the button used to launch the variable creation dialogue.",
 	"NEW_COLOUR_VARIABLE": "button text - Text on the button used to launch the variable creation dialogue.",
+	"NEW_VARIABLE_DROPDOWN": "dropdown choice - When the user clicks on a variable block, this is one of the dropdown menu choices.  It is used to create a new variable with no type.",
+	"NEW_VARIABLE_TYPE_DROPDOWN": "dropdown choice - When the user clicks on a variable block, this is one of the dropdown menu choices.  It is used to create a new variable of the same type.",
 	"NEW_VARIABLE_TYPE_TITLE": "prompt - Prompts the user to enter the type for a variable.",
 	"NEW_VARIABLE_TITLE": "prompt - Prompts the user to enter the name for a new variable.  See [https://github.com/google/blockly/wiki/Variables#dropdown-menu https://github.com/google/blockly/wiki/Variables#dropdown-menu].",
 	"VARIABLE_ALREADY_EXISTS": "alert - Tells the user that the name they entered is already in use.",

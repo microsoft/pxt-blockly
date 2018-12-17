@@ -131,6 +131,10 @@ Blockly.Msg.NEW_STRING_VARIABLE = 'Create string variable...';
 Blockly.Msg.NEW_NUMBER_VARIABLE = 'Create number variable...';
 /// button text - Text on the button used to launch the variable creation dialogue.
 Blockly.Msg.NEW_COLOUR_VARIABLE = 'Create colour variable...';
+/// dropdown choice - When the user clicks on a variable block, this is one of the dropdown menu choices.  It is used to create a new variable with no type.
+Blockly.Msg.NEW_VARIABLE_DROPDOWN = 'New variable...';
+/// dropdown choice - When the user clicks on a variable block, this is one of the dropdown menu choices.  It is used to create a new variable of the same type.
+Blockly.Msg.NEW_VARIABLE_TYPE_DROPDOWN = 'New %1 variable...';
 /// prompt - Prompts the user to enter the type for a variable.
 Blockly.Msg.NEW_VARIABLE_TYPE_TITLE = 'New variable type:';
 /// prompt - Prompts the user to enter the name for a new variable.  See [https://github.com/google/blockly/wiki/Variables#dropdown-menu https://github.com/google/blockly/wiki/Variables#dropdown-menu].

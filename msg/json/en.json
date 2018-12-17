@@ -33,6 +33,8 @@
 	"NEW_STRING_VARIABLE": "Create string variable...",
 	"NEW_NUMBER_VARIABLE": "Create number variable...",
 	"NEW_COLOUR_VARIABLE": "Create colour variable...",
+	"NEW_VARIABLE_DROPDOWN": "New variable...",
+	"NEW_VARIABLE_TYPE_DROPDOWN": "New %1 variable...",
 	"NEW_VARIABLE_TYPE_TITLE": "New variable type:",
 	"NEW_VARIABLE_TITLE": "New variable name:",
 	"VARIABLE_ALREADY_EXISTS": "A variable named '%1' already exists.",
