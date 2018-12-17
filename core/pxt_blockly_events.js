@@ -30,7 +30,7 @@
 /**
  * @fileoverview Events fired as a result of UI actions in a pxt-blockly
  * editor that are not fired in Blockly.
- * @author Microsoft MakeCode
+ * @author gujenkin@microsoft.com (Guillaume Jenkins)
  */
 'use strict';
 

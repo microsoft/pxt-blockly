@@ -29,7 +29,7 @@
 
 /**
  * @fileoverview Utility functions for handling functions (pxt-blockly's custom procedures).
- * @author Microsoft MakeCode
+ * @author gujenkin@microsoft.com (Guillaume Jenkins)
  */
 'use strict';
 

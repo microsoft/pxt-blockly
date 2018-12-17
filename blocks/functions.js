@@ -29,9 +29,11 @@
 
 /**
  * @fileoverview Utility functions for handling functions (pxt-blockly's custom procedures).
- * @author Microsoft MakeCode
+ * @author gujenkin@microsoft.com (Guillaume Jenkins)
  */
 'use strict';
+
+Blockly.PXTBlockly.FunctionUtils = {};
 
 /**
  * Type to represent a function parameter
@@ -40,8 +42,6 @@
  * @property {string} name the name of the param
  * @property {string} type the type of the param (string, number, boolean or a custom type)
  */
-
-Blockly.PXTBlockly.FunctionUtils = {};
 
 /**
  * Function argument reporters cannot exist outside functions that define them

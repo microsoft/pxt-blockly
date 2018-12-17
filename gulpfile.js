@@ -76,7 +76,7 @@ gulp.task('publishall', ['python-build-all'], pxtPublishTask);
 
 gulp.task('publishts', [], pxtPublishTsTask);
 
-gulp.task('only-publishall', [], pxtPublishTask);
+gulp.task('publishall-nobuild', [], pxtPublishTask);
 
 gulp.task('release', ['python-build-all'], function (done) {
 	spawn('npm', ['publish'], { stdio: 'inherit' }).on('close', done);
