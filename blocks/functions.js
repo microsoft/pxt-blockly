@@ -221,7 +221,7 @@ Blockly.Blocks['argument_reporter_custom'] = {
       "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
       "output": null
     });
-    this.typeName_ = 'any';
+    this.typeName_ = '';
   },
   onchange: Blockly.PXTBlockly.FunctionUtils.onReporterChange,
   getTypeName: Blockly.PXTBlockly.FunctionUtils.getTypeName,
