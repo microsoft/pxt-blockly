@@ -52,11 +52,11 @@ goog.require('Blockly.Workspace');
  * @return {boolean} Whether the argument type is a custom type. A return value
  *  of false means the argument is a built-in literal.
  */
-Blockly.Functions.isCustomType = function (argumentType) {
+Blockly.Functions.isCustomType = function(argumentType) {
   return !(argumentType === 'boolean' ||
     argumentType === 'string' ||
     argumentType === 'number');
-}
+};
 
 /**
  * Converts an argument reporter block's output type to its equivalent
@@ -66,7 +66,7 @@ Blockly.Functions.isCustomType = function (argumentType) {
  * @return {string} The TypeScript type of the argument.
  * @package
  */
-Blockly.Functions.getReporterArgumentType = function (reporterOutputType) {
+Blockly.Functions.getReporterArgumentType = function(reporterOutputType) {
   switch (reporterOutputType) {
     case 'Boolean':
     case 'Number':
@@ -75,7 +75,7 @@ Blockly.Functions.getReporterArgumentType = function (reporterOutputType) {
     default:
       return reporterOutputType;
   }
-}
+};
 
 /**
  * Whether a block is a function argument reporter.
@@ -83,7 +83,7 @@ Blockly.Functions.getReporterArgumentType = function (reporterOutputType) {
  *     decision.
  * @return {boolean} True if the block is a function argument reporter.
  */
-Blockly.Functions.isFunctionArgumentReporter = function (block) {
+Blockly.Functions.isFunctionArgumentReporter = function(block) {
   return block.type === 'argument_reporter_boolean' ||
     block.type === 'argument_reporter_number' ||
     block.type === 'argument_reporter_string' ||

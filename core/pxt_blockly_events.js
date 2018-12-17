@@ -54,7 +54,7 @@ Blockly.Events.EndBlockDrag = function(block) {
   Blockly.Events.EndBlockDrag.superClass_.constructor.call(this, block);
   this.recordUndo = false;
   this.blockId = block.id;
-  this.allNestedIds = block.getDescendants().map(b => b.id);
+  this.allNestedIds = block.getDescendants().map(function(b) { return b.id; });
 };
 goog.inherits(Blockly.Events.EndBlockDrag, Blockly.Events.BlockBase);
 

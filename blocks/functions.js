@@ -49,14 +49,16 @@ Blockly.PXTBlockly.FunctionUtils = {};
  * @param {!Blockly.Events.Abstract} event Change event.
  * @this Blockly.Block
  */
-Blockly.PXTBlockly.FunctionUtils.onReporterChange = function (event) {
+Blockly.PXTBlockly.FunctionUtils.onReporterChange = function(event) {
   if (!this.workspace || this.workspace.isFlyout) {
     // Block is deleted or is in a flyout.
     return;
   }
 
-  var thisWasCreated = event.type === Blockly.Events.BLOCK_CREATE && event.ids.indexOf(this.id) != -1;
-  var thisWasDragged = event.type === Blockly.Events.END_DRAG && event.allNestedIds.indexOf(this.id) != -1;
+  var thisWasCreated =
+    event.type === Blockly.Events.BLOCK_CREATE && event.ids.indexOf(this.id) != -1;
+  var thisWasDragged =
+    event.type === Blockly.Events.END_DRAG && event.allNestedIds.indexOf(this.id) != -1;
 
   if (thisWasCreated || thisWasDragged) {
     var rootBlock = this.getRootBlock();
@@ -78,7 +80,7 @@ Blockly.PXTBlockly.FunctionUtils.onReporterChange = function (event) {
       Blockly.Events.setGroup(false);
     }
   }
-}
+};
 
 // Argument editor and reporter helpers
 
@@ -87,16 +89,16 @@ Blockly.PXTBlockly.FunctionUtils.onReporterChange = function (event) {
  * @return {string} This argument's type, as would be emitted to TypeScript.
  * @this Blockly.Block
  */
-Blockly.PXTBlockly.FunctionUtils.getTypeName = function () {
+Blockly.PXTBlockly.FunctionUtils.getTypeName = function() {
   return this.typeName_;
-}
+};
 
 /**
  * Create XML to represent the type name of an argument editor or reporter.
  * @return {!Element} XML storage element.
  * @this Blockly.Block
  */
-Blockly.PXTBlockly.FunctionUtils.argumentMutationToDom = function () {
+Blockly.PXTBlockly.FunctionUtils.argumentMutationToDom = function() {
   var container = document.createElement('mutation');
   container.setAttribute('typename', this.typeName_);
   return container;
@@ -107,7 +109,7 @@ Blockly.PXTBlockly.FunctionUtils.argumentMutationToDom = function () {
  * @param {!Element} xmlElement XML storage element.
  * @this Blockly.Block
  */
-Blockly.PXTBlockly.FunctionUtils.argumentDomToMutation = function (xmlElement) {
+Blockly.PXTBlockly.FunctionUtils.argumentDomToMutation = function(xmlElement) {
   this.typeName_ = xmlElement.getAttribute('typename');
   this.setOutput(true, this.typeName_);
 };
@@ -121,7 +123,7 @@ Blockly.PXTBlockly.FunctionUtils.argumentDomToMutation = function (xmlElement) {
  * @param {!Blockly.Workspace} ws The workspace to create the block in.
  * @return {!Blockly.block} The created block.
  */
-Blockly.PXTBlockly.FunctionUtils.createCustomArgumentBlock = function (blockType, typeName, ws) {
+Blockly.PXTBlockly.FunctionUtils.createCustomArgumentBlock = function(blockType, typeName, ws) {
   var blockText =
     '<xml>' +
     '<block type="' + blockType + '">' +
@@ -130,7 +132,7 @@ Blockly.PXTBlockly.FunctionUtils.createCustomArgumentBlock = function (blockType
     '</xml>';
   var blockDom = Blockly.Xml.textToDom(blockText);
   return Blockly.Xml.domToBlock(blockDom.firstChild, ws);
-}
+};
 
 /**
  * Creates an argument_reporter_custom block with the correct mutation for the
@@ -139,14 +141,15 @@ Blockly.PXTBlockly.FunctionUtils.createCustomArgumentBlock = function (blockType
  * @param {!Blockly.Workspace} ws The workspace to create the block in.
  * @return {!Blockly.block} The created block.
  */
-Blockly.PXTBlockly.FunctionUtils.createCustomArgumentReporter = function (typeName, ws) {
-  return Blockly.PXTBlockly.FunctionUtils.createCustomArgumentBlock('argument_reporter_custom', typeName, ws);
-}
+Blockly.PXTBlockly.FunctionUtils.createCustomArgumentReporter = function(typeName, ws) {
+  return Blockly.PXTBlockly.FunctionUtils.createCustomArgumentBlock(
+      'argument_reporter_custom', typeName, ws);
+};
 
 // Argument reporter blocks
 
 Blockly.Blocks['argument_reporter_boolean'] = {
-  init: function () {
+  init: function() {
     this.jsonInit({
       "message0": " %1",
       "args0": [
@@ -166,7 +169,7 @@ Blockly.Blocks['argument_reporter_boolean'] = {
 };
 
 Blockly.Blocks['argument_reporter_number'] = {
-  init: function () {
+  init: function() {
     this.jsonInit({
       "message0": " %1",
       "args0": [
@@ -186,7 +189,7 @@ Blockly.Blocks['argument_reporter_number'] = {
 };
 
 Blockly.Blocks['argument_reporter_string'] = {
-  init: function () {
+  init: function() {
     this.jsonInit({
       "message0": " %1",
       "args0": [
@@ -206,7 +209,7 @@ Blockly.Blocks['argument_reporter_string'] = {
 };
 
 Blockly.Blocks['argument_reporter_custom'] = {
-  init: function () {
+  init: function() {
     this.jsonInit({
       "message0": " %1",
       "args0": [

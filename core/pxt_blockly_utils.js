@@ -58,8 +58,8 @@ Blockly.pxtBlocklyUtils.isShadowArgumentReporter = function(block) {
 };
 
 /**
- * Finds and returns an argument reporter of the given name, argument type name, and reporter type on the
- * given block, or null if none match.
+ * Finds and returns an argument reporter of the given name, argument type
+ * name, and reporter type on the given block, or null if none match.
  * @param {!Blockly.Block} targetBlock The block to search.
  * @param {!Blockly.Block} reporter The reporter to try to match.
  * @return {boolean} Whether there is a matching reporter or not.
@@ -67,7 +67,6 @@ Blockly.pxtBlocklyUtils.isShadowArgumentReporter = function(block) {
 Blockly.pxtBlocklyUtils.hasMatchingArgumentReporter = function(targetBlock, reporter) {
   var argName = reporter.getFieldValue('VALUE');
   var argTypeName = reporter.getTypeName();
-  var reporterType = reporter.type;
   for (var i = 0; i < targetBlock.inputList.length; ++i) {
     var input = targetBlock.inputList[i];
     if (input.type == Blockly.INPUT_VALUE) {
@@ -83,4 +82,4 @@ Blockly.pxtBlocklyUtils.hasMatchingArgumentReporter = function(targetBlock, repo
     }
   }
   return false;
-}
+};

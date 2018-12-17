@@ -65,7 +65,8 @@ Blockly.BlockDragger = function(block, workspace, mousedownxy) {
    * @private
    */
   this.draggedConnectionManager_ = new Blockly.InsertionMarkerManager(
-      this.draggingBlock_, this.pixelsToWorkspaceUnits_(goog.math.Coordinate.difference(mousedownxy, this.workspaceOriginInPixels_())));
+      this.draggingBlock_, this.pixelsToWorkspaceUnits_(
+          goog.math.Coordinate.difference(mousedownxy, this.workspaceOriginInPixels_())));
 
   /**
    * Which delete area the mouse pointer is over, if any.

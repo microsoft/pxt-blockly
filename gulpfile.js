@@ -8,7 +8,7 @@ var bump = require('gulp-bump');
 var fs = require('fs');
 var spawn = require('child_process').spawn;
 
-const USE_PY_LAUNCHER = false;
+var USE_PY_LAUNCHER = false;
 
 function spawnPython(args, opts) {
 	var cmd = 'python';
