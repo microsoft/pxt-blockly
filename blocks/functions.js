@@ -980,7 +980,7 @@ Blockly.PXTBlockly.FunctionUtils.createCustomArgumentBlock = function (blockType
  * @param {!Blockly.Workspace} ws The workspace to create the block in.
  * @return {!Blockly.block} The created block.
  */
- Blockly.PXTBlockly.FunctionUtils.createCustomArgumentEditor = function (typeName, ws) {
+Blockly.PXTBlockly.FunctionUtils.createCustomArgumentEditor = function (typeName, ws) {
   return Blockly.PXTBlockly.FunctionUtils.createCustomArgumentBlock('argument_editor_custom', typeName, ws);
 }
 
@@ -1059,7 +1059,7 @@ Blockly.Blocks['argument_editor_boolean'] = {
   removeFieldCallback: Blockly.PXTBlockly.FunctionUtils.removeArgumentCallback_
 };
 
- Blockly.Blocks['argument_editor_string'] = {
+Blockly.Blocks['argument_editor_string'] = {
   init: function () {
     this.jsonInit({
       "message0": " %1",
@@ -1081,7 +1081,7 @@ Blockly.Blocks['argument_editor_boolean'] = {
   removeFieldCallback: Blockly.PXTBlockly.FunctionUtils.removeArgumentCallback_
 };
 
- Blockly.Blocks['argument_editor_number'] = {
+Blockly.Blocks['argument_editor_number'] = {
   init: function () {
     this.jsonInit({
       "message0": " %1",
@@ -1103,7 +1103,7 @@ Blockly.Blocks['argument_editor_boolean'] = {
   removeFieldCallback: Blockly.PXTBlockly.FunctionUtils.removeArgumentCallback_
 };
 
- Blockly.Blocks['argument_editor_custom'] = {
+Blockly.Blocks['argument_editor_custom'] = {
   init: function () {
     this.jsonInit({
       "message0": " %1",
