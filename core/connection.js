@@ -171,7 +171,6 @@ Blockly.Connection.prototype.connect_ = function(childConnection) {
       shadowDom = Blockly.Xml.blockToDom(orphanBlock);
       orphanBlock.dispose();
       orphanBlock = null;
-      
     } /*else if (parentConnection.type == Blockly.INPUT_VALUE) {
       // Value connections.
       // If female block is already connected, disconnect and bump the male.
@@ -315,11 +314,11 @@ Blockly.Connection.prototype.canConnectWithReason_ = function(target) {
   if (this.isSuperior()) {
     var blockA = this.sourceBlock_;
     var blockB = target.getSourceBlock();
-    var superiorConn = this;
+    // var superiorConn = this; // pxt-blockly: the check that uses this is commented out below
   } else {
     var blockB = this.sourceBlock_;
     var blockA = target.getSourceBlock();
-    var superiorConn = target;
+    // var superiorConn = target; // pxt-blockly: the check that uses this is commented out below
   }
   if (blockA && blockA == blockB) {
     return Blockly.Connection.REASON_SELF_CONNECTION;
@@ -330,6 +329,7 @@ Blockly.Connection.prototype.canConnectWithReason_ = function(target) {
   } else if (!this.checkType_(target)) {
     return Blockly.Connection.REASON_CHECKS_FAILED;
   // } else if (blockA.isShadow() && !blockB.isShadow()) {
+  //   // pxtblockly: check removed to support nested shadow blocks
   //   return Blockly.Connection.REASON_SHADOW_PARENT;
   // } else if (blockA.type == 'procedures_defnoreturn' &&
   //     blockB.type != 'procedures_callnoreturn_internal' &&
@@ -337,10 +337,7 @@ Blockly.Connection.prototype.canConnectWithReason_ = function(target) {
   //   // Hack to fix #1127: Fail attempts to connect to the custom_block input
   //   // on a defnoreturn block, unless the connecting block is a specific type.
   //   return Blockly.Connection.REASON_CUSTOM_PROCEDURE;
-  // }
-  // pxtblockly: disabled to support nested shadow blocks
-  // else if (blockA.isShadow() && !blockB.isShadow()) {
-  //   return Blockly.Connection.REASON_SHADOW_PARENT;
+  //
   }
   return Blockly.Connection.CAN_CONNECT;
 };
@@ -477,13 +474,33 @@ Blockly.Connection.prototype.isConnectionAllowed = function(candidate) {
           !candidate.targetBlock().isShadow()) {
         return false;
       }
+
+      // pxt-blockly: don't allow connecting a block to an argument reporter
+      // shadow.
+      if (candidate.targetConnection) {
+        var targetBlock = candidate.targetBlock();
+        if (Blockly.pxtBlocklyUtils.isShadowArgumentReporter(targetBlock)) {
+          return false;
+        }
+      }
+
+      // pxt-blockly: don't allow putting argument reporters outside their
+      // respective function or event handler.
+      if (Blockly.Functions.isFunctionArgumentReporter(this.sourceBlock_)) {
+        // Ensure the root block of this stack has an argument reporter
+        // matching the name and the type of this reporter.
+        var rootBlock = candidate.sourceBlock_.getRootBlock();
+        if (!Blockly.pxtBlocklyUtils.hasMatchingArgumentReporter(rootBlock, this.sourceBlock_)) {
+          return false;
+        }
+      }
       break;
     }
     case Blockly.NEXT_STATEMENT: {
-        // Scratch-specific behaviour:
-        // If this is a c-block, we can't connect this block's
-        // previous connection unless we're connecting to the end of the last
-        // block on a stack or there's already a block connected inside the c.
+      // Scratch-specific behaviour:
+      // If this is a c-block, we can't connect this block's
+      // previous connection unless we're connecting to the end of the last
+      // block on a stack or there's already a block connected inside the c.
       if (firstStatementConnection &&
           this == this.sourceBlock_.previousConnection &&
           candidate.isConnectedToNonInsertionMarker() &&

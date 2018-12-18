@@ -49,6 +49,37 @@ Blockly.pxtBlocklyUtils.measureText = function(fontSize, fontFamily,
  * @package
  */
 Blockly.pxtBlocklyUtils.isShadowArgumentReporter = function(block) {
-  return (block.type == 'variables_get_reporter');
+  return block.isShadow() &&
+    (block.type === 'variables_get_reporter' ||
+      block.type === 'argument_reporter_boolean' ||
+      block.type === 'argument_reporter_number' ||
+      block.type === 'argument_reporter_string' ||
+      block.type === 'argument_reporter_custom');
 };
 
+/**
+ * Finds and returns an argument reporter of the given name, argument type
+ * name, and reporter type on the given block, or null if none match.
+ * @param {!Blockly.Block} targetBlock The block to search.
+ * @param {!Blockly.Block} reporter The reporter to try to match.
+ * @return {boolean} Whether there is a matching reporter or not.
+ */
+Blockly.pxtBlocklyUtils.hasMatchingArgumentReporter = function(targetBlock, reporter) {
+  var argName = reporter.getFieldValue('VALUE');
+  var argTypeName = reporter.getTypeName();
+  for (var i = 0; i < targetBlock.inputList.length; ++i) {
+    var input = targetBlock.inputList[i];
+    if (input.type == Blockly.INPUT_VALUE) {
+      var potentialMatch = input.connection.targetBlock();
+      if (!potentialMatch || potentialMatch.type != reporter.type) {
+        continue;
+      }
+      var n = potentialMatch.getFieldValue('VALUE');
+      var tn = potentialMatch.getTypeName();
+      if (n == argName && argTypeName == tn) {
+        return true;
+      }
+    }
+  }
+  return false;
+};

@@ -65,7 +65,9 @@
 <script src="../blocks/variables.js"></script>
 <script src="../blocks/variables_dynamic.js"></script>
 <script src="../blocks/procedures.js"></script>
+<script src="../blocks/functions.js"></script>
 <script src="blocks/test_blocks.js"></script>
+<script src="blocks/pxt_test_blocks.js"></script>
 <script>
 'use strict';
 var workspace = null;
@@ -524,7 +526,7 @@ line.blocklyFlyoutLine {
     <input type="button" value="Redo" onclick="workspace.undo(true)" />
     <input type="button" value="Clear" onclick="workspace.clear()" />
   </p>
-  
+
   <p>
     Log events: &nbsp;
     <input type="checkbox" onclick="logEvents(this.checked)" id="logCheck">
@@ -1367,6 +1369,76 @@ line.blocklyFlyoutLine {
           </block>
         </statement>
       </block>
+    </category>
+    <category name="Argument Reporters">
+      <block type="event_with_draggable_params_all">
+        <value name="HANDLER_DRAG_PARAM_myStr">
+          <shadow type="argument_reporter_string">
+            <field name="VALUE">myStr</field>
+          </shadow>
+        </value>
+        <value name="HANDLER_DRAG_PARAM_myNum">
+          <shadow type="argument_reporter_number">
+            <field name="VALUE">myNum</field>
+          </shadow>
+        </value>
+        <value name="HANDLER_DRAG_PARAM_myBool">
+          <shadow type="argument_reporter_boolean">
+            <field name="VALUE">myBool</field>
+          </shadow>
+        </value>
+        <value name="HANDLER_DRAG_PARAM_myArg">
+          <shadow type="argument_reporter_custom">
+            <field name="VALUE">myArg</field>
+          </shadow>
+        </value>
+        <statement name="STACK"></statement>
+      </block>
+      <block type="event_with_draggable_params_string">
+        <value name="HANDLER_DRAG_PARAM_myStr">
+          <shadow type="argument_reporter_string">
+            <field name="VALUE">myStr</field>
+          </shadow>
+        </value>
+        <statement name="STACK"></statement>
+      </block>
+      <block type="event_with_draggable_params_number">
+        <value name="HANDLER_DRAG_PARAM_myNum">
+          <shadow type="argument_reporter_number">
+            <field name="VALUE">myNum</field>
+          </shadow>
+        </value>
+        <statement name="STACK"></statement>
+      </block>
+      <block type="event_with_draggable_params_boolean">
+        <value name="HANDLER_DRAG_PARAM_myBool">
+          <shadow type="argument_reporter_boolean">
+            <field name="VALUE">myBool</field>
+          </shadow>
+        </value>
+        <statement name="STACK"></statement>
+      </block>
+      <block type="event_with_draggable_params_custom">
+        <value name="HANDLER_DRAG_PARAM_myArg">
+          <shadow type="argument_reporter_custom">
+            <field name="VALUE">myArg</field>
+          </shadow>
+        </value>
+        <statement name="STACK"></statement>
+      </block>
+      <block type="event_with_draggable_params_wrong_names">
+          <value name="HANDLER_DRAG_PARAM_myNum">
+            <shadow type="argument_reporter_boolean">
+              <field name="VALUE">myNum</field>
+            </shadow>
+          </value>
+          <value name="HANDLER_DRAG_PARAM_myBool">
+              <shadow type="argument_reporter_number">
+                <field name="VALUE">myBool</field>
+              </shadow>
+            </value>
+          <statement name="STACK"></statement>
+        </block>
     </category>
     <category name="Fields">
       <label text="Numbers"></label>

@@ -535,9 +535,9 @@ Blockly.Gesture.prototype.doStart = function(e) {
  */
 Blockly.Gesture.prototype.bindMouseEvents = function(e) {
   this.onMoveWrapper_ = Blockly.bindEventWithChecks_(
-    document, 'mousemove', null, this.handleMove.bind(this));
+      document, 'mousemove', null, this.handleMove.bind(this));
   this.onUpWrapper_ = Blockly.bindEventWithChecks_(
-    document, 'mouseup', null, this.handleUp.bind(this));
+      document, 'mouseup', null, this.handleUp.bind(this));
 
   e.preventDefault();
   e.stopPropagation();
@@ -1005,6 +1005,10 @@ Blockly.Gesture.prototype.duplicateOnDrag_ = function() {
       newVariableField.textContent = xmlBlockField.textContent;
       newVariableBlock.appendChild(newVariableField);
       xmlBlock = newVariableBlock;
+    }
+    if (this.targetBlock_.inputList[0] &&
+      this.targetBlock_.inputList[0].fieldRow[0] &&
+      this.targetBlock_.inputList[0].fieldRow[0].clearHover) {
       this.targetBlock_.inputList[0].fieldRow[0].clearHover();
     }
     newBlock = Blockly.Xml.domToBlock(xmlBlock, this.startWorkspace_);

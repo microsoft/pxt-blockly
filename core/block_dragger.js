@@ -29,6 +29,7 @@ goog.provide('Blockly.BlockDragger');
 goog.require('Blockly.BlockAnimations');
 goog.require('Blockly.InsertionMarkerManager');
 goog.require('Blockly.Events.BlockMove');
+goog.require('Blockly.Events.EndBlockDrag');
 
 goog.require('goog.math.Coordinate');
 goog.require('goog.asserts');
@@ -64,7 +65,8 @@ Blockly.BlockDragger = function(block, workspace, mousedownxy) {
    * @private
    */
   this.draggedConnectionManager_ = new Blockly.InsertionMarkerManager(
-      this.draggingBlock_, this.pixelsToWorkspaceUnits_(goog.math.Coordinate.difference(mousedownxy, this.workspaceOriginInPixels_())));
+      this.draggingBlock_, this.pixelsToWorkspaceUnits_(
+          goog.math.Coordinate.difference(mousedownxy, this.workspaceOriginInPixels_())));
 
   /**
    * Which delete area the mouse pointer is over, if any.
@@ -229,6 +231,7 @@ Blockly.BlockDragger.prototype.endBlockDrag = function(e, currentDragDeltaXY) {
     this.draggedConnectionManager_.applyConnections();
     this.draggingBlock_.render();
     this.fireMoveEvent_();
+    this.fireEndDragEvent_();
     this.draggingBlock_.scheduleSnapAndBump();
   }
   this.workspace_.setResizesEnabled(true);
@@ -250,6 +253,17 @@ Blockly.BlockDragger.prototype.fireMoveEvent_ = function() {
   var event = new Blockly.Events.BlockMove(this.draggingBlock_);
   event.oldCoordinate = this.startXY_;
   event.recordNew();
+  Blockly.Events.fire(event);
+};
+
+/**
+ * pxt-blockly: Fire an end_drag event at the end of a block drag. We need this
+ * in addition to the move event because the move event is fired in multiple
+ * other places, so it can't be relied on to listen for drag end specifically.
+ * @private
+ */
+Blockly.BlockDragger.prototype.fireEndDragEvent_ = function() {
+  var event = new Blockly.Events.EndBlockDrag(this.draggingBlock_);
   Blockly.Events.fire(event);
 };
 

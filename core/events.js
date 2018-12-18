@@ -151,6 +151,12 @@ Blockly.Events.COMMENT_MOVE = 'comment_move';
 Blockly.Events.UI = 'ui';
 
 /**
+ * pxt-blockly: Name of event that ends a block drag
+ * @const
+ */
+Blockly.Events.END_DRAG = 'end_drag';
+
+/**
  * List of events queued for firing.
  * @private
  */
@@ -363,6 +369,10 @@ Blockly.Events.fromJson = function(json, workspace) {
       break;
     case Blockly.Events.COMMENT_MOVE:
       event = new Blockly.Events.CommentMove(null, '');
+      break;
+      // pxt-blockly: end_drag event
+    case Blockly.Events.END_DRAG:
+      event = new Blockly.Events.EndBlockDrag(null, false);
       break;
     default:
       throw 'Unknown event type.';

@@ -8,7 +8,7 @@ var bump = require('gulp-bump');
 var fs = require('fs');
 var spawn = require('child_process').spawn;
 
-const USE_PY_LAUNCHER = false;
+var USE_PY_LAUNCHER = false;
 
 function spawnPython(args, opts) {
 	var cmd = 'python';
@@ -75,6 +75,8 @@ gulp.task('publish', ['python-build-core'], pxtPublishTask);
 gulp.task('publishall', ['python-build-all'], pxtPublishTask);
 
 gulp.task('publishts', [], pxtPublishTsTask);
+
+gulp.task('publishall-nobuild', [], pxtPublishTask);
 
 gulp.task('release', ['python-build-all'], function (done) {
 	spawn('npm', ['publish'], { stdio: 'inherit' }).on('close', done);
