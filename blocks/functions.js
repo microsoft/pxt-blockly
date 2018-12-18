@@ -974,6 +974,17 @@ Blockly.PXTBlockly.FunctionUtils.createCustomArgumentBlock = function (blockType
 };
 
 /**
+ * Creates an argument_editor_custom block with the correct mutation for the
+ * specified type name.
+ * @param {string} typeName The TypeScript type of the argument.
+ * @param {!Blockly.Workspace} ws The workspace to create the block in.
+ * @return {!Blockly.block} The created block.
+ */
+ Blockly.PXTBlockly.FunctionUtils.createCustomArgumentEditor = function (typeName, ws) {
+  return Blockly.PXTBlockly.FunctionUtils.createCustomArgumentBlock('argument_editor_custom', typeName, ws);
+}
+
+/**
  * Creates an argument_reporter_custom block with the correct mutation for the
  * specified type name.
  * @param {string} typeName The TypeScript type of the argument.
@@ -1022,6 +1033,98 @@ Blockly.PXTBlockly.FunctionUtils.onReporterChange = function (event) {
       Blockly.Events.setGroup(false);
     }
   }
+};
+
+// Argument editor blocks
+
+Blockly.Blocks['argument_editor_boolean'] = {
+  init: function () {
+    this.jsonInit({
+      "message0": " %1",
+      "args0": [
+        {
+          "type": "field_input_removable",
+          "name": "TEXT",
+          "text": "bool"
+        }
+      ],
+      "colour": Blockly.Colours.textField,
+      "colourSecondary": Blockly.Colours.textField,
+      "colourTertiary": Blockly.Colours.textField,
+      "extensions": ["output_boolean"]
+    });
+    this.typeName_ = 'boolean';
+  },
+  getTypeName: Blockly.PXTBlockly.FunctionUtils.getTypeName,
+  removeFieldCallback: Blockly.PXTBlockly.FunctionUtils.removeArgumentCallback_
+};
+
+ Blockly.Blocks['argument_editor_string'] = {
+  init: function () {
+    this.jsonInit({
+      "message0": " %1",
+      "args0": [
+        {
+          "type": "field_input_removable",
+          "name": "TEXT",
+          "text": "text"
+        }
+      ],
+      "colour": Blockly.Colours.textField,
+      "colourSecondary": Blockly.Colours.textField,
+      "colourTertiary": Blockly.Colours.textField,
+      "extensions": ["output_string"]
+    });
+    this.typeName_ = 'string';
+  },
+  getTypeName: Blockly.PXTBlockly.FunctionUtils.getTypeName,
+  removeFieldCallback: Blockly.PXTBlockly.FunctionUtils.removeArgumentCallback_
+};
+
+ Blockly.Blocks['argument_editor_number'] = {
+  init: function () {
+    this.jsonInit({
+      "message0": " %1",
+      "args0": [
+        {
+          "type": "field_input_removable",
+          "name": "TEXT",
+          "text": "num"
+        }
+      ],
+      "colour": Blockly.Colours.textField,
+      "colourSecondary": Blockly.Colours.textField,
+      "colourTertiary": Blockly.Colours.textField,
+      "extensions": ["output_number"]
+    });
+    this.typeName_ = 'number';
+  },
+  getTypeName: Blockly.PXTBlockly.FunctionUtils.getTypeName,
+  removeFieldCallback: Blockly.PXTBlockly.FunctionUtils.removeArgumentCallback_
+};
+
+ Blockly.Blocks['argument_editor_custom'] = {
+  init: function () {
+    this.jsonInit({
+      "message0": " %1",
+      "args0": [
+        {
+          "type": "field_input_removable",
+          "name": "TEXT",
+          "text": "foo"
+        }
+      ],
+      "colour": Blockly.Colours.textField,
+      "colourSecondary": Blockly.Colours.textField,
+      "colourTertiary": Blockly.Colours.textField,
+      "outputShape": Blockly.OUTPUT_SHAPE_ROUND
+    });
+    this.typeName_ = 'any';
+  },
+  getTypeName: Blockly.PXTBlockly.FunctionUtils.getTypeName,
+  removeFieldCallback: Blockly.PXTBlockly.FunctionUtils.removeArgumentCallback_,
+  mutationToDom: Blockly.PXTBlockly.FunctionUtils.argumentMutationToDom,
+  domToMutation: Blockly.PXTBlockly.FunctionUtils.argumentDomToMutation
 };
 
 // Argument reporter blocks
