@@ -236,18 +236,19 @@ Blockly.PXTBlockly.FunctionUtils.createAllInputs_ = function(connectionMap) {
   this.addFunctionLabel_(this.getName());
 
   // Create arguments.
+  var self = this;
   this.arguments_.forEach(function(arg) {
     // For custom types, the parameter type is appended to the UUID in the
     // input name. This is needed to retrieve the function signature from the
     // block inputs when the declaration block is modified.
-    var input = this.appendValueInput(arg.id);
+    var input = self.appendValueInput(arg.id);
     if (Blockly.Functions.isCustomType(arg.type)) {
       input.setCheck(arg.type);
     } else {
       input.setCheck(arg.type.charAt(0).toUpperCase() + arg.type.slice(1));
     }
-    if (!this.isInsertionMarker()) {
-      this.populateArgument_(arg, connectionMap, input);
+    if (!self.isInsertionMarker()) {
+      self.populateArgument_(arg, connectionMap, input);
     }
   });
 
