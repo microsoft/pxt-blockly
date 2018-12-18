@@ -49,11 +49,11 @@ Blockly.PXTBlockly.FunctionUtils = {};
  * @return {!Element} XML storage element.
  * @this Blockly.Block
  */
-Blockly.PXTBlockly.FunctionUtils.mutationToDom = function () {
+Blockly.PXTBlockly.FunctionUtils.mutationToDom = function() {
   var container = document.createElement('mutation');
   container.setAttribute('name', this.name_);
   container.setAttribute('functionid', this.functionId_);
-  this.arguments_.forEach((arg) => {
+  this.arguments_.forEach(function(arg) {
     var argNode = document.createElement('arg');
     argNode.setAttribute('name', arg.name);
     argNode.setAttribute('id', arg.id);
@@ -70,9 +70,9 @@ Blockly.PXTBlockly.FunctionUtils.mutationToDom = function () {
  * @param {!Element} xmlElement XML storage element.
  * @this Blockly.Block
  */
-Blockly.PXTBlockly.FunctionUtils.domToMutation = function (xmlElement) {
+Blockly.PXTBlockly.FunctionUtils.domToMutation = function(xmlElement) {
   var args = [];
-  xmlElement.childNodes.forEach(c => {
+  xmlElement.childNodes.forEach(function(c) {
     args.push({
       id: c.getAttribute('id'),
       name: c.getAttribute('name'),
@@ -92,7 +92,7 @@ Blockly.PXTBlockly.FunctionUtils.domToMutation = function (xmlElement) {
  * @return {string} Function name.
  * @this Blockly.Block
  */
-Blockly.PXTBlockly.FunctionUtils.getName = function () {
+Blockly.PXTBlockly.FunctionUtils.getName = function() {
   return this.name_;
 };
 
@@ -103,7 +103,7 @@ Blockly.PXTBlockly.FunctionUtils.getName = function () {
  * @return {string} Function ID.
  * @this Blockly.Block
  */
-Blockly.PXTBlockly.FunctionUtils.getFunctionId = function () {
+Blockly.PXTBlockly.FunctionUtils.getFunctionId = function() {
   return this.functionId_;
 };
 
@@ -112,26 +112,26 @@ Blockly.PXTBlockly.FunctionUtils.getFunctionId = function () {
  * @return {FunctionParameter[]} The arguments of this function.
  * @this Blockly.Block
  */
-Blockly.PXTBlockly.FunctionUtils.getArguments = function () {
+Blockly.PXTBlockly.FunctionUtils.getArguments = function() {
   return this.arguments_;
-}
+};
 
 /**
  * Add or remove the statement block from this function definition.
  * @param {boolean} hasStatements True if a statement block is needed.
  * @this Blockly.Block
  */
-Blockly.PXTBlockly.FunctionUtils.setStatements_ = function (hasStatements) {
+Blockly.PXTBlockly.FunctionUtils.setStatements_ = function(hasStatements) {
   if (this.hasStatements_ === hasStatements) {
     return;
   }
   if (hasStatements) {
-    this.appendStatementInput('STACK')
+    this.appendStatementInput('STACK');
   } else {
     this.removeInput('STACK', true);
   }
   this.hasStatements_ = hasStatements;
-}
+};
 
 /**
  * Update the block's structure and appearance to match the internally stored
@@ -139,7 +139,7 @@ Blockly.PXTBlockly.FunctionUtils.setStatements_ = function (hasStatements) {
  * @private
  * @this Blockly.Block
  */
-Blockly.PXTBlockly.FunctionUtils.updateDisplay_ = function () {
+Blockly.PXTBlockly.FunctionUtils.updateDisplay_ = function() {
   var wasRendered = this.rendered;
   this.rendered = false;
 
@@ -166,7 +166,7 @@ Blockly.PXTBlockly.FunctionUtils.updateDisplay_ = function () {
  * @private
  * @this Blockly.Block
  */
-Blockly.PXTBlockly.FunctionUtils.disconnectOldBlocks_ = function () {
+Blockly.PXTBlockly.FunctionUtils.disconnectOldBlocks_ = function() {
   // Remove old stuff
   var connectionMap = {};
   for (var i = 0, input; input = this.inputList[i]; i++) {
@@ -196,7 +196,7 @@ Blockly.PXTBlockly.FunctionUtils.disconnectOldBlocks_ = function () {
  * @private
  * @this Blockly.Block
  */
-Blockly.PXTBlockly.FunctionUtils.removeAllInputs_ = function () {
+Blockly.PXTBlockly.FunctionUtils.removeAllInputs_ = function() {
   // Delete inputs directly instead of with block.removeInput to avoid splicing
   // out of the input list at every index.
   var stackInput = null;
@@ -218,7 +218,7 @@ Blockly.PXTBlockly.FunctionUtils.removeAllInputs_ = function () {
  * @private
  * @this Blockly.Block
  */
-Blockly.PXTBlockly.FunctionUtils.createAllInputs_ = function (connectionMap) {
+Blockly.PXTBlockly.FunctionUtils.createAllInputs_ = function(connectionMap) {
   // Create the main label.
   var labelText = '';
   switch (this.type) {
@@ -230,14 +230,13 @@ Blockly.PXTBlockly.FunctionUtils.createAllInputs_ = function (connectionMap) {
       labelText = Blockly.Msg.PROCEDURES_DEFNORETURN_TITLE;
   }
 
-  this.appendDummyInput()
-    .appendField(labelText, 'function_title');
+  this.appendDummyInput().appendField(labelText, 'function_title');
 
   // Create the function name (overridden by the block type).
   this.addFunctionLabel_(this.getName());
 
   // Create arguments.
-  this.arguments_.forEach(arg => {
+  this.arguments_.forEach(function(arg) {
     // For custom types, the parameter type is appended to the UUID in the
     // input name. This is needed to retrieve the function signature from the
     // block inputs when the declaration block is modified.
@@ -266,7 +265,7 @@ Blockly.PXTBlockly.FunctionUtils.createAllInputs_ = function (connectionMap) {
  * @private
  * @this Blockly.Block
  */
-Blockly.PXTBlockly.FunctionUtils.deleteShadows_ = function (connectionMap) {
+Blockly.PXTBlockly.FunctionUtils.deleteShadows_ = function(connectionMap) {
   // Get rid of all of the old shadow blocks if they aren't connected.
   if (connectionMap) {
     for (var id in connectionMap) {
@@ -291,7 +290,7 @@ Blockly.PXTBlockly.FunctionUtils.deleteShadows_ = function (connectionMap) {
  * @param {string} text The label text.
  * @private
  */
-Blockly.PXTBlockly.FunctionUtils.addLabelEditor_ = function (text) {
+Blockly.PXTBlockly.FunctionUtils.addLabelEditor_ = function(text) {
   this.appendDummyInput('function_name').appendField(new Blockly.FieldTextInput(text || ''), 'function_name');
 };
 
@@ -301,7 +300,7 @@ Blockly.PXTBlockly.FunctionUtils.addLabelEditor_ = function (text) {
  * @param {string} text The label text.
  * @private
  */
-Blockly.PXTBlockly.FunctionUtils.addLabelField_ = function (text) {
+Blockly.PXTBlockly.FunctionUtils.addLabelField_ = function(text) {
   this.appendDummyInput('function_name').appendField(new Blockly.FieldLabel(text, 'functionNameText'), 'function_name');
 };
 
@@ -312,7 +311,7 @@ Blockly.PXTBlockly.FunctionUtils.addLabelField_ = function (text) {
  * @param {Blockly.Workspace} ws The workspace of the function call block.
  * @return {!Array<string>} An array of block type, field name and field value.
  */
-Blockly.PXTBlockly.FunctionUtils.getShadowBlockInfoFromType_ = function (argumentType, ws) {
+Blockly.PXTBlockly.FunctionUtils.getShadowBlockInfoFromType_ = function(argumentType, ws) {
   var shadowType = '';
   var fieldName = '';
   var fieldValue = '';
@@ -336,13 +335,11 @@ Blockly.PXTBlockly.FunctionUtils.getShadowBlockInfoFromType_ = function (argumen
       // This is probably a custom type. Use a variable as the shadow.
       shadowType = 'variables_get';
       fieldName = 'VAR';
-      fieldValue = Blockly.Variables.getOrCreateVariablePackage(ws, null, Blockly.Msg.VARIABLES_DEFAULT_NAME, '').getId();
-    // var realWs = ws.isFlyout ? ws.targetWorkspace : ws;
-    // var defaultVar = Blockly.Variables.getOrCreateVariablePackage(realWs, null, Blockly.Msg.VARIABLES_DEFAULT_NAME, '');
-    // fieldValue = defaultVar.getId();
+      fieldValue = Blockly.Variables.getOrCreateVariablePackage(
+          ws, null, Blockly.Msg.VARIABLES_DEFAULT_NAME, '').getId();
   }
   return [shadowType, fieldName, fieldValue];
-}
+};
 
 /**
  * Build a DOM node representing a shadow block of the given type.
@@ -351,9 +348,13 @@ Blockly.PXTBlockly.FunctionUtils.getShadowBlockInfoFromType_ = function (argumen
  * @private
  * @this Blockly.Block
  */
-Blockly.PXTBlockly.FunctionUtils.buildShadowDom_ = function (argumentType) {
+Blockly.PXTBlockly.FunctionUtils.buildShadowDom_ = function(argumentType) {
   var shadowDom = goog.dom.createDom('shadow');
-  var [shadowType, fieldName, fieldValue] = Blockly.PXTBlockly.FunctionUtils.getShadowBlockInfoFromType_(argumentType, this.workspace);
+  var shadowInfo = Blockly.PXTBlockly.FunctionUtils.getShadowBlockInfoFromType_(
+      argumentType, this.workspace);
+  var shadowType = shadowInfo[0];
+  var fieldName = shadowInfo[1];
+  var fieldValue = shadowInfo[2];
   shadowDom.setAttribute('type', shadowType);
   var fieldDom = goog.dom.createDom('field', null, fieldValue);
   fieldDom.setAttribute('name', fieldName);
@@ -368,12 +369,16 @@ Blockly.PXTBlockly.FunctionUtils.buildShadowDom_ = function (argumentType) {
  * @private
  * @this Blockly.Block
  */
-Blockly.PXTBlockly.FunctionUtils.attachShadow_ = function (input, argumentType) {
-  var [blockType, fieldName, fieldValue] = Blockly.PXTBlockly.FunctionUtils.getShadowBlockInfoFromType_(argumentType, this.workspace);
+Blockly.PXTBlockly.FunctionUtils.attachShadow_ = function(input, argumentType) {
+  var shadowInfo = Blockly.PXTBlockly.FunctionUtils.getShadowBlockInfoFromType_(
+      argumentType, this.workspace);
+  var shadowType = shadowInfo[0];
+  var fieldName = shadowInfo[1];
+  var fieldValue = shadowInfo[2];
   Blockly.Events.disable();
   var newBlock = null;
   try {
-    newBlock = this.workspace.newBlock(blockType);
+    newBlock = this.workspace.newBlock(shadowType);
     newBlock.setFieldValue(fieldValue, fieldName);
     newBlock.setShadow(true);
     if (!this.isInsertionMarker()) {
@@ -396,7 +401,7 @@ Blockly.PXTBlockly.FunctionUtils.attachShadow_ = function (input, argumentType) 
  * @private
  * @this Blockly.Block
  */
-Blockly.PXTBlockly.FunctionUtils.createArgumentReporter_ = function (arg) {
+Blockly.PXTBlockly.FunctionUtils.createArgumentReporter_ = function(arg) {
   var blockType = '';
   switch (arg.type) {
     case 'boolean':
@@ -415,7 +420,8 @@ Blockly.PXTBlockly.FunctionUtils.createArgumentReporter_ = function (arg) {
   try {
     var newBlock;
     if (blockType == 'argument_reporter_custom') {
-      newBlock = Blockly.PXTBlockly.FunctionUtils.createCustomArgumentReporter(arg.type, this.workspace);
+      newBlock = Blockly.PXTBlockly.FunctionUtils.createCustomArgumentReporter(
+          arg.type, this.workspace);
     } else {
       newBlock = this.workspace.newBlock(blockType);
     }
@@ -441,7 +447,7 @@ Blockly.PXTBlockly.FunctionUtils.createArgumentReporter_ = function (arg) {
  * @private
  * @this Blockly.Block
  */
-Blockly.PXTBlockly.FunctionUtils.populateArgumentOnCaller_ = function (arg, connectionMap, input) {
+Blockly.PXTBlockly.FunctionUtils.populateArgumentOnCaller_ = function(arg, connectionMap, input) {
   var oldBlock = null;
   var oldShadow = null;
   if (connectionMap && (arg.id in connectionMap)) {
@@ -471,7 +477,8 @@ Blockly.PXTBlockly.FunctionUtils.populateArgumentOnCaller_ = function (arg, conn
  * @private
  * @this Blockly.Block
  */
-Blockly.PXTBlockly.FunctionUtils.populateArgumentOnDefinition_ = function (arg, connectionMap, input) {
+Blockly.PXTBlockly.FunctionUtils.populateArgumentOnDefinition_ = function(
+    arg, connectionMap, input) {
   var oldBlock = null;
   if (connectionMap && (arg.id in connectionMap)) {
     var saveInfo = connectionMap[arg.id];
@@ -503,15 +510,9 @@ Blockly.PXTBlockly.FunctionUtils.populateArgumentOnDefinition_ = function (arg, 
  * @private
  * @this Blockly.Block
  */
-Blockly.PXTBlockly.FunctionUtils.populateArgumentOnDeclaration_ = function (arg, connectionMap, input) {
-  var oldBlock = null;
-  if (connectionMap && (arg.id in connectionMap)) {
-    var saveInfo = connectionMap[arg.id];
-    oldBlock = saveInfo['block'];
-  }
-
+Blockly.PXTBlockly.FunctionUtils.populateArgumentOnDeclaration_ = function(
+    arg, connectionMap, input) {
   var argumentEditor = this.createArgumentEditor_(arg.type, arg.name);
-
   // Attach the block.
   input.connection.connect(argumentEditor.outputConnection);
 };
@@ -527,7 +528,7 @@ Blockly.PXTBlockly.FunctionUtils.populateArgumentOnDeclaration_ = function (arg,
  * @private
  * @this Blockly.Block
  */
-Blockly.PXTBlockly.FunctionUtils.createArgumentEditor_ = function (argumentType, displayName) {
+Blockly.PXTBlockly.FunctionUtils.createArgumentEditor_ = function(argumentType, displayName) {
   Blockly.Events.disable();
   var newBlock;
 
@@ -547,7 +548,8 @@ Blockly.PXTBlockly.FunctionUtils.createArgumentEditor_ = function (argumentType,
         blockType = 'argument_editor_custom';
     }
     if (blockType == 'argument_editor_custom') {
-      newBlock = Blockly.PXTBlockly.FunctionUtils.createCustomArgumentEditor(argumentType, this.workspace);
+      newBlock = Blockly.PXTBlockly.FunctionUtils.createCustomArgumentEditor(
+          argumentType, this.workspace);
     } else {
       newBlock = this.workspace.newBlock(blockType);
     }
@@ -567,7 +569,7 @@ Blockly.PXTBlockly.FunctionUtils.createArgumentEditor_ = function (argumentType,
  * Update the mutation information on the declaration block based on the
  * existing inputs and their text.
  */
-Blockly.PXTBlockly.FunctionUtils.updateDeclarationMutation_ = function () {
+Blockly.PXTBlockly.FunctionUtils.updateDeclarationMutation_ = function() {
   this.arguments_ = [];
 
   // Start iterating at 1 to skip the function label
@@ -600,7 +602,7 @@ Blockly.PXTBlockly.FunctionUtils.updateDeclarationMutation_ = function () {
  * Focus on the last argument editor editor on the declaration block.
  * @private
  */
-Blockly.PXTBlockly.FunctionUtils.focusLastEditor_ = function () {
+Blockly.PXTBlockly.FunctionUtils.focusLastEditor_ = function() {
   if (this.inputList.length > 0) {
     var newInput = this.inputList[this.inputList.length - 2];
     if (newInput.type == Blockly.DUMMY_INPUT) {
@@ -622,9 +624,10 @@ Blockly.PXTBlockly.FunctionUtils.focusLastEditor_ = function () {
  * @param {string} defaultName the default name of the parameter.
  * @private
  */
-Blockly.PXTBlockly.FunctionUtils.addParam_ = function (typeName, defaultName) {
+Blockly.PXTBlockly.FunctionUtils.addParam_ = function(typeName, defaultName) {
   Blockly.WidgetDiv.hide(true);
-  var argName = Blockly.Functions.findUniqueParamName(defaultName, this.arguments_.map(a => a.name));
+  var argName = Blockly.Functions.findUniqueParamName(defaultName,
+      this.arguments_.map(function(a) { return a.name; }));
   this.arguments_.push({
     id: Blockly.utils.genUid(),
     name: argName,
@@ -632,14 +635,14 @@ Blockly.PXTBlockly.FunctionUtils.addParam_ = function (typeName, defaultName) {
   });
   this.updateDisplay_();
   this.focusLastEditor_();
-}
+};
 
 /**
  * Externally-visible function to add a boolean argument to the function
  * declaration.
  * @public
  */
-Blockly.PXTBlockly.FunctionUtils.addBooleanExternal = function () {
+Blockly.PXTBlockly.FunctionUtils.addBooleanExternal = function() {
   this.addParam_('boolean', Blockly.Msg.FUNCTIONS_DEFAULT_BOOLEAN_ARG_NAME);
 };
 
@@ -648,7 +651,7 @@ Blockly.PXTBlockly.FunctionUtils.addBooleanExternal = function () {
  * declaration.
  * @public
  */
-Blockly.PXTBlockly.FunctionUtils.addStringExternal = function () {
+Blockly.PXTBlockly.FunctionUtils.addStringExternal = function() {
   this.addParam_('string', Blockly.Msg.FUNCTIONS_DEFAULT_STRING_ARG_NAME);
 };
 
@@ -657,7 +660,7 @@ Blockly.PXTBlockly.FunctionUtils.addStringExternal = function () {
  * declaration.
  * @public
  */
-Blockly.PXTBlockly.FunctionUtils.addNumberExternal = function () {
+Blockly.PXTBlockly.FunctionUtils.addNumberExternal = function() {
   this.addParam_('number', Blockly.Msg.FUNCTIONS_DEFAULT_NUMBER_ARG_NAME);
 };
 
@@ -668,7 +671,7 @@ Blockly.PXTBlockly.FunctionUtils.addNumberExternal = function () {
  *  to Typescript.
  * @public
  */
-Blockly.PXTBlockly.FunctionUtils.addCustomExternal = function (typeName) {
+Blockly.PXTBlockly.FunctionUtils.addCustomExternal = function(typeName) {
   this.addParam_(typeName, Blockly.Msg.FUNCTIONS_DEFAULT_CUSTOM_ARG_NAME);
 };
 
@@ -677,7 +680,7 @@ Blockly.PXTBlockly.FunctionUtils.addCustomExternal = function (typeName) {
  * @param {Blockly.Field} field The field being removed.
  * @public
  */
-Blockly.PXTBlockly.FunctionUtils.removeFieldCallback = function (field) {
+Blockly.PXTBlockly.FunctionUtils.removeFieldCallback = function(field) {
   var inputNameToRemove = null;
   for (var n = 0; n < this.inputList.length; n++) {
     if (inputNameToRemove) {
@@ -713,7 +716,7 @@ Blockly.PXTBlockly.FunctionUtils.removeFieldCallback = function (field) {
  * @param {Blockly.Field} field The field being removed.
  * @public
  */
-Blockly.PXTBlockly.FunctionUtils.removeArgumentCallback_ = function (field) {
+Blockly.PXTBlockly.FunctionUtils.removeArgumentCallback_ = function(field) {
   if (this.parentBlock_ && this.parentBlock_.removeFieldCallback) {
     this.parentBlock_.removeFieldCallback(field);
   }
@@ -725,7 +728,7 @@ Blockly.PXTBlockly.FunctionUtils.removeArgumentCallback_ = function (field) {
  * @param {!Blockly.Events.Abstract} event Change event.
  * @this Blockly.Block
  */
-Blockly.PXTBlockly.FunctionUtils.onCallerChange = function (event) {
+Blockly.PXTBlockly.FunctionUtils.onCallerChange = function(event) {
   if (!this.workspace || this.workspace.isFlyout) {
     // Block is deleted or is in a flyout.
     return;
@@ -737,13 +740,14 @@ Blockly.PXTBlockly.FunctionUtils.onCallerChange = function (event) {
     if (def) {
       // The function definition exists, ensure the signatures match.
       var defArgs = def.getArguments().slice();
-      defArgs.sort((a, b) => a.name.localeCompare(b.name));
+      defArgs.sort(function(a, b) { return a.name.localeCompare(b.name); });
       var thisArgs = this.arguments_.slice();
-      thisArgs.sort((a, b) => a.name.localeCompare(b.name));
+      thisArgs.sort(function(a, b) { return a.name.localeCompare(b.name); });
       if (JSON.stringify(thisArgs) !== JSON.stringify(defArgs)) {
         // The function signature has changed since this block was copied,
         // update it.
-        Blockly.Functions.mutateCallersAndDefinition(def.getName(), this.workspace, def.mutationToDom());
+        Blockly.Functions.mutateCallersAndDefinition(
+            def.getName(), this.workspace, def.mutationToDom());
       }
     } else {
       // There is no function definition for this function, create an empty one
@@ -774,14 +778,14 @@ Blockly.PXTBlockly.FunctionUtils.onCallerChange = function (event) {
       Blockly.Events.setGroup(false);
     }
   }
-}
+};
 
 Blockly.Blocks['function_declaration'] = {
   /**
    * The preview block in the function editor dialog.
    * @this Blockly.Block
    */
-  init: function () {
+  init: function() {
     /* Data known about the function. */
     this.name_ = ""; // The name of the function.
     this.arguments_ = []; // The arguments of this function.
@@ -830,7 +834,7 @@ Blockly.Blocks['function_definition'] = {
    * Block for defining a function with no return value.
    * @this Blockly.Block
    */
-  init: function () {
+  init: function() {
     this.jsonInit({
       "extensions": ["function_contextmenu_edit"]
     });
@@ -880,7 +884,7 @@ Blockly.Blocks['function_call'] = {
    * Block for calling a function with no return value.
    * @this Blockly.Block
    */
-  init: function () {
+  init: function() {
     this.jsonInit({
       "extensions": ["function_contextmenu_edit"]
     });
@@ -925,7 +929,7 @@ Blockly.Blocks['function_call'] = {
  * @return {string} This argument's type, as would be emitted to TypeScript.
  * @this Blockly.Block
  */
-Blockly.PXTBlockly.FunctionUtils.getTypeName = function () {
+Blockly.PXTBlockly.FunctionUtils.getTypeName = function() {
   return this.typeName_;
 };
 
@@ -934,7 +938,7 @@ Blockly.PXTBlockly.FunctionUtils.getTypeName = function () {
  * @return {!Element} XML storage element.
  * @this Blockly.Block
  */
-Blockly.PXTBlockly.FunctionUtils.argumentMutationToDom = function () {
+Blockly.PXTBlockly.FunctionUtils.argumentMutationToDom = function() {
   var container = document.createElement('mutation');
   container.setAttribute('typename', this.typeName_);
   return container;
@@ -945,7 +949,7 @@ Blockly.PXTBlockly.FunctionUtils.argumentMutationToDom = function () {
  * @param {!Element} xmlElement XML storage element.
  * @this Blockly.Block
  */
-Blockly.PXTBlockly.FunctionUtils.argumentDomToMutation = function (xmlElement) {
+Blockly.PXTBlockly.FunctionUtils.argumentDomToMutation = function(xmlElement) {
   this.typeName_ = xmlElement.getAttribute('typename');
   this.setOutput(true, this.typeName_);
 };
@@ -959,7 +963,7 @@ Blockly.PXTBlockly.FunctionUtils.argumentDomToMutation = function (xmlElement) {
  * @param {!Blockly.Workspace} ws The workspace to create the block in.
  * @return {!Blockly.block} The created block.
  */
-Blockly.PXTBlockly.FunctionUtils.createCustomArgumentBlock = function (blockType, typeName, ws) {
+Blockly.PXTBlockly.FunctionUtils.createCustomArgumentBlock = function(blockType, typeName, ws) {
   var blockText =
     '<xml>' +
     '<block type="' + blockType + '">' +
@@ -977,9 +981,9 @@ Blockly.PXTBlockly.FunctionUtils.createCustomArgumentBlock = function (blockType
  * @param {!Blockly.Workspace} ws The workspace to create the block in.
  * @return {!Blockly.block} The created block.
  */
-Blockly.PXTBlockly.FunctionUtils.createCustomArgumentEditor = function (typeName, ws) {
+Blockly.PXTBlockly.FunctionUtils.createCustomArgumentEditor = function(typeName, ws) {
   return Blockly.PXTBlockly.FunctionUtils.createCustomArgumentBlock('argument_editor_custom', typeName, ws);
-}
+};
 
 /**
  * Creates an argument_reporter_custom block with the correct mutation for the
@@ -988,9 +992,9 @@ Blockly.PXTBlockly.FunctionUtils.createCustomArgumentEditor = function (typeName
  * @param {!Blockly.Workspace} ws The workspace to create the block in.
  * @return {!Blockly.block} The created block.
  */
-Blockly.PXTBlockly.FunctionUtils.createCustomArgumentReporter = function (typeName, ws) {
+Blockly.PXTBlockly.FunctionUtils.createCustomArgumentReporter = function(typeName, ws) {
   return Blockly.PXTBlockly.FunctionUtils.createCustomArgumentBlock(
-    'argument_reporter_custom', typeName, ws);
+      'argument_reporter_custom', typeName, ws);
 };
 
 /**
@@ -999,7 +1003,7 @@ Blockly.PXTBlockly.FunctionUtils.createCustomArgumentReporter = function (typeNa
  * @param {!Blockly.Events.Abstract} event Change event.
  * @this Blockly.Block
  */
-Blockly.PXTBlockly.FunctionUtils.onReporterChange = function (event) {
+Blockly.PXTBlockly.FunctionUtils.onReporterChange = function(event) {
   if (!this.workspace || this.workspace.isFlyout) {
     // Block is deleted or is in a flyout.
     return;
@@ -1035,7 +1039,7 @@ Blockly.PXTBlockly.FunctionUtils.onReporterChange = function (event) {
 // Argument editor blocks
 
 Blockly.Blocks['argument_editor_boolean'] = {
-  init: function () {
+  init: function() {
     this.jsonInit({
       "message0": " %1",
       "args0": [
@@ -1057,7 +1061,7 @@ Blockly.Blocks['argument_editor_boolean'] = {
 };
 
 Blockly.Blocks['argument_editor_string'] = {
-  init: function () {
+  init: function() {
     this.jsonInit({
       "message0": " %1",
       "args0": [
@@ -1079,7 +1083,7 @@ Blockly.Blocks['argument_editor_string'] = {
 };
 
 Blockly.Blocks['argument_editor_number'] = {
-  init: function () {
+  init: function() {
     this.jsonInit({
       "message0": " %1",
       "args0": [
@@ -1101,7 +1105,7 @@ Blockly.Blocks['argument_editor_number'] = {
 };
 
 Blockly.Blocks['argument_editor_custom'] = {
-  init: function () {
+  init: function() {
     this.jsonInit({
       "message0": " %1",
       "args0": [
@@ -1127,7 +1131,7 @@ Blockly.Blocks['argument_editor_custom'] = {
 // Argument reporter blocks
 
 Blockly.Blocks['argument_reporter_boolean'] = {
-  init: function () {
+  init: function() {
     this.jsonInit({
       "message0": " %1",
       "args0": [
@@ -1147,7 +1151,7 @@ Blockly.Blocks['argument_reporter_boolean'] = {
 };
 
 Blockly.Blocks['argument_reporter_number'] = {
-  init: function () {
+  init: function() {
     this.jsonInit({
       "message0": " %1",
       "args0": [
@@ -1167,7 +1171,7 @@ Blockly.Blocks['argument_reporter_number'] = {
 };
 
 Blockly.Blocks['argument_reporter_string'] = {
-  init: function () {
+  init: function() {
     this.jsonInit({
       "message0": " %1",
       "args0": [
@@ -1187,7 +1191,7 @@ Blockly.Blocks['argument_reporter_string'] = {
 };
 
 Blockly.Blocks['argument_reporter_custom'] = {
-  init: function () {
+  init: function() {
     this.jsonInit({
       "message0": " %1",
       "args0": [

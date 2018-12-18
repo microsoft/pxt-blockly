@@ -124,7 +124,7 @@ Blockly.WorkspaceSvg = function(options, opt_blockDragSurface, opt_wsDragSurface
   // pxt-blockly: use the new Functions implementation for custom procedures.
   if (Blockly.Functions && Blockly.Functions.flyoutCategory) {
     this.registerToolboxCategoryCallback(Blockly.PROCEDURE_CATEGORY_NAME,
-      Blockly.Functions.flyoutCategory);
+        Blockly.Functions.flyoutCategory);
   }
   // if (Blockly.Procedures && Blockly.Procedures.flyoutCategory) {
   //   this.registerToolboxCategoryCallback(Blockly.PROCEDURE_CATEGORY_NAME,
@@ -1671,7 +1671,8 @@ Blockly.WorkspaceSvg.prototype.centerOnBlock = function(id, animate) {
 
   // XY is in workspace coordinates.
   var xy = block.getRelativeToSurfaceXY();
-  // Height/width is in workspace units. Note that getHeightWidth returns the block height AND all subsequent blocks.
+  // Height/width is in workspace units. Note that getHeightWidth returns the block height AND all
+  // subsequent blocks.
   var heightWidth = { height: block.height, width: block.width };
 
   // Find the center of the block in workspace units.
