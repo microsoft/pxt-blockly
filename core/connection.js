@@ -314,11 +314,11 @@ Blockly.Connection.prototype.canConnectWithReason_ = function(target) {
   if (this.isSuperior()) {
     var blockA = this.sourceBlock_;
     var blockB = target.getSourceBlock();
-    // var superiorConn = this;
+    // var superiorConn = this; // pxt-blockly: the check that uses this is commented out below
   } else {
     var blockB = this.sourceBlock_;
     var blockA = target.getSourceBlock();
-    // var superiorConn = target;
+    // var superiorConn = target; // pxt-blockly: the check that uses this is commented out below
   }
   if (blockA && blockA == blockB) {
     return Blockly.Connection.REASON_SELF_CONNECTION;
