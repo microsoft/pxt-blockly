@@ -35,11 +35,6 @@
 
 Blockly.PXTBlockly.FunctionUtils = {};
 
-// TODO GUJEN Make function name editable on the definition
-// TODO GUJEN Make function name bold on function calls
-// TODO GUJEN Have a single function_call block for parameterless functions, with a dropdown
-// TODO GUJEN Show function call preview in a separate workspace in the function editor
-
 /**
  * Type to represent a function parameter
  * @typedef {Object} FunctionParameter
@@ -252,7 +247,9 @@ Blockly.PXTBlockly.FunctionUtils.createAllInputs_ = function (connectionMap) {
     } else {
       input.setCheck(arg.type.charAt(0).toUpperCase() + arg.type.slice(1));
     }
-    this.populateArgument_(arg, connectionMap, input);
+    if (!this.isInsertionMarker()) {
+      this.populateArgument_(arg, connectionMap, input);
+    }
   });
 
   // Move the statement input (block mouth) back to the end.
@@ -305,7 +302,7 @@ Blockly.PXTBlockly.FunctionUtils.addLabelEditor_ = function (text) {
  * @private
  */
 Blockly.PXTBlockly.FunctionUtils.addLabelField_ = function (text) {
-  this.appendDummyInput('function_name').appendField(text, 'function_name');
+  this.appendDummyInput('function_name').appendField(new Blockly.FieldLabel(text, 'functionNameText'), 'function_name');
 };
 
 /**

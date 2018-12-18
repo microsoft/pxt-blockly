@@ -1266,5 +1266,10 @@ Blockly.Css.CONTENT = [
     'overflow: visible;',
   '}',
 
+  // pxt-blockly: Bold function names
+  '.functionNameText {',
+    'font-weight: bold;',
+  '}',
+
   ''
 ];
