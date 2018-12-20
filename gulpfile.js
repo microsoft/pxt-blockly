@@ -8,7 +8,7 @@ var bump = require('gulp-bump');
 var fs = require('fs');
 var spawn = require('child_process').spawn;
 
-var USE_PY_LAUNCHER = false;
+var USE_PY_LAUNCHER = !!process.env["PXT_BLOCKLY_PY_LAUNCHER"];
 
 function spawnPython(args, opts) {
 	var cmd = 'python';
