@@ -137,5 +137,25 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
         "name": "STACK",
       }
     ],
+  },
+  {
+    "type": "event_with_draggable_variable",
+    "message0": "Draggable variables %1 %2 %3",
+    "args0": [
+      {
+        "type": "input_value",
+        "name": "HANDLER_DRAG_PARAM_myVar1",
+        "check": "Variable"
+      },
+      {
+        "type": "input_value",
+        "name": "HANDLER_DRAG_PARAM_myVar2",
+        "check": "Variable"
+      },
+      {
+        "type": "input_statement",
+        "name": "STACK",
+      }
+    ],
   }
 ]);  // END JSON EXTRACT (Do not delete this comment.)
