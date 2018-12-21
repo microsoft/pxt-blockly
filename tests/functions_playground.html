@@ -315,11 +315,13 @@
         var blocklyXmlArea = document.getElementById("blockly-xml");
         var declarationXmlArea = document.getElementById("declaration-xml");
         var declarationWorkspace = Blockly.inject('declaration', {
+            newFunctions: true,
             scrollbars: true
         });
         declarationWorkspace.showContextMenu_ = () => { };
         var toolbox = document.getElementById('toolbox-categories');
         var definitionWorkspace = Blockly.inject('blockly', {
+            newFunctions: true,
             toolbox,
             toolboxOptions: {
                 color: true,
