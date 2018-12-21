@@ -479,7 +479,7 @@ Blockly.Connection.prototype.isConnectionAllowed = function(candidate) {
       // shadow.
       if (candidate.targetConnection) {
         var targetBlock = candidate.targetBlock();
-        if (Blockly.pxtBlocklyUtils.isShadowArgumentReporter(targetBlock)) {
+        if (targetBlock.isShadow() && Blockly.Functions.isFunctionArgumentReporter(targetBlock)) {
           return false;
         }
       }

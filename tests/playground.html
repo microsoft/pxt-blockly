@@ -1427,18 +1427,38 @@ line.blocklyFlyoutLine {
         <statement name="STACK"></statement>
       </block>
       <block type="event_with_draggable_params_wrong_names">
-          <value name="HANDLER_DRAG_PARAM_myNum">
-            <shadow type="argument_reporter_boolean">
-              <field name="VALUE">myNum</field>
+        <value name="HANDLER_DRAG_PARAM_myNum">
+          <shadow type="argument_reporter_boolean">
+            <field name="VALUE">myNum</field>
+          </shadow>
+        </value>
+        <value name="HANDLER_DRAG_PARAM_myBool">
+            <shadow type="argument_reporter_number">
+              <field name="VALUE">myBool</field>
             </shadow>
           </value>
-          <value name="HANDLER_DRAG_PARAM_myBool">
-              <shadow type="argument_reporter_number">
-                <field name="VALUE">myBool</field>
-              </shadow>
-            </value>
-          <statement name="STACK"></statement>
-        </block>
+        <statement name="STACK"></statement>
+      </block>
+      <block type="event_with_draggable_variable">
+        <value name="HANDLER_DRAG_PARAM_myVar1">
+          <shadow type="variables_get_reporter">
+            <field name="VAR">myVar1</field>
+          </shadow>
+        </value>
+        <value name="HANDLER_DRAG_PARAM_myVar2">
+            <shadow type="variables_get_reporter">
+              <field name="VAR">myVar2</field>
+            </shadow>
+          </value>
+        <statement name="STACK"></statement>
+      </block>
+      <block type="controls_forEach">
+        <value name="VAR">
+          <shadow type="variables_get_reporter">
+            <field name="VAR">item</field>
+          </shadow>
+        </value>
+      </block>
     </category>
     <category name="Fields">
       <label text="Numbers"></label>
