@@ -73,11 +73,15 @@ Blockly.PXTBlockly.FunctionUtils.mutationToDom = function() {
 Blockly.PXTBlockly.FunctionUtils.domToMutation = function(xmlElement) {
   var args = [];
   xmlElement.childNodes.forEach(function(c) {
-    args.push({
-      id: c.getAttribute('id'),
-      name: c.getAttribute('name'),
-      type: c.getAttribute('type')
-    });
+    // During domToWorkspace, it's possible that the element has some whitespace text child nodes.
+    // Ignore those.
+    if (c.nodeName.toLowerCase() == 'arg') {
+      args.push({
+        id: c.getAttribute('id'),
+        name: c.getAttribute('name'),
+        type: c.getAttribute('type')
+      });
+    }
   });
 
   this.arguments_ = args;
@@ -150,7 +154,7 @@ Blockly.PXTBlockly.FunctionUtils.updateDisplay_ = function() {
   this.deleteShadows_(connectionMap);
 
   this.rendered = wasRendered;
-  if (wasRendered && !this.isInsertionMarker()) {
+  if (wasRendered && !this.isInsertionMarker() && this.initSvg) {
     this.initSvg();
     this.render();
   }
@@ -382,7 +386,7 @@ Blockly.PXTBlockly.FunctionUtils.attachShadow_ = function(input, argumentType) {
     newBlock = this.workspace.newBlock(shadowType);
     newBlock.setFieldValue(fieldValue, fieldName);
     newBlock.setShadow(true);
-    if (!this.isInsertionMarker()) {
+    if (!this.isInsertionMarker() && newBlock.initSvg) {
       newBlock.initSvg();
       newBlock.render(false);
     }
@@ -428,7 +432,7 @@ Blockly.PXTBlockly.FunctionUtils.createArgumentReporter_ = function(arg) {
     }
     newBlock.setShadow(true);
     newBlock.setFieldValue(arg.name, 'VALUE');
-    if (!this.isInsertionMarker()) {
+    if (!this.isInsertionMarker() && newBlock.initSvg) {
       newBlock.initSvg();
       newBlock.render(false);
     }
@@ -556,7 +560,7 @@ Blockly.PXTBlockly.FunctionUtils.createArgumentEditor_ = function(argumentType, 
     }
     newBlock.setFieldValue(displayName, 'TEXT');
     newBlock.setShadow(true);
-    if (!this.isInsertionMarker()) {
+    if (!this.isInsertionMarker() && newBlock.initSvg) {
       newBlock.initSvg();
       newBlock.render(false);
     }
@@ -750,6 +754,8 @@ Blockly.PXTBlockly.FunctionUtils.onCallerChange = function(event) {
         Blockly.Functions.mutateCallersAndDefinition(
             def.getName(), this.workspace, def.mutationToDom());
       }
+      // Propagate the functionId of the definition to the caller
+      this.functionId_ = def.functionId_;
     } else {
       // There is no function definition for this function, create an empty one
       // that matches the signature of the caller.
@@ -1142,7 +1148,7 @@ Blockly.Blocks['argument_reporter_boolean'] = {
           "text": ""
         }
       ],
-      "colour": Blockly.Msg.PROCEDURES_HUE,
+      "colour": Blockly.Msg.REPORTERS_HUE,
       "extensions": ["output_boolean"]
     });
     this.typeName_ = 'boolean';
@@ -1162,7 +1168,7 @@ Blockly.Blocks['argument_reporter_number'] = {
           "text": ""
         }
       ],
-      "colour": Blockly.Msg.PROCEDURES_HUE,
+      "colour": Blockly.Msg.REPORTERS_HUE,
       "extensions": ["output_number"]
     });
     this.typeName_ = 'number';
@@ -1182,7 +1188,7 @@ Blockly.Blocks['argument_reporter_string'] = {
           "text": ""
         }
       ],
-      "colour": Blockly.Msg.PROCEDURES_HUE,
+      "colour": Blockly.Msg.REPORTERS_HUE,
       "extensions": ["output_string"]
     });
     this.typeName_ = 'string';
@@ -1202,7 +1208,7 @@ Blockly.Blocks['argument_reporter_custom'] = {
           "text": ""
         }
       ],
-      "colour": Blockly.Msg.PROCEDURES_HUE,
+      "colour": Blockly.Msg.REPORTERS_HUE,
       "inputsInline": true,
       "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
       "output": null
