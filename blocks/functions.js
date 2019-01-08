@@ -50,6 +50,7 @@ Blockly.PXTBlockly.FunctionUtils = {};
  * @this Blockly.Block
  */
 Blockly.PXTBlockly.FunctionUtils.mutationToDom = function() {
+  this.ensureIds_();
   var container = document.createElement('mutation');
   container.setAttribute('name', this.name_);
   container.setAttribute('functionid', this.functionId_);
@@ -87,8 +88,44 @@ Blockly.PXTBlockly.FunctionUtils.domToMutation = function(xmlElement) {
   this.arguments_ = args;
   this.name_ = xmlElement.getAttribute('name');
   this.functionId_ = xmlElement.getAttribute('functionid');
+  this.ensureIds_();
   this.updateDisplay_();
 };
+
+/**
+ * Generates functionId_ and argument IDs if they don't exist on the definition, and update caller
+ * IDs so they match the IDs on the definition.
+ * @this Blockly.Block
+ */
+Blockly.PXTBlockly.FunctionUtils.ensureIds_ = function() {
+  switch (this.type) {
+    case Blockly.FUNCTION_DEFINITION_BLOCK_TYPE:
+      if (!this.functionId_ || this.functionId_ == 'null') {
+        this.functionId_ = Blockly.utils.genUid();
+      }
+      for (var i = 0; i < this.arguments_.length; ++i) {
+        if (!this.arguments_[i].id) {
+          this.arguments_[i].id = Blockly.utils.genUid();
+        }
+      }
+      break;
+    case Blockly.FUNCTION_CALL_BLOCK_TYPE:
+      var def = Blockly.Functions.getDefinition(this.name_, this.workspace);
+      if (def) {
+        this.functionId_ = def.getFunctionId();
+        var defArgs = def.getArguments();
+        for (var i = 0; i < this.arguments_.length; ++i) {
+          for (var j = 0; j < defArgs.length; ++j) {
+            if (defArgs[j].name == this.arguments_[i].name) {
+              this.arguments_[i].id = defArgs[j].id;
+              break;
+            }
+          }
+        }
+      }
+      break;
+  }
+}
 
 /**
  * Returns the name of the function, or the empty string if it has not yet been
@@ -819,6 +856,7 @@ Blockly.Blocks['function_declaration'] = {
   createAllInputs_: Blockly.PXTBlockly.FunctionUtils.createAllInputs_,
   updateDisplay_: Blockly.PXTBlockly.FunctionUtils.updateDisplay_,
   setStatements_: Blockly.PXTBlockly.FunctionUtils.setStatements_,
+  ensureIds_: Blockly.PXTBlockly.FunctionUtils.ensureIds_,
 
   // Exists on all three blocks, but have different implementations.
   populateArgument_: Blockly.PXTBlockly.FunctionUtils.populateArgumentOnDeclaration_,
@@ -877,6 +915,7 @@ Blockly.Blocks['function_definition'] = {
   createAllInputs_: Blockly.PXTBlockly.FunctionUtils.createAllInputs_,
   updateDisplay_: Blockly.PXTBlockly.FunctionUtils.updateDisplay_,
   setStatements_: Blockly.PXTBlockly.FunctionUtils.setStatements_,
+  ensureIds_: Blockly.PXTBlockly.FunctionUtils.ensureIds_,
 
   // Exists on all three blocks, but have different implementations.
   populateArgument_: Blockly.PXTBlockly.FunctionUtils.populateArgumentOnDefinition_,
@@ -918,6 +957,7 @@ Blockly.Blocks['function_call'] = {
   createAllInputs_: Blockly.PXTBlockly.FunctionUtils.createAllInputs_,
   updateDisplay_: Blockly.PXTBlockly.FunctionUtils.updateDisplay_,
   setStatements_: Blockly.PXTBlockly.FunctionUtils.setStatements_,
+  ensureIds_: Blockly.PXTBlockly.FunctionUtils.ensureIds_,
 
   // Exists on all three blocks, but have different implementations.
   populateArgument_: Blockly.PXTBlockly.FunctionUtils.populateArgumentOnCaller_,
