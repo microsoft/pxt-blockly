@@ -316,9 +316,7 @@ Blockly.PXTBlockly.FunctionUtils.deleteShadows_ = function(connectionMap) {
         var block = saveInfo['block'];
         if (block && block.isShadow()) {
           block.dispose();
-          connectionMap[id] = null;
-          // At this point we know which shadow DOMs are about to be orphaned in
-          // the VM. What do we do with that information?
+          delete connectionMap[id];
         }
       }
     }
@@ -782,9 +780,7 @@ Blockly.PXTBlockly.FunctionUtils.onCallerChange = function(event) {
     if (def) {
       // The function definition exists, ensure the signatures match.
       var defArgs = def.getArguments().slice();
-      defArgs.sort(function(a, b) { return a.name.localeCompare(b.name); });
       var thisArgs = this.arguments_.slice();
-      thisArgs.sort(function(a, b) { return a.name.localeCompare(b.name); });
       if (JSON.stringify(thisArgs) !== JSON.stringify(defArgs)) {
         // The function signature has changed since this block was copied,
         // update it.

@@ -118,7 +118,7 @@ Blockly.Functions.addCreateButton_ = function(workspace, xmlList) {
     Blockly.Functions.createFunctionCallback_(workspace);
   };
   button.setAttribute('text', msg);
-  button.setAttribute('callbackKey', callbackKey);
+  button.setAttribute('callbackkey', callbackKey);
   workspace.registerButtonCallback(callbackKey, callback);
   xmlList.push(button);
 };
