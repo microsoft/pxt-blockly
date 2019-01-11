@@ -29,7 +29,6 @@
 
 /**
  * @fileoverview Utility functions for handling functions (pxt-blockly's custom procedures).
- * @author gujenkin@microsoft.com (Guillaume Jenkins)
  */
 'use strict';
 
