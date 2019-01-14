@@ -1251,5 +1251,25 @@ Blockly.Css.CONTENT = [
     'stroke-width: 5px;',
   '}',
 
+  // pxt-blockly: Argument editor
+  '.blocklyTextRemoveIcon {',
+    'position: absolute;',
+    'width: 24px;',
+    'height: 24px;',
+    'top: -40px;',
+    'left: 50%;',
+    'margin-left: -12px;',
+    'cursor: pointer;',
+  '}',
+
+  '.blocklyWidgetDiv.fieldTextInput.removableTextInput {',
+    'overflow: visible;',
+  '}',
+
+  // pxt-blockly: Bold function names
+  '.functionNameText {',
+    'font-weight: bold;',
+  '}',
+
   ''
 ];

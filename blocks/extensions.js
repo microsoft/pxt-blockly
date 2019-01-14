@@ -25,6 +25,36 @@ Blockly.PXTBlockly.Extensions.INLINE_SVGS = function() {
 
 /**
  * pxt-blockly
+ * Mixin to add a "edit" option to the context menu of a function call or
+ * definition block.
+ * @mixin
+ * @augments Blockly.Block
+ * @package
+ * @readonly
+ */
+Blockly.PXTBlockly.Extensions.FUNCTION_CONTEXTMENU_EDIT = {
+  /**
+   * Add the "edit" option to the context menu.
+   * @param {!Array.<!Object>} menuOptions List of menu options to edit.
+   * @this Blockly.Block
+   */
+  customContextMenu: function(menuOptions) {
+    menuOptions.push(Blockly.Functions.makeEditOption(this));
+
+    // Find and remove the duplicate option for definitions
+    if (this.type == Blockly.FUNCTION_DEFINITION_BLOCK_TYPE) {
+      for (var i = 0, option; option = menuOptions[i]; i++) {
+        if (option.text == Blockly.Msg.DUPLICATE_BLOCK) {
+          menuOptions.splice(i, 1);
+          break;
+        }
+      }
+    }
+  }
+};
+
+/**
+ * pxt-blockly
  * Extension to represent a number reporter. That means the block has inline
  * inputs, a round output shape, and a 'Number' output type.
  * @this {Blockly.Block}
@@ -66,6 +96,8 @@ Blockly.PXTBlockly.Extensions.registerAll = function() {
   Blockly.Extensions.register('inline-svgs', this.INLINE_SVGS);
 
   // pxt-blockly: Register functions-related extensions
+  Blockly.Extensions.registerMixin('function_contextmenu_edit',
+      Blockly.PXTBlockly.Extensions.FUNCTION_CONTEXTMENU_EDIT);
   Blockly.Extensions.register('output_number', Blockly.PXTBlockly.Extensions.OUTPUT_NUMBER);
   Blockly.Extensions.register('output_string', Blockly.PXTBlockly.Extensions.OUTPUT_STRING);
   Blockly.Extensions.register('output_boolean', Blockly.PXTBlockly.Extensions.OUTPUT_BOOLEAN);

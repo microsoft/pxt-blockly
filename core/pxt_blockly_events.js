@@ -28,9 +28,8 @@
  */
 
 /**
- * @fileoverview Events fired as a result of UI actions in a pxt-blockly
- * editor that are not fired in Blockly.
- * @author gujenkin@microsoft.com (Guillaume Jenkins)
+ * @fileoverview Events fired as a result of UI actions in a pxt-blockly editor that are not fired
+ * in Blockly.
  */
 'use strict';
 

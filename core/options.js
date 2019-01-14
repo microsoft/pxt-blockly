@@ -134,6 +134,8 @@ Blockly.Options = function(options) {
   this.disable = hasDisable;
   this.readOnly = readOnly;
   this.maxBlocks = options['maxBlocks'] || Infinity;
+  // pxt-blockly: consumers can specify whether to use old or new functions implementation
+  this.newFunctions = options['newFunctions'] == true;
   this.pathToMedia = pathToMedia;
   this.hasCategories = hasCategories;
   this.hasScrollbars = hasScrollbars;

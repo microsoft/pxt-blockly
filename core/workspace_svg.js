@@ -120,7 +120,11 @@ Blockly.WorkspaceSvg = function(options, opt_blockDragSurface, opt_wsDragSurface
     this.registerToolboxCategoryCallback(Blockly.VARIABLE_DYNAMIC_CATEGORY_NAME,
         Blockly.VariablesDynamic.flyoutCategory);
   }
-  if (Blockly.Procedures && Blockly.Procedures.flyoutCategory) {
+  // pxt-blockly: we support 2 different functions implementation; check for which one to use
+  if (options.newFunctions && Blockly.Functions && Blockly.Functions.flyoutCategory) {
+    this.registerToolboxCategoryCallback(Blockly.PROCEDURE_CATEGORY_NAME,
+        Blockly.Functions.flyoutCategory);
+  } else if (Blockly.Procedures && Blockly.Procedures.flyoutCategory) {
     this.registerToolboxCategoryCallback(Blockly.PROCEDURE_CATEGORY_NAME,
         Blockly.Procedures.flyoutCategory);
   }
@@ -1665,7 +1669,8 @@ Blockly.WorkspaceSvg.prototype.centerOnBlock = function(id, animate) {
 
   // XY is in workspace coordinates.
   var xy = block.getRelativeToSurfaceXY();
-  // Height/width is in workspace units. Note that getHeightWidth returns the block height AND all subsequent blocks.
+  // Height/width is in workspace units. Note that getHeightWidth returns the block height AND all
+  // subsequent blocks.
   var heightWidth = { height: block.height, width: block.width };
 
   // Find the center of the block in workspace units.

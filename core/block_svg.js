@@ -195,6 +195,10 @@ Blockly.BlockSvg.prototype.initSvg = function() {
  * Select this block.  Highlight it visually.
  */
 Blockly.BlockSvg.prototype.select = function() {
+  // pxt-blockly if a block is not movable, also consider it unselectable.
+  if (!this.isMovable()) {
+    return;
+  }
   if (this.isShadow() && this.getParent()) {
     // Shadow blocks should not be selected.
     this.getParent().select();
@@ -874,6 +878,12 @@ Blockly.BlockSvg.prototype.updateMovable = function() {
  */
 Blockly.BlockSvg.prototype.setMovable = function(movable) {
   Blockly.BlockSvg.superClass_.setMovable.call(this, movable);
+
+  // pxt-blockly: consider unmovable blocks unselectable.
+  if (!movable) {
+    this.unselect();
+  }
+
   this.updateMovable();
 };
 
