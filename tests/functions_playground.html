@@ -26,60 +26,30 @@
             font-family: sans-serif;
         }
 
-        h1 {
-            font-weight: normal;
-            font-size: 140%;
-        }
-
         button {
             margin: 8px;
         }
 
-        .grid-container {
-            display: grid;
-            grid-template-columns: 50% 50%;
-            grid-template-rows: 50% 5% 40% 5%;
-            grid-gap: 3px;
-            min-height: 600px;
-            height: 98vh;
-            width: 98vw;
+        table {
+            width: 100%;
+        }
+
+        textarea {
+            width: 99%;
+            resize: none;
+        }
+
+        .first-col {
+            width: 50%;
         }
 
         #blockly {
-            grid-row: 1 / 3;
-            grid-column: 1;
+            /* width: 100%; */
+            height: 600px;
         }
 
-        #declaration {
-            grid-row: 1;
-            grid-column: 2;
-        }
-
-        #declaration-controls {
-            grid-row: 2;
-            grid-column: 2;
-        }
-
-        #blockly-xml {
-            grid-row: 3;
-            grid-column: 1;
-            resize: none;
-        }
-
-        #declaration-xml {
-            grid-row: 3;
-            grid-column: 2;
-            resize: none;
-        }
-
-        #blockly-xml-controls {
-            grid-row: 4;
-            grid-column: 1;
-        }
-
-        #declaration-xml-controls {
-            grid-row: 4;
-            grid-column: 2;
+        .area-with-controls {
+            height: 400px;
         }
     </style>
 </head>
@@ -192,28 +162,40 @@
         <category name="Functions" colour="290" custom="PROCEDURE" iconclass="blocklyTreeIconCustom functions"></category>
     </xml>
 
-    <div class="grid-container">
-        <div id="blockly"></div>
-        <div id="declaration"></div>
-        <div id="declaration-controls">
-            <button id="number" onclick="addNumber()">Add number</button>
-            <button id="text" onclick="addText()">Add text</button>
-            <button id="boolean" onclick="addBoolean()">Add boolean</button>
-            <button id="custom" onclick="addCustom()">Add custom</button>
-            <button id="cancel" onclick="closeDeclarationWorkspace()">Cancel</button>
-            <button id="done" onclick="applyMutation()">Done</button>
-        </div>
-        <textarea id="blockly-xml"></textarea>
-        <textarea id="declaration-xml"></textarea>
-        <div id="blockly-xml-controls">
-            <button onclick="injectXml()">Inject XML</button>
-            <button onclick="resetXml()">Reset XML</button>
-        </div>
-        <div id="declaration-xml-controls">
-            <button onclick="injectXml(true)">Inject XML</button>
-            <button onclick="resetXml(true)">Reset XML</button>
-        </div>
-    </div>
+    <table>
+        <tr>
+            <td class="first-col">
+                <div id="blockly"></div>
+            </td>
+            <td>
+                <div id="function-editor" class="area-with-controls"></div>
+                <div id="function-editor-controls" class="controls">
+                    <button id="number" onclick="addNumber()">Add number</button>
+                    <button id="text" onclick="addText()">Add text</button>
+                    <button id="boolean" onclick="addBoolean()">Add boolean</button>
+                    <button id="custom" onclick="addCustom()">Add custom</button>
+                    <button id="cancel" onclick="closeDeclarationWorkspace()">Cancel</button>
+                    <button id="done" onclick="applyMutation()">Done</button>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <textarea id="blockly-xml" class="area-with-controls"></textarea>
+                <div id="blockly-xml-controls" class="controls">
+                    <button onclick="injectXml()">Inject XML</button>
+                    <button onclick="resetXml()">Reset XML</button>
+                </div>
+            </td>
+            <td>
+                <textarea id="function-editor-xml" class="area-with-controls"></textarea>
+                <div id="function-editor-xml-controls" class="controls">
+                    <button onclick="injectXml(true)">Inject XML</button>
+                    <button onclick="resetXml(true)">Reset XML</button>
+                </div>
+            </td>
+        </tr>
+    </table>
 
     <script>
         function clearWorkspaceAndLoadFromXml(xml, workspace) {
@@ -297,7 +279,7 @@
             var controls = document.querySelectorAll(allDeclarationElementsSelector);
             for (var i = 0; i < controls.length; ++i) {
                 var b = controls[i];
-                b.removeAttribute("disabled");
+                b.removeAttribute('disabled');
             }
             isEditingDeclaration = true;
         }
@@ -306,23 +288,23 @@
             var controls = document.querySelectorAll(allDeclarationElementsSelector);
             for (var i = 0; i < controls.length; ++i) {
                 var b = controls[i];
-                b.setAttribute("disabled", "");
+                b.setAttribute('disabled', '');
             }
-            declarationXmlArea.value = "";
+            declarationXmlArea.value = '';
             isEditingDeclaration = false;
         }
 
-        var allDeclarationElementsSelector = "#declaration-controls button, #declaration-xml-controls button, #declaration-xml";
+        var allDeclarationElementsSelector = '#function-editor-controls button, #function-editor-xml-controls button, #function-editor-xml';
         var isEditingDeclaration = false;
         var callback = null;
         var mutationRoot = null;
-        var blocklyXmlArea = document.getElementById("blockly-xml");
-        var declarationXmlArea = document.getElementById("declaration-xml");
-        var declarationWorkspace = Blockly.inject('declaration', {
+        var blocklyXmlArea = document.getElementById('blockly-xml');
+        var declarationXmlArea = document.getElementById('function-editor-xml');
+        var declarationWorkspace = Blockly.inject('function-editor', {
             newFunctions: true,
             scrollbars: true
         });
-        declarationWorkspace.showContextMenu_ = function() { };
+        declarationWorkspace.showContextMenu_ = function () { };
         var toolbox = document.getElementById('toolbox-categories');
         var definitionWorkspace = Blockly.inject('blockly', {
             newFunctions: true,
@@ -338,16 +320,16 @@
             }
         });
         var initialContent =
-        "<xml xmlns=\"http://www.w3.org/1999/xhtml\">" +
+            "<xml xmlns=\"http://www.w3.org/1999/xhtml\">" +
             "<block type=\"function_definition\" x=\"25\" y=\"25\">" +
-                "<mutation name=\"myFunc\" functionid=\"S-K/H.HR!;+la~V+gT*6\"><arg type=\"CustomType\" name=\"mySprite\" id=\"$J[@GtUSc~eo!]Y?wT{;\"></arg></mutation>" +
+            "<mutation name=\"myFunc\" functionid=\"S-K/H.HR!;+la~V+gT*6\"><arg type=\"CustomType\" name=\"mySprite\" id=\"$J[@GtUSc~eo!]Y?wT{;\"></arg></mutation>" +
             "</block>" +
             "<block type=\"function_call\" x=\"25\" y=\"200\">" +
-                 "<mutation name=\"myFunc\"><arg type=\"CustomType\" name=\"mySprite\" id=\"$J[@GtUSc~eo!]Y?wT{;\"></arg></mutation>" +
-             "</block>" +
-        "</xml>";
+            "<mutation name=\"myFunc\"><arg type=\"CustomType\" name=\"mySprite\" id=\"$J[@GtUSc~eo!]Y?wT{;\"></arg></mutation>" +
+            "</block>" +
+            "</xml>";
 
-        Blockly.Msg.PROCEDURES_DEFNORETURN_TITLE = "function";
+        Blockly.Msg.PROCEDURES_DEFNORETURN_TITLE = 'function';
         declarationWorkspace.addChangeListener(function () {
             if (isEditingDeclaration) {
                 resetXml(true);
@@ -357,7 +339,7 @@
                 mutationRoot.updateFunctionSignature();
             }
         });
-        definitionWorkspace.addChangeListener(function() { resetXml(false); });
+        definitionWorkspace.addChangeListener(function () { resetXml(false); });
         Blockly.Functions.editFunctionExternalHandler = function (mutation, cb) {
             enableDeclarationControls();
             callback = cb;
