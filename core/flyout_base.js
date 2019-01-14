@@ -760,7 +760,7 @@ Blockly.Flyout.prototype.placeNewBlock_ = function(oldBlock) {
   // the flyout-workspace variable to a main-workspace variable if the function
   // has custom argument types.
   if (oldBlock.type == 'function_call') {
-    oldBlock.inputList.forEach(i => {
+    oldBlock.inputList.forEach(function(i) {
       if (i.connection && i.connection.targetConnection &&
           i.connection.targetBlock().type == 'variables_get') {
         var varGetBlock = i.connection.targetBlock();

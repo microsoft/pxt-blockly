@@ -407,23 +407,20 @@ Blockly.Functions.validateFunctionExternal = function(mutation, destinationWs) {
   }
 
   // Check for duplicate arg names and empty arg names.
-  var argNames = [];
-  mutation.childNodes.forEach(function(arg) {
-    argNames.push(arg.getAttribute('name'));
-  });
   var seen = {};
-
-  for (var i = 0; i < argNames.length; ++i) {
-    var arg = argNames[i].toLowerCase();
-    if (!arg) {
+  for (var i = 0; i < mutation.childNodes.length; ++i) {
+    var arg = mutation.childNodes[i];
+    var argName = arg.getAttribute('name');
+    var normalizedArgName = argName.toLowerCase();
+    if (!normalizedArgName) {
       Blockly.alert(Blockly.Msg.FUNCTION_WARNING_EMPTY_NAME);
       return false;
     }
-    if (seen[arg]) {
+    if (seen[normalizedArgName]) {
       Blockly.alert(Blockly.Msg.FUNCTION_WARNING_DUPLICATE_ARG);
       return false;
     }
-    seen[arg] = true;
+    seen[normalizedArgName] = true;
   }
 
   // Check for function name also being an argument name.
@@ -441,7 +438,7 @@ Blockly.Functions.validateFunctionExternal = function(mutation, destinationWs) {
     return false;
   }
 
-  // Check if function name is in use by a different function(it's ok if the
+  // Check if function name is in use by a different function (it's ok if the
   // name is in use by the function we're editing - that means we've changed
   // the arguments without renaming the function).
   var funcId = mutation.getAttribute('functionid');
@@ -460,7 +457,7 @@ Blockly.Functions.validateFunctionExternal = function(mutation, destinationWs) {
 
 /**
  * Creates a map of argument name -> argument ID based on the specified
- * function mutation. If specified, can also to the inverse map:
+ * function mutation. If specified, can also create the inverse map:
  * argument ID -> argument name.
  * @param {!Element} mutation The function mutation to parse.
  * @param {boolean} inverse Whether to make the inverse map, ID -> name.
@@ -469,11 +466,12 @@ Blockly.Functions.validateFunctionExternal = function(mutation, destinationWs) {
  */
 Blockly.Functions.getArgMap = function(mutation, inverse) {
   var map = {};
-  mutation.childNodes.forEach(function(arg) {
+  for (var i = 0; i < mutation.childNodes.length; ++i) {
+    var arg = mutation.childNodes[i];
     var key = inverse ? arg.getAttribute('id') : arg.getAttribute('name');
     var val = inverse ? arg.getAttribute('name') : arg.getAttribute('id');
     map[key] = val;
-  });
+  }
   return map;
 };
 

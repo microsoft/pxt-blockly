@@ -17,7 +17,7 @@
     <script src="../blocks/colour.js"></script>
     <script src="../blocks/variables.js"></script>
     <script src="../blocks/variables_dynamic.js"></script>
-    <script src="../blocks/functions.js"></script>
+    <script src="../blocks/pxt_blockly_functions.js"></script>
     <script src="blocks/test_blocks.js"></script>
 
     <style>
@@ -294,16 +294,20 @@
         }
 
         function enableDeclarationControls() {
-            document.querySelectorAll(allDeclarationElementsSelector).forEach(b => {
+            var controls = document.querySelectorAll(allDeclarationElementsSelector);
+            for (var i = 0; i < controls.length; ++i) {
+                var b = controls[i];
                 b.removeAttribute("disabled");
-            });
+            }
             isEditingDeclaration = true;
         }
 
         function disableDeclarationControls() {
-            document.querySelectorAll(allDeclarationElementsSelector).forEach(b => {
+            var controls = document.querySelectorAll(allDeclarationElementsSelector);
+            for (var i = 0; i < controls.length; ++i) {
+                var b = controls[i];
                 b.setAttribute("disabled", "");
-            });
+            }
             declarationXmlArea.value = "";
             isEditingDeclaration = false;
         }
@@ -318,11 +322,11 @@
             newFunctions: true,
             scrollbars: true
         });
-        declarationWorkspace.showContextMenu_ = () => { };
+        declarationWorkspace.showContextMenu_ = function() { };
         var toolbox = document.getElementById('toolbox-categories');
         var definitionWorkspace = Blockly.inject('blockly', {
             newFunctions: true,
-            toolbox,
+            toolbox: toolbox,
             toolboxOptions: {
                 color: true,
                 inverted: true
@@ -333,24 +337,15 @@
                 startScale: 0.75
             }
         });
-        // var initialContent = `
-        // <xml xmlns="http://www.w3.org/1999/xhtml">
-        //     <block type="function_definition" x="25" y="25">
-        //         <mutation name="myFunc" functionid="S-K/H.HR!;+la~V+gT*6"><arg type="boolean" name="myBool" id="$J[@GtUSc~eo!]Y?wT{;"></arg></mutation>
-        //     </block>
-        //     <block type="function_call" x="25" y="200">
-        //         <mutation name="myFunc"><arg type="boolean" name="myBool" id="$J[@GtUSc~eo!]Y?wT{;"></arg></mutation>
-        //     </block>
-        // </xml>`
-        var initialContent = `
-        <xml xmlns="http://www.w3.org/1999/xhtml">
-            <block type="function_definition" x="25" y="25">
-                <mutation name="myFunc" functionid="S-K/H.HR!;+la~V+gT*6"><arg type="CustomType" name="mySprite" id="$J[@GtUSc~eo!]Y?wT{;"></arg></mutation>
-            </block>
-            <block type="function_call" x="25" y="200">
-                 <mutation name="myFunc"><arg type="CustomType" name="mySprite" id="$J[@GtUSc~eo!]Y?wT{;"></arg></mutation>
-             </block>
-        </xml>`
+        var initialContent =
+        "<xml xmlns=\"http://www.w3.org/1999/xhtml\">" +
+            "<block type=\"function_definition\" x=\"25\" y=\"25\">" +
+                "<mutation name=\"myFunc\" functionid=\"S-K/H.HR!;+la~V+gT*6\"><arg type=\"CustomType\" name=\"mySprite\" id=\"$J[@GtUSc~eo!]Y?wT{;\"></arg></mutation>" +
+            "</block>" +
+            "<block type=\"function_call\" x=\"25\" y=\"200\">" +
+                 "<mutation name=\"myFunc\"><arg type=\"CustomType\" name=\"mySprite\" id=\"$J[@GtUSc~eo!]Y?wT{;\"></arg></mutation>" +
+             "</block>" +
+        "</xml>";
 
         Blockly.Msg.PROCEDURES_DEFNORETURN_TITLE = "function";
         declarationWorkspace.addChangeListener(function () {
@@ -362,7 +357,7 @@
                 mutationRoot.updateFunctionSignature();
             }
         });
-        definitionWorkspace.addChangeListener(() => resetXml(false));
+        definitionWorkspace.addChangeListener(function() { resetXml(false); });
         Blockly.Functions.editFunctionExternalHandler = function (mutation, cb) {
             enableDeclarationControls();
             callback = cb;

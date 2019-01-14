@@ -72,9 +72,10 @@ Blockly.PXTBlockly.FunctionUtils.mutationToDom = function() {
  */
 Blockly.PXTBlockly.FunctionUtils.domToMutation = function(xmlElement) {
   var args = [];
-  xmlElement.childNodes.forEach(function(c) {
+  for (var i = 0; i < xmlElement.childNodes.length; ++i) {
     // During domToWorkspace, it's possible that the element has some whitespace text child nodes.
     // Ignore those.
+    var c = xmlElement.childNodes[i];
     if (c.nodeName.toLowerCase() == 'arg') {
       args.push({
         id: c.getAttribute('id'),
@@ -82,7 +83,7 @@ Blockly.PXTBlockly.FunctionUtils.domToMutation = function(xmlElement) {
         type: c.getAttribute('type')
       });
     }
-  });
+  };
 
   this.arguments_ = args;
   this.name_ = xmlElement.getAttribute('name');
@@ -124,7 +125,7 @@ Blockly.PXTBlockly.FunctionUtils.ensureIds_ = function() {
       }
       break;
   }
-}
+};
 
 /**
  * Returns the name of the function, or the empty string if it has not yet been
