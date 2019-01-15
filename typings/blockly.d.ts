@@ -1232,6 +1232,7 @@ declare namespace Blockly {
 
     namespace PXTBlockly {
         namespace FunctionUtils {
+            let argumentIcons: {[typeName: string]: string};
             function createCustomArgumentReporter(typeName: string, ws: Blockly.Workspace): Blockly.Block;
         }
     }

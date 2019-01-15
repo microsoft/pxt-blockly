@@ -32,7 +32,7 @@
  */
 'use strict';
 
-goog.provide('Blockly.FieldTextInputRemovable');
+goog.provide('Blockly.FieldArgumentEditor');
 
 goog.require('Blockly.BlockSvg.render');
 goog.require('Blockly.Colours');
@@ -55,34 +55,44 @@ goog.require('goog.dom.TagName');
  * @extends {Blockly.FieldTextInput}
  * @constructor
  */
-Blockly.FieldTextInputRemovable = function(text, opt_validator, opt_restrictor) {
-  Blockly.FieldTextInputRemovable.superClass_.constructor.call(this, text,
+Blockly.FieldArgumentEditor = function(text, opt_validator, opt_restrictor) {
+  Blockly.FieldArgumentEditor.superClass_.constructor.call(this, text,
       opt_validator, opt_restrictor);
 };
-goog.inherits(Blockly.FieldTextInputRemovable, Blockly.FieldTextInput);
+goog.inherits(Blockly.FieldArgumentEditor, Blockly.FieldTextInput);
 
 /**
  * Data URI for the delete argument icon.
  * @type {string}
  * @public
  */
-Blockly.FieldTextInputRemovable.REMOVE_ARG_URI = "data:image/svg+xml;charset=UTF-8,%3c?xml version='1.0' encoding='UTF-8' standalone='no'?%3e%3csvg width='20px' height='20px' viewBox='0 0 20 20' version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'%3e%3c!-- Generator: Sketch 48.1 (47250) - http://www.bohemiancoding.com/sketch --%3e%3ctitle%3edelete-argument v2%3c/title%3e%3cdesc%3eCreated with Sketch.%3c/desc%3e%3cdefs%3e%3c/defs%3e%3cg id='Page-1' stroke='none' stroke-width='1' fill='none' fill-rule='evenodd'%3e%3cg id='delete-argument-v2' stroke='%23FF661A'%3e%3cg id='Group' transform='translate(3.000000, 2.500000)'%3e%3cpath d='M1,3 L13,3 L11.8900496,14.0995037 C11.8389294,14.6107055 11.4087639,15 10.8950124,15 L3.10498756,15 C2.59123611,15 2.16107055,14.6107055 2.10995037,14.0995037 L1,3 Z' id='Rectangle' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3e%3c/path%3e%3cpath d='M7,11 L7,6' id='Line' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3e%3c/path%3e%3cpath d='M9.5,11 L9.5,6' id='Line-Copy' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3e%3c/path%3e%3cpath d='M4.5,11 L4.5,6' id='Line-Copy-2' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3e%3c/path%3e%3crect id='Rectangle-2' fill='%23FF661A' x='0' y='2.5' width='14' height='1' rx='0.5'%3e%3c/rect%3e%3cpath d='M6,0 L8,0 C8.55228475,-1.01453063e-16 9,0.44771525 9,1 L9,3 L5,3 L5,1 C5,0.44771525 5.44771525,1.01453063e-16 6,0 Z' id='Rectangle-3' stroke-width='1.5'%3e%3c/path%3e%3c/g%3e%3c/g%3e%3c/g%3e%3c/svg%3e";
+Blockly.FieldArgumentEditor.REMOVE_ARG_URI = "data:image/svg+xml;charset=UTF-8,%3c?xml version='1.0' encoding='UTF-8' standalone='no'?%3e%3csvg width='20px' height='20px' viewBox='0 0 20 20' version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'%3e%3c!-- Generator: Sketch 48.1 (47250) - http://www.bohemiancoding.com/sketch --%3e%3ctitle%3edelete-argument v2%3c/title%3e%3cdesc%3eCreated with Sketch.%3c/desc%3e%3cdefs%3e%3c/defs%3e%3cg id='Page-1' stroke='none' stroke-width='1' fill='none' fill-rule='evenodd'%3e%3cg id='delete-argument-v2' stroke='%23FF661A'%3e%3cg id='Group' transform='translate(3.000000, 2.500000)'%3e%3cpath d='M1,3 L13,3 L11.8900496,14.0995037 C11.8389294,14.6107055 11.4087639,15 10.8950124,15 L3.10498756,15 C2.59123611,15 2.16107055,14.6107055 2.10995037,14.0995037 L1,3 Z' id='Rectangle' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3e%3c/path%3e%3cpath d='M7,11 L7,6' id='Line' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3e%3c/path%3e%3cpath d='M9.5,11 L9.5,6' id='Line-Copy' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3e%3c/path%3e%3cpath d='M4.5,11 L4.5,6' id='Line-Copy-2' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3e%3c/path%3e%3crect id='Rectangle-2' fill='%23FF661A' x='0' y='2.5' width='14' height='1' rx='0.5'%3e%3c/rect%3e%3cpath d='M6,0 L8,0 C8.55228475,-1.01453063e-16 9,0.44771525 9,1 L9,3 L5,3 L5,1 C5,0.44771525 5.44771525,1.01453063e-16 6,0 Z' id='Rectangle-3' stroke-width='1.5'%3e%3c/path%3e%3c/g%3e%3c/g%3e%3c/g%3e%3c/svg%3e";
 
 /**
  * Show the inline free-text editor on top of the text with the remove button.
  * @private
  */
-Blockly.FieldTextInputRemovable.prototype.showEditor_ = function() {
-  Blockly.FieldTextInputRemovable.superClass_.showEditor_.call(this);
+Blockly.FieldArgumentEditor.prototype.showEditor_ = function() {
+  Blockly.FieldArgumentEditor.superClass_.showEditor_.call(this);
 
   var div = Blockly.WidgetDiv.DIV;
-  div.className += ' removableTextInput';
+  div.className += ' argumentEditorInput';
   var removeButton =
-      goog.dom.createDom(goog.dom.TagName.IMG, 'blocklyTextRemoveIcon');
-  removeButton.setAttribute('src', Blockly.FieldTextInputRemovable.REMOVE_ARG_URI);
+      goog.dom.createDom(goog.dom.TagName.IMG, 'argumentEditorRemoveIcon');
+  removeButton.setAttribute('src', Blockly.FieldArgumentEditor.REMOVE_ARG_URI);
   this.removeButtonMouseWrapper_ = Blockly.bindEvent_(removeButton,
       'mousedown', this, this.removeCallback_);
   div.appendChild(removeButton);
+
+  if (this.sourceBlock_ && this.sourceBlock_.typeName_) {
+    var typeIconSvgData =
+        Blockly.PXTBlockly.FunctionUtils.getArgumentIcon(this.sourceBlock_.typeName_);
+    if (typeIconSvgData) {
+      var typeIcon = goog.dom.createDom(goog.dom.TagName.IMG, 'argumentEditorTypeIcon');
+      typeIcon.setAttribute('src', typeIconSvgData);
+      div.appendChild(typeIcon);
+    }
+  }
 };
 
 /**
@@ -90,7 +100,7 @@ Blockly.FieldTextInputRemovable.prototype.showEditor_ = function() {
  * on sourceBlock and calls it if possible.
  * @private
  */
-Blockly.FieldTextInputRemovable.prototype.removeCallback_ = function() {
+Blockly.FieldArgumentEditor.prototype.removeCallback_ = function() {
   if (this.sourceBlock_ && this.sourceBlock_.removeFieldCallback) {
     this.sourceBlock_.removeFieldCallback(this);
   } else {
@@ -99,16 +109,16 @@ Blockly.FieldTextInputRemovable.prototype.removeCallback_ = function() {
 };
 
 /**
- * Helper function to construct a FieldTextInputRemovable from a JSON arg object,
+ * Helper function to construct a FieldArgumentEditor from a JSON arg object,
  * dereferencing any string table references.
  * @param {!Object} options A JSON object with options (text, class, and
  *                          spellcheck).
- * @returns {!Blockly.FieldTextInputRemovable} The new text input.
+ * @returns {!Blockly.FieldArgumentEditor} The new text input.
  * @public
  */
-Blockly.FieldTextInputRemovable.fromJson = function(options) {
+Blockly.FieldArgumentEditor.fromJson = function(options) {
   var text = Blockly.utils.replaceMessageReferences(options['text']);
-  var field = new Blockly.FieldTextInputRemovable(text, options['class']);
+  var field = new Blockly.FieldArgumentEditor(text, options['class']);
   if (typeof options['spellcheck'] == 'boolean') {
     field.setSpellcheck(options['spellcheck']);
   }
@@ -116,4 +126,4 @@ Blockly.FieldTextInputRemovable.fromJson = function(options) {
 };
 
 Blockly.Field.register(
-    'field_input_removable', Blockly.FieldTextInputRemovable);
+    'field_argument_editor', Blockly.FieldArgumentEditor);

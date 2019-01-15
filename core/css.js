@@ -1252,7 +1252,7 @@ Blockly.Css.CONTENT = [
   '}',
 
   // pxt-blockly: Argument editor
-  '.blocklyTextRemoveIcon {',
+  '.argumentEditorRemoveIcon {',
     'position: absolute;',
     'width: 24px;',
     'height: 24px;',
@@ -1262,7 +1262,16 @@ Blockly.Css.CONTENT = [
     'cursor: pointer;',
   '}',
 
-  '.blocklyWidgetDiv.fieldTextInput.removableTextInput {',
+  '.argumentEditorTypeIcon {',
+    'position: absolute;',
+    'width: 24px;',
+    'height: 24px;',
+    'top: 40px;',
+    'left: 50%;',
+    'margin-left: -12px;',
+  '}',
+
+  '.blocklyWidgetDiv.fieldTextInput.argumentEditorInput {',
     'overflow: visible;',
   '}',
 
