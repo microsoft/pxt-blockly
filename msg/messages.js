@@ -141,7 +141,7 @@ Blockly.Msg.NEW_VARIABLE_TYPE_DROPDOWN = 'New %1 variable...';
 Blockly.Msg.NEW_VARIABLE_TYPE_TITLE = 'New variable type:';
 /// prompt - Prompts the user to enter the name for a new variable.  See [https://github.com/google/blockly/wiki/Variables#dropdown-menu https://github.com/google/blockly/wiki/Variables#dropdown-menu].
 Blockly.Msg.NEW_VARIABLE_TITLE = 'New variable name:';
-/// alert - Tells the user that the name they entered is already in use. pxt-blockly: also mention that a function can be the source of the name conflict.
+/// alert - Tells the user that the name they entered is already in use. pxt-blockly: also mention that functions can be the source of the name conflict.
 Blockly.Msg.VARIABLE_ALREADY_EXISTS = 'A variable or function named "%1" already exists.';
 /// alert - Tells the user that the name they entered is already in use for another type.
 Blockly.Msg.VARIABLE_ALREADY_EXISTS_FOR_ANOTHER_TYPE = 'A variable named "%1" already exists for another type: "%2".';
