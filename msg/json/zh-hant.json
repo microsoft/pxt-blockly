@@ -77,7 +77,7 @@
 	"CONTROLS_IF_TOOLTIP_1": "當值為 true 時，執行一些陳述式。",
 	"CONTROLS_IF_TOOLTIP_2": "當值為 true 時，執行第一個陳述式，否則，執行第二個陳述式。",
 	"CONTROLS_IF_TOOLTIP_3": "如果第一個值為 true，則執行第一個陳述式。否則，當第二個值為 true 時，則執行第二個陳述式。",
-	"CONTROLS_IF_TOOLTIP_4": "如果第一個值為 true，則執行第一個陳述式。否則當第二個值為 true 時，則執行第二個陳述式。如果前幾個敘述都不為 ture，則執行最後一個陳述式。",
+	"CONTROLS_IF_TOOLTIP_4": "如果第一個值為 true，則執行第一個陳述式。否則當第二個值為 true 時，則執行第二個陳述式。如果前幾個敘述都不為 true，則執行最後一個陳述式。",
 	"CONTROLS_IF_MSG_IF": "如果",
 	"CONTROLS_IF_MSG_ELSEIF": "否則如果",
 	"CONTROLS_IF_MSG_ELSE": "否則",
