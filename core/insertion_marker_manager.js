@@ -154,6 +154,8 @@ Blockly.InsertionMarkerManager = function(block, handleXY) {
   if (block.outputConnection) {
     var coord = new goog.math.Coordinate(block.outputConnection.x_, block.outputConnection.y_);
     this.handleDXY = goog.math.Coordinate.difference(handleXY, coord);
+    // Fade the dragging block to make targets easier to see.
+    this.workspace_.getBlockDragSurface().setOpacity(0.7);
   }
   else {
     this.handleDXY = new goog.math.Coordinate(0, 0);
@@ -165,6 +167,9 @@ Blockly.InsertionMarkerManager = function(block, handleXY) {
  * @package
  */
 Blockly.InsertionMarkerManager.prototype.dispose = function() {
+  // Unfade the dragging block.
+  this.workspace_.getBlockDragSurface().setOpacity(1);
+
   this.topBlock_ = null;
   this.workspace_ = null;
   this.availableConnections_.length = 0;
