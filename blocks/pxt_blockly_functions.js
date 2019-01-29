@@ -43,6 +43,24 @@ Blockly.PXTBlockly.FunctionUtils = {};
  */
 
 /**
+ * An object mapping function argument type names to an icon for the function editor dialog. The
+ * icons must be in data URI ("data:image/svg+xml...") format.
+ */
+Blockly.PXTBlockly.FunctionUtils.argumentIcons = {};
+
+/**
+ * Returns the SVG data to use as the type icon for the specified argument type.
+ * @param {string} typeName The argument type
+ * @return {string} The SVG data of the icon to use for the specified argument type, or undefined
+ *                  if none was set
+ */
+Blockly.PXTBlockly.FunctionUtils.getArgumentIcon = function(typeName) {
+  var icon = Blockly.PXTBlockly.FunctionUtils.argumentIcons &&
+      Blockly.PXTBlockly.FunctionUtils.argumentIcons[typeName];
+  return icon || undefined;
+};
+
+/**
  * Create XML to represent the name and parameters of a function declaration,
  * definition or call block.
  * @return {!Element} XML storage element.
@@ -1087,7 +1105,7 @@ Blockly.Blocks['argument_editor_boolean'] = {
       "message0": " %1",
       "args0": [
         {
-          "type": "field_input_removable",
+          "type": "field_argument_editor",
           "name": "TEXT",
           "text": "bool"
         }
@@ -1109,7 +1127,7 @@ Blockly.Blocks['argument_editor_string'] = {
       "message0": " %1",
       "args0": [
         {
-          "type": "field_input_removable",
+          "type": "field_argument_editor",
           "name": "TEXT",
           "text": "text"
         }
@@ -1131,7 +1149,7 @@ Blockly.Blocks['argument_editor_number'] = {
       "message0": " %1",
       "args0": [
         {
-          "type": "field_input_removable",
+          "type": "field_argument_editor",
           "name": "TEXT",
           "text": "num"
         }
@@ -1153,9 +1171,9 @@ Blockly.Blocks['argument_editor_custom'] = {
       "message0": " %1",
       "args0": [
         {
-          "type": "field_input_removable",
+          "type": "field_argument_editor",
           "name": "TEXT",
-          "text": "foo"
+          "text": "arg"
         }
       ],
       "colour": Blockly.Colours.textField,
