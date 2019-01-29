@@ -203,7 +203,7 @@ Blockly.PXTBlockly.FunctionUtils.updateDisplay_ = function() {
   this.rendered = false;
 
   var connectionMap = this.disconnectOldBlocks_();
-  this.removeAllInputs_();
+  this.removeValueInputs_();
 
   this.createAllInputs_(connectionMap);
   this.deleteShadows_(connectionMap);
@@ -250,23 +250,22 @@ Blockly.PXTBlockly.FunctionUtils.disconnectOldBlocks_ = function() {
 };
 
 /**
- * Removes all inputs on the block, including dummy inputs, except the STACK
- * input. Assumes no input has shadow DOM set.
+ * Removes all value inputs on the block.
  * @private
  * @this Blockly.Block
  */
-Blockly.PXTBlockly.FunctionUtils.removeAllInputs_ = function() {
+Blockly.PXTBlockly.FunctionUtils.removeValueInputs_ = function() {
   // Delete inputs directly instead of with block.removeInput to avoid splicing
   // out of the input list at every index.
-  var stackInput = null;
+  var newInputList = [];
   for (var i = 0, input; input = this.inputList[i]; i++) {
-    if (input.name === 'STACK') {
-      stackInput = input;
-    } else {
+    if (input.type == Blockly.INPUT_VALUE) {
       input.dispose();
+    } else {
+      newInputList.push(input);
     }
   }
-  this.inputList = stackInput ? [stackInput] : [];
+  this.inputList = newInputList;
 };
 
 /**
@@ -278,21 +277,36 @@ Blockly.PXTBlockly.FunctionUtils.removeAllInputs_ = function() {
  * @this Blockly.Block
  */
 Blockly.PXTBlockly.FunctionUtils.createAllInputs_ = function(connectionMap) {
-  // Create the main label.
-  var labelText = '';
-  switch (this.type) {
-    case Blockly.FUNCTION_CALL_BLOCK_TYPE:
-      labelText = Blockly.Msg.FUNCTIONS_CALL_TITLE;
-      break;
-    case Blockly.FUNCTION_DEFINITION_BLOCK_TYPE:
-    case Blockly.FUNCTION_DECLARATION_BLOCK_TYPE:
-      labelText = Blockly.Msg.PROCEDURES_DEFNORETURN_TITLE;
+  var hasTitle = false;
+  var hasName = false;
+  this.inputList.forEach(function(i) {
+    if (i.name == 'function_title') {
+      hasTitle = true;
+    } else if (i.name == 'function_name') {
+      hasName = true;
+    }
+  });
+
+  // Create the main label if it doesn't exist.
+  if (!hasTitle) {
+    var labelText = '';
+    switch (this.type) {
+      case Blockly.FUNCTION_CALL_BLOCK_TYPE:
+        labelText = Blockly.Msg.FUNCTIONS_CALL_TITLE;
+        break;
+      case Blockly.FUNCTION_DEFINITION_BLOCK_TYPE:
+      case Blockly.FUNCTION_DECLARATION_BLOCK_TYPE:
+        labelText = Blockly.Msg.PROCEDURES_DEFNORETURN_TITLE;
+    }
+    this.appendDummyInput('function_title').appendField(labelText, 'function_title');
   }
 
-  this.appendDummyInput().appendField(labelText, 'function_title');
-
-  // Create the function name (overridden by the block type).
-  this.addFunctionLabel_(this.getName());
+  // Create or update the function name (overridden by the block type).
+  if (hasName) {
+    this.updateFunctionLabel_(this.getName());
+  } else {
+    this.addFunctionLabel_(this.getName());
+  }
 
   // Create arguments.
   var self = this;
@@ -342,6 +356,22 @@ Blockly.PXTBlockly.FunctionUtils.deleteShadows_ = function(connectionMap) {
 };
 
 /**
+ * Updates the text of the text input for the function's name.
+ * @param {string} text The new text to set.
+ * @private
+ * @this Blockly.Block
+ */
+Blockly.PXTBlockly.FunctionUtils.updateLabelEditor_ = function(text) {
+  Blockly.Events.disable();
+  this.getField('function_name').setText(text);
+  Blockly.Events.enable();
+}
+
+Blockly.PXTBlockly.FunctionUtils.updateLabelField_ = function(text) {
+  this.getField('function_name').setValue(text);
+}
+
+/**
  * Add a label editor with the given text to a function_declaration
  * block. Editing the text in the label editor updates the text of the
  * corresponding label fields on function calls.
@@ -349,7 +379,14 @@ Blockly.PXTBlockly.FunctionUtils.deleteShadows_ = function(connectionMap) {
  * @private
  */
 Blockly.PXTBlockly.FunctionUtils.addLabelEditor_ = function(text) {
-  this.appendDummyInput('function_name').appendField(new Blockly.FieldTextInput(text || ''), 'function_name');
+  var nameField;
+  if (this.type === Blockly.FUNCTION_DEFINITION_BLOCK_TYPE) {
+    var nameField = new Blockly.FieldTextInput(text || '', Blockly.Functions.rename);
+  } else {
+    var nameField = new Blockly.FieldTextInput(text || '');
+  }
+  nameField.setSpellcheck(false);
+  this.appendDummyInput('function_name').appendField(nameField, 'function_name')
 };
 
 /**
@@ -864,7 +901,7 @@ Blockly.Blocks['function_declaration'] = {
   getName: Blockly.PXTBlockly.FunctionUtils.getName,
   getFunctionId: Blockly.PXTBlockly.FunctionUtils.getFunctionId,
   getArguments: Blockly.PXTBlockly.FunctionUtils.getArguments,
-  removeAllInputs_: Blockly.PXTBlockly.FunctionUtils.removeAllInputs_,
+  removeValueInputs_: Blockly.PXTBlockly.FunctionUtils.removeValueInputs_,
   disconnectOldBlocks_: Blockly.PXTBlockly.FunctionUtils.disconnectOldBlocks_,
   deleteShadows_: Blockly.PXTBlockly.FunctionUtils.deleteShadows_,
   createAllInputs_: Blockly.PXTBlockly.FunctionUtils.createAllInputs_,
@@ -875,6 +912,7 @@ Blockly.Blocks['function_declaration'] = {
   // Exists on all three blocks, but have different implementations.
   populateArgument_: Blockly.PXTBlockly.FunctionUtils.populateArgumentOnDeclaration_,
   addFunctionLabel_: Blockly.PXTBlockly.FunctionUtils.addLabelEditor_,
+  updateFunctionLabel_: Blockly.PXTBlockly.FunctionUtils.updateLabelEditor_,
 
   // Only exists on function_declaration.
   createArgumentEditor_: Blockly.PXTBlockly.FunctionUtils.createArgumentEditor_,
@@ -923,7 +961,7 @@ Blockly.Blocks['function_definition'] = {
   getName: Blockly.PXTBlockly.FunctionUtils.getName,
   getFunctionId: Blockly.PXTBlockly.FunctionUtils.getFunctionId,
   getArguments: Blockly.PXTBlockly.FunctionUtils.getArguments,
-  removeAllInputs_: Blockly.PXTBlockly.FunctionUtils.removeAllInputs_,
+  removeValueInputs_: Blockly.PXTBlockly.FunctionUtils.removeValueInputs_,
   disconnectOldBlocks_: Blockly.PXTBlockly.FunctionUtils.disconnectOldBlocks_,
   deleteShadows_: Blockly.PXTBlockly.FunctionUtils.deleteShadows_,
   createAllInputs_: Blockly.PXTBlockly.FunctionUtils.createAllInputs_,
@@ -933,7 +971,8 @@ Blockly.Blocks['function_definition'] = {
 
   // Exists on all three blocks, but have different implementations.
   populateArgument_: Blockly.PXTBlockly.FunctionUtils.populateArgumentOnDefinition_,
-  addFunctionLabel_: Blockly.PXTBlockly.FunctionUtils.addLabelField_,
+  addFunctionLabel_: Blockly.PXTBlockly.FunctionUtils.addLabelEditor_,
+  updateFunctionLabel_: Blockly.PXTBlockly.FunctionUtils.updateLabelEditor_,
 
   // Only exists on function_definition.
   createArgumentReporter_: Blockly.PXTBlockly.FunctionUtils.createArgumentReporter_
@@ -965,7 +1004,7 @@ Blockly.Blocks['function_call'] = {
   getName: Blockly.PXTBlockly.FunctionUtils.getName,
   getFunctionId: Blockly.PXTBlockly.FunctionUtils.getFunctionId,
   getArguments: Blockly.PXTBlockly.FunctionUtils.getArguments,
-  removeAllInputs_: Blockly.PXTBlockly.FunctionUtils.removeAllInputs_,
+  removeValueInputs_: Blockly.PXTBlockly.FunctionUtils.removeValueInputs_,
   disconnectOldBlocks_: Blockly.PXTBlockly.FunctionUtils.disconnectOldBlocks_,
   deleteShadows_: Blockly.PXTBlockly.FunctionUtils.deleteShadows_,
   createAllInputs_: Blockly.PXTBlockly.FunctionUtils.createAllInputs_,
@@ -976,6 +1015,7 @@ Blockly.Blocks['function_call'] = {
   // Exists on all three blocks, but have different implementations.
   populateArgument_: Blockly.PXTBlockly.FunctionUtils.populateArgumentOnCaller_,
   addFunctionLabel_: Blockly.PXTBlockly.FunctionUtils.addLabelField_,
+  updateFunctionLabel_: Blockly.PXTBlockly.FunctionUtils.updateLabelField_,
 
   // Only exists on function_call.
   attachShadow_: Blockly.PXTBlockly.FunctionUtils.attachShadow_,

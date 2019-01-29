@@ -214,6 +214,21 @@ Blockly.Functions.newFunctionMutation = function() {
 };
 
 /**
+ * Appends a number to the given name, or increments the number if one is already present.
+ * @param {string} name The name for which to add or increment the suffix.
+ * @return {string} The resulting name.
+ */
+Blockly.Functions.incrementNameSuffix = function(name) {
+  var r = name.match(/^(.*?)(\d+)$/);
+  if (!r) {
+    name += '2';
+  } else {
+    name = r[1] + (parseInt(r[2], 10) + 1);
+  }
+  return name;
+}
+
+/**
  * Returns a unique parameter name based on the given name (using a numbered
  * suffix).
  * @param {string} name Initial name.
@@ -224,12 +239,7 @@ Blockly.Functions.newFunctionMutation = function() {
 Blockly.Functions.findUniqueParamName = function(name, paramNames) {
   while (!Blockly.Functions.isUniqueParamName(name, paramNames)) {
     // Collision with another parameter name.
-    var r = name.match(/^(.*?)(\d+)$/);
-    if (!r) {
-      name += '2';
-    } else {
-      name = r[1] + (parseInt(r[2], 10) + 1);
-    }
+    name = Blockly.Functions.incrementNameSuffix(name);
   }
   return name;
 };
@@ -385,6 +395,60 @@ Blockly.Functions.getReporterArgumentType = function(reporterOutputType) {
   }
 };
 
+/**
+ * Returns a name that is unique among existing functions and variables.
+ * @param {string} name Proposed function name.
+ * @param {!Blockly.Block} block Block to disambiguate.
+ * @return {string} Non-colliding name.
+ */
+Blockly.Functions.findLegalName = function(name, block) {
+  if (block.isInFlyout) {
+    // Flyouts can have multiple procedures called 'do something'.
+    return name;
+  }
+
+  var usedNames = {};
+  block.workspace.getAllVariables().forEach(function(v) {
+    usedNames[v.name.toLowerCase()] = true;
+  });
+  block.workspace.getAllBlocks().forEach(function(b) {
+    if (b.type == Blockly.FUNCTION_DEFINITION_BLOCK_TYPE && b != block) {
+      usedNames[b.getName().toLowerCase()] = true;
+    }
+  });
+
+  while (usedNames[name]) {
+    name = Blockly.Functions.incrementNameSuffix(name);
+  }
+
+  return name;
+}
+
+/**
+ * Rename a Function.  Called by the editable field on a function definition.
+ * @param {string} name The proposed new name.
+ * @return {string} The accepted name.
+ * @this {Blockly.Field}
+ */
+Blockly.Functions.rename = function(name) {
+  // Strip leading and trailing whitespace. Beyond this, all names are legal.
+  name = name.replace(/^[\s\xa0]+|[\s\xa0]+$/g, '');
+  var legalName = Blockly.Functions.findLegalName(name, this.sourceBlock_);
+  var oldName = this.text_;
+
+  if (!legalName) return oldName;
+  if (oldName != name && oldName != legalName) {
+    // Temporarily change the function name to the new name so we can generate the new mutation,
+    // but reset to the old name afterwards so that mutateCallersAndDefinition() can find the
+    // function by its old name.
+    var functionDef = this.sourceBlock_;
+    functionDef.name_ = legalName;
+    var newMutation = functionDef.mutationToDom();
+    functionDef.name_ = oldName;
+    Blockly.Functions.mutateCallersAndDefinition(oldName, functionDef.workspace, newMutation);
+  }
+  return legalName;
+};
 
 /**
  * Validate the given function mutation to ensure that:
