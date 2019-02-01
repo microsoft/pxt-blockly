@@ -89,7 +89,8 @@ Blockly.FieldArgumentEditor.prototype.showEditor_ = function() {
         Blockly.PXTBlockly.FunctionUtils.getArgumentIcon(this.sourceBlock_.typeName_);
     if (iconClass) {
       var className = iconClass + ' icon argumentEditorTypeIcon';
-      var typeIcon = goog.dom.createDom(goog.dom.TagName.I, className);
+      var typeIcon = document.createElement('i');
+      typeIcon.className = className;
       div.appendChild(typeIcon);
     }
   }
