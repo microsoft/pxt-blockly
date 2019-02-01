@@ -1262,7 +1262,7 @@ Blockly.Css.CONTENT = [
     'cursor: pointer;',
   '}',
 
-  '.argumentEditorTypeIcon {',
+  '.functioneditor i.argumentEditorTypeIcon {',
     'position: absolute;',
     'width: 24px;',
     'height: 24px;',
