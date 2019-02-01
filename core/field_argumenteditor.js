@@ -85,11 +85,11 @@ Blockly.FieldArgumentEditor.prototype.showEditor_ = function() {
   div.appendChild(removeButton);
 
   if (this.sourceBlock_ && this.sourceBlock_.typeName_) {
-    var typeIconSvgData =
+    var iconClass =
         Blockly.PXTBlockly.FunctionUtils.getArgumentIcon(this.sourceBlock_.typeName_);
-    if (typeIconSvgData) {
-      var typeIcon = goog.dom.createDom(goog.dom.TagName.IMG, 'argumentEditorTypeIcon');
-      typeIcon.setAttribute('src', typeIconSvgData);
+    if (iconClass) {
+      var className = iconClass + ' icon argumentEditorTypeIcon';
+      var typeIcon = goog.dom.createDom(goog.dom.TagName.I, className);
       div.appendChild(typeIcon);
     }
   }
