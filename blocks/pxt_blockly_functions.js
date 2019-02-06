@@ -942,12 +942,6 @@ Blockly.Blocks['function_definition'] = {
     this.functionId_ = ""; // An ID, independent from the block ID, to track a function across its call, definition and declaration blocks.
 
     this.createAllInputs_();
-    if ((this.workspace.options.comments ||
-      (this.workspace.options.parentWorkspace &&
-        this.workspace.options.parentWorkspace.options.comments)) &&
-      Blockly.Msg.PROCEDURES_DEFNORETURN_COMMENT) {
-      this.setCommentText(Blockly.Msg.PROCEDURES_DEFNORETURN_COMMENT);
-    }
     this.setColour(Blockly.Msg.PROCEDURES_HUE);
     this.setTooltip(Blockly.Msg.PROCEDURES_DEFNORETURN_TOOLTIP);
     this.setHelpUrl(Blockly.Msg.PROCEDURES_DEFNORETURN_HELPURL);
