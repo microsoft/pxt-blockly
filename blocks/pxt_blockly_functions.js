@@ -386,6 +386,7 @@ Blockly.PXTBlockly.FunctionUtils.addLabelEditor_ = function(text) {
     var nameField = new Blockly.FieldTextInput(text || '');
   }
   nameField.setSpellcheck(false);
+  nameField.setAutoCapitalize(false);
   this.appendDummyInput('function_name').appendField(nameField, 'function_name')
 };
 

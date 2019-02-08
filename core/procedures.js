@@ -138,11 +138,16 @@ Blockly.Procedures.isNameUsed = function(name, workspace, opt_exclude) {
     if (blocks[i] == opt_exclude) {
       continue;
     }
+    var procName = '';
     if (blocks[i].getProcedureDef) {
-      var procName = blocks[i].getProcedureDef();
-      if (Blockly.Names.equals(procName[0], name)) {
-        return true;
-      }
+      procName = blocks[i].getProcedureDef()[0];
+    } else if (blocks[i].getName) {
+      // pxt-blockly: also check new function blocks, which use getName() for the function name.
+      procName = blocks[i].getName();
+    }
+
+    if (Blockly.Names.equals(procName, name)) {
+      return true;
     }
   }
   return false;

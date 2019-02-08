@@ -18,6 +18,7 @@
     <script src="../blocks/variables.js"></script>
     <script src="../blocks/variables_dynamic.js"></script>
     <script src="../blocks/pxt_blockly_functions.js"></script>
+    <script src="../blocks/procedures.js"></script>
     <script src="blocks/test_blocks.js"></script>
 
     <style>
@@ -321,12 +322,28 @@
         });
         var initialContent =
             "<xml xmlns=\"http://www.w3.org/1999/xhtml\">" +
-            "<block type=\"function_definition\" x=\"25\" y=\"25\">" +
-            "<mutation name=\"myFunc\" functionid=\"S-K/H.HR!;+la~V+gT*6\"><arg type=\"CustomType\" name=\"mySprite\" id=\"$J[@GtUSc~eo!]Y?wT{;\"></arg></mutation>" +
-            "</block>" +
-            "<block type=\"function_call\" x=\"25\" y=\"200\">" +
-            "<mutation name=\"myFunc\"><arg type=\"CustomType\" name=\"mySprite\" id=\"$J[@GtUSc~eo!]Y?wT{;\"></arg></mutation>" +
-            "</block>" +
+                "<block type=\"procedures_defnoreturn\" x=\"25\" y=\"270\">" +
+                    "<field name=\"NAME\">oldFunction</field>" +
+                    "<statement name=\"STACK\">" +
+                        "<block type=\"variables_set\">" +
+                            "<field name=\"VAR\" variabletype=\"\">foo</field>" +
+                            "<value name=\"VALUE\">" +
+                                "<shadow type=\"math_number\">" +
+                                    "<field name=\"NUM\">0</field>" +
+                                "</shadow>" +
+                            "</value>" +
+                        "</block>" +
+                    "</statement>" +
+                "</block>" +
+                "<block type=\"procedures_defnoreturn\" x=\"25\" y=\"400\">" +
+                    "<field name=\"NAME\">Math</field>" +
+                "</block>" +
+                "<block type=\"function_definition\" x=\"25\" y=\"25\">" +
+                    "<mutation name=\"myFunc\" functionid=\"S-K/H.HR!;+la~V+gT*6\"><arg type=\"CustomType\" name=\"mySprite\" id=\"$J[@GtUSc~eo!]Y?wT{;\"></arg></mutation>" +
+                "</block>" +
+                "<block type=\"function_call\" x=\"25\" y=\"200\">" +
+                    "<mutation name=\"myFunc\"><arg type=\"CustomType\" name=\"mySprite\" id=\"$J[@GtUSc~eo!]Y?wT{;\"></arg></mutation>" +
+                "</block>" +
             "</xml>";
 
         Blockly.Msg.PROCEDURES_DEFNORETURN_TITLE = 'function';
