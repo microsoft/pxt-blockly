@@ -455,7 +455,7 @@ Blockly.Functions.findLegalName = function(name, ws, block) {
 Blockly.Functions.rename = function(name) {
   // Strip leading and trailing whitespace. Beyond this, all names are legal.
   name = name.replace(/^[\s\xa0]+|[\s\xa0]+$/g, '');
-  var legalName = Blockly.Functions.findLegalName(name, this.sourceBlock_);
+  var legalName = Blockly.Functions.findLegalName(name, this.sourceBlock_.workspace, this.sourceBlock_);
   var oldName = this.text_;
 
   if (!legalName) return oldName;
