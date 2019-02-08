@@ -107,6 +107,12 @@ Blockly.FieldTextInput.prototype.CURSOR = 'text';
 Blockly.FieldTextInput.prototype.spellcheck_ = true;
 
 /**
+ * pxt-blockly: Allow browser to auto-capitalize this field.
+ * @private
+ */
+Blockly.FieldTextInput.prototype.autoCapitalize_ = true;
+
+/**
  * Install this text field on a block.
  */
 Blockly.FieldTextInput.prototype.init = function() {
@@ -244,6 +250,14 @@ Blockly.FieldTextInput.prototype.setSpellcheck = function(check) {
 };
 
 /**
+ * pxt-blockly: Set whether this field is auto-capitalized by the browser.
+ * @param {boolean} autoCapitalize True if auto-capitalized.
+ */
+Blockly.FieldTextInput.prototype.setAutoCapitalize = function(autoCapitalize) {
+  this.autoCapitalize_ = autoCapitalize;
+};
+
+/**
  * Set the restrictor regex for this text input.
  * Text that doesn't match the restrictor will never show in the text field.
  * @param {?RegExp} restrictor Regular expression to restrict text.
@@ -280,6 +294,10 @@ Blockly.FieldTextInput.prototype.showEditor_ = function(
   htmlInput.setAttribute('spellcheck', this.spellcheck_);
   if (readOnly) {
     htmlInput.setAttribute('readonly', 'true');
+  }
+  // pxt-blockly: disable auto-capitalization if configured to do so.
+  if (!this.autoCapitalize_) {
+    htmlInput.setAttribute('autocapitalize', 'none');
   }
   /** @type {!HTMLInputElement} */
   Blockly.FieldTextInput.htmlInput_ = htmlInput;

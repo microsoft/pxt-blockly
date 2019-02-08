@@ -133,10 +133,21 @@ Blockly.Functions.getCallers = function(name, workspace) {
   var blocks = workspace.getAllBlocks();
   // Iterate through every block and check the name.
   for (var i = 0; i < blocks.length; i++) {
+    // TODO: Ideally this should only check for function calls, but changing the if condition
+    // causes a bug in mutateCallersAndDefinition() where arg reporters are deleted from the
+    // function definition. The reason it works right now from what I've gathered is that the
+    // function definition gets included twice in mutateCallersAndDefinition(): once from this call
+    // (because it does not filter on function calls, so it also incldues the function definition),
+    // and once from mutateCallersAndDefinition() that hardcodes adding the definition to the array
+    // of blocks to mutate. So, the definition gets processed twice: the 1st time, the arg
+    // reporters get deleted from the definition; but the second time, the mutationToDom() fixes
+    // the deleted arg reporters and returns early (because the mutation hasn't changed between the
+    // first pass and the 2nd pass). Uncommenting the below if() makes it so the definition is only
+    // processed once, so the arg reporters are deleted and never fixed by the 2nd pass.
+    // if (blocks[i].type == Blockly.FUNCTION_CALL_BLOCK_TYPE) {
     if (blocks[i].getName) {
       var funcName = blocks[i].getName();
-      // Function name may be null if the block is only half-built.
-      if (funcName && Blockly.Names.equals(funcName, name)) {
+      if (funcName == name) {
         callers.push(blocks[i]);
       }
     }
@@ -154,10 +165,9 @@ Blockly.Functions.getDefinition = function(name, workspace) {
   // Assume that a function definition is a top block.
   var blocks = workspace.getTopBlocks(false);
   for (var i = 0; i < blocks.length; i++) {
-    if (blocks[i].type === Blockly.FUNCTION_DEFINITION_BLOCK_TYPE && blocks[i].getName) {
+    if (blocks[i].type == Blockly.FUNCTION_DEFINITION_BLOCK_TYPE && blocks[i].getName) {
       var funcName = blocks[i].getName();
-      // Function name may be null if the block is only half-built.
-      if (funcName && Blockly.Names.equals(funcName, name)) {
+      if (funcName == name) {
         return blocks[i];
       }
     }
@@ -189,24 +199,28 @@ Blockly.Functions.getAllFunctionDefinitionBlocks = function(root) {
  *  of false means the argument is a built-in literal.
  */
 Blockly.Functions.isCustomType = function(argumentType) {
-  return !(argumentType === 'boolean' ||
-    argumentType === 'string' ||
-    argumentType === 'number');
+  return !(argumentType == 'boolean' ||
+    argumentType == 'string' ||
+    argumentType == 'number');
 };
 
 
 /**
  * Create a mutation for a brand new function.
+ * @param {!Blockly.Workspace} destWs The main workspace where the user keeps their code.
  * @return {Element} The mutation for a new function.
  * @package
  */
-Blockly.Functions.newFunctionMutation = function() {
+Blockly.Functions.newFunctionMutation = function(destWs) {
+  // Ensure the default function name is unique.
+  var defaultName = Blockly.Functions.findLegalName(Blockly.Msg.FUNCTIONS_DEFAULT_FUNCTION_NAME, destWs);
+
   // <block type="function_definition">
   //   <mutation name="myFunc" functionid="..."></mutation>
   // </block>
   var mutationText =
     '<xml>' +
-    '<mutation name="' + Blockly.Msg.FUNCTIONS_DEFAULT_FUNCTION_NAME + '" functionid="' + Blockly.utils.genUid() + '"></mutation>' +
+    '<mutation name="' + defaultName + '" functionid="' + Blockly.utils.genUid() + '"></mutation>' +
     '</xml>';
   var mutation = Blockly.Xml.textToDom(mutationText).firstChild;
   mutation.removeAttribute('xmlns');
@@ -253,7 +267,7 @@ Blockly.Functions.findUniqueParamName = function(name, paramNames) {
  */
 Blockly.Functions.isUniqueParamName = function(name, paramNames) {
   if (!paramNames) return true;
-  return paramNames.indexOf(name) === -1;
+  return paramNames.indexOf(name) == -1;
 };
 
 /**
@@ -267,7 +281,7 @@ Blockly.Functions.createFunctionCallback_ = function(workspace) {
     Blockly.selected.unselect();
   }
   Blockly.Functions.editFunctionExternalHandler(
-      Blockly.Functions.newFunctionMutation(),
+      Blockly.Functions.newFunctionMutation(workspace),
       Blockly.Functions.createFunctionCallbackFactory_(workspace)
   );
 };
@@ -317,7 +331,7 @@ Blockly.Functions.createFunctionCallbackFactory_ = function(workspace) {
 Blockly.Functions.editFunctionCallback_ = function(block) {
   // Edit can come from either the function definition or a function call.
   // Normalize by setting the block to the definition block for the function.
-  if (block.type == Blockly.Functions_CALL_BLOCK_TYPE) {
+  if (block.type == Blockly.FUNCTION_CALL_BLOCK_TYPE) {
     // This is a call block, find the definition block corresponding to the
     // name. Make sure to search the correct workspace, call block can be in flyout.
     var workspaceToSearch = block.workspace.isFlyout ?
@@ -396,26 +410,45 @@ Blockly.Functions.getReporterArgumentType = function(reporterOutputType) {
 };
 
 /**
+ * Returns a dictionary of all variable, old functions and new functions names currently in use.
+ * @param {!Blockly.Workspace} ws The workspace to search.
+ * @param {!Blockly.Block} exceptBlock Optional block to disambiguate.
+ * @param {!string} exceptFuncId Optional function ID to ignore.
+ * @return {!Object.<string,boolean>} The dictionary <name, true> of names in use.
+ */
+Blockly.Functions.namesInUse = function(ws, exceptBlock, exceptFuncId) {
+  var usedNames = {};
+  ws.getAllVariables().forEach(function(v) {
+    usedNames[v.name] = true;
+  });
+  ws.getAllBlocks().forEach(function(b) {
+    if (b == exceptBlock || (!!exceptFuncId && b.getFunctionId && b.getFunctionId() == exceptFuncId)) {
+      return;
+    }
+
+    if (b.type == Blockly.FUNCTION_DEFINITION_BLOCK_TYPE) {
+      usedNames[b.getName()] = true;
+    } else if (b.type == 'procedures_defreturn' || b.type == 'procedures_defnoreturn') {
+      usedNames[b.getProcedureDef()[0]] = true;
+    }
+  });
+  return usedNames;
+}
+
+/**
  * Returns a name that is unique among existing functions and variables.
  * @param {string} name Proposed function name.
+ * @param {!Blockly.Workspace} ws The workspace to search.
  * @param {!Blockly.Block} block Block to disambiguate.
  * @return {string} Non-colliding name.
  */
-Blockly.Functions.findLegalName = function(name, block) {
-  if (block.isInFlyout) {
+Blockly.Functions.findLegalName = function(name, ws, block) {
+  if (block && block.isInFlyout) {
     // Flyouts can have multiple procedures called 'do something'.
     return name;
   }
 
-  var usedNames = {};
-  block.workspace.getAllVariables().forEach(function(v) {
-    usedNames[v.name.toLowerCase()] = true;
-  });
-  block.workspace.getAllBlocks().forEach(function(b) {
-    if (b.type == Blockly.FUNCTION_DEFINITION_BLOCK_TYPE && b != block) {
-      usedNames[b.getName().toLowerCase()] = true;
-    }
-  });
+  var usedNames = Blockly.Functions.namesInUse(ws, block);
 
   while (usedNames[name]) {
     name = Blockly.Functions.incrementNameSuffix(name);
@@ -425,7 +458,7 @@ Blockly.Functions.findLegalName = function(name, block) {
 }
 
 /**
- * Rename a Function.  Called by the editable field on a function definition.
+ * Rename a Function. Called by the editable field on a function definition.
  * @param {string} name The proposed new name.
  * @return {string} The accepted name.
  * @this {Blockly.Field}
@@ -433,7 +466,7 @@ Blockly.Functions.findLegalName = function(name, block) {
 Blockly.Functions.rename = function(name) {
   // Strip leading and trailing whitespace. Beyond this, all names are legal.
   name = name.replace(/^[\s\xa0]+|[\s\xa0]+$/g, '');
-  var legalName = Blockly.Functions.findLegalName(name, this.sourceBlock_);
+  var legalName = Blockly.Functions.findLegalName(name, this.sourceBlock_.workspace, this.sourceBlock_);
   var oldName = this.text_;
 
   if (!legalName) return oldName;
@@ -463,9 +496,8 @@ Blockly.Functions.rename = function(name) {
 Blockly.Functions.validateFunctionExternal = function(mutation, destinationWs) {
   // Check for empty function name.
   var funcName = mutation.getAttribute('name');
-  var lowerCase = funcName.toLowerCase();
 
-  if (!lowerCase) {
+  if (!funcName) {
     Blockly.alert(Blockly.Msg.FUNCTION_WARNING_EMPTY_NAME);
     return false;
   }
@@ -475,44 +507,30 @@ Blockly.Functions.validateFunctionExternal = function(mutation, destinationWs) {
   for (var i = 0; i < mutation.childNodes.length; ++i) {
     var arg = mutation.childNodes[i];
     var argName = arg.getAttribute('name');
-    var normalizedArgName = argName.toLowerCase();
-    if (!normalizedArgName) {
+    if (!argName) {
       Blockly.alert(Blockly.Msg.FUNCTION_WARNING_EMPTY_NAME);
       return false;
     }
-    if (seen[normalizedArgName]) {
+    if (seen[argName]) {
       Blockly.alert(Blockly.Msg.FUNCTION_WARNING_DUPLICATE_ARG);
       return false;
     }
-    seen[normalizedArgName] = true;
+    seen[argName] = true;
   }
 
   // Check for function name also being an argument name.
-  if (seen[lowerCase]) {
+  if (seen[funcName]) {
     Blockly.alert(Blockly.Msg.FUNCTION_WARNING_ARG_NAME_IS_FUNCTION_NAME);
     return false;
   }
 
-  // Check if function name is in use by a variable.
-  var allVarNames = destinationWs.getAllVariables().map(function(v) {
-    return v.name.toLowerCase();
-  });
-  if (allVarNames.indexOf(lowerCase) !== -1) {
-    Blockly.alert(Blockly.Msg.VARIABLE_ALREADY_EXISTS.replace('%1', lowerCase));
-    return false;
-  }
-
-  // Check if function name is in use by a different function (it's ok if the
-  // name is in use by the function we're editing - that means we've changed
-  // the arguments without renaming the function).
+  // Check if function name is in use by a variable or another function.
   var funcId = mutation.getAttribute('functionid');
-  var allFunctions = Blockly.Functions.getAllFunctionDefinitionBlocks(destinationWs);
-  for (var i = 0; i < allFunctions.length; ++i) {
-    if (allFunctions[i].getName().toLowerCase() === lowerCase &&
-      allFunctions[i].getFunctionId() !== funcId) {
-      Blockly.alert(Blockly.Msg.VARIABLE_ALREADY_EXISTS.replace('%1', lowerCase));
-      return false;
-    }
+  var usedNames = Blockly.Functions.namesInUse(destinationWs, null, funcId);
+
+  if (usedNames[funcName]) {
+    Blockly.alert(Blockly.Msg.VARIABLE_ALREADY_EXISTS.replace('%1', funcName));
+    return false;
   }
 
   // Looks good.
@@ -566,7 +584,7 @@ Blockly.Functions.mutateCallersAndDefinition = function(name, ws, mutation) {
 
         // For the definition, we also need to update all arguments that are
         // used inside the function.
-        if (caller.id === definitionBlock.id) {
+        if (caller.id == definitionBlock.id) {
           // First, build a map of oldArgName -> argId from the old mutation,
           // and a map of argId -> newArgName from the new mutation.
           var oldArgNamesToIds = Blockly.Functions.getArgMap(oldMutationDom);
@@ -615,8 +633,8 @@ Blockly.Functions.mutateCallersAndDefinition = function(name, ws, mutation) {
  * @return {boolean} True if the block is a function argument reporter.
  */
 Blockly.Functions.isFunctionArgumentReporter = function(block) {
-  return block.type === 'argument_reporter_boolean' ||
-    block.type === 'argument_reporter_number' ||
-    block.type === 'argument_reporter_string' ||
-    block.type === 'argument_reporter_custom';
+  return block.type == 'argument_reporter_boolean' ||
+    block.type == 'argument_reporter_number' ||
+    block.type == 'argument_reporter_string' ||
+    block.type == 'argument_reporter_custom';
 };

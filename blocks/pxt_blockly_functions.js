@@ -44,20 +44,36 @@ Blockly.PXTBlockly.FunctionUtils = {};
 
 /**
  * An object mapping function argument type names to an icon for the function editor dialog. The
- * icons must be in data URI ("data:image/svg+xml...") format.
+ * icons must be a SemanticUI icon class name, such as "copy outline", "play", etc.
  */
 Blockly.PXTBlockly.FunctionUtils.argumentIcons = {};
 
 /**
- * Returns the SVG data to use as the type icon for the specified argument type.
+ * An object mapping function argument type names to a default name to use in the function
+ * signature.
+ */
+Blockly.PXTBlockly.FunctionUtils.argumentDefaultNames = {};
+
+/**
+ * Returns the SemanticUI icon to use as the type icon for the specified argument type.
  * @param {string} typeName The argument type
- * @return {string} The SVG data of the icon to use for the specified argument type, or undefined
- *                  if none was set
+ * @return {string} The SemanticUI css className for the icon
  */
 Blockly.PXTBlockly.FunctionUtils.getArgumentIcon = function(typeName) {
   var icon = Blockly.PXTBlockly.FunctionUtils.argumentIcons &&
       Blockly.PXTBlockly.FunctionUtils.argumentIcons[typeName];
   return icon || undefined;
+};
+
+/**
+ * Returns the name to use as the default argument name for the given type.
+ * @param {string} typeName The argument type
+ * @return {string} The default argument name.
+ */
+Blockly.PXTBlockly.FunctionUtils.getArgumentDefaultName = function(typeName) {
+  var name = Blockly.PXTBlockly.FunctionUtils.argumentDefaultNames &&
+      Blockly.PXTBlockly.FunctionUtils.argumentDefaultNames[typeName];
+  return name || Blockly.Msg.FUNCTIONS_DEFAULT_CUSTOM_ARG_NAME;
 };
 
 /**
@@ -386,6 +402,7 @@ Blockly.PXTBlockly.FunctionUtils.addLabelEditor_ = function(text) {
     var nameField = new Blockly.FieldTextInput(text || '');
   }
   nameField.setSpellcheck(false);
+  nameField.setAutoCapitalize(false);
   this.appendDummyInput('function_name').appendField(nameField, 'function_name')
 };
 
@@ -430,8 +447,8 @@ Blockly.PXTBlockly.FunctionUtils.getShadowBlockInfoFromType_ = function(argument
       // This is probably a custom type. Use a variable as the shadow.
       shadowType = 'variables_get';
       fieldName = 'VAR';
-      fieldValue = Blockly.Variables.getOrCreateVariablePackage(
-          ws, null, Blockly.Msg.VARIABLES_DEFAULT_NAME, '').getId();
+      fieldValue = Blockly.Variables.getOrCreateVariablePackage(ws, null,
+          Blockly.PXTBlockly.FunctionUtils.getArgumentDefaultName(argumentType), '').getId();
   }
   return [shadowType, fieldName, fieldValue];
 };
@@ -767,7 +784,7 @@ Blockly.PXTBlockly.FunctionUtils.addNumberExternal = function() {
  * @public
  */
 Blockly.PXTBlockly.FunctionUtils.addCustomExternal = function(typeName) {
-  this.addParam_(typeName, Blockly.Msg.FUNCTIONS_DEFAULT_CUSTOM_ARG_NAME);
+  this.addParam_(typeName, Blockly.PXTBlockly.FunctionUtils.getArgumentDefaultName(typeName));
 };
 
 /**
