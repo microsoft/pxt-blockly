@@ -133,6 +133,17 @@ Blockly.Functions.getCallers = function(name, workspace) {
   var blocks = workspace.getAllBlocks();
   // Iterate through every block and check the name.
   for (var i = 0; i < blocks.length; i++) {
+    // TODO: Ideally this should only check for function calls, but changing the if condition
+    // causes a bug in mutateCallersAndDefinition() where arg reporters are deleted from the
+    // function definition. The reason it works right now from what I've gathered is that the
+    // function definition gets included twice in mutateCallersAndDefinition(): once from this call
+    // (because it does not filter on function calls, so it also incldues the function definition),
+    // and once from mutateCallersAndDefinition() that hardcodes adding the definition to the array
+    // of blocks to mutate. So, the definition gets processed twice: the 1st time, the arg
+    // reporters get deleted from the definition; but the second time, the mutationToDom() fixes
+    // the deleted arg reporters and returns early (because the mutation hasn't changed between the
+    // first pass and the 2nd pass). Uncommenting the below if() makes it so the definition is only
+    // processed once, so the arg reporters are deleted and never fixed by the 2nd pass.
     // if (blocks[i].type == Blockly.FUNCTION_CALL_BLOCK_TYPE) {
     if (blocks[i].getName) {
       var funcName = blocks[i].getName();
