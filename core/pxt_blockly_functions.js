@@ -522,27 +522,6 @@ Blockly.Functions.validateFunctionExternal = function(mutation, destinationWs) {
     return false;
   }
 
-  // // Check if function name is in use by a variable.
-  // var allVarNames = destinationWs.getAllVariables().map(function(v) {
-  //   return v.name;
-  // });
-  // if (allVarNames.indexOf(funcName) !== -1) {
-  //   Blockly.alert(Blockly.Msg.VARIABLE_ALREADY_EXISTS.replace('%1', funcName));
-  //   return false;
-  // }
-
-  // // Check if function name is in use by a different function (it's ok if the
-  // // name is in use by the function we're editing - that means we've changed
-  // // the arguments without renaming the function).
-  // var funcId = mutation.getAttribute('functionid');
-  // var allFunctions = Blockly.Functions.getAllFunctionDefinitionBlocks(destinationWs);
-  // for (var i = 0; i < allFunctions.length; ++i) {
-  //   if (allFunctions[i].getName() == funcName && allFunctions[i].getFunctionId() !== funcId) {
-  //     Blockly.alert(Blockly.Msg.VARIABLE_ALREADY_EXISTS.replace('%1', funcName));
-  //     return false;
-  //   }
-  // }
-
   // Looks good.
   return true;
 };
