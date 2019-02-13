@@ -45,10 +45,10 @@ cat tmp/output/*.d.ts > tmp/blockly-core.d.ts.tmp
 sed -i.bak '/reference path/d' tmp/blockly-core.d.ts.tmp
 
 # add other definition files
-cat typings/blockly-header.d.ts > typings/blockly.d.ts
-cat typings/blockly-colours.d.ts >> typings/blockly.d.ts
-cat typings/blockly-toolbox.d.ts >> typings/blockly.d.ts
-cat typings/goog-closure.d.ts >> typings/blockly.d.ts
+cat typings/parts/blockly-header.d.ts > typings/blockly.d.ts
+cat typings/parts/blockly-colours.d.ts >> typings/blockly.d.ts
+cat typings/parts/blockly-options.d.ts >> typings/blockly.d.ts
+cat typings/parts/goog-closure.d.ts >> typings/blockly.d.ts
 cat tmp/blockly-core.d.ts.tmp >> typings/blockly.d.ts
 
 # remove build artifacts
