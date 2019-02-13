@@ -106,7 +106,7 @@ Blockly.FieldDropdown.prototype.imageElement_ = null;
 /**
  * Object with src, height, width, and alt attributes if currently selected
  * option is an image, or null.
- * @type {Object}
+ * @type {Blockly.ImageJson}
  * @private
  */
 Blockly.FieldDropdown.prototype.imageJson_ = null;

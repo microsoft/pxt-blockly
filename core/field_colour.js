@@ -86,7 +86,7 @@ Blockly.FieldColour.prototype.colorPicker_ = null;
 
 /**
  * Install this field on a block.
- * @param {!Blockly.Block} block The block containing this field.
+ * @param {!Blockly.Block=} block The block containing this field.
  */
 Blockly.FieldColour.prototype.init = function(block) {
   Blockly.FieldColour.superClass_.init.call(this, block);

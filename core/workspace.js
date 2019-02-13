@@ -241,7 +241,7 @@ Blockly.Workspace.prototype.getTopComments = function(ordered) {
 /**
  * Find all blocks in workspace.  Blocks are optionally sorted
  * by position; top to bottom (with slight LTR or RTL bias).
- * @param {boolean} ordered Sort the list if true.
+ * @param {boolean=} ordered Sort the list if true.
  * @return {!Array.<!Blockly.Block>} Array of blocks.
  */
 Blockly.Workspace.prototype.getAllBlocks = function(ordered) {

@@ -187,7 +187,7 @@ Blockly.DropDownDiv.setCategory = function(category) {
  * @param {!Blockly.Field} field The field showing the drop-down
  * @param {!Blockly.Block} block Block to position the drop-down around.
  * @param {Function=} opt_onHide Optional callback for when the drop-down is hidden.
- * @param {Number} opt_secondaryYOffset Optional Y offset for above-block positioning.
+ * @param {Number=} opt_secondaryYOffset Optional Y offset for above-block positioning.
  * @return {boolean} True if the menu rendered below block; false if above.
  */
 Blockly.DropDownDiv.showPositionedByBlock = function(field, block,
@@ -219,7 +219,7 @@ Blockly.DropDownDiv.showPositionedByBlock = function(field, block,
  * constrained to the block's workspace.
  * @param {Object} owner The object showing the drop-down
  * @param {Function=} opt_onHide Optional callback for when the drop-down is hidden.
- * @param {Number} opt_secondaryYOffset Optional Y offset for above-block positioning.
+ * @param {Number=} opt_secondaryYOffset Optional Y offset for above-block positioning.
  * @return {boolean} True if the menu rendered below block; false if above.
  */
 Blockly.DropDownDiv.showPositionedByField = function(owner,

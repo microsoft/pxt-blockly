@@ -418,7 +418,8 @@ Blockly.ContextMenu.wsExpandOption = function(hasCollapsedBlocks, topBlocks) {
 
 /*
  * Make a context menu option for deleting the current workspace comment.
- * @param {!Blockly.WorkspaceCommentSvg} comment The workspace comment where the right-click originated.
+ * @param {!Blockly.WorkspaceCommentSvg} comment The workspace comment
+ *  where the right-click originated.
  * @return {!Object} A menu option, containing text, enabled, and a callback.
  * @package
  */
@@ -437,7 +438,8 @@ Blockly.ContextMenu.commentDeleteOption = function(comment) {
 
 /**
  * Make a context menu option for duplicating the current workspace comment.
- * @param {!Blockly.WorkspaceCommentSvg} comment The workspace comment where the right-click originated.
+ * @param {!Blockly.WorkspaceCommentSvg} comment The workspace comment
+ *  where the right-click originated.
  * @return {!Object} A menu option, containing text, enabled, and a callback.
  * @package
  */

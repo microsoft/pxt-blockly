@@ -1648,7 +1648,7 @@ Blockly.WorkspaceSvg.prototype.scrollCenter = function() {
 /**
  * Scroll the workspace to center on the given block.
  * @param {?string} id ID of block center on.
- * @param {boolean} animate If true, transition to the block.
+ * @param {boolean=} animate If true, transition to the block.
  * @public
  */
 Blockly.WorkspaceSvg.prototype.centerOnBlock = function(id, animate) {
@@ -2184,6 +2184,15 @@ Blockly.WorkspaceSvg.prototype.getAudioManager = function() {
  */
 Blockly.WorkspaceSvg.prototype.getGrid = function() {
   return this.grid_;
+};
+
+/**
+ * Return an object with the metrics required to size the workspace.
+ * @return {Blockly.Metrics} Contains size and position metrics, or null.
+ */
+Blockly.WorkspaceSvg.prototype.getMetrics = function() {
+  console.warn('WorkspaceSvg getOptions should be overriden by constructor');
+  return undefined;
 };
 
 // Export symbols that would otherwise be renamed by Closure compiler.

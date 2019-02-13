@@ -173,6 +173,41 @@ Blockly.Field.prototype.argType_ = null;
 Blockly.Field.prototype.validator_ = null;
 
 /**
+ * Box drawn around a field.
+ * @type {SVGRectElement}
+ * @private
+ */
+Blockly.Field.prototype.arrow_ = null;
+
+/**
+ * Box drawn around a field.
+ * @type {SVGRectElement}
+ * @private
+ */
+Blockly.Field.prototype.box_ = null;
+
+/**
+ * Arrow width.
+ * @type {number}
+ * @private
+ */
+Blockly.Field.prototype.arrowWidth_ = 0;
+
+/**
+ * Field size
+ * @type {goog.math.Size}
+ * @private
+ */
+Blockly.Field.prototype.size_ = null;
+
+/**
+ * Field group
+ * @type {SVGElement}
+ * @private
+ */
+Blockly.Field.prototype.fieldGroup_ = null;
+
+/**
  * Non-breaking space.
  * @const
  */
@@ -577,7 +612,7 @@ Blockly.Field.prototype.getSize = function() {
 /**
  * Returns the bounding box of the rendered field, accounting for workspace
  * scaling.
- * @return {!Object} An object with top, bottom, left, and right in pixels
+ * @return {!goog.math.Box} An object with top, bottom, left, and right in pixels
  *     relative to the top left corner of the page (window coordinates).
  * @private
  */
@@ -805,4 +840,13 @@ Blockly.Field.prototype.getTotalFields_ = function() {
  */
 Blockly.Field.prototype.getAbsoluteXY_ = function() {
   return goog.style.getPageOffset(this.getClickTarget_());
+};
+
+/**
+ * Show an editor when the field is clicked.
+ * @param {!Event=} e A mouse down or touch start event.
+ * @private
+ */
+Blockly.Field.prototype.showEditor_ = function(e) {
+  console.warn('Field should override showEditor_', e);
 };

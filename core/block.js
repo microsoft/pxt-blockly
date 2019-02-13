@@ -272,7 +272,7 @@ Blockly.Block.prototype.hue_ = null;
 
 /**
  * Dispose of this block.
- * @param {boolean} healStack If true, then try to heal any gap by connecting
+ * @param {boolean=} healStack If true, then try to heal any gap by connecting
  *     the next statement with the previous statement.  Otherwise, dispose of
  *     all children of this block.
  */
@@ -571,7 +571,7 @@ Blockly.Block.prototype.getChildren = function(ordered) {
 
 /**
  * Set parent of this block to be a new block or null.
- * @param {Blockly.Block} newParent New parent block.
+ * @param {Blockly.Block|Blockly.BlockSvg} newParent New parent block.
  */
 Blockly.Block.prototype.setParent = function(newParent) {
   if (newParent == this.parentBlock_) {
@@ -878,8 +878,8 @@ Blockly.Block.prototype.makeColour_ = function(colour) {
 /**
  * Change the colour of a block, and optional secondary/teriarty colours.
  * @param {number|string} colour HSV hue value, or #RRGGBB string.
- * @param {number|string} colourSecondary HSV hue value, or #RRGGBB string.
- * @param {number|string} colourTertiary HSV hue value, or #RRGGBB string.
+ * @param {number|string=} colourSecondary HSV hue value, or #RRGGBB string.
+ * @param {number|string=} colourTertiary HSV hue value, or #RRGGBB string.
  */
 Blockly.Block.prototype.setColour = function(colour, colourSecondary, colourTertiary) {
   this.colour_ = this.makeColour_(colour);
@@ -1802,7 +1802,7 @@ Blockly.Block.prototype.moveBy = function(dx, dy) {
 /**
  * Create a connection of the specified type.
  * @param {number} type The type of the connection to create.
- * @return {!Blockly.Connection} A new connection of the specified type.
+ * @return {!Blockly.Connection|!Blockly.RenderedConnection} A new connection of the specified type.
  * @private
  */
 Blockly.Block.prototype.makeConnection_ = function(type) {

@@ -26,11 +26,13 @@ goog.require('goog.ui.Slider');
 
 /**
  * Class for an editable number field.
- * @param {number|string} value The initial content of the field.
- * @param {number|string|undefined} opt_min Minimum value.
- * @param {number|string|undefined} opt_max Maximum value.
- * @param {number|string|undefined} opt_precision Precision for value.
- * @param {number|string|undefined} opt_labelText Label text
+ * @param {(string|number)=} opt_value The initial content of the field. The value
+ *     should cast to a number, and if it does not, '0' will be used.
+ * @param {(string|number)=} opt_min Minimum value.
+ * @param {(string|number)=} opt_max Maximum value.
+ * @param {(string|number)=} opt_precision Precision for value.
+ * @param {(string|number)=} opt_step Step.
+ * @param {(string|number)=} opt_labelText Label text.
  * @param {Function=} opt_validator An optional function that is called
  *     to validate any constraints on what the user entered.  Takes the new
  *     text as an argument and returns either the accepted text, a replacement
@@ -38,9 +40,9 @@ goog.require('goog.ui.Slider');
  * @extends {Blockly.FieldNumber}
  * @constructor
  */
-Blockly.FieldSlider = function(value_, opt_min, opt_max, opt_precision,
+Blockly.FieldSlider = function(opt_value, opt_min, opt_max, opt_precision,
     opt_step, opt_labelText, opt_validator) {
-  Blockly.FieldSlider.superClass_.constructor.call(this, value_,
+  Blockly.FieldSlider.superClass_.constructor.call(this, opt_value,
       opt_validator);
   this.min_ = parseFloat(opt_min);
   this.max_ = parseFloat(opt_max);
@@ -49,6 +51,41 @@ Blockly.FieldSlider = function(value_, opt_min, opt_max, opt_precision,
   this.precision_ = parseFloat(opt_precision);
 };
 goog.inherits(Blockly.FieldSlider, Blockly.FieldNumber);
+
+/**
+ * Minimum value
+ * @type {number}
+ * @private
+ */
+Blockly.FieldSlider.prototype.min_ = null;
+
+/**
+ * Maximum value
+ * @type {number}
+ * @private
+ */
+Blockly.FieldSlider.prototype.max_ = null;
+
+/**
+ * Step value
+ * @type {number}
+ * @private
+ */
+Blockly.FieldSlider.prototype.step_ = null;
+
+/**
+ * Precision for value
+ * @type {number}
+ * @private
+ */
+Blockly.FieldSlider.prototype.precision_ = null;
+
+/**
+ * Label text
+ * @type {string}
+ * @private
+ */
+Blockly.FieldSlider.prototype.labelText_ = null;
 
 /**
  * Construct a FieldSlider from a JSON arg object.
@@ -98,7 +135,7 @@ Blockly.FieldSlider.prototype.init = function() {
 
 /**
  * Show the inline free-text editor on top of the text.
- * @param {!Event} e A mouse down or touch start event.
+ * @param {!Event=} e A mouse down or touch start event.
  * @private
  */
 Blockly.FieldSlider.prototype.showEditor_ = function(e) {
@@ -137,10 +174,6 @@ Blockly.FieldSlider.prototype.showSlider_ = function() {
   if (this.slider_) this.slider_.setVisible(true);
 };
 
-/**
- * Add the slider.
- * @private
- */
 Blockly.FieldSlider.prototype.addSlider_ = function(contentDiv) {
   if (this.labelText_) {
     var elements = this.createLabelDom_(this.labelText_);
@@ -186,10 +219,6 @@ Blockly.FieldSlider.prototype.addSlider_ = function(contentDiv) {
       });
 };
 
-/**
- * Create label DOM.
- * @private
- */
 Blockly.FieldSlider.prototype.createLabelDom_ = function(labelText) {
   var labelContainer = document.createElement('div');
   labelContainer.setAttribute('class', 'blocklyFieldSliderLabel');
@@ -204,7 +233,8 @@ Blockly.FieldSlider.prototype.createLabelDom_ = function(labelText) {
 };
 
 /**
- * Set value.
+ * Set the slider value.
+ * @param {string} value The new slider value.
  */
 Blockly.FieldSlider.prototype.setValue = function(value) {
   Blockly.FieldSlider.superClass_.setValue.call(this, value);
@@ -224,10 +254,6 @@ Blockly.FieldSlider.prototype.updateDom_ = function() {
   }
 };
 
-/**
- * Set the slider background.
- * @private
- */
 Blockly.FieldSlider.prototype.setBackground_ = function(slider) {
   if (this.sliderColor_) {
     goog.style.setStyle(slider, 'background', this.sliderColor_);
@@ -237,10 +263,6 @@ Blockly.FieldSlider.prototype.setBackground_ = function(slider) {
   }
 };
 
-/**
- * Set readout.
- * @private
- */
 Blockly.FieldSlider.prototype.setReadout_ = function(readout, value) {
   readout.innerHTML = value;
 };
