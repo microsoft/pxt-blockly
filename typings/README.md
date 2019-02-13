@@ -24,13 +24,13 @@ A number of static definitions are included in the generated blockly defenition 
 ### Google closure typings
 Today, Blockly has a dependency on the Google Closure library. The typings for these dependencies are handcrafted to only the ones used by ``blockly.d.ts`` and can be found under ``typings/parts/goog-closure.d.ts``
 
-### Blockly header
+### Typings header
 A header file that includes the MIT license header and a couple of interfaces used by Blockly, such as Metrics and ImageJson. This can be found under ``typings/parts/blockly-header.d.ts``
 
-### Blockly Options
+### Blockly workspace options
 An interface describing the Blockly workspace options. This can be found under ``typings/parts/blockly-options.d.ts``
 
-### Blockly Colours
+### Blockly colours
 An interface describing the Blockly colour options. This can be found under ``typings/parts/blockly-colours.d.ts``
 
 ## LICENSE
