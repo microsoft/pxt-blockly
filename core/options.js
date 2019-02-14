@@ -152,19 +152,19 @@ Blockly.Options = function(options) {
   var toolboxOptions = options['toolboxOptions'] || {};
   this.toolboxOptions = {};
   if (toolboxOptions["border"] == undefined) {
-      toolboxOptions["border"] = true;
+    toolboxOptions["border"] = true;
   }
   if (toolboxOptions["colour"] == undefined) {
-      toolboxOptions["colour"] = false;
+    toolboxOptions["colour"] = false;
   }
   if (toolboxOptions["inverted"] == undefined) {
-      toolboxOptions["inverted"] = false;
+    toolboxOptions["inverted"] = false;
   }
   if (toolboxOptions["invertedMultiplier"] == undefined) {
-      toolboxOptions["invertedMultiplier"] = 0.3;
+    toolboxOptions["invertedMultiplier"] = 0.3;
   }
   if (toolboxOptions["disabledOpacity"] == undefined) {
-      toolboxOptions["disabledOpacity"] = 0.4;
+    toolboxOptions["disabledOpacity"] = 0.4;
   }
   this.toolboxOptions.border = toolboxOptions["border"];
   this.toolboxOptions.colour = toolboxOptions["colour"];

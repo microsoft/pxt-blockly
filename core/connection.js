@@ -789,7 +789,7 @@ Blockly.Connection.prototype.getShadowDom = function() {
  * and always return an empty list (the default).
  * {@link Blockly.RenderedConnection} overrides this behavior with a list
  * computed from the rendered positioning.
- * @param {number} maxLimit The maximum radius to another connection.
+ * @param {number=} maxLimit The maximum radius to another connection.
  * @return {!Array.<!Blockly.Connection>} List of connections.
  * @private
  */

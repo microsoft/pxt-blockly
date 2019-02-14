@@ -929,10 +929,10 @@ Blockly.BlockSvg.prototype.getSvgRoot = function() {
 
 /**
  * Dispose of this block.
- * @param {boolean} healStack If true, then try to heal any gap by connecting
+ * @param {boolean=} healStack If true, then try to heal any gap by connecting
  *     the next statement with the previous statement.  Otherwise, dispose of
  *     all children of this block.
- * @param {boolean} animate If true, show a disposal animation and sound.
+ * @param {boolean=} animate If true, show a disposal animation and sound.
  */
 Blockly.BlockSvg.prototype.dispose = function(healStack, animate) {
   if (!this.workspace) {
@@ -1217,9 +1217,9 @@ Blockly.BlockSvg.prototype.setDeleteStyle = function(enable) {
 /**
  * Change the colour of a block.
  * @param {number|string} colour HSV hue value, or #RRGGBB string.
- * @param {number|string} colourSecondary Secondary HSV hue value, or #RRGGBB
+ * @param {number|string=} colourSecondary Secondary HSV hue value, or #RRGGBB
  *    string.
- * @param {number|string} colourTertiary Tertiary HSV hue value, or #RRGGBB
+ * @param {number|string=} colourTertiary Tertiary HSV hue value, or #RRGGBB
  *    string.
  */
 Blockly.BlockSvg.prototype.setColour = function(colour, colourSecondary,
@@ -1502,3 +1502,22 @@ Blockly.BlockSvg.prototype.bindReporterHoverEvents_ = function() {
   });
 };
 
+/**
+ * Returns a bounding box describing the dimensions of this block
+ * and any blocks stacked below it.
+ * @return {!{height: number, width: number}} Object with height and width properties.
+ */
+Blockly.BlockSvg.prototype.getHeightWidth = function() {
+  console.warn('method is overriden by block_render_svg.js');
+  return undefined;
+};
+
+/**
+ * Render the block.
+ * Lays out and reflows a block based on its contents and settings.
+ * @param {boolean=} opt_bubble If false, just render this block.
+ *   If true, also render block's parent, grandparent, etc.  Defaults to true.
+ */
+Blockly.BlockSvg.prototype.render = function(opt_bubble) {
+  console.warn('method is overriden by block_render_svg.js', opt_bubble);
+};

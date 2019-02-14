@@ -76,7 +76,7 @@ Blockly.FieldIconMenu.savedPrimary_ = null;
 
 /**
  * Called when the field is placed on a block.
- * @param {Block} block The owning block.
+ * @param {!Blockly.Block=} block The block containing this field.
  */
 Blockly.FieldIconMenu.prototype.init = function(block) {
   // Render the arrow icon

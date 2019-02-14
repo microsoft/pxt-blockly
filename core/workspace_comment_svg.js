@@ -597,3 +597,12 @@ Blockly.WorkspaceCommentSvg.prototype.toXmlWithXY = function(opt_noId) {
   element.setAttribute('w', this.getWidth());
   return element;
 };
+
+/**
+ * Returns a bounding box describing the dimensions of this workspace comment.
+ * @return {!{height: number, width: number}} Object with height and width properties.
+ */
+Blockly.WorkspaceCommentSvg.prototype.getHeightWidth = function() {
+  console.warn('method is overriden by workspace_comment_render_svg.js');
+  return undefined;
+};

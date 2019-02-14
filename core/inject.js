@@ -43,7 +43,7 @@ goog.require('goog.userAgent');
  * Inject a Blockly editor into the specified container element (usually a div).
  * @param {!Element|string} container Containing element, or its ID,
  *     or a CSS selector.
- * @param {Object=} opt_options Optional dictionary of options.
+ * @param {Blockly.WorkspaceOptions=} opt_options Optional dictionary of options.
  * @return {!Blockly.Workspace} Newly created main workspace.
  */
 Blockly.inject = function(container, opt_options) {

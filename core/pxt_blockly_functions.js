@@ -365,10 +365,12 @@ Blockly.Functions.editFunctionCallbackFactory_ = function(block) {
 
 /**
  * Callback to create a new function custom command block.
+ * @param {Element=} mutation The function mutator
+ * @param {Function=} callback The function callback.
  * @public
  */
-Blockly.Functions.editFunctionExternalHandler = function(/** mutator, callback */) {
-  console.warn('External function editor must be overriden: Blockly.Functions.editFunctionExternalHandler');
+Blockly.Functions.editFunctionExternalHandler = function(mutation, callback) {
+  console.warn('External function editor must be overriden: Blockly.Functions.editFunctionExternalHandler', mutation, callback);
 };
 
 /**

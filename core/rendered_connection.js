@@ -311,7 +311,7 @@ Blockly.RenderedConnection.prototype.hideAll = function() {
 /**
  * Check if the two connections can be dragged to connect to each other.
  * @param {!Blockly.Connection} candidate A nearby connection to check.
- * @param {number} maxRadius The maximum radius allowed for connections, in
+ * @param {number=} maxRadius The maximum radius allowed for connections, in
  *     workspace units.
  * @return {boolean} True if the connection is allowed, false otherwise.
  */
@@ -371,7 +371,7 @@ Blockly.RenderedConnection.prototype.respawnShadow_ = function() {
 /**
  * Find all nearby compatible connections to this connection.
  * Type checking does not apply, since this function is used for bumping.
- * @param {number} maxLimit The maximum radius to another connection, in
+ * @param {number=} maxLimit The maximum radius to another connection, in
  *     workspace units.
  * @return {!Array.<!Blockly.Connection>} List of connections.
  * @private
