@@ -49,12 +49,7 @@ Blockly.pxtBlocklyUtils.measureText = function(fontSize, fontFamily,
  * @package
  */
 Blockly.pxtBlocklyUtils.isShadowArgumentReporter = function(block) {
-  return block.isShadow() &&
-    (block.type === 'variables_get_reporter' ||
-      block.type === 'argument_reporter_boolean' ||
-      block.type === 'argument_reporter_number' ||
-      block.type === 'argument_reporter_string' ||
-      block.type === 'argument_reporter_custom');
+  return block.isShadow()
 };
 
 /**
