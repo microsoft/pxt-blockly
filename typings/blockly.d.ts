@@ -814,6 +814,9 @@ declare namespace Blockly {
     class Warning extends Icon {
     }
 
+    class Breakpoint extends Icon {
+    }
+
     class Icon {
         constructor(block: Block);
 

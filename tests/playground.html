@@ -309,6 +309,16 @@ function airstrike(n) {
   }
 }
 
+function showBreakpoints() {
+  workspace.options.debugMode = !workspace.options.debugMode;
+  let blocks = workspace.getAllBlocks();
+  blocks.forEach(block => {
+    if (block.nextConnection && block.previousConnection) {
+      block.enableBreakpoint(workspace.options.debugMode);
+    }
+  });
+}
+
 function spaghetti(n) {
   var xml = spaghettiXml;
   for(var i = 0; i < n; i++) {
@@ -494,6 +504,7 @@ line.blocklyFlyoutLine {
     Stress test: &nbsp;
     <input type="button" value="Airstrike!" onclick="airstrike(100)">
     <input type="button" value="Spaghetti!" onclick="spaghetti(8)">
+    <input type="button" value="Debug!!" onclick="showBreakpoints()">
   </p>
 
   <p>

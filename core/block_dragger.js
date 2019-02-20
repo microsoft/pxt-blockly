@@ -139,7 +139,8 @@ Blockly.BlockDragger.initIconData_ = function(block) {
         // Blockly.Icon
         icon: icons[j]
       };
-      dragIconData.push(data);
+      // We only drag bubbles from Icons that have one.
+      if (data.location) dragIconData.push(data);
     }
   }
   return dragIconData;
