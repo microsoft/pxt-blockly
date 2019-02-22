@@ -1727,21 +1727,26 @@ Blockly.Block.prototype.setCommentText = function(text) {
 
 /**
  * Set this Block's breakpoint as enabled or disabled.
- * @param {?boolean} enable A boolean definining if the breakpoint should be enabled or disabled.
+ * @param {boolean} enable A boolean definining if the breakpoint should be enabled or disabled.
  */
 Blockly.Block.prototype.enableBreakpoint = function(enable) {
+  let modified = false;
   if (enable) {
     if (!this.breakpoint) {
       this.breakpoint = new Blockly.Breakpoint(this);
+      modified = true;
     }
     this.breakpoint.setVisible(this.isBreakpointSet());
   } else {
     if (this.breakpoint) {
       this.breakpoint.dispose();
+      modified = true;
     }
   }
-  Blockly.Events.fire(new Blockly.Events.BlockChange(
-    this, 'breakpoint', null, !enable, enable));
+  if (modified) {
+    Blockly.Events.fire(new Blockly.Events.BlockChange(
+      this, 'breakpoint', null, !enable, enable));
+    }
 }
 
 /**
@@ -1755,7 +1760,7 @@ Blockly.Block.prototype.isBreakpointSet = function () {
 
 /**
  * Set this block's breakpoint.
- * @param {?boolean} set Boolean representing if the breakpoint is now set or not.
+ * @param {boolean} set Boolean representing if the breakpoint is now set or not.
  */
 Blockly.Block.prototype.setBreakpoint = function(set) {
   this.breakpointSet_ = set;

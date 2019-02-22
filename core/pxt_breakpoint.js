@@ -4,7 +4,6 @@
 
 goog.provide('Blockly.Breakpoint');
 
-// goog.require('Blockly.Bubble');
 goog.require('Blockly.Events.BlockChange');
 goog.require('Blockly.Events.Ui');
 goog.require('Blockly.Icon');
@@ -36,7 +35,7 @@ Blockly.Breakpoint.prototype.collapseHidden = false;
  * @private
  */
 Blockly.Breakpoint.prototype.drawIcon_ = function(group) {
-  let fill = this.block_.isBreakpointSet() ? '#f00' : "#ccc";
+  var fill = this.block_.isBreakpointSet() ? '#f00' : "#ccc";
   // Red/Grey filled circle, for Set/Unset breakpoint respectively.
   this.bigDot = Blockly.utils.createSvgElement('circle',
   {

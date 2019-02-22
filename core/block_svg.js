@@ -1039,7 +1039,7 @@ Blockly.BlockSvg.prototype.getCommentText = function() {
  * @param {boolean} enable Boolean representing if the breakpoint is being enabled or disabled.
  */
 Blockly.BlockSvg.prototype.enableBreakpoint = function(enable) {
-  let changedState = false;
+  var changedState = false;
   if (enable) {
     if (!this.breakpoint) {
       this.breakpoint = new Blockly.Breakpoint(this);

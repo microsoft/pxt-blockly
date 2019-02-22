@@ -191,7 +191,7 @@ Blockly.Xml.blockToDom = function(block, opt_noId) {
   Blockly.Xml.allFieldsToDom_(block, element);
 
   if (block.isBreakpointSet()) {
-    let breakpointElement = goog.dom.createDom('breakpoint', null, "");
+    var breakpointElement = goog.dom.createDom('breakpoint', null, "");
     element.appendChild(breakpointElement);
   }
 
