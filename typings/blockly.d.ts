@@ -1033,6 +1033,7 @@ declare namespace Blockly {
         rtl?: boolean;
         // PXT specific:
         toolboxOptions?: ToolboxOptions;
+        debugMode?: boolean;
     }
 
     class Options {
