@@ -77,7 +77,7 @@ Blockly.Icon.prototype.createIcon = function() {
   </g>
   */
   this.iconGroup_ = Blockly.utils.createSvgElement('g',
-      {'class': 'blocklyIconGroup'}, null);
+      {'class': 'blocklyText'}, null);
   if (this.block_.isInFlyout) {
     Blockly.utils.addClass(
         /** @type {!Element} */ (this.iconGroup_), 'blocklyIconGroupReadonly');
@@ -143,9 +143,11 @@ Blockly.Icon.prototype.updateColour = function() {
 /**
  * Render the icon.
  * @param {number} cursorX Horizontal offset at which to position the icon.
+ * @param {?number} cursorY Vertical offset at which to position the icon.
  * @return {number} Horizontal offset for next item to draw.
  */
-Blockly.Icon.prototype.renderIcon = function(cursorX) {
+Blockly.Icon.prototype.renderIcon = function(cursorX, cursorY) {
+  cursorY = cursorY || 0;
   if (this.collapseHidden && this.block_.isCollapsed()) {
     this.iconGroup_.setAttribute('display', 'none');
     return cursorX;
@@ -158,7 +160,7 @@ Blockly.Icon.prototype.renderIcon = function(cursorX) {
     cursorX -= width;
   }
   this.iconGroup_.setAttribute('transform',
-      'translate(' + cursorX + ',' + TOP_MARGIN + '),scale(1.4)');
+      'translate(' + cursorX + ',' + (TOP_MARGIN + cursorY)  + '),scale(1.4)');
   this.computeIconLocation();
   if (this.block_.RTL) {
     cursorX -= Blockly.BlockSvg.SEP_SPACE_X;
