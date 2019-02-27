@@ -366,11 +366,20 @@ Blockly.BlockSvg.prototype.comment = null;
 Blockly.BlockSvg.prototype.warning = null;
 
 /**
- * Returns a list of mutator, comment, and warning icons.
+ * Block's breakpoint icon (if any).
+ * @type {Blockly.Breakpoint}
+ */
+Blockly.BlockSvg.prototype.breakpoint = null;
+
+/**
+ * Returns a list of breakpoint, mutator, comment, and warning icons.
  * @return {!Array} List of icons.
  */
 Blockly.BlockSvg.prototype.getIcons = function() {
   var icons = [];
+  if (this.breakpoint) {
+    icons.push(this.breakpoint);
+  }
   if (this.mutator) {
     icons.push(this.mutator);
   }
@@ -1023,6 +1032,32 @@ Blockly.BlockSvg.prototype.getCommentText = function() {
     return comment.replace(/\s+$/, '').replace(/ +\n/g, '\n');
   }
   return '';
+};
+
+/**
+ * Set this blockSvg's breakpoint as enabled.
+ * @param {boolean} enable Boolean representing if the breakpoint is being enabled or disabled.
+ */
+Blockly.BlockSvg.prototype.enableBreakpoint = function(enable) {
+  var changedState = false;
+  if (enable) {
+    if (!this.breakpoint) {
+      this.breakpoint = new Blockly.Breakpoint(this);
+      changedState = true;
+      this.breakpoint.enableBreakpoint();
+    }
+  } else {
+    if (this.breakpoint) {
+      this.breakpoint.dispose();
+      changedState = true;
+    }
+  }
+
+  if (changedState && this.rendered) {
+    this.render();
+    // Adding a breakpoint icon will cause the block to change shape.
+    this.bumpNeighbours_();
+  }
 };
 
 /**

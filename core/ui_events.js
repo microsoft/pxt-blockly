@@ -35,7 +35,7 @@ goog.require('goog.math.Coordinate');
 /**
  * Class for a UI event.
  * @param {Blockly.Block} block The affected block.
- * @param {string} element One of 'selected', 'comment', 'mutator', etc.
+ * @param {string} element One of 'selected', 'comment', 'mutator', 'breakpoint' etc.
  * @param {*} oldValue Previous value of element.
  * @param {*} newValue New value of element.
  * @extends {Blockly.Events.Abstract}
