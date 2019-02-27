@@ -232,8 +232,17 @@ Blockly.FieldDropdown.prototype.showEditor_ = function() {
   Blockly.DropDownDiv.hideWithoutAnimation();
   Blockly.DropDownDiv.clearContent();
 
-  var contentDiv = Blockly.DropDownDiv.getContentDiv();
+  var menu = this.createMenu_();
+  this.addActionListener_(menu);
+  this.positionMenu_(menu);
+};
 
+/**
+ * Add a listener for mouse and keyboard events in the menu and its items.
+ * @param {!goog.ui.Menu} menu The menu to add listeners to.
+ * @private
+ */
+Blockly.FieldDropdown.prototype.addActionListener_ = function(menu) {
   var thisField = this;
 
   var selected = false;
@@ -248,9 +257,20 @@ Blockly.FieldDropdown.prototype.showEditor_ = function() {
     Blockly.DropDownDiv.hide();
     Blockly.Events.setGroup(false);
   }
+  // Listen for mouse/keyboard events.
+  goog.events.listen(menu, goog.ui.Component.EventType.ACTION, callback);
+};
 
+/**
+ * Create and populate the menu and menu items for this dropdown, based on
+ * the options list.
+ * @return {!goog.ui.Menu} The populated dropdown menu.
+ * @private
+ */
+Blockly.FieldDropdown.prototype.createMenu_ = function() {
   var menu = new goog.ui.Menu();
   menu.setRightToLeft(this.sourceBlock_.RTL);
+  var options = this.getOptions();
   for (var i = 0; i < options.length; i++) {
     var content = options[i][0]; // Human-readable text or image.
     var value = options[i][1];   // Language-neutral value.
@@ -281,32 +301,56 @@ Blockly.FieldDropdown.prototype.showEditor_ = function() {
       this.selectedItem = menuItem;
     }
   }
-  // Listen for mouse/keyboard events.
-  goog.events.listen(menu, goog.ui.Component.EventType.ACTION, callback);
+  return menu;
+};
 
+/**
+ * Place the menu correctly on the screen, taking into account the dimensions
+ * of the menu and the dimensions of the screen so that it doesn't run off any
+ * edges.
+ * @param {!goog.ui.Menu} menu The menu to position.
+ * @private
+ */
+Blockly.FieldDropdown.prototype.positionMenu_ = function(menu) {
+  this.createWidget_(menu);
+  this.updateColours_();
+  Blockly.DropDownDiv.showPositionedByField(this, this.onHide.bind(this));
+
+  // Calling menuDom.focus() has to wait until after the menu has been placed
+  // correctly.  Otherwise it will cause a page scroll to get the misplaced menu
+  // in view.  See issue #1329.
+  menu.getElement().focus();
+};
+
+/**
+ * Create and render the menu widget inside Blockly's widget div.
+ * @param {!goog.ui.Menu} menu The menu to add to the widget div.
+ * @private
+ */
+Blockly.FieldDropdown.prototype.createWidget_ = function(menu) {
+  var contentDiv = Blockly.DropDownDiv.getContentDiv();
   // Record windowSize and scrollOffset before adding menu.
   menu.render(contentDiv);
   var menuDom = menu.getElement();
   Blockly.utils.addClass(menuDom, 'blocklyDropdownMenu');
-  // Record menuSize after adding menu.
-  var menuSize = goog.style.getSize(menuDom);
-  // Recalculate height for the total content, not only box height.
-  menuSize.height = menuDom.scrollHeight;
+  // Enable autofocus after the initial render to avoid issue #1329.
+  menu.setAllowAutoFocus(true);
+};
 
+/**
+ * Set the colours of the dropdown div to match the colours of the field or
+ * parent block.
+ * @private
+ */
+Blockly.FieldDropdown.prototype.updateColours_ = function() {
   var primaryColour = (this.sourceBlock_.isShadow()) ?
-    this.sourceBlock_.parentBlock_.getColour() : this.sourceBlock_.getColour();
+  this.sourceBlock_.parentBlock_.getColour() : this.sourceBlock_.getColour();
 
   Blockly.DropDownDiv.setColour(primaryColour, this.sourceBlock_.getColourTertiary());
 
   var category = (this.sourceBlock_.isShadow()) ?
     this.sourceBlock_.parentBlock_.getCategory() : this.sourceBlock_.getCategory();
   Blockly.DropDownDiv.setCategory(category);
-
-  Blockly.DropDownDiv.showPositionedByField(this, this.onHide.bind(this));
-
-  menu.setAllowAutoFocus(true);
-  menuDom.focus();
-
   // Update colour to look selected.
   if (!this.disableColourChange_) {
     if (this.sourceBlock_.isShadow()) {
