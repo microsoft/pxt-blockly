@@ -1252,13 +1252,13 @@ Blockly.BlockSvg.prototype.renderDrawRight_ = function(steps,
   
   // Align the icons vertically to the middle of the first row of the block.
   // We need to do this because row's height is modified when rendering fields.
-  let iconsCursorX = Blockly.BlockSvg.SEP_SPACE_X
+  var iconsCursorX = Blockly.BlockSvg.SEP_SPACE_X
   if (this.RTL) {
     iconsCursorX = -iconsCursorX;
   }
   var icons = this.getIcons();
   for (var i = 0; i < icons.length; i++) {
-    iconsCursorX = icons[i].renderIcon(iconsCursorX, (cursorY + inputRows[0].height)/2 -24);
+    iconsCursorX = icons[i].moveIcon(iconsCursorX, (cursorY + inputRows[0].height)/2 - 24);
   }
 
   for (var y = 0, row; row = inputRows[y]; y++) {
