@@ -77,7 +77,7 @@ Blockly.Icon.prototype.createIcon = function() {
   </g>
   */
   this.iconGroup_ = Blockly.utils.createSvgElement('g',
-      {'class': 'blocklyText'}, null);
+      {'class': 'blocklyIconGroup'}, null);
   if (this.block_.isInFlyout) {
     Blockly.utils.addClass(
         /** @type {!Element} */ (this.iconGroup_), 'blocklyIconGroupReadonly');
