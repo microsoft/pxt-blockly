@@ -30,20 +30,48 @@ goog.inherits(Blockly.Breakpoint, Blockly.Icon);
 Blockly.Breakpoint.prototype.collapseHidden = false;
 
 /**
+ * Create the icon on the block.
+ */
+Blockly.Breakpoint.prototype.createIcon = function() {
+  if (this.iconGroup_) {
+    // Icon already exists.
+    return;
+  }
+  /* Here's the markup that will be generated:
+  <g class="blocklyBreakpointIconGroup">
+    ...
+  </g>
+  */
+  this.iconGroup_ = Blockly.utils.createSvgElement('g',
+      {'class': 'blocklyBreakpointIconGroup'}, null);
+  if (this.block_.isInFlyout) {
+    Blockly.utils.addClass(
+        /** @type {!Element} */ (this.iconGroup_), 'blocklyBreakpointIconGroupReadonly');
+  }
+  this.drawIcon_(this.iconGroup_);
+
+  this.block_.getSvgRoot().appendChild(this.iconGroup_);
+  Blockly.bindEventWithChecks_(
+      this.iconGroup_, 'mouseup', this, this.iconClick_);
+  this.updateEditable();
+};
+
+/**
  * Draw the breakpoint icon.
  * @param {!Element} group The icon group.
  * @private
  */
 Blockly.Breakpoint.prototype.drawIcon_ = function(group) {
   var fill = this.block_.isBreakpointSet() ? '#f00' : "#ccc";
-  // Red/Grey filled circle, for Set/Unset breakpoint respectively.
-  this.bigDot = Blockly.utils.createSvgElement('circle',
+  // Red/Grey filled stop sign, for Set/Unset breakpoint respectively.
+  this.bigDot = Blockly.utils.createSvgElement('polygon',
   {
     'class': 'blocklyBreakpointSymbol',
-    'cx': '7',
-    'cy': '11',
-    'r': '5',
+    'points': '10,7 20,7 25,12 25,22 20,27 10,27 5,22 5,12',
     'fill': fill,
+    'stroke': 'white',
+    'stroke-width': 2,
+    'transform': 'scale(0.7)',
   },
   group);
 };
