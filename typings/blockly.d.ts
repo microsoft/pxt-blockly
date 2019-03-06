@@ -5828,10 +5828,10 @@ declare module Blockly {
     
             /**
              * Box drawn around a field.
-             * @type {SVGRectElement}
+             * @type {SVGElement}
              * @private
              */
-            arrow_: SVGRectElement;
+            arrow_: SVGElement;
     
             /**
              * Box drawn around a field.
