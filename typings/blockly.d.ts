@@ -18171,9 +18171,9 @@ declare module Blockly {
     
             /**
              * Get the SVG element that contains this workspace.
-             * @return {Element} SVG element.
+             * @return {SVGElement} SVG element.
              */
-            getParentSvg(): Element;
+            getParentSvg(): SVGElement;
     
             /**
              * Translate this workspace to new coordinates.
