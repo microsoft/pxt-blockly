@@ -5186,9 +5186,9 @@ declare module Blockly.DropDownDiv {
 
     /**
      * Provide the div for inserting content into the drop-down.
-     * @return {Element} Div to populate with content
+     * @return {HTMLElement} Div to populate with content
      */
-    function getContentDiv(): Element;
+    function getContentDiv(): HTMLElement;
 
     /**
      * Clear the content of the drop-down.
