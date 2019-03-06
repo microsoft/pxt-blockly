@@ -6867,6 +6867,44 @@ declare module Blockly {
             showEditor_(): void;
     
             /**
+             * Add a listener for mouse and keyboard events in the menu and its items.
+             * @param {!goog.ui.Menu} menu The menu to add listeners to.
+             * @private
+             */
+            addActionListener_(menu: goog.ui.Menu): void;
+    
+            /**
+             * Create and populate the menu and menu items for this dropdown, based on
+             * the options list.
+             * @return {!goog.ui.Menu} The populated dropdown menu.
+             * @private
+             */
+            createMenu_(): goog.ui.Menu;
+    
+            /**
+             * Place the menu correctly on the screen, taking into account the dimensions
+             * of the menu and the dimensions of the screen so that it doesn't run off any
+             * edges.
+             * @param {!goog.ui.Menu} menu The menu to position.
+             * @private
+             */
+            positionMenu_(menu: goog.ui.Menu): void;
+    
+            /**
+             * Create and render the menu widget inside Blockly's widget div.
+             * @param {!goog.ui.Menu} menu The menu to add to the widget div.
+             * @private
+             */
+            createWidget_(menu: goog.ui.Menu): void;
+    
+            /**
+             * Set the colours of the dropdown div to match the colours of the field or
+             * parent block.
+             * @private
+             */
+            updateColours_(): void;
+    
+            /**
              * Callback for when the drop-down is hidden.
              */
             onHide(): void;
@@ -10117,6 +10155,14 @@ declare module Blockly {
              * @return {number} Horizontal offset for next item to draw.
              */
             renderIcon(cursorX: number): number;
+    
+            /**
+             * Move the icon.
+             * @param {number} cursorX Horizontal offset at which to position the icon.
+             * @param {number} cursorY Vertical offset at which to position the icon.
+             * @return {number} Horizontal offset for next item to draw.
+             */
+            moveIcon(cursorX: number, cursorY: number): number;
     
             /**
              * Notification that the icon has moved.  Update the arrow accordingly.
@@ -13511,6 +13557,11 @@ declare module Blockly {
             collapseHidden: any /*missing*/;
     
             /**
+             * Create the icon on the block.
+             */
+            createIcon(): void;
+    
+            /**
              * Draw the breakpoint icon.
              * @param {!Element} group The icon group.
              * @private
@@ -16343,11 +16394,6 @@ declare module Blockly {
              * @package
              */
             isClearing: boolean;
-
-            /**
-             * Zoom scale
-             */
-            scale: number;
     
             /**
              * Maximum number of undo events in stack. `0` turns off undo, `Infinity` sets it to unlimited.
