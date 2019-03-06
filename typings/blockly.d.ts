@@ -16343,6 +16343,11 @@ declare module Blockly {
              * @package
              */
             isClearing: boolean;
+
+            /**
+             * Zoom scale
+             */
+            scale: number;
     
             /**
              * Maximum number of undo events in stack. `0` turns off undo, `Infinity` sets it to unlimited.
