@@ -174,7 +174,7 @@ Blockly.Field.prototype.validator_ = null;
 
 /**
  * Box drawn around a field.
- * @type {SVGRectElement}
+ * @type {SVGElement}
  * @private
  */
 Blockly.Field.prototype.arrow_ = null;
