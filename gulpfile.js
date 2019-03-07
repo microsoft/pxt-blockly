@@ -49,6 +49,17 @@ gulp.task("python-build-all", function (cb) {
 	});
 });
 
+gulp.task("generate-dts", function(cb) {
+	console.info('Generate blockly.d.ts')
+	var sh =spawn("sh", ["generate-dts.sh"], {
+		cwd: "typings"
+	})
+	sh.on('close', function(code) {
+		console.log('generate-dts exited with code ' + code);
+		cb(code)
+	})
+})
+
 function pxtPublishTask() {
 	if (fs.existsSync('../pxt')) {
 		pxtPublishTsTask();
@@ -74,7 +85,7 @@ gulp.task('publish', ['python-build-core'], pxtPublishTask);
 
 gulp.task('publishall', ['python-build-all'], pxtPublishTask);
 
-gulp.task('publishts', [], pxtPublishTsTask);
+gulp.task('publishts', ['generate-dts'], pxtPublishTsTask);
 
 gulp.task('publishall-nobuild', [], pxtPublishTask);
 

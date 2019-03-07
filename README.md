@@ -37,6 +37,10 @@ npm install .
 
 * `gulp build` to build blockly (install ``gulp`` if needed ``npm install -g gulp``)
 
+## Update Blockly.d.ts
+
+* `gulp generate-dts` to regenerate blockly.d.ts
+
 ## Integrating in PXT
 
 * `gulp publish` from the ``develop`` branch.
