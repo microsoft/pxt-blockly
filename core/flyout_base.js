@@ -103,20 +103,6 @@ Blockly.Flyout = function(workspaceOptions) {
    * @private
    */
   this.permanentlyDisabled_ = [];
-
-  /**
-   * The svg or g element that contains the flyout dom (excluding scrollbar).
-   * @type {!SVGElement}
-   * @private
-   */
-  this.svgGroup_ = null;
-
-  /**
-   * Scrollbar for scrolling blocks.
-   * @type {!Blockly.Scrollbar}
-   * @private
-   */
-  this.scrollbar_ = null;
 };
 
 /**
@@ -207,6 +193,20 @@ Blockly.Flyout.prototype.height_ = 0;
  * @protected
 */
 Blockly.Flyout.prototype.dragAngleRange_ = 70;
+
+/**
+ * The svg or g element that contains the flyout dom (excluding scrollbar).
+ * @type {!SVGElement}
+ * @private
+ */
+Blockly.Flyout.prototype.svgGroup_ = null;
+
+/**
+ * Scrollbar for scrolling blocks.
+ * @type {!Blockly.Scrollbar}
+ * @private
+ */
+Blockly.Flyout.prototype.scrollbar_ = null;
 
 /**
  * Creates the flyout's DOM.  Only needs to be called once.  The flyout can
