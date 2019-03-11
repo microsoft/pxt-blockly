@@ -207,6 +207,13 @@ Blockly.Scrollbar = function(workspace, horizontal, opt_pair, opt_class) {
   this.horizontal_ = horizontal;
   this.oldHostMetrics_ = null;
 
+  /**
+   * The svg element containing the scrollbar dom elements.
+   * @type {!SVGSVGElement}
+   * @private
+   */
+  this.svgGroup_ = null;
+
   this.createDom_(opt_class);
 
   /**
