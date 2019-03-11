@@ -175,29 +175,13 @@ Blockly.Toolbox.prototype.init = function() {
         }
         Blockly.Touch.clearTouchIdentifier();  // Don't block future drags.
       }, /*opt_noCaptureIdentifier*/ false, /*opt_noPreventDefault*/ true);
-  var workspaceOptions = {
-    disabledPatternId: workspace.options.disabledPatternId,
-    parentWorkspace: workspace,
-    RTL: workspace.RTL,
-    oneBasedIndex: workspace.options.oneBasedIndex,
-    horizontalLayout: workspace.horizontalLayout,
-    toolboxPosition: workspace.options.toolboxPosition,
-    // pxt-blockly: pass the newFunctions option
-    newFunctions: workspace.options.newFunctions
-  };
+  let { flyout, flyoutSvg } = Blockly.Functions.createFlyout(workspace);
   /**
    * @type {!Blockly.Flyout}
    * @private
    */
-  this.flyout_ = null;
-  if (workspace.horizontalLayout) {
-    this.flyout_ = new Blockly.HorizontalFlyout(workspaceOptions);
-  } else {
-    this.flyout_ = new Blockly.VerticalFlyout(workspaceOptions);
-  }
-  goog.dom.insertSiblingAfter(
-      this.flyout_.createDom('svg'), this.workspace_.getParentSvg());
-  this.flyout_.init(workspace);
+  this.flyout_ = flyout;
+  goog.dom.insertSiblingAfter(flyoutSvg, this.workspace_.getParentSvg());
 
   this.config_['cleardotPath'] = workspace.options.pathToMedia + '1x1.gif';
   this.config_['cssCollapsedFolderIcon'] =

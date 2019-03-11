@@ -876,7 +876,11 @@ Blockly.Scrollbar.prototype.onScroll_ = function() {
  *     scrollbar handle.
  */
 Blockly.Scrollbar.prototype.set = function(value) {
-  this.setHandlePosition(this.constrainHandle_(value * this.ratio_));
+  const newHandlePos = this.constrainHandle_(value * this.ratio_);
+  // short-circuit if the scrollbar is already at the desired position
+  if (this.handlePosition_ === newHandlePos)
+    return;
+  this.setHandlePosition(newHandlePos);
   this.onScroll_();
 };
 
