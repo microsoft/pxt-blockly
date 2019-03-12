@@ -169,6 +169,28 @@ Blockly.Icon.prototype.renderIcon = function(cursorX) {
 };
 
 /**
+ * Move the icon.
+ * @param {number} cursorX Horizontal offset at which to position the icon.
+ * @param {number} cursorY Vertical offset at which to position the icon.
+ * @return {number} Horizontal offset for next item to draw.
+ */
+Blockly.Icon.prototype.moveIcon = function(cursorX, cursorY) {
+  var TOP_MARGIN = 9;
+  var width = this.SIZE;
+  if (this.block_.RTL) {
+    cursorX -= width;
+  }
+  this.iconGroup_.setAttribute('transform',
+      'translate(' + cursorX + ',' + (TOP_MARGIN + cursorY)  + '),scale(1.4)');
+  if (this.block_.RTL) {
+    cursorX -= Blockly.BlockSvg.SEP_SPACE_X;
+  } else {
+    cursorX += width + Blockly.BlockSvg.SEP_SPACE_X;
+  }
+  return cursorX;
+};
+
+/**
  * Notification that the icon has moved.  Update the arrow accordingly.
  * @param {!goog.math.Coordinate} xy Absolute location in workspace coordinates.
  */

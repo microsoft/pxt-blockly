@@ -14,6 +14,7 @@
 cd ..
 
 # create tmp directory
+rm -rf tmp/
 mkdir tmp
 
 # move to blockly core directory
@@ -50,6 +51,3 @@ cat typings/parts/blockly-colours.d.ts >> typings/blockly.d.ts
 cat typings/parts/blockly-options.d.ts >> typings/blockly.d.ts
 cat typings/parts/goog-closure.d.ts >> typings/blockly.d.ts
 cat tmp/blockly-core.d.ts.tmp >> typings/blockly.d.ts
-
-# remove build artifacts
-rm -rf tmp/

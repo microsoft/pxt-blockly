@@ -30,6 +30,7 @@
 goog.provide('Blockly.Block');
 
 goog.require('Blockly.Blocks');
+goog.require('Blockly.Breakpoint');
 goog.require('Blockly.Colours');
 goog.require('Blockly.Comment');
 goog.require('Blockly.Connection');
@@ -1722,6 +1723,47 @@ Blockly.Block.prototype.setCommentText = function(text) {
         this, 'comment', null, this.comment, text || ''));
     this.comment = text;
   }
+};
+
+/**
+ * Set this Block's breakpoint as enabled or disabled.
+ * @param {boolean} enable A boolean definining if the breakpoint should be enabled or disabled.
+ */
+Blockly.Block.prototype.enableBreakpoint = function(enable) {
+  let modified = false;
+  if (enable) {
+    if (!this.breakpoint) {
+      this.breakpoint = new Blockly.Breakpoint(this);
+      modified = true;
+    }
+    this.breakpoint.setVisible(this.isBreakpointSet());
+  } else {
+    if (this.breakpoint) {
+      this.breakpoint.dispose();
+      modified = true;
+    }
+  }
+  if (modified) {
+    Blockly.Events.fire(new Blockly.Events.BlockChange(
+      this, 'breakpoint', null, !enable, enable));
+    }
+}
+
+/**
+ * Returns a boolean representing if the block has a breakpoint set or not 
+ * (regardless of whether it is enabled).
+ * @return {boolean} Block's breakpoint set or not.
+ */
+Blockly.Block.prototype.isBreakpointSet = function () {
+  return this.breakpointSet_ || false;
+}
+
+/**
+ * Set this block's breakpoint.
+ * @param {boolean} set Boolean representing if the breakpoint is now set or not.
+ */
+Blockly.Block.prototype.setBreakpoint = function(set) {
+  this.breakpointSet_ = set;
 };
 
 /**

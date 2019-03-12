@@ -190,6 +190,11 @@ Blockly.Xml.blockToDom = function(block, opt_noId) {
 
   Blockly.Xml.allFieldsToDom_(block, element);
 
+  if (block.isBreakpointSet()) {
+    var breakpointElement = goog.dom.createDom('breakpoint', null, "");
+    element.appendChild(breakpointElement);
+  }
+
   var commentText = block.getCommentText();
   if (commentText) {
     var commentElement = goog.dom.createDom('comment', null, commentText);
@@ -713,6 +718,8 @@ Blockly.Xml.domToBlockHeadless_ = function(xmlBlock, workspace) {
           block.nextConnection.connect(blockChild.previousConnection);
         }
         break;
+      case 'breakpoint':
+        block.setBreakpoint(true);
       default:
         // Unknown tag; ignore.  Same principle as HTML parsers.
         console.warn('Ignoring unknown tag: ' + xmlChild.nodeName);

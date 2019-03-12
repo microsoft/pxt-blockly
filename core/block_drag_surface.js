@@ -271,3 +271,12 @@ Blockly.BlockDragSurfaceSvg.prototype.clearAndHide = function(opt_newSurface) {
   var injectionDiv = document.getElementsByClassName('injectionDiv')[0];
   injectionDiv.style.overflow = 'hidden';
 };
+
+/**
+ * Sets the opacity of the drag surface and everything on it.
+ * @param {number} value The new opacity value to use.
+ * @package
+ */
+Blockly.BlockDragSurfaceSvg.prototype.setOpacity = function(value) {
+  this.SVG_.setAttribute('opacity', value);
+};

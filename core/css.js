@@ -562,13 +562,19 @@ Blockly.Css.CONTENT = [
     'display: block;',
   '}',
 
-  '.blocklyIconGroup {',
+  '.blocklyIconGroup,',
+  '.blocklyBreakpointIconGroup {',
     'cursor: default;',
   '}',
 
   '.blocklyIconGroup:not(:hover),',
   '.blocklyIconGroupReadonly {',
     'opacity: .6;',
+  '}',
+
+  '.blocklyBreakpointIconGroup:hover,',
+  '.blocklyBreakpointIconGroupReadonly {',
+    'fill-opacity: .6;',
   '}',
 
   '.blocklyIconShape {',

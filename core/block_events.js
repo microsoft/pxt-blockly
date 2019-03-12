@@ -179,6 +179,9 @@ Blockly.Events.Change.prototype.run = function(forward) {
         console.warn("Can't set non-existent field: " + this.name);
       }
       break;
+    case 'breakpoint':
+      block.enableBreakpoint(value);
+      break;
     case 'comment':
       block.setCommentText(value || null);
       break;
