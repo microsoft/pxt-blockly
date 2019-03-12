@@ -175,7 +175,8 @@ Blockly.Toolbox.prototype.init = function() {
         }
         Blockly.Touch.clearTouchIdentifier();  // Don't block future drags.
       }, /*opt_noCaptureIdentifier*/ false, /*opt_noPreventDefault*/ true);
-  let { flyout, flyoutSvg } = Blockly.Functions.createFlyout(workspace);
+  const flyout = Blockly.Functions.createFlyout(workspace);
+  const flyoutSvg = flyout.svgGroup_
   /**
    * @type {!Blockly.Flyout}
    * @private

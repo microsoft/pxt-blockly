@@ -15,6 +15,7 @@ Major additions and changes in this fork:
 * Workspace comments that appear like sticky notes [workspace_comment.js](https://github.com/Microsoft/pxt-blockly/blob/develop/core/workspace_comment.js)
 * A number of Edge & IE fixes
 * Support underlining and icons in flyout labels [flyout_button.js](https://github.com/Microsoft/pxt-blockly/blob/develop/core/flyout_button.js#L203)
+* Support for multiple flyouts per toolbox for performance reasons [pxt_blockly_functions.js](https://github.com/Microsoft/pxt-blockly/blob/develop/core/pxt_blockly_functions.js#L650)
 
 ## Prerequisites
 
