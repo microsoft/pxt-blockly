@@ -175,14 +175,12 @@ Blockly.Toolbox.prototype.init = function() {
         }
         Blockly.Touch.clearTouchIdentifier();  // Don't block future drags.
       }, /*opt_noCaptureIdentifier*/ false, /*opt_noPreventDefault*/ true);
-  const flyout = Blockly.Functions.createFlyout(workspace);
-  const flyoutSvg = flyout.svgGroup_
+  const flyout = Blockly.Functions.createFlyout(workspace, this.workspace_.getParentSvg());
   /**
    * @type {!Blockly.Flyout}
    * @private
    */
   this.flyout_ = flyout;
-  goog.dom.insertSiblingAfter(flyoutSvg, this.workspace_.getParentSvg());
 
   this.config_['cleardotPath'] = workspace.options.pathToMedia + '1x1.gif';
   this.config_['cssCollapsedFolderIcon'] =

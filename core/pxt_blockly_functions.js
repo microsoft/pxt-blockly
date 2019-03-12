@@ -65,7 +65,7 @@ Blockly.Functions.NAME_TYPE = Blockly.PROCEDURE_CATEGORY_NAME;
   * @param {!Blockly.Workspace} workspace The workspace containing functions.
   * @return {!Array.<!Element>} Array of XML block elements.
   */
-Blockly.Functions.flyoutCategory = function(workspace) {
+Blockly.Functions.flyoutCategory = function (workspace) {
   var xmlList = [];
 
   Blockly.Functions.addCreateButton_(workspace, xmlList);
@@ -109,11 +109,11 @@ Blockly.Functions.flyoutCategory = function(workspace) {
  * @param {!Array.<!Element>} xmlList Array of XML block elements to add to.
  * @private
  */
-Blockly.Functions.addCreateButton_ = function(workspace, xmlList) {
+Blockly.Functions.addCreateButton_ = function (workspace, xmlList) {
   var button = goog.dom.createDom('button');
   var msg = Blockly.Msg.FUNCTION_CREATE_NEW;
   var callbackKey = 'CREATE_FUNCTION';
-  var callback = function() {
+  var callback = function () {
     Blockly.Functions.createFunctionCallback_(workspace);
   };
   button.setAttribute('text', msg);
@@ -128,7 +128,7 @@ Blockly.Functions.addCreateButton_ = function(workspace, xmlList) {
  * @param {!Blockly.Workspace} workspace The workspace to find callers in.
  * @return {!Array.<!Blockly.Block>} Array of caller blocks.
  */
-Blockly.Functions.getCallers = function(name, workspace) {
+Blockly.Functions.getCallers = function (name, workspace) {
   var callers = [];
   var blocks = workspace.getAllBlocks();
   // Iterate through every block and check the name.
@@ -161,7 +161,7 @@ Blockly.Functions.getCallers = function(name, workspace) {
  * @param {!Blockly.Workspace} workspace The workspace to search.
  * @return {!Blockly.Block} The function definition block, or null if not found.
  */
-Blockly.Functions.getDefinition = function(name, workspace) {
+Blockly.Functions.getDefinition = function (name, workspace) {
   // Assume that a function definition is a top block.
   var blocks = workspace.getTopBlocks(false);
   for (var i = 0; i < blocks.length; i++) {
@@ -180,7 +180,7 @@ Blockly.Functions.getDefinition = function(name, workspace) {
  * @param {!Blockly.Workspace} root Root workspace.
  * @return {!Array.<Blockly.Block>} An array of function definition blocks.
  */
-Blockly.Functions.getAllFunctionDefinitionBlocks = function(root) {
+Blockly.Functions.getAllFunctionDefinitionBlocks = function (root) {
   // Assume that a function definition is a top block.
   var blocks = root.getTopBlocks(false);
   var allFunctions = [];
@@ -198,7 +198,7 @@ Blockly.Functions.getAllFunctionDefinitionBlocks = function(root) {
  * @return {boolean} Whether the argument type is a custom type. A return value
  *  of false means the argument is a built-in literal.
  */
-Blockly.Functions.isCustomType = function(argumentType) {
+Blockly.Functions.isCustomType = function (argumentType) {
   return !(argumentType == 'boolean' ||
     argumentType == 'string' ||
     argumentType == 'number');
@@ -211,7 +211,7 @@ Blockly.Functions.isCustomType = function(argumentType) {
  * @return {Element} The mutation for a new function.
  * @package
  */
-Blockly.Functions.newFunctionMutation = function(destWs) {
+Blockly.Functions.newFunctionMutation = function (destWs) {
   // Ensure the default function name is unique.
   var defaultName = Blockly.Functions.findLegalName(Blockly.Msg.FUNCTIONS_DEFAULT_FUNCTION_NAME, destWs);
 
@@ -232,7 +232,7 @@ Blockly.Functions.newFunctionMutation = function(destWs) {
  * @param {string} name The name for which to add or increment the suffix.
  * @return {string} The resulting name.
  */
-Blockly.Functions.incrementNameSuffix = function(name) {
+Blockly.Functions.incrementNameSuffix = function (name) {
   var r = name.match(/^(.*?)(\d+)$/);
   if (!r) {
     name += '2';
@@ -250,7 +250,7 @@ Blockly.Functions.incrementNameSuffix = function(name) {
  * @return {string} The unique parameter name. If the name was already unique,
  *  the original name is returned.
  */
-Blockly.Functions.findUniqueParamName = function(name, paramNames) {
+Blockly.Functions.findUniqueParamName = function (name, paramNames) {
   while (!Blockly.Functions.isUniqueParamName(name, paramNames)) {
     // Collision with another parameter name.
     name = Blockly.Functions.incrementNameSuffix(name);
@@ -265,7 +265,7 @@ Blockly.Functions.findUniqueParamName = function(name, paramNames) {
  * @param {string[]} paramNames Existing parameter names.
  * @return {boolean} Whether the name is unique.
  */
-Blockly.Functions.isUniqueParamName = function(name, paramNames) {
+Blockly.Functions.isUniqueParamName = function (name, paramNames) {
   if (!paramNames) return true;
   return paramNames.indexOf(name) == -1;
 };
@@ -275,14 +275,14 @@ Blockly.Functions.isUniqueParamName = function(name, paramNames) {
  * @param {!Blockly.Workspace} workspace The workspace to create the new function on.
  * @private
  */
-Blockly.Functions.createFunctionCallback_ = function(workspace) {
+Blockly.Functions.createFunctionCallback_ = function (workspace) {
   Blockly.hideChaff();
   if (Blockly.selected) {
     Blockly.selected.unselect();
   }
   Blockly.Functions.editFunctionExternalHandler(
-      Blockly.Functions.newFunctionMutation(workspace),
-      Blockly.Functions.createFunctionCallbackFactory_(workspace)
+    Blockly.Functions.newFunctionMutation(workspace),
+    Blockly.Functions.createFunctionCallbackFactory_(workspace)
   );
 };
 
@@ -292,8 +292,8 @@ Blockly.Functions.createFunctionCallback_ = function(workspace) {
  * @return {function(?Element)} callback for creating the new custom function.
  * @private
  */
-Blockly.Functions.createFunctionCallbackFactory_ = function(workspace) {
-  return function(mutation) {
+Blockly.Functions.createFunctionCallbackFactory_ = function (workspace) {
+  return function (mutation) {
     if (mutation) {
       var blockText =
         '<xml>' +
@@ -328,14 +328,14 @@ Blockly.Functions.createFunctionCallbackFactory_ = function(workspace) {
  * @param {!Blockly.Block} block The block that was right-clicked.
  * @private
  */
-Blockly.Functions.editFunctionCallback_ = function(block) {
+Blockly.Functions.editFunctionCallback_ = function (block) {
   // Edit can come from either the function definition or a function call.
   // Normalize by setting the block to the definition block for the function.
   if (block.type == Blockly.FUNCTION_CALL_BLOCK_TYPE) {
     // This is a call block, find the definition block corresponding to the
     // name. Make sure to search the correct workspace, call block can be in flyout.
     var workspaceToSearch = block.workspace.isFlyout ?
-        block.workspace.targetWorkspace : block.workspace;
+      block.workspace.targetWorkspace : block.workspace;
     block = Blockly.Functions.getDefinition(block.getName(), workspaceToSearch);
   }
   // "block" now refers to the function definition block, it is safe to proceed.
@@ -344,8 +344,8 @@ Blockly.Functions.editFunctionCallback_ = function(block) {
     Blockly.selected.unselect();
   }
   Blockly.Functions.editFunctionExternalHandler(
-      block.mutationToDom(),
-      Blockly.Functions.editFunctionCallbackFactory_(block)
+    block.mutationToDom(),
+    Blockly.Functions.editFunctionCallbackFactory_(block)
   );
 };
 
@@ -355,8 +355,8 @@ Blockly.Functions.editFunctionCallback_ = function(block) {
  * @return {function(?Element)} Callback for editing the custom function.
  * @private
  */
-Blockly.Functions.editFunctionCallbackFactory_ = function(block) {
-  return function(mutation) {
+Blockly.Functions.editFunctionCallbackFactory_ = function (block) {
+  return function (mutation) {
     if (mutation) {
       Blockly.Functions.mutateCallersAndDefinition(block.getName(), block.workspace, mutation);
     }
@@ -369,7 +369,7 @@ Blockly.Functions.editFunctionCallbackFactory_ = function(block) {
  * @param {Function=} callback The function callback.
  * @public
  */
-Blockly.Functions.editFunctionExternalHandler = function(mutation, callback) {
+Blockly.Functions.editFunctionExternalHandler = function (mutation, callback) {
   console.warn('External function editor must be overriden: Blockly.Functions.editFunctionExternalHandler', mutation, callback);
 };
 
@@ -381,11 +381,11 @@ Blockly.Functions.editFunctionExternalHandler = function(mutation, callback) {
  * @return {!Object} A menu option, containing text, enabled, and a callback.
  * @package
  */
-Blockly.Functions.makeEditOption = function(block) {
+Blockly.Functions.makeEditOption = function (block) {
   var editOption = {
     enabled: true,
     text: Blockly.Msg.FUNCTIONS_EDIT_OPTION,
-    callback: function() {
+    callback: function () {
       Blockly.Functions.editFunctionCallback_(block);
     }
   };
@@ -400,7 +400,7 @@ Blockly.Functions.makeEditOption = function(block) {
  * @return {string} The TypeScript type of the argument.
  * @package
  */
-Blockly.Functions.getReporterArgumentType = function(reporterOutputType) {
+Blockly.Functions.getReporterArgumentType = function (reporterOutputType) {
   switch (reporterOutputType) {
     case 'Boolean':
     case 'Number':
@@ -418,12 +418,12 @@ Blockly.Functions.getReporterArgumentType = function(reporterOutputType) {
  * @param {!string} exceptFuncId Optional function ID to ignore.
  * @return {!Object.<string,boolean>} The dictionary <name, true> of names in use.
  */
-Blockly.Functions.namesInUse = function(ws, exceptBlock, exceptFuncId) {
+Blockly.Functions.namesInUse = function (ws, exceptBlock, exceptFuncId) {
   var usedNames = {};
-  ws.getAllVariables().forEach(function(v) {
+  ws.getAllVariables().forEach(function (v) {
     usedNames[v.name] = true;
   });
-  ws.getAllBlocks().forEach(function(b) {
+  ws.getAllBlocks().forEach(function (b) {
     if (b == exceptBlock || (!!exceptFuncId && b.getFunctionId && b.getFunctionId() == exceptFuncId)) {
       return;
     }
@@ -444,7 +444,7 @@ Blockly.Functions.namesInUse = function(ws, exceptBlock, exceptFuncId) {
  * @param {!Blockly.Block} block Block to disambiguate.
  * @return {string} Non-colliding name.
  */
-Blockly.Functions.findLegalName = function(name, ws, block) {
+Blockly.Functions.findLegalName = function (name, ws, block) {
   if (block && block.isInFlyout) {
     // Flyouts can have multiple procedures called 'do something'.
     return name;
@@ -465,7 +465,7 @@ Blockly.Functions.findLegalName = function(name, ws, block) {
  * @return {string} The accepted name.
  * @this {Blockly.Field}
  */
-Blockly.Functions.rename = function(name) {
+Blockly.Functions.rename = function (name) {
   // Strip leading and trailing whitespace. Beyond this, all names are legal.
   name = name.replace(/^[\s\xa0]+|[\s\xa0]+$/g, '');
   var legalName = Blockly.Functions.findLegalName(name, this.sourceBlock_.workspace, this.sourceBlock_);
@@ -495,7 +495,7 @@ Blockly.Functions.rename = function(name) {
  * @return {boolean} Whether the function passes name validation or not.
  * @package
  */
-Blockly.Functions.validateFunctionExternal = function(mutation, destinationWs) {
+Blockly.Functions.validateFunctionExternal = function (mutation, destinationWs) {
   // Check for empty function name.
   var funcName = mutation.getAttribute('name');
 
@@ -548,7 +548,7 @@ Blockly.Functions.validateFunctionExternal = function(mutation, destinationWs) {
  * @return {!Object} A map of name -> ID, or ID -> name if inverse was true.
  * @package
  */
-Blockly.Functions.getArgMap = function(mutation, inverse) {
+Blockly.Functions.getArgMap = function (mutation, inverse) {
   var map = {};
   for (var i = 0; i < mutation.childNodes.length; ++i) {
     var arg = mutation.childNodes[i];
@@ -567,13 +567,13 @@ Blockly.Functions.getArgMap = function(mutation, inverse) {
  * @param {!Element} mutation New mutation for the callers.
  * @package
  */
-Blockly.Functions.mutateCallersAndDefinition = function(name, ws, mutation) {
+Blockly.Functions.mutateCallersAndDefinition = function (name, ws, mutation) {
   var definitionBlock = Blockly.Functions.getDefinition(name, ws);
   if (definitionBlock) {
     var callers = Blockly.Functions.getCallers(name, definitionBlock.workspace);
     callers.push(definitionBlock);
     Blockly.Events.setGroup(true);
-    callers.forEach(function(caller) {
+    callers.forEach(function (caller) {
       var oldMutationDom = caller.mutationToDom();
       var oldMutation = oldMutationDom && Blockly.Xml.domToText(oldMutationDom);
       caller.domToMutation(mutation);
@@ -594,7 +594,7 @@ Blockly.Functions.mutateCallersAndDefinition = function(name, ws, mutation) {
 
           // Then, go through all descendants of the function definition and
           // look for argument reporters to update.
-          definitionBlock.getDescendants().forEach(function(d) {
+          definitionBlock.getDescendants().forEach(function (d) {
             if (!Blockly.Functions.isFunctionArgumentReporter(d)) {
               return;
             }
@@ -616,7 +616,7 @@ Blockly.Functions.mutateCallersAndDefinition = function(name, ws, mutation) {
         } else {
           // For the callers, we need to bump blocks that were connected to any
           // argument that has since been deleted.
-          setTimeout(function() {
+          setTimeout(function () {
             caller.bumpNeighbours_();
           }, Blockly.BUMP_DELAY);
         }
@@ -634,7 +634,7 @@ Blockly.Functions.mutateCallersAndDefinition = function(name, ws, mutation) {
  *     decision.
  * @return {boolean} True if the block is a function argument reporter.
  */
-Blockly.Functions.isFunctionArgumentReporter = function(block) {
+Blockly.Functions.isFunctionArgumentReporter = function (block) {
   return block.type == 'argument_reporter_boolean' ||
     block.type == 'argument_reporter_number' ||
     block.type == 'argument_reporter_string' ||
@@ -645,9 +645,10 @@ Blockly.Functions.isFunctionArgumentReporter = function(block) {
  * Create a flyout, creates the DOM elements for the flyout, and initializes the flyout.
  * @param {!Blockly.Workspace} workspace The target and parent workspace for this flyout. The workspace's options will
  *     be used to create the flyout's inner workspace.
+ * @param {!Element} siblingNode The flyout is added after this reference node. 
  * @return {!Blockly.Flyout} The newly created flyout.
  */
-Blockly.Functions.createFlyout = function (workspace) {
+Blockly.Functions.createFlyout = function (workspace, siblingNode) {
   let flyoutWorkspaceOptions = {
     disabledPatternId: workspace.options.disabledPatternId,
     parentWorkspace: workspace,
@@ -660,11 +661,12 @@ Blockly.Functions.createFlyout = function (workspace) {
   };
   let newFlyout;
   if (flyoutWorkspaceOptions.horizontalLayout) {
-    newFlyout = new Blockly.HorizontalFlyout(workspaceOptions);
+    newFlyout = new Blockly.HorizontalFlyout(flyoutWorkspaceOptions);
   } else {
-    newFlyout = new Blockly.VerticalFlyout(workspaceOptions);
+    newFlyout = new Blockly.VerticalFlyout(flyoutWorkspaceOptions);
   }
   let newSvg = newFlyout.createDom('svg');
+  goog.dom.insertSiblingAfter(newSvg, siblingNode);
   newFlyout.init(workspace);
 
   return newFlyout;

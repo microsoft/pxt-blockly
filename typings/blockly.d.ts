@@ -13487,9 +13487,10 @@ declare module Blockly.Functions {
      * Create a flyout, creates the DOM elements for the flyout, and initializes the flyout.
      * @param {!Blockly.Workspace} workspace The target and parent workspace for this flyout. The workspace's options will
      *     be used to create the flyout's inner workspace.
+     * @param {!Element} siblingNode The flyout is added after this reference node. 
      * @return {!Blockly.Flyout} The newly created flyout.
      */
-    function createFlyout(workspace: Blockly.Workspace): Blockly.Flyout;
+    function createFlyout(workspace: Blockly.Workspace, siblingNode: Element): Blockly.Flyout;
 }
 
 declare module Blockly.pxtBlocklyUtils {
