@@ -640,3 +640,34 @@ Blockly.Functions.isFunctionArgumentReporter = function(block) {
     block.type == 'argument_reporter_string' ||
     block.type == 'argument_reporter_custom';
 };
+
+/**
+ * Create a flyout, creates the DOM elements for the flyout, and initializes the flyout.
+ * @param {!Blockly.Workspace} workspace The target and parent workspace for this flyout. The workspace's options will
+ *     be used to create the flyout's inner workspace.
+ * @param {!Element} siblingNode The flyout is added after this reference node. 
+ * @return {!Blockly.Flyout} The newly created flyout.
+ */
+Blockly.Functions.createFlyout = function (workspace, siblingNode) {
+  let flyoutWorkspaceOptions = {
+    disabledPatternId: workspace.options.disabledPatternId,
+    parentWorkspace: workspace,
+    RTL: workspace.RTL,
+    oneBasedIndex: workspace.options.oneBasedIndex,
+    horizontalLayout: workspace.horizontalLayout,
+    toolboxPosition: workspace.options.toolboxPosition,
+    // pxt-blockly: pass the newFunctions option
+    newFunctions: workspace.options.newFunctions
+  };
+  let newFlyout;
+  if (flyoutWorkspaceOptions.horizontalLayout) {
+    newFlyout = new Blockly.HorizontalFlyout(flyoutWorkspaceOptions);
+  } else {
+    newFlyout = new Blockly.VerticalFlyout(flyoutWorkspaceOptions);
+  }
+  let newSvg = newFlyout.createDom('svg');
+  goog.dom.insertSiblingAfter(newSvg, siblingNode);
+  newFlyout.init(workspace);
+
+  return newFlyout;
+};

@@ -207,6 +207,13 @@ Blockly.Scrollbar = function(workspace, horizontal, opt_pair, opt_class) {
   this.horizontal_ = horizontal;
   this.oldHostMetrics_ = null;
 
+  /**
+   * The svg element containing the scrollbar dom elements.
+   * @type {!SVGSVGElement}
+   * @private
+   */
+  this.svgGroup_ = null;
+
   this.createDom_(opt_class);
 
   /**
@@ -869,7 +876,11 @@ Blockly.Scrollbar.prototype.onScroll_ = function() {
  *     scrollbar handle.
  */
 Blockly.Scrollbar.prototype.set = function(value) {
-  this.setHandlePosition(this.constrainHandle_(value * this.ratio_));
+  const newHandlePos = this.constrainHandle_(value * this.ratio_);
+  // short-circuit if the scrollbar is already at the desired position
+  if (this.handlePosition_ === newHandlePos)
+    return;
+  this.setHandlePosition(newHandlePos);
   this.onScroll_();
 };
 
