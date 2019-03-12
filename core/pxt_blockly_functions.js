@@ -645,7 +645,7 @@ Blockly.Functions.isFunctionArgumentReporter = function(block) {
  * Create a flyout, creates the DOM elements for the flyout, and initializes the flyout.
  * @param {!Blockly.Workspace} workspace The target and parent workspace for this flyout. The workspace's options will
  *     be used to create the flyout's inner workspace.
- * @return { flyout: !Blockly.Flyout, flyoutSvg: SVGSVGElement } True if the block is a function argument reporter.
+ * @return {!Blockly.Flyout} The newly created flyout.
  */
 Blockly.Functions.createFlyout = function (workspace) {
   let flyoutWorkspaceOptions = {
@@ -667,5 +667,5 @@ Blockly.Functions.createFlyout = function (workspace) {
   let newSvg = newFlyout.createDom('svg');
   newFlyout.init(workspace);
 
-  return { flyout: newFlyout, flyoutSvg: newSvg };
+  return newFlyout;
 };

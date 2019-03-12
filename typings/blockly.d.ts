@@ -13487,9 +13487,9 @@ declare module Blockly.Functions {
      * Create a flyout, creates the DOM elements for the flyout, and initializes the flyout.
      * @param {!Blockly.Workspace} workspace The target and parent workspace for this flyout. The workspace's options will
      *     be used to create the flyout's inner workspace.
-     * @return { flyout: !Blockly.Flyout, flyoutSvg: SVGSVGElement } True if the block is a function argument reporter.
+     * @return {!Blockly.Flyout} The newly created flyout.
      */
-    function createFlyout(workspace: Blockly.Workspace): void;
+    function createFlyout(workspace: Blockly.Workspace): Blockly.Flyout;
 }
 
 declare module Blockly.pxtBlocklyUtils {
