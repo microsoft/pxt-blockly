@@ -275,6 +275,7 @@ Blockly.Flyout.prototype.init = function(targetWorkspace) {
  */
 Blockly.Flyout.prototype.dispose = function() {
   this.hide();
+  this.clearOldEventListeners_();
   Blockly.unbindEvent_(this.eventWrappers_);
   if (this.filterWrapper_) {
     this.targetWorkspace_.removeChangeListener(this.filterWrapper_);
@@ -407,15 +408,10 @@ Blockly.Flyout.prototype.hide = function() {
 };
 
 /**
- * Show and populate the flyout.
- * @param {!Array|string} xmlList List of blocks to show.
- *     Variables and procedures have a custom set of blocks.
+ * Delete any event listeners.
+ * @private
  */
-Blockly.Flyout.prototype.show = function(xmlList) {
-  this.workspace_.setResizesEnabled(false);
-  this.hide();
-
-  // Delete any old event listeners.
+Blockly.Flyout.prototype.clearOldEventListeners_ = function () {
   for (var x = 0, listen; listen = this.listeners_[x]; x++) {
     Blockly.unbindEvent_(listen);
   }
@@ -424,7 +420,18 @@ Blockly.Flyout.prototype.show = function(xmlList) {
     this.workspace_.removeChangeListener(this.reflowWrapper_);
     this.reflowWrapper_ = null;
   }
+};
 
+/**
+ * Show and populate the flyout.
+ * @param {!Array|string} xmlList List of blocks to show.
+ *     Variables and procedures have a custom set of blocks.
+ */
+Blockly.Flyout.prototype.show = function (xmlList) {
+  this.workspace_.setResizesEnabled(false);
+  this.hide();
+
+  this.clearOldEventListeners_();
   this.clearOldBlocks_();
 
   // Handle dynamic categories, represented by a name instead of a list of XML.
