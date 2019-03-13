@@ -656,8 +656,9 @@ Blockly.Functions.createFlyout = function (workspace, siblingNode) {
     oneBasedIndex: workspace.options.oneBasedIndex,
     horizontalLayout: workspace.horizontalLayout,
     toolboxPosition: workspace.options.toolboxPosition,
+    zoomOptions: workspace.options.zoomOptions,
     // pxt-blockly: pass the newFunctions option
-    newFunctions: workspace.options.newFunctions
+    newFunctions: workspace.options.newFunctions,
   };
   let newFlyout;
   if (flyoutWorkspaceOptions.horizontalLayout) {

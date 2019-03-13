@@ -41,7 +41,7 @@ goog.require('goog.math.Rect');
 
 /**
  * Class for a flyout.
- * @param {!Object} workspaceOptions Dictionary of options for the workspace.
+ * @param {!Blockly.WorkspaceOptions} workspaceOptions Dictionary of options for the workspace.
  * @constructor
  */
 Blockly.Flyout = function(workspaceOptions) {
@@ -196,17 +196,24 @@ Blockly.Flyout.prototype.dragAngleRange_ = 70;
 
 /**
  * The svg or g element that contains the flyout dom (excluding scrollbar).
- * @type {!SVGElement}
+ * @type {SVGElement}
  * @private
  */
 Blockly.Flyout.prototype.svgGroup_ = null;
 
 /**
  * Scrollbar for scrolling blocks.
- * @type {!Blockly.Scrollbar}
+ * @type {Blockly.Scrollbar}
  * @private
  */
 Blockly.Flyout.prototype.scrollbar_ = null;
+
+/**
+ * The workspace this flyout puts blocks on
+ * @type {Blockly.WorkspaceSvg}
+ * @private
+ */
+Blockly.Flyout.prototype.targetWorkspace_ = null;
 
 /**
  * Creates the flyout's DOM.  Only needs to be called once.  The flyout can

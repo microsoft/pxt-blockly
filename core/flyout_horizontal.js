@@ -39,7 +39,7 @@ goog.require('goog.userAgent');
 
 /**
  * Class for a flyout.
- * @param {!Object} workspaceOptions Dictionary of options for the workspace.
+ * @param {!Blockly.WorkspaceOptions} workspaceOptions Dictionary of options for the workspace.
  * @extends {Blockly.Flyout}
  * @constructor
  */
