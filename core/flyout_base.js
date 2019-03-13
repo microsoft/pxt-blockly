@@ -397,24 +397,13 @@ Blockly.Flyout.prototype.positionAt_ = function(width, height, x, y) {
 };
 
 /**
- * Hide and empty the flyout.
+ * Hide the flyout.
  */
 Blockly.Flyout.prototype.hide = function() {
   if (!this.isVisible()) {
     return;
   }
   this.setVisible(false);
-  // Delete all the event listeners.
-  for (var x = 0, listen; listen = this.listeners_[x]; x++) {
-    Blockly.unbindEvent_(listen);
-  }
-  this.listeners_.length = 0;
-  if (this.reflowWrapper_) {
-    this.workspace_.removeChangeListener(this.reflowWrapper_);
-    this.reflowWrapper_ = null;
-  }
-  // Do NOT delete the blocks here.  Wait until Flyout.show.
-  // https://neil.fraser.name/news/2014/08/09/
 };
 
 /**
@@ -425,6 +414,17 @@ Blockly.Flyout.prototype.hide = function() {
 Blockly.Flyout.prototype.show = function(xmlList) {
   this.workspace_.setResizesEnabled(false);
   this.hide();
+
+  // Delete any old event listeners.
+  for (var x = 0, listen; listen = this.listeners_[x]; x++) {
+    Blockly.unbindEvent_(listen);
+  }
+  this.listeners_.length = 0;
+  if (this.reflowWrapper_) {
+    this.workspace_.removeChangeListener(this.reflowWrapper_);
+    this.reflowWrapper_ = null;
+  }
+
   this.clearOldBlocks_();
 
   // Handle dynamic categories, represented by a name instead of a list of XML.
