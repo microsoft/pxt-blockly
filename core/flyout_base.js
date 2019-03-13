@@ -399,6 +399,7 @@ Blockly.Flyout.prototype.positionAt_ = function(width, height, x, y) {
 
 /**
  * Hide the flyout.
+ * Note: this does not remove any flyout state like event listeners.
  */
 Blockly.Flyout.prototype.hide = function() {
   if (!this.isVisible()) {
