@@ -94,12 +94,15 @@ Blockly.FieldTextDropdown.prototype.init = function() {
         'xlink:href', Blockly.FieldTextDropdown.DROPDOWN_SVG_DATAURI);
     this.arrow_.style.cursor = 'pointer';
     this.fieldGroup_.appendChild(this.arrow_);
-    this.mouseUpWrapper_ =
-        Blockly.bindEvent_(this.arrow_, 'mousedown', this, function(e) {
-          Blockly.FieldTextDropdown.prototype.showEditor_.call(this, e);
-          e.preventDefault();
-          e.stopPropagation();
-        });
+
+    if (this.sourceBlock_.isEditable()) {
+      this.mouseUpWrapper_ =
+          Blockly.bindEvent_(this.arrow_, 'mousedown', this, function(e) {
+            Blockly.FieldTextDropdown.prototype.showEditor_.call(this, e);
+            e.preventDefault();
+            e.stopPropagation();
+          });
+    }
   }
   // Prevent the drop-down handler from changing the field colour on open.
   this.disableColourChange_ = true;
