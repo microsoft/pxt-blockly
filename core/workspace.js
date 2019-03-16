@@ -662,6 +662,14 @@ Blockly.Workspace.getById = function(id) {
   return Blockly.Workspace.WorkspaceDB_[id] || null;
 };
 
+/**
+ * Sets the debugMode option in the workspace.
+ * @param {boolean} debugMode value to set to this option.
+ */
+Blockly.Workspace.prototype.setDebugmodeOption = function(debugMode) {
+  this.options.debugMode = debugMode;
+};
+
 // Export symbols that would otherwise be renamed by Closure compiler.
 Blockly.Workspace.prototype['clear'] = Blockly.Workspace.prototype.clear;
 Blockly.Workspace.prototype['clearUndo'] =

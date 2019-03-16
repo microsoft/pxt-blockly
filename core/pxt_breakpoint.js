@@ -131,3 +131,9 @@ Blockly.Breakpoint.prototype.isVisible = function() {
 Blockly.Breakpoint.prototype.setIconLocation = function(xy) {
   this.iconXY_ = xy;
 };
+
+/**
+ * Don't do anything, since breakpoint icon doesn't have a bubble.
+ */
+Blockly.Icon.prototype.updateColour = function () {
+};

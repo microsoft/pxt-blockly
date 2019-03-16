@@ -48,6 +48,7 @@ Blockly.Options = function(options) {
     var hasComments = false;
     var hasDisable = false;
     var hasSounds = false;
+    var debugMode = false;
   } else {
     var languageTree = Blockly.Options.parseToolboxTree(options['toolbox']);
     var hasCategories = Boolean(languageTree &&
@@ -131,6 +132,7 @@ Blockly.Options = function(options) {
   this.oneBasedIndex = oneBasedIndex;
   this.collapse = hasCollapse;
   this.comments = hasComments;
+  this.debugMode = debugMode;
   this.disable = hasDisable;
   this.readOnly = readOnly;
   this.maxBlocks = options['maxBlocks'] || Infinity;

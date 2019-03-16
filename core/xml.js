@@ -250,10 +250,10 @@ Blockly.Xml.blockToDom = function(block, opt_noId) {
   if (!block.isDeletable() && !block.isShadow()) {
     element.setAttribute('deletable', false);
   }
-  if (!block.isMovable() && !block.isShadow()) {
+  if (!block.isMovablePersisted() && !block.isShadow()) {
     element.setAttribute('movable', false);
   }
-  if (!block.isEditable()) {
+  if (!block.isEditablePersisted()) {
     element.setAttribute('editable', false);
   }
 
@@ -720,6 +720,7 @@ Blockly.Xml.domToBlockHeadless_ = function(xmlBlock, workspace) {
         break;
       case 'breakpoint':
         block.setBreakpoint(true);
+        break;
       default:
         // Unknown tag; ignore.  Same principle as HTML parsers.
         console.warn('Ignoring unknown tag: ' + xmlChild.nodeName);
