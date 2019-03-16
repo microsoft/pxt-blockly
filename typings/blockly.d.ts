@@ -16706,7 +16706,7 @@ declare module Blockly {
              * Sets the debugMode option in the workspace.
              * @param {boolean} debugMode value to set to this option.
              */
-            setDebugmodeOption(debugMode: boolean): void;
+            setDebugModeOption(debugMode: boolean): void;
     } 
     
 }

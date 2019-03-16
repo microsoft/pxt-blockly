@@ -666,7 +666,7 @@ Blockly.Workspace.getById = function(id) {
  * Sets the debugMode option in the workspace.
  * @param {boolean} debugMode value to set to this option.
  */
-Blockly.Workspace.prototype.setDebugmodeOption = function(debugMode) {
+Blockly.Workspace.prototype.setDebugModeOption = function(debugMode) {
   this.options.debugMode = debugMode;
 };
 
