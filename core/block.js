@@ -649,7 +649,7 @@ Blockly.Block.prototype.setDeletable = function(deletable) {
  * @return {boolean} True if movable.
  */
 Blockly.Block.prototype.isMovable = function() {
-  return this.isMovablePersisted() && !this.workspace.options.debugMode;
+  return this.isMovablePersisted() && !(this.workspace && this.workspace.options.debugMode);
 };
 
 /**
@@ -716,7 +716,7 @@ Blockly.Block.prototype.setInsertionMarker = function(insertionMarker) {
  * @return {boolean} True if editable.
  */
 Blockly.Block.prototype.isEditable = function() {
-  return this.isEditablePersisted() && !this.workspace.options.debugMode;
+  return this.isEditablePersisted() && !(this.workspace && this.workspace.options.debugMode);
 };
 
 /**
