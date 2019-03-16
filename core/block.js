@@ -649,7 +649,7 @@ Blockly.Block.prototype.setDeletable = function(deletable) {
  * @return {boolean} True if movable.
  */
 Blockly.Block.prototype.isMovable = function() {
-  return this.isMovablePersisted && !this.workspace.options.debugMode;
+  return this.isMovablePersisted() && !this.workspace.options.debugMode;
 };
 
 /**
