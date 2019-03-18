@@ -41,7 +41,7 @@ goog.require('goog.math.Rect');
 
 /**
  * Class for a flyout.
- * @param {!Object} workspaceOptions Dictionary of options for the workspace.
+ * @param {!Blockly.WorkspaceOptions} workspaceOptions Dictionary of options for the workspace.
  * @constructor
  */
 Blockly.Flyout = function(workspaceOptions) {
@@ -196,17 +196,24 @@ Blockly.Flyout.prototype.dragAngleRange_ = 70;
 
 /**
  * The svg or g element that contains the flyout dom (excluding scrollbar).
- * @type {!SVGElement}
+ * @type {SVGElement}
  * @private
  */
 Blockly.Flyout.prototype.svgGroup_ = null;
 
 /**
  * Scrollbar for scrolling blocks.
- * @type {!Blockly.Scrollbar}
+ * @type {Blockly.Scrollbar}
  * @private
  */
 Blockly.Flyout.prototype.scrollbar_ = null;
+
+/**
+ * The workspace this flyout puts blocks on
+ * @type {Blockly.WorkspaceSvg}
+ * @private
+ */
+Blockly.Flyout.prototype.targetWorkspace_ = null;
 
 /**
  * Creates the flyout's DOM.  Only needs to be called once.  The flyout can
@@ -275,6 +282,7 @@ Blockly.Flyout.prototype.init = function(targetWorkspace) {
  */
 Blockly.Flyout.prototype.dispose = function() {
   this.hide();
+  this.clearOldEventListeners_();
   Blockly.unbindEvent_(this.eventWrappers_);
   if (this.filterWrapper_) {
     this.targetWorkspace_.removeChangeListener(this.filterWrapper_);
@@ -397,14 +405,21 @@ Blockly.Flyout.prototype.positionAt_ = function(width, height, x, y) {
 };
 
 /**
- * Hide and empty the flyout.
+ * Hide the flyout.
+ * Note: this does not remove any flyout state like event listeners.
  */
 Blockly.Flyout.prototype.hide = function() {
   if (!this.isVisible()) {
     return;
   }
   this.setVisible(false);
-  // Delete all the event listeners.
+};
+
+/**
+ * Delete any event listeners.
+ * @private
+ */
+Blockly.Flyout.prototype.clearOldEventListeners_ = function () {
   for (var x = 0, listen; listen = this.listeners_[x]; x++) {
     Blockly.unbindEvent_(listen);
   }
@@ -413,8 +428,6 @@ Blockly.Flyout.prototype.hide = function() {
     this.workspace_.removeChangeListener(this.reflowWrapper_);
     this.reflowWrapper_ = null;
   }
-  // Do NOT delete the blocks here.  Wait until Flyout.show.
-  // https://neil.fraser.name/news/2014/08/09/
 };
 
 /**
@@ -422,9 +435,11 @@ Blockly.Flyout.prototype.hide = function() {
  * @param {!Array|string} xmlList List of blocks to show.
  *     Variables and procedures have a custom set of blocks.
  */
-Blockly.Flyout.prototype.show = function(xmlList) {
+Blockly.Flyout.prototype.show = function (xmlList) {
   this.workspace_.setResizesEnabled(false);
   this.hide();
+
+  this.clearOldEventListeners_();
   this.clearOldBlocks_();
 
   // Handle dynamic categories, represented by a name instead of a list of XML.

@@ -8406,10 +8406,10 @@ declare module Blockly {
     
             /**
              * Class for a flyout.
-             * @param {!Object} workspaceOptions Dictionary of options for the workspace.
+             * @param {!Blockly.WorkspaceOptions} workspaceOptions Dictionary of options for the workspace.
              * @constructor
              */
-            constructor(workspaceOptions: Object);
+            constructor(workspaceOptions: Blockly.WorkspaceOptions);
     
             /**
              * @type {!Blockly.Workspace}
@@ -8555,17 +8555,24 @@ declare module Blockly {
     
             /**
              * The svg or g element that contains the flyout dom (excluding scrollbar).
-             * @type {!SVGElement}
+             * @type {SVGElement}
              * @private
              */
             svgGroup_: SVGElement;
     
             /**
              * Scrollbar for scrolling blocks.
-             * @type {!Blockly.Scrollbar}
+             * @type {Blockly.Scrollbar}
              * @private
              */
             scrollbar_: Blockly.Scrollbar;
+    
+            /**
+             * The workspace this flyout puts blocks on
+             * @type {Blockly.WorkspaceSvg}
+             * @private
+             */
+            targetWorkspace_: Blockly.WorkspaceSvg;
     
             /**
              * Creates the flyout's DOM.  Only needs to be called once.  The flyout can
@@ -8646,9 +8653,16 @@ declare module Blockly {
             positionAt_(width: number, height: number, x: number, y: number): void;
     
             /**
-             * Hide and empty the flyout.
+             * Hide the flyout.
+             * Note: this does not remove any flyout state like event listeners.
              */
             hide(): void;
+    
+            /**
+             * Delete any event listeners.
+             * @private
+             */
+            clearOldEventListeners_(): void;
     
             /**
              * Show and populate the flyout.
@@ -8995,11 +9009,11 @@ declare module Blockly {
     
             /**
              * Class for a flyout.
-             * @param {!Object} workspaceOptions Dictionary of options for the workspace.
+             * @param {!Blockly.WorkspaceOptions} workspaceOptions Dictionary of options for the workspace.
              * @extends {Blockly.Flyout}
              * @constructor
              */
-            constructor(workspaceOptions: Object);
+            constructor(workspaceOptions: Blockly.WorkspaceOptions);
     
             /**
              * Flyout should be laid out horizontally.
@@ -9105,11 +9119,11 @@ declare module Blockly {
     
             /**
              * Class for a flyout.
-             * @param {!Object} workspaceOptions Dictionary of options for the workspace.
+             * @param {!Blockly.WorkspaceOptions} workspaceOptions Dictionary of options for the workspace.
              * @extends {Blockly.Flyout}
              * @constructor
              */
-            constructor(workspaceOptions: Object);
+            constructor(workspaceOptions: Blockly.WorkspaceOptions);
     
             /**
              * Flyout should be laid out vertically.
