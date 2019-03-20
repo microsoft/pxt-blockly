@@ -649,8 +649,16 @@ Blockly.Block.prototype.setDeletable = function(deletable) {
  * @return {boolean} True if movable.
  */
 Blockly.Block.prototype.isMovable = function() {
+  return this.isMovablePersisted() && !(this.workspace && this.workspace.options.debugMode);
+};
+
+/**
+ * Get whether we should persist this block as movable or not.
+ * @return {boolean} True if movable.
+ */
+Blockly.Block.prototype.isMovablePersisted = function() {
   return this.movable_ && !this.isShadow_ &&
-      !(this.workspace && this.workspace.options.readOnly);
+    !(this.workspace && this.workspace.options.readOnly);
 };
 
 /**
@@ -708,6 +716,14 @@ Blockly.Block.prototype.setInsertionMarker = function(insertionMarker) {
  * @return {boolean} True if editable.
  */
 Blockly.Block.prototype.isEditable = function() {
+  return this.isEditablePersisted() && !(this.workspace && this.workspace.options.debugMode);
+};
+
+/**
+ * Get whether we should persist this block as editable.
+ * @return {boolean} True if editable.
+ */
+Blockly.Block.prototype.isEditablePersisted = function() {
   return this.editable_ && !(this.workspace && this.workspace.options.readOnly);
 };
 
