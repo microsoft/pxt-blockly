@@ -63,17 +63,31 @@ Blockly.Breakpoint.prototype.createIcon = function() {
  */
 Blockly.Breakpoint.prototype.drawIcon_ = function(group) {
   var fill = this.block_.isBreakpointSet() ? '#f00' : "#ccc";
-  // Red/Grey filled stop sign, for Set/Unset breakpoint respectively.
-  this.bigDot = Blockly.utils.createSvgElement('polygon',
+  // Red/Grey filled circle, for Set/Unset breakpoint respectively.
+  this.bigDot = Blockly.utils.createSvgElement('circle',
   {
     'class': 'blocklyBreakpointSymbol',
-    'points': '10,7 20,7 25,12 25,22 20,27 10,27 5,22 5,12',
     'fill': fill,
     'stroke': 'white',
     'stroke-width': 2,
-    'transform': 'scale(0.7)',
+    'cx': 7,
+    'cy': 11.5,
+    'r': 8,
   },
   group);
+
+  // Dismissed stop sign.
+  // this.bigDot = Blockly.utils.createSvgElement('polygon',
+  // {
+  //   'class': 'blocklyBreakpointSymbol',
+  //   'points': '10,7 20,7 25,12 25,22 20,27 10,27 5,22 5,12',
+  //   'fill': fill,
+  //   'stroke': 'white',
+  //   'stroke-width': 2,
+  //   'transform': 'scale(0.7)',
+  // },
+  // group);
+  
 };
 
 
