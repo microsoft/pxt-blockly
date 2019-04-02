@@ -53,7 +53,7 @@ Blockly.Variables.NAME_TYPE = Blockly.VARIABLE_CATEGORY_NAME;
  * @return {!Array.<!Blockly.VariableModel>} Array of variable models.
  */
 Blockly.Variables.allUsedVarModels = function(ws) {
-  var blocks = ws.getAllBlocks();
+  var blocks = ws.getAllBlocks().filter(block => !block.disabled);
   var variableHash = Object.create(null);
   // Iterate through every block and add each variable to the hash.
   for (var x = 0; x < blocks.length; x++) {
