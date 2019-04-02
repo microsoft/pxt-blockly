@@ -21,6 +21,11 @@ goog.provide('Blockly.pxtBlocklyUtils');
 
 
 /**
+ * Whitelist of blocks whose shadow blocks duplicate on drag
+ */
+Blockly.pxtBlocklyUtils._duplicateOnDragWhitelist = null;
+
+/**
  * Measure some text using a canvas in-memory.
  * Does not exist in Blockly, but needed in scratch-blocks
  * @param {string} fontSize E.g., '10pt'
@@ -54,7 +59,20 @@ Blockly.pxtBlocklyUtils.isShadowArgumentReporter = function(block) {
       block.type === 'argument_reporter_boolean' ||
       block.type === 'argument_reporter_number' ||
       block.type === 'argument_reporter_string' ||
-      block.type === 'argument_reporter_custom');
+      block.type === 'argument_reporter_custom' ||
+      (Blockly.pxtBlocklyUtils._duplicateOnDragWhitelist &&
+        Blockly.pxtBlocklyUtils._duplicateOnDragWhitelist.indexOf(block.type) !== -1));
+};
+
+
+/**
+ * Sets a whitelist of blocks whose shadow blocks duplicate on drag (in addition
+ * to argument reporter blocks).
+ * @param {Array<string>} blockTypes a list of block
+ * @package
+ */
+Blockly.pxtBlocklyUtils.whitelistDraggableBlockTypes = function(blockTypes) {
+  Blockly.pxtBlocklyUtils._duplicateOnDragWhitelist = blockTypes.slice();
 };
 
 /**
