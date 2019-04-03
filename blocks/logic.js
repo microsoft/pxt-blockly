@@ -92,7 +92,7 @@ Blockly.Blocks['controls_if'] = {
     if (!xmlElement) return;
     this.elseifCount_ = parseInt(xmlElement.getAttribute('elseif'), 10) || 0;
     this.elseCount_ = parseInt(xmlElement.getAttribute('else'), 10) || 0;
-    this.updateShape_();
+    this.rebuildShape_();
   },
   /**
    * Store pointers to any connected child blocks.
@@ -249,6 +249,46 @@ Blockly.Blocks['controls_if'] = {
     this.appendDummyInput('ADDBUTTON')
         .appendField(
             new Blockly.FieldImage(this.ADD_IMAGE_DATAURI, 24, 24, false, "*", addElseIf));
+  },
+  /**
+   * Reconstructs the block with all child blocks attached.
+   */
+  rebuildShape_: function() {
+    var valueConnections = [null];
+    var statementConnections = [null];
+    var elseStatementConnection = null;
+
+    if (this.getInput('ELSE')) {
+      elseStatementConnection = this.getInput('ELSE').connection.targetConnection;
+    }
+    var i = 1;
+    while (this.getInput('IF' + i)) {
+      var inputIf = this.getInput('IF' + i);
+      var inputDo = this.getInput('DO' + i);
+      valueConnections.push(inputIf.connection.targetConnection);
+      statementConnections.push(inputDo.connection.targetConnection);
+      i++;
+    }
+    this.updateShape_();
+    this.reconnectChildBlocks_(valueConnections, statementConnections,
+        elseStatementConnection);
+  },
+  /**
+   * Reconnects child blocks.
+   * @param {!Array<?Blockly.RenderedConnection>} valueConnections List of value
+   * connectsions for if input.
+   * @param {!Array<?Blockly.RenderedConnection>} statementConnections List of
+   * statement connections for do input.
+   * @param {?Blockly.RenderedConnection} elseStatementConnection Statement
+   * connection for else input.
+   */
+  reconnectChildBlocks_: function(valueConnections, statementConnections,
+      elseStatementConnection) {
+    for (var i = 1; i <= this.elseifCount_; i++) {
+      Blockly.Mutator.reconnect(valueConnections[i], this, 'IF' + i);
+      Blockly.Mutator.reconnect(statementConnections[i], this, 'DO' + i);
+    }
+    Blockly.Mutator.reconnect(elseStatementConnection, this, 'ELSE');
   }
 };
 
@@ -549,7 +589,7 @@ Blockly.Constants.Logic.CONTROLS_IF_MUTATOR_MIXIN = {
   domToMutation: function(xmlElement) {
     this.elseifCount_ = parseInt(xmlElement.getAttribute('elseif'), 10) || 0;
     this.elseCount_ = parseInt(xmlElement.getAttribute('else'), 10) || 0;
-    this.updateShape_();
+    this.rebuildShape_();
   },
   /**
    * Populate the mutator's dialog with this block's components.
