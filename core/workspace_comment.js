@@ -107,7 +107,7 @@ Blockly.WorkspaceComment = function(workspace, content, height, width, opt_id) {
    * @protected
    * @type {!string}
    */
-  this.content_ = content;
+  this.content_ = content.trim(); // PXT Blockly
 
   /**
    * @package
@@ -304,6 +304,7 @@ Blockly.WorkspaceComment.prototype.setEditable = function(editable) {
  * @package
  */
 Blockly.WorkspaceComment.prototype.getContent = function() {
+
   return this.content_;
 };
 
@@ -314,6 +315,7 @@ Blockly.WorkspaceComment.prototype.getContent = function() {
  */
 Blockly.WorkspaceComment.prototype.setContent = function(content) {
   if (this.content_ != content) {
+    content = content.trim(); // PXT Blockly
     Blockly.Events.fire(
         new Blockly.Events.CommentChange(this, this.content_, content));
     this.content_ = content;
@@ -399,10 +401,8 @@ Blockly.WorkspaceComment.fromXml = function(xmlComment, workspace) {
       workspace, info.content, info.h, info.w, info.id);
   comment.data = xmlComment.getAttribute('data');
 
-  var commentX = parseInt(xmlComment.getAttribute('x'), 10);
-  var commentY = parseInt(xmlComment.getAttribute('y'), 10);
-  if (!isNaN(commentX) && !isNaN(commentY)) {
-    comment.moveBy(commentX, commentY);
+  if (!isNaN(info.x) && !isNaN(info.y)) {
+    comment.moveBy(info.x, info.y);
   }
 
   Blockly.WorkspaceComment.fireCreateEvent(comment);
