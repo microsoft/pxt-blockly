@@ -226,7 +226,6 @@ Blockly.WorkspaceCommentSvg.prototype.unselect = function() {
   Blockly.Events.fire(event);
   Blockly.selected = null;
   this.removeSelect();
-  this.blurFocus();
 };
 
 /**
@@ -319,7 +318,6 @@ Blockly.WorkspaceCommentSvg.prototype.moveBy = function(dx, dy) {
   // TODO: Do I need to look up the relative to surface XY position here?
   var xy = this.getRelativeToSurfaceXY();
   this.translate(xy.x + dx, xy.y + dy);
-  this.xy_ = new goog.math.Coordinate(xy.x + dx, xy.y + dy);
   event.recordNew();
   Blockly.Events.fire(event);
   this.workspace.resizeContents();
