@@ -204,6 +204,12 @@ Blockly.Events.Change.prototype.run = function(forward) {
         value = value || '<mutation></mutation>';
         var dom = Blockly.Xml.textToDom('<xml>' + value + '</xml>');
         block.domToMutation(dom.firstChild);
+        // PXT Blockly
+        // Mutation may have added some elements that need initializing and re-rendering.
+        block.initSvg();
+        if (block.rendered) {
+          block.render();
+        }
       }
       Blockly.Events.fire(new Blockly.Events.Change(
           block, 'mutation', null, oldMutation, value));
