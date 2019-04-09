@@ -90,11 +90,11 @@ Blockly.FieldString.prototype.init = function() {
 
   // Add quotes around the string
   // Positioned on render, after text size is calculated.
-  this.quoteSize_ = 12;
-  this.quoteWidth_ = 6;
+  this.quoteSize_ = 16;
+  this.quoteWidth_ = 8;
   this.quoteLeftX_ = 0;
   this.quoteRightX_ = 0;
-  this.quoteY_ = 16;
+  this.quoteY_ = 22;
   if (this.quoteLeft_) this.quoteLeft_.parentNode.removeChild(this.quoteLeft_);
   this.quoteLeft_ = Blockly.utils.createSvgElement('text', {
     'font-size': this.quoteSize_ + 'px',
