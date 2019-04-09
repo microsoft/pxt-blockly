@@ -95,14 +95,13 @@ Blockly.FieldString.prototype.init = function() {
   this.quoteLeftX_ = 0;
   this.quoteRightX_ = 0;
   this.quoteY_ = 16;
-  var quoteElement = 'text';
   if (this.quoteLeft_) this.quoteLeft_.parentNode.removeChild(this.quoteLeft_);
-  this.quoteLeft_ = Blockly.utils.createSvgElement(quoteElement, {
+  this.quoteLeft_ = Blockly.utils.createSvgElement('text', {
     'font-size': this.quoteSize_ + 'px',
     'class': 'text-quote'
   });
   if (this.quoteRight_) this.quoteRight_.parentNode.removeChild(this.quoteRight_);
-  this.quoteRight_ = Blockly.utils.createSvgElement(quoteElement, {
+  this.quoteRight_ = Blockly.utils.createSvgElement('text', {
     'font-size': this.quoteSize_ + 'px',
     'class': 'text-quote'
   });
