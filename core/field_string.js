@@ -91,36 +91,23 @@ Blockly.FieldString.prototype.init = function() {
   // Add quotes around the string
   // Positioned on render, after text size is calculated.
   this.quoteSize_ = 12;
+  this.quoteWidth_ = 6;
   this.quoteLeftX_ = 0;
   this.quoteRightX_ = 0;
-  this.quoteY_ = 8;
-  var quoteElement = goog.userAgent.IE ? 'image' : 'use';
+  this.quoteY_ = 16;
+  var quoteElement = 'text';
   if (this.quoteLeft_) this.quoteLeft_.parentNode.removeChild(this.quoteLeft_);
   this.quoteLeft_ = Blockly.utils.createSvgElement(quoteElement, {
-    'height': this.quoteSize_ + 'px',
-    'width': this.quoteSize_ + 'px'
+    'font-size': this.quoteSize_ + 'px',
+    'class': 'text-quote'
   });
   if (this.quoteRight_) this.quoteRight_.parentNode.removeChild(this.quoteRight_);
   this.quoteRight_ = Blockly.utils.createSvgElement(quoteElement, {
-    'height': this.quoteSize_ + 'px',
-    'width': this.quoteSize_ + 'px'
+    'font-size': this.quoteSize_ + 'px',
+    'class': 'text-quote'
   });
-  var quoteLeft = this.sourceBlock_.RTL ? '#blocklyStringQuote1Svg' : '#blocklyStringQuote0Svg';
-  var quoteRight = this.sourceBlock_.RTL ? '#blocklyStringQuote0Svg' : '#blocklyStringQuote1Svg';
-  if (goog.userAgent.IE) {
-    // IE has issues with the <use> element, place the image inline instead
-    // https://developer.mozilla.org/en-US/docs/Web/SVG/Element/use#Browser_compatibility
-    quoteLeft = this.sourceBlock_.RTL ?
-      Blockly.FieldString.QUOTE_1_DATA_URI :
-      Blockly.FieldString.QUOTE_0_DATA_URI;
-    quoteRight = this.sourceBlock_.RTL ?
-      Blockly.FieldString.QUOTE_0_DATA_URI :
-      Blockly.FieldString.QUOTE_1_DATA_URI;
-  }
-  this.quoteLeft_.setAttributeNS('http://www.w3.org/1999/xlink',
-      'xlink:href', quoteLeft);
-  this.quoteRight_.setAttributeNS('http://www.w3.org/1999/xlink',
-      'xlink:href', quoteRight);
+  this.quoteLeft_.appendChild(document.createTextNode('"'));
+  this.quoteRight_.appendChild(document.createTextNode('"'));
 
   // Force a reset of the text to add the arrow.
   var text = this.text_;
@@ -161,11 +148,11 @@ Blockly.FieldString.prototype.positionLeft = function(x) {
   }
   var addedWidth = 0;
   if (this.sourceBlock_.RTL) {
-    this.quoteLeftX_ = x + this.quoteSize_ + Blockly.FieldString.quotePadding * 2;
-    addedWidth = this.quoteSize_ + Blockly.FieldString.quotePadding;
+    this.quoteLeftX_ = x + this.quoteWidth_ + Blockly.FieldString.quotePadding * 2;
+    addedWidth = this.quoteWidth_ + Blockly.FieldString.quotePadding;
   } else {
     this.quoteLeftX_ = 0;
-    addedWidth = this.quoteSize_ + Blockly.FieldString.quotePadding;
+    addedWidth = this.quoteWidth_ + Blockly.FieldString.quotePadding;
   }
   this.quoteLeft_.setAttribute('transform',
       'translate(' + this.quoteLeftX_ + ',' + this.quoteY_ + ')'
@@ -181,10 +168,10 @@ Blockly.FieldString.prototype.positionArrow = function(x) {
   var addedWidth = 0;
   if (this.sourceBlock_.RTL) {
     this.quoteRightX_ = Blockly.FieldString.quotePadding;
-    addedWidth = this.quoteSize_ + Blockly.FieldString.quotePadding;
+    addedWidth = this.quoteWidth_ + Blockly.FieldString.quotePadding;
   } else {
     this.quoteRightX_ = x + Blockly.FieldString.quotePadding;
-    addedWidth = this.quoteSize_ + Blockly.FieldString.quotePadding;
+    addedWidth = this.quoteWidth_ + Blockly.FieldString.quotePadding;
   }
   this.quoteRight_.setAttribute('transform',
       'translate(' + this.quoteRightX_ + ',' + this.quoteY_ + ')'

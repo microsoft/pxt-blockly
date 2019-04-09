@@ -398,7 +398,7 @@ Blockly.createDom_ = function(container, options) {
   Blockly.utils.createSvgElement('path',
       {'d': 'M 0 0 L 10 10 M 10 0 L 0 10', 'stroke': '#cc0'}, disabledPattern);
 
-  // Add dropdown and quote image definitions
+  // Add dropdown image definitions
   var arrowSize = 12;
   var dropdownArrowImage = Blockly.utils.createSvgElement('image',
       {
@@ -408,24 +408,6 @@ Blockly.createDom_ = function(container, options) {
       }, defs);
   dropdownArrowImage.setAttributeNS('http://www.w3.org/1999/xlink',
       'xlink:href', Blockly.FieldDropdown.DROPDOWN_SVG_DATAURI);
-
-  var quoteSize = 12;
-  var leftQuoteImage = Blockly.utils.createSvgElement('image',
-      {
-        'id': 'blocklyStringQuote0Svg',
-        'height': quoteSize + 'px',
-        'width': quoteSize + 'px'
-      }, defs);
-  leftQuoteImage.setAttributeNS('http://www.w3.org/1999/xlink',
-      'xlink:href', Blockly.FieldString.QUOTE_0_DATA_URI);
-  var rightQuoteImage = Blockly.utils.createSvgElement('image',
-      {
-        'id': 'blocklyStringQuote1Svg',
-        'height': quoteSize + 'px',
-        'width': quoteSize + 'px'
-      }, defs);
-  rightQuoteImage.setAttributeNS('http://www.w3.org/1999/xlink',
-      'xlink:href', Blockly.FieldString.QUOTE_1_DATA_URI);
 
   options.stackGlowFilterId = stackGlowFilter.id;
   options.replacementGlowFilterId = replacementGlowFilter.id;
