@@ -76,12 +76,12 @@ Blockly.FieldString.prototype.init = function() {
   if (this.quoteLeft_) this.quoteLeft_.parentNode.removeChild(this.quoteLeft_);
   this.quoteLeft_ = Blockly.utils.createSvgElement('text', {
     'font-size': this.quoteSize_ + 'px',
-    'class': 'text-quote'
+    'class': 'field-text-quote'
   });
   if (this.quoteRight_) this.quoteRight_.parentNode.removeChild(this.quoteRight_);
   this.quoteRight_ = Blockly.utils.createSvgElement('text', {
     'font-size': this.quoteSize_ + 'px',
-    'class': 'text-quote'
+    'class': 'field-text-quote'
   });
   this.quoteLeft_.appendChild(document.createTextNode('"'));
   this.quoteRight_.appendChild(document.createTextNode('"'));
