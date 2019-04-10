@@ -1286,5 +1286,10 @@ Blockly.Css.CONTENT = [
     'font-weight: bold;',
   '}',
 
+  // Quote for string field
+  '.field-text-quote {',
+    'fill: #a31515 !important;',
+  '}',
+
   ''
 ];
