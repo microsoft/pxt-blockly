@@ -61,10 +61,11 @@ Blockly.Comment.prototype.width_ = 160;
  * Height of bubble.
  * @private
  */
-Blockly.Comment.prototype.height_ = 120;
+Blockly.Comment.prototype.height_ = 80;
 
 /**
  * Draw the comment icon.
+ * PXT Blockly: draw comment icon shape
  * @param {!Element} group The icon group.
  * @private
  */
@@ -110,6 +111,8 @@ Blockly.Comment.prototype.drawIcon_ = function(group) {
 
 /**
  * Create the editor for the comment's bubble.
+ * PXT Blockly: keep creatEditor_ and createTextEditor_
+ * functions separate, to leave space for top icons
  * @return {!Element} The top-level node of the editor.
  * @private
  */
@@ -126,19 +129,15 @@ Blockly.Comment.prototype.createEditor_ = function() {
   this.createTextEditor_();
   this.svgGroup_.appendChild(this.foreignObject_);
 
-  // Add the delete icon
-  this.addDeleteDom_();
-  Blockly.bindEventWithChecks_(
-      this.deleteGroup_, 'mousedown', this, this.deleteMouseDown_);
-  Blockly.bindEventWithChecks_(
-      this.deleteGroup_, 'mouseout', this, this.deleteMouseOut_);
-  Blockly.bindEventWithChecks_(
-      this.deleteGroup_, 'mouseup', this, this.deleteMouseUp_);
+  // Add the delete and minimize icon
+  this.createTopBarIcons_();
 
-  // Add the minimize icon
-  this.addMinimizeDom_();
   Blockly.bindEventWithChecks_(
-      this.minimizeGroup_, 'mousedown', this, this.minimizeMouseUp_);
+      this.deleteIcon_, 'mousedown', this, this.deleteMouseDown_);
+  Blockly.bindEventWithChecks_(
+      this.deleteIcon_, 'mouseup', this, this.deleteMouseUp_);
+  Blockly.bindEventWithChecks_(
+      this.minimizeArrow_, 'mousedown', this, this.minimizeMouseUp_);
 
   return this.svgGroup_;
 };
@@ -159,13 +158,8 @@ Blockly.Comment.prototype.createTextEditor_ = function() {
     </foreignObject>
   */
   this.foreignObject_ = Blockly.utils.createSvgElement('foreignObject',
-      {
-        'x': Blockly.WorkspaceCommentSvg.BORDER_WIDTH,
-        'y': Blockly.WorkspaceCommentSvg.BORDER_WIDTH + Blockly.WorkspaceCommentSvg.TOP_OFFSET,
-        // pxtblockly: Firefox does not respect the stacking context for foreign objects; see https://bugzilla.mozilla.org/show_bug.cgi?id=984312
-        'transform': 'translate(0, 0)'
-      },
-      null);
+      {'x': Blockly.Bubble.BORDER_WIDTH, 'y': Blockly.Bubble.BORDER_WIDTH + Blockly.WorkspaceCommentSvg.TOP_BAR_HEIGHT},
+      null); // PXT Blockly: add space for top bar height
   var body = document.createElementNS(Blockly.HTML_NS, 'body');
   body.setAttribute('xmlns', Blockly.HTML_NS);
   body.className = 'blocklyMinimalBody';
@@ -175,8 +169,7 @@ Blockly.Comment.prototype.createTextEditor_ = function() {
   body.appendChild(textarea);
   this.textarea_ = textarea;
   this.foreignObject_.appendChild(body);
-  Blockly.bindEventWithChecks_(textarea, 'mouseup', this, this.textareaFocus_, true, true);
-  Blockly.bindEventWithChecks_(textarea, 'blur', this, this.textareaBlur_);
+  Blockly.bindEventWithChecks_(textarea, 'mouseup', this, this.textareaFocus_);
   // Don't zoom with mousewheel.
   Blockly.bindEventWithChecks_(textarea, 'wheel', this, function(e) {
     e.stopPropagation();
@@ -191,58 +184,53 @@ Blockly.Comment.prototype.createTextEditor_ = function() {
   setTimeout(function() {
     textarea.focus();
   }, 0);
-  this.addFocus();
   return this.foreignObject_;
 };
 
 /**
- * Add the delete icon to the DOM
+ * PXT Blockly: Create the minimize toggle and delete icons that in the comment top bar.
  * @private
  */
-Blockly.Comment.prototype.addDeleteDom_ = function() {
-  this.deleteGroup_ = Blockly.utils.createSvgElement(
-      'g',
+Blockly.Comment.prototype.createTopBarIcons_ = function() {
+  var topBarMiddleY = (Blockly.WorkspaceCommentSvg.TOP_BAR_HEIGHT / 2) +
+      Blockly.WorkspaceCommentSvg.BORDER_WIDTH;
+
+  // Minimize Toggle Icon in Comment Top Bar
+  var xInset = Blockly.WorkspaceCommentSvg.TOP_BAR_ICON_INSET;
+  this.minimizeArrow_ = Blockly.utils.createSvgElement('image',
       {
-        'class': 'blocklyCommentDeleteIcon'
-      },
-      this.svgGroup_);
-  this.deleteIconBorder_ = Blockly.utils.createSvgElement('rect',
+        'x': xInset,
+        'y': topBarMiddleY - Blockly.WorkspaceCommentSvg.MINIMIZE_ICON_SIZE / 2,
+        'width': Blockly.WorkspaceCommentSvg.MINIMIZE_ICON_SIZE,
+        'height': Blockly.WorkspaceCommentSvg.MINIMIZE_ICON_SIZE
+      }, this.svgGroup_);
+  this.minimizeArrow_.setAttributeNS('http://www.w3.org/1999/xlink',
+    'xlink:href', Blockly.mainWorkspace.options.pathToMedia + 'comment-arrow-down.svg');
+
+  // Delete Icon in Comment Top Bar
+  this.deleteIcon_ = Blockly.utils.createSvgElement('image',
       {
-        'x': '-12.5', 'y': '1',
-        'width': '27.5', 'height': '27.5',
-        'fill': 'transparent',
-        'class': 'blocklyDeleteIconShape'
-      },
-      this.deleteGroup_);
-  Blockly.WorkspaceCommentSvg.drawDeleteIcon(this.deleteGroup_)
+        'x': xInset,
+        'y': topBarMiddleY - Blockly.WorkspaceCommentSvg.DELETE_ICON_SIZE / 2,
+        'width': Blockly.WorkspaceCommentSvg.DELETE_ICON_SIZE,
+        'height': Blockly.WorkspaceCommentSvg.DELETE_ICON_SIZE
+      }, this.svgGroup_);
+  this.deleteIcon_.setAttributeNS('http://www.w3.org/1999/xlink',
+      'xlink:href', Blockly.mainWorkspace.options.pathToMedia + 'delete-x.svg');
 };
 
 /**
- * Handle a mouse-down on comment's delete icon.
+ * PXT Blockly: Handle a mouse-down on comment's delete icon.
  * @param {!Event} e Mouse down event.
  * @private
  */
 Blockly.Comment.prototype.deleteMouseDown_ = function(e) {
-  // highlight the delete icon
-  Blockly.utils.addClass(
-      /** @type {!Element} */ (this.deleteIconBorder_), 'blocklyDeleteIconHighlighted');
   // This event has been handled.  No need to bubble up to the document.
   e.stopPropagation();
 };
 
 /**
- * Handle a mouse-out on comment's delete icon.
- * @param {!Event} e Mouse out event.
- * @private
- */
-Blockly.Comment.prototype.deleteMouseOut_ = function(/*e*/) {
-  // restore highlight on the delete icon
-  Blockly.utils.removeClass(
-      /** @type {!Element} */ (this.deleteIconBorder_), 'blocklyDeleteIconHighlighted');
-};
-
-/**
- * Handle a mouse-up on comment's delete icon.
+ * PXT Blockly: Handle a mouse-up on comment's delete icon.
  * @param {!Event} e Mouse up event.
  * @private
  */
@@ -254,35 +242,7 @@ Blockly.Comment.prototype.deleteMouseUp_ = function(e) {
 };
 
 /**
- * Add the minimize icon to the DOM
- * @private
- */
-Blockly.Comment.prototype.addMinimizeDom_ = function() {
-  this.minimizeGroup_ = Blockly.utils.createSvgElement(
-      'g',
-      {
-        'class': 'blocklyCommentMinimizeIcon'
-      },
-      this.svgGroup_);
-  Blockly.utils.createSvgElement('rect',
-      {
-        'x': '2', 'y': '2',
-        'width': '27.5', 'height': '27.5',
-        'class': 'blocklyIconShape',
-        'style': 'fill: transparent; stroke-width: 0px;'
-      },
-      this.minimizeGroup_);
-  Blockly.utils.createSvgElement(
-      'path',
-      {
-        'd': 'm 15,17 c -2.0186301,-1.7939 -4.0372859,-3.5877 -6.0559675,-5.3815 4.0751576,0.011 8.1503148,0.023 12.2254728,0.034 -2.056269,1.7828 -4.112771,3.5653 -6.1695053,5.3475 z',
-        'style': 'fill: #fff'
-      },
-      this.minimizeGroup_);
-};
-
-/**
- * Handle a mouse-up on comment's minimize icon.
+ * PXT Blockly: Handle a mouse-up on comment's minimize icon.
  * @param {!Event} e Mouse up event.
  * @private
  */
@@ -315,25 +275,27 @@ Blockly.Comment.prototype.updateEditable = function() {
 Blockly.Comment.prototype.resizeBubble_ = function() {
   if (this.isVisible()) {
     var size = this.bubble_.getBubbleSize();
-    var doubleBorderWidth = 2 * Blockly.WorkspaceCommentSvg.BORDER_WIDTH;
-    var topOffset = Blockly.WorkspaceCommentSvg.TOP_OFFSET;
+    var doubleBorderWidth = 2 * Blockly.Bubble.BORDER_WIDTH;
+    var topBarHeight = Blockly.WorkspaceCommentSvg.TOP_BAR_HEIGHT
     this.foreignObject_.setAttribute('width', size.width - doubleBorderWidth);
-    this.foreignObject_.setAttribute('height', size.height - doubleBorderWidth - topOffset);
+    this.foreignObject_.setAttribute('height', size.height - doubleBorderWidth - topBarHeight); // PXT Blockly: add space for top bar height
     this.textarea_.style.width = (size.width - doubleBorderWidth - 4) + 'px';
-    this.textarea_.style.height = (size.height - doubleBorderWidth - topOffset - 4) + 'px';
+    this.textarea_.style.height = (size.height - doubleBorderWidth - 4) + 'px';
 
-    if (this.deleteGroup_) {
-      if (this.block_.RTL) {
-        this.deleteGroup_.setAttribute('transform', 'translate(' +
-          (Blockly.WorkspaceCommentSvg.DELETE_ICON_PADDING +
-          Blockly.WorkspaceCommentSvg.BORDER_WIDTH) + ',' +
-          Blockly.WorkspaceCommentSvg.BORDER_WIDTH + ') scale(-1 1)');
-      } else {
-        this.deleteGroup_.setAttribute('transform', 'translate(' +
-          (size.width - Blockly.WorkspaceCommentSvg.DELETE_ICON_PADDING -
-          Blockly.WorkspaceCommentSvg.BORDER_WIDTH) + ',' +
-          Blockly.WorkspaceCommentSvg.BORDER_WIDTH + ')');
-      }
+    // PXT Blockly: handle minimize and delete icons
+    if (this.RTL) {
+      this.minimizeArrow_.setAttribute('x', size.width -
+          (Blockly.WorkspaceCommentSvg.MINIMIZE_ICON_SIZE) -
+          Blockly.WorkspaceCommentSvg.TOP_BAR_ICON_INSET);
+      this.deleteIcon_.setAttribute('x', (-size.width +
+          Blockly.WorkspaceCommentSvg.DELETE_ICON_SIZE -
+          Blockly.WorkspaceCommentSvg.TOP_BAR_ICON_INSET));
+      this.minimizeArrow_.setAttribute('transform', 'translate(' + -size.width + ', 1)');
+      this.deleteIcon_.setAttribute('tranform', 'translate(' + -size.width + ', 1)');
+    } else {
+      this.deleteIcon_.setAttribute('x', size.width -
+          Blockly.WorkspaceCommentSvg.DELETE_ICON_SIZE -
+          Blockly.WorkspaceCommentSvg.TOP_BAR_ICON_INSET);
     }
   }
 };
@@ -383,46 +345,20 @@ Blockly.Comment.prototype.setVisible = function(visible) {
 };
 
 /**
- * Focus this comment.  Highlight it visually.
- */
-Blockly.Comment.prototype.addFocus = function() {
-  Blockly.utils.addClass(
-      /** @type {!Element} */ (this.svgGroup_), 'blocklyFocused');
-};
-
-/**
- * Unfocus this comment.  Remove its highlighting.
- */
-Blockly.Comment.prototype.removeFocus = function() {
-  Blockly.utils.removeClass(
-      /** @type {!Element} */ (this.svgGroup_), 'blocklyFocused');
-};
-
-/**
  * Bring the comment to the top of the stack when clicked on.
  * @param {!Event} _e Mouse up event.
  * @private
  */
 Blockly.Comment.prototype.textareaFocus_ = function(_e) {
   // Ideally this would be hooked to the focus event for the comment.
-  // However doing so in Firefox swallows the cursor for unknown reasons.
-  // So this is hooked to mouseup instead.  No big deal.
+  // This is tied to mousedown, however doing so in Firefox swallows the cursor
+  // for unknown reasons.
+  // See https://github.com/LLK/scratch-blocks/issues/1631 for more history.
   if (this.bubble_.promote_()) {
     // Since the act of moving this node within the DOM causes a loss of focus,
     // we need to reapply the focus.
     this.textarea_.focus();
   }
-  this.addFocus();
-};
-
-/**
- * Remove the focused attribute when the text area goes out of focus.
- * @param {!Event} e blur event.
- * @private
- */
-Blockly.Comment.prototype.textareaBlur_ = function(
-    /* eslint-disable no-unused-vars */ e /* eslint-enable no-unused-vars */) {
-  this.removeFocus();
 };
 
 /**

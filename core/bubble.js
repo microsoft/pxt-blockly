@@ -29,7 +29,6 @@ goog.provide('Blockly.Bubble');
 goog.require('Blockly.Touch');
 goog.require('Blockly.Workspace');
 goog.require('goog.dom');
-goog.require('goog.math');
 goog.require('goog.math.Coordinate');
 goog.require('goog.userAgent');
 
@@ -56,7 +55,7 @@ Blockly.Bubble = function(workspace, content, shape, anchorXY,
   if (this.workspace_.RTL) {
     angle = -angle;
   }
-  this.arrow_radians_ = goog.math.toRadians(angle);
+  this.arrow_radians_ = Blockly.utils.toRadians(angle);
 
   var canvas = workspace.getBubbleCanvas();
   canvas.appendChild(this.createDom_(content, !!(bubbleWidth && bubbleHeight)));
@@ -87,12 +86,7 @@ Blockly.Bubble = function(workspace, content, shape, anchorXY,
 /**
  * Width of the border around the bubble.
  */
-Blockly.Bubble.BORDER_WIDTH = 6;
-
-/**
- * Radius of the border around the bubble.
- */
-Blockly.Bubble.BORDER_RADIUS = 0;
+Blockly.Bubble.BORDER_WIDTH = 1;
 
 /**
  * Determines the thickness of the base of the arrow in relation to the size
@@ -245,11 +239,10 @@ Blockly.Bubble.prototype.createDom_ = function(content, hasResize) {
         'class': 'blocklyDraggable',
         'x': 0,
         'y': 0,
-        'rx': Blockly.Bubble.BORDER_RADIUS,
-        'ry': Blockly.Bubble.BORDER_RADIUS
+        'rx': Blockly.Bubble.BORDER_WIDTH,
+        'ry': Blockly.Bubble.BORDER_WIDTH
       },
       bubbleEmboss);
-  this.bubbleGroup_.appendChild(content);
   if (hasResize) {
     this.resizeGroup_ = Blockly.utils.createSvgElement('g',
         {'class': this.workspace_.RTL ?
@@ -276,6 +269,7 @@ Blockly.Bubble.prototype.createDom_ = function(content, hasResize) {
   } else {
     this.resizeGroup_ = null;
   }
+  this.bubbleGroup_.appendChild(content);
   return this.bubbleGroup_;
 };
 
@@ -311,15 +305,18 @@ Blockly.Bubble.prototype.bubbleMouseDown_ = function(e) {
 
 /**
  * Show the context menu for this bubble.
- * @param {!Event} e Mouse event.
+ * @param {!Event} _e Mouse event.
  * @private
  */
-Blockly.Bubble.prototype.showContextMenu_ = function(/*e*/) {
+Blockly.Bubble.prototype.showContextMenu_ = function(_e) {
+  // NOP on bubbles, but used by the bubble dragger to pass events to
+  // workspace comments.
 };
 
 /**
  * Get whether this bubble is deletable or not.
  * @return {boolean} True if deletable.
+ * @package
  */
 Blockly.Bubble.prototype.isDeletable = function() {
   return false;
@@ -453,7 +450,7 @@ Blockly.Bubble.prototype.layoutBubble_ = function() {
 Blockly.Bubble.prototype.positionBubble_ = function() {
   var left = this.anchorXY_.x;
   if (this.workspace_.RTL) {
-    left -= this.relativeLeft_ + this.width_;
+    left -= this.relativeLeft_ ;
   } else {
     left += this.relativeLeft_;
   }
@@ -643,13 +640,14 @@ Blockly.Bubble.prototype.moveDuringDrag = function(dragSurface, newLoc) {
 };
 
 /**
- * Return the coordinates of the top-left corner of this bubble's body relative
+ * Return the coordinates of the top corner of this bubble's starting edge (e.g.
+ * top left corner in LTR and top right corner in RTL) relative
  * to the drawing surface's origin (0,0), in workspace units.
  * @return {!goog.math.Coordinate} Object with .x and .y properties.
  */
 Blockly.Bubble.prototype.getRelativeToSurfaceXY = function() {
   return new goog.math.Coordinate(
-      this.anchorXY_.x + this.relativeLeft_,
+      this.workspace_.RTL ? this.anchorXY_.x - this.relativeLeft_ : this.anchorXY_.x + this.relativeLeft_,
       this.anchorXY_.y + this.relativeTop_);
 };
 

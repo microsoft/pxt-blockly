@@ -604,6 +604,10 @@ Blockly.Css.CONTENT = [
     'z-index: 0;',
   '}',
 
+  '.blocklyComment > image {',
+    'cursor: pointer',
+  '}',
+
   '.blocklyCommentRect {',
     'fill: #FAF6BD;',
     'stroke: #F9F3A1;',
@@ -615,8 +619,20 @@ Blockly.Css.CONTENT = [
     'stroke: #F9F3A1;',
   '}',
 
+  '.blocklyCommentTargetFocused {',
+    'fill: none;',
+  '}',
+
+  '.blocklyCommentText {',
+    'fill: #000',
+  '}',
+
   '.blocklyCommentHandleTarget {',
     'fill: none;',
+  '}',
+
+  '.blocklyCommentHandleTargetFocused {',
+    'fill: transparent;',
   '}',
 
   '.blocklyFocused>.blocklyCommentRect {',

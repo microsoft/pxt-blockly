@@ -199,6 +199,7 @@ Blockly.Xml.blockToDom = function(block, opt_noId) {
   if (commentText) {
     var commentElement = goog.dom.createDom('comment', null, commentText);
     if (typeof block.comment == 'object') {
+      commentElement.setAttribute('id', block.comment.id);
       commentElement.setAttribute('pinned', block.comment.isVisible());
       var hw = block.comment.getBubbleSize();
       commentElement.setAttribute('h', hw.height);
