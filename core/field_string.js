@@ -61,6 +61,13 @@ Blockly.FieldString.fromJson = function(options) {
 };
 
 /**
+ * Quote padding.
+ * @type {number}
+ * @public
+ */
+Blockly.FieldString.quotePadding = 0;
+
+/**
  * Install this string on a block.
  */
 Blockly.FieldString.prototype.init = function() {
