@@ -89,6 +89,11 @@ Blockly.Bubble = function(workspace, content, shape, anchorXY,
 Blockly.Bubble.BORDER_WIDTH = 1;
 
 /**
+ * PXT Blockly: Size of the resize icon.
+ */
+Blockly.Bubble.RESIZE_SIZE = 12 * Blockly.Bubble.BORDER_WIDTH;
+
+/**
  * Determines the thickness of the base of the arrow in relation to the size
  * of the bubble.  Higher numbers result in thinner arrows.
  */
@@ -243,12 +248,13 @@ Blockly.Bubble.prototype.createDom_ = function(content, hasResize) {
         'ry': Blockly.Bubble.BORDER_WIDTH
       },
       bubbleEmboss);
+  this.bubbleGroup_.appendChild(content);
   if (hasResize) {
     this.resizeGroup_ = Blockly.utils.createSvgElement('g',
         {'class': this.workspace_.RTL ?
                   'blocklyResizeSW' : 'blocklyResizeSE'},
         this.bubbleGroup_);
-    var resizeSize = 2 * Blockly.Bubble.BORDER_WIDTH;
+    var resizeSize = Blockly.Bubble.RESIZE_SIZE;
     Blockly.utils.createSvgElement('polygon',
         {'points': '0,x x,x x,0'.replace(/x/g, resizeSize.toString())},
         this.resizeGroup_);
@@ -269,7 +275,6 @@ Blockly.Bubble.prototype.createDom_ = function(content, hasResize) {
   } else {
     this.resizeGroup_ = null;
   }
-  this.bubbleGroup_.appendChild(content);
   return this.bubbleGroup_;
 };
 
@@ -491,15 +496,15 @@ Blockly.Bubble.prototype.setBubbleSize = function(width, height) {
   this.bubbleBack_.setAttribute('width', width);
   this.bubbleBack_.setAttribute('height', height);
   if (this.resizeGroup_) {
+    var resizeSize = Blockly.Bubble.RESIZE_SIZE;
     if (this.workspace_.RTL) {
       // Mirror the resize group.
-      var resizeSize = 2 * Blockly.Bubble.BORDER_WIDTH;
       this.resizeGroup_.setAttribute('transform', 'translate(' +
           resizeSize + ',' + (height - doubleBorderWidth) + ') scale(-1 1)');
     } else {
       this.resizeGroup_.setAttribute('transform', 'translate(' +
-          (width - doubleBorderWidth) + ',' +
-          (height - doubleBorderWidth) + ')');
+          (width - resizeSize) + ',' +
+          (height - resizeSize) + ')');
     }
   }
   if (this.rendered_) {
