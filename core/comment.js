@@ -280,7 +280,7 @@ Blockly.Comment.prototype.resizeBubble_ = function() {
     this.foreignObject_.setAttribute('width', size.width - doubleBorderWidth);
     this.foreignObject_.setAttribute('height', size.height - doubleBorderWidth - topBarHeight); // PXT Blockly: add space for top bar height
     this.textarea_.style.width = (size.width - doubleBorderWidth - 4) + 'px';
-    this.textarea_.style.height = (size.height - doubleBorderWidth - 4) + 'px';
+    this.textarea_.style.height = (size.height - doubleBorderWidth - topBarHeight - 4) + 'px'; // PXT Blockly: add space for top bar height
 
     // PXT Blockly: handle minimize and delete icons
     if (this.RTL) {
