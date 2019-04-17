@@ -710,6 +710,7 @@ function test_events_newblock_newvar() {
 
 // The sequence of events should be the same whether the block was created from
 // XML or directly.
+// pxt-blockly: PXT Blockly references variables by name and not ID
 function test_events_newblock_newvar_xml() {
   eventTest_setUpWithMockBlocks();
 
@@ -737,8 +738,8 @@ function test_events_newblock_newvar_xml() {
     assertEquals(event0.group, event1.group);
 
     // Expect the workspace to have a variable with ID 'id1'.
-    assertNotNull(workspace.getVariableById('id1'));
-    assertEquals('id1', event0.varId);
+    assertNotNull(workspace.getVariable('name1'));
+    assertEquals('name1', event0.varName);
   } finally {
     eventTest_tearDownWithMockBlocks();
     Blockly.Events.fire = savedFireFunc;
