@@ -222,7 +222,9 @@ function test_domToWorkspace_VariablesAtTop_MissingType() {
   }
 }
 
-function test_domToWorkspace_VariablesAtTop_MismatchBlockType() {
+// pxt-blockly: disabled, since PXT Blockly does not allow variables
+// with duplicate names, irrespective of type
+/* function test_domToWorkspace_VariablesAtTop_MismatchBlockType() {
   // Expect thrown error when the serialized type of a variable does not match
   // the type of a variable field that references it.
   xmlTest_setUpWithMockBlocks();
@@ -243,7 +245,7 @@ function test_domToWorkspace_VariablesAtTop_MismatchBlockType() {
   } finally {
     xmlTest_tearDownWithMockBlocks();
   }
-}
+} */
 
 function test_domToPrettyText() {
   var dom = Blockly.Xml.textToDom(XML_TEXT);
