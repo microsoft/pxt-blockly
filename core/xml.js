@@ -783,7 +783,8 @@ Blockly.Xml.domToFieldVariable_ = function(workspace, xml, text, field) {
     type = '';
   }
 
-  var variable = Blockly.Variables.getOrCreateVariablePackage(workspace, xml.id,
+  // pxt-blockly: variable ID and variable name are both unique, only use name
+  var variable = Blockly.Variables.getOrCreateVariablePackage(workspace, null,
       text, type);
 
   // This should never happen :)
