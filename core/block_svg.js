@@ -792,6 +792,28 @@ Blockly.BlockSvg.prototype.showContextMenu_ = function(e) {
     if (this.isEditable() && this.workspace.options.comments) {
       menuOptions.push(Blockly.ContextMenu.blockCommentOption(block));
     }
+
+    // pxt-blockly: only allow collapse on top-level event handler blocks
+    if (this.workspace.options.collapse
+        && block.previousConnection == null && block.outputConnection == null) {
+      // Option to collapse/expand block.
+      if (this.collapsed_) {
+        var expandOption = {enabled: true};
+        expandOption.text = Blockly.Msg['EXPAND_BLOCK'];
+        expandOption.callback = function() {
+          block.setCollapsed(false);
+        };
+        menuOptions.push(expandOption);
+      } else {
+        var collapseOption = {enabled: true};
+        collapseOption.text = Blockly.Msg['COLLAPSE_BLOCK'];
+        collapseOption.callback = function() {
+          block.setCollapsed(true);
+        };
+        menuOptions.push(collapseOption);
+      }
+    }
+
     menuOptions.push(Blockly.ContextMenu.blockDeleteOption(block));
   } else if (this.parentBlock_ && (this.isShadow_
       && !Blockly.pxtBlocklyUtils.isShadowArgumentReporter(block))) {
