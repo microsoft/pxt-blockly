@@ -626,7 +626,9 @@ Blockly.BlockSvg.prototype.getBoundingRectangle = function() {
     bottomRight = new goog.math.Coordinate(blockXY.x + blockBounds.width,
         blockXY.y + blockBounds.height);
   }
-
+  if (this.startHat_) {
+    topLeft.y -= Blockly.BlockSvg.START_HAT_HEIGHT;
+  }
   return {topLeft: topLeft, bottomRight: bottomRight};
 };
 
