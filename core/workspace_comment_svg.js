@@ -38,12 +38,13 @@ goog.require('Blockly.WorkspaceComment');
  * @param {string} content The content of this workspace comment.
  * @param {number} height Height of the comment.
  * @param {number} width Width of the comment.
+ * @param {boolean} minimized Whether this comment is minimized.
  * @param {string=} opt_id Optional ID.  Use this ID if provided, otherwise
  *     create a new ID.
  * @extends {Blockly.WorkspaceComment}
  * @constructor
  */
-Blockly.WorkspaceCommentSvg = function(workspace, content, height, width,
+Blockly.WorkspaceCommentSvg = function(workspace, content, height, width, minimized,
     opt_id) {
   // Create core elements for the block.
   /**
@@ -60,9 +61,10 @@ Blockly.WorkspaceCommentSvg = function(workspace, content, height, width,
         'class': 'blocklyCommentRect',
         'x': 0,
         'y': 0,
-        'rx': Blockly.WorkspaceCommentSvg.BORDER_RADIUS,
-        'ry': Blockly.WorkspaceCommentSvg.BORDER_RADIUS
+        'rx': Blockly.WorkspaceCommentSvg.BORDER_WIDTH,
+        'ry': Blockly.WorkspaceCommentSvg.BORDER_WIDTH
       });
+
   this.svgGroup_.appendChild(this.svgRect_);
 
   /**
@@ -82,10 +84,18 @@ Blockly.WorkspaceCommentSvg = function(workspace, content, height, width,
       Blockly.utils.is3dSupported() && !!workspace.blockDragSurface_;
 
   Blockly.WorkspaceCommentSvg.superClass_.constructor.call(this,
-      workspace, content, height, width, opt_id);
+      workspace, content, height, width, minimized, opt_id);
 
   this.render();
 }; goog.inherits(Blockly.WorkspaceCommentSvg, Blockly.WorkspaceComment);
+
+/**
+ * The width and height to use to size a workspace comment when it is first
+ * added, before it has been edited by the user.
+ * @type {number}
+ * @package
+ */
+Blockly.WorkspaceCommentSvg.DEFAULT_SIZE = 200;
 
 /**
  * Dispose of this comment.
@@ -96,7 +106,7 @@ Blockly.WorkspaceCommentSvg.prototype.dispose = function() {
     // The comment has already been deleted.
     return;
   }
-  // If this comment is being dragged, unlink the mouse events.
+  // If this comment is being deleted, unlink the mouse events.
   if (Blockly.selected == this) {
     this.unselect();
     this.workspace.cancelCurrentGesture();
@@ -173,20 +183,6 @@ Blockly.WorkspaceCommentSvg.prototype.showContextMenu_ = function(e) {
 };
 
 /**
- * Move this workspace comment to the top of the stack.
- * @return {!boolean} Whether or not the comment has been moved.
- * @private
- */
-Blockly.WorkspaceCommentSvg.prototype.promote_ = function() {
-  var svgGroup = this.svgGroup_.parentNode;
-  if (svgGroup.lastChild !== this.svgGroup_) {
-    svgGroup.appendChild(this.svgGroup_);
-    return true;
-  }
-  return false;
-};
-
-/**
  * Select this comment.  Highlight it visually.
  * @package
  */
@@ -197,7 +193,7 @@ Blockly.WorkspaceCommentSvg.prototype.select = function() {
   var oldId = null;
   if (Blockly.selected) {
     oldId = Blockly.selected.id;
-    // Unselect any previously selected block.
+    // Unselect any previously selected block or comment.
     Blockly.Events.disable();
     try {
       Blockly.selected.unselect();
@@ -209,7 +205,6 @@ Blockly.WorkspaceCommentSvg.prototype.select = function() {
   event.workspaceId = this.workspace.id;
   Blockly.Events.fire(event);
   Blockly.selected = this;
-  this.promote_();
   this.addSelect();
 };
 
@@ -413,6 +408,26 @@ Blockly.WorkspaceCommentSvg.prototype.clearTransformAttributes_ = function() {
 };
 
 /**
+ * Return the rendered size of the comment or the stored size if the comment is
+ * not rendered. This differs from getHeightWidth in the behavior of rendered
+ * minimized comments. This function reports the actual size of the minimized
+ * comment instead of the full sized comment height/width.
+ * @return {!{height: number, width: number}} Object with height and width
+ *    properties in workspace units.
+ * @package
+ */
+Blockly.WorkspaceCommentSvg.prototype.getBubbleSize = function() {
+  if (this.rendered_) {
+    return {
+      width: parseInt(this.svgRect_.getAttribute('width')),
+      height: parseInt(this.svgRect_.getAttribute('height'))
+    };
+  } else {
+    this.getHeightWidth();
+  }
+};
+
+/**
  * Returns the coordinates of a bounding box describing the dimensions of this
  * comment.
  * Coordinate system: workspace coordinates.
@@ -505,7 +520,7 @@ Blockly.WorkspaceCommentSvg.prototype.getContent = function() {
 /**
  * Set this comment's content.
  * @param {string} content Comment content.
- * @public
+ * @package
  */
 Blockly.WorkspaceCommentSvg.prototype.setContent = function(content) {
   Blockly.WorkspaceCommentSvg.superClass_.setContent.call(this, content);
@@ -550,7 +565,7 @@ Blockly.WorkspaceCommentSvg.fromXml = function(xmlComment, workspace,
     var info = Blockly.WorkspaceComment.parseAttributes(xmlComment);
 
     var comment = new Blockly.WorkspaceCommentSvg(workspace,
-        info.content, info.h, info.w, info.id);
+        info.content, info.h, info.w, info.minimized, info.id);
     comment.data = xmlComment.getAttribute('data');
     if (workspace.rendered) {
       comment.initSvg();

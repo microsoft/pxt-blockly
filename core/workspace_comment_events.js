@@ -19,7 +19,7 @@
  */
 
 /**
- * @fileoverview Classes for all types of block events.
+ * @fileoverview Classes for all comment events.
  * @author fenichel@google.com (Rachel Fenichel)
  */
 'use strict';
@@ -39,8 +39,8 @@ goog.require('goog.math.Coordinate');
 
 /**
  * Abstract class for a comment event.
- * @param {Blockly.WorkspaceComment} comment The comment this event corresponds
- *     to.
+ * @param {Blockly.WorkspaceComment} comment
+ *    The comment this event corresponds to.
  * @extends {Blockly.Events.Abstract}
  * @constructor
  */
@@ -56,6 +56,13 @@ Blockly.Events.CommentBase = function(comment) {
    * @type {string}
    */
   this.workspaceId = comment.workspace.id;
+
+  /**
+   * The ID of the block this comment belongs to or null if it is not a block
+   * comment.
+   * @type {string}
+   */
+  this.blockId = comment.blockId || null;
 
   /**
    * The event group id for the group this event belongs to. Groups define
@@ -87,6 +94,9 @@ Blockly.Events.CommentBase.prototype.toJson = function() {
   if (this.commentId) {
     json['commentId'] = this.commentId;
   }
+  if (this.blockId) {
+    json['blockId'] = this.blockId;
+  }
   return json;
 };
 
@@ -97,14 +107,32 @@ Blockly.Events.CommentBase.prototype.toJson = function() {
 Blockly.Events.CommentBase.prototype.fromJson = function(json) {
   this.commentId = json['commentId'];
   this.group = json['group'];
+  this.blockId = json['blockId'];
+};
+
+/**
+ * Helper function for finding the comment this event pertains to.
+ * @return {Blockly.WorkspaceComment}
+ *     The comment this event pertains to, or null if it no longer exists.
+ * @private
+ */
+Blockly.Events.CommentBase.prototype.getComment_ = function() {
+  var workspace = this.getEventWorkspace_();
+  return workspace.getCommentById(this.commentId);
 };
 
 /**
  * Class for a comment change event.
- * @param {Blockly.WorkspaceComment} comment The comment that is being changed.
- *     Null for a blank event.
- * @param {string} oldContents Previous contents of the comment.
- * @param {string} newContents New contents of the comment.
+ * @param {Blockly.WorkspaceComment} comment
+ *     The comment that is being changed. Null for a blank event.
+ * @param {!object} oldContents Object containing previous state of a comment's
+ *     properties. The possible properties can be: 'minimized', 'text', or
+ *     'width' and 'height' together. Must contain the same property (or in the
+ *     case of 'width' and 'height' properties) as the 'newContents' param.
+ * @param {!object} newContents Object containing the new state of a comment's
+ *     properties. The possible properties can be: 'minimized', 'text', or
+ *     'width' and 'height' together. Must contain the same property (or in the
+ *     case of 'width' and 'height' properties) as the 'oldContents' param.
  * @extends {Blockly.Events.CommentBase}
  * @constructor
  */
@@ -156,21 +184,30 @@ Blockly.Events.CommentChange.prototype.isNull = function() {
  * @param {boolean} forward True if run forward, false if run backward (undo).
  */
 Blockly.Events.CommentChange.prototype.run = function(forward) {
-  var workspace = this.getEventWorkspace_();
-  var comment = workspace.getCommentById(this.commentId);
+  var comment = this.getComment_();
   if (!comment) {
     console.warn('Can\'t change non-existent comment: ' + this.commentId);
     return;
   }
   var contents = forward ? this.newContents_ : this.oldContents_;
 
-  comment.setContent(contents);
+  if (contents.hasOwnProperty('minimized')) {
+    comment.setMinimized(contents.minimized);
+  }
+  if (contents.hasOwnProperty('width') && contents.hasOwnProperty('height')) {
+    comment.setSize(contents.width, contents.height);
+  }
+  if (contents.hasOwnProperty('text')) {
+    comment.setContent(contents.text);
+  }
 };
 
 /**
  * Class for a comment creation event.
- * @param {Blockly.WorkspaceComment} comment The created comment.
- *     Null for a blank event.
+ * @param {Blockly.WorkspaceComment} comment
+ *     The created comment. Null for a blank event.
+ * @param {string=} opt_blockId Optional id for the block this comment belongs
+ *     to, if it is a block comment.
  * @extends {Blockly.Events.CommentBase}
  * @constructor
  */
@@ -179,6 +216,38 @@ Blockly.Events.CommentCreate = function(comment) {
     return;  // Blank event to be populated by fromJson.
   }
   Blockly.Events.CommentCreate.superClass_.constructor.call(this, comment);
+
+  /**
+   * The text content of this comment.
+   * @type {string}
+   */
+  this.text = comment.getContent();
+
+  /**
+   * The XY position of this comment on the workspace.
+   * @type {goog.math.Coordinate}
+   */
+  this.xy = comment.getXY();
+
+  var hw = comment.getHeightWidth();
+
+  /**
+   * The width of this comment when it is full size.
+   * @type {number}
+   */
+  this.width = hw.width;
+
+  /**
+   * The height of this comment when it is full size.
+   * @type {number}
+   */
+  this.height = hw.height;
+
+  /**
+   * Whether or not this comment is minimized.
+   * @type {boolean}
+   */
+  this.minimized = comment.isMinimized() || false;
 
   this.xml = comment.toXmlWithXY();
 };
@@ -192,7 +261,8 @@ Blockly.Events.CommentCreate.prototype.type = Blockly.Events.COMMENT_CREATE;
 
 /**
  * Encode the event as JSON.
- * TODO (#1266): "Full" and "minimal" serialization.
+ * TODO (github.com/google/blockly/issues/1266): "Full" and "minimal"
+ * serialization.
  * @return {!Object} JSON representation.
  */
 Blockly.Events.CommentCreate.prototype.toJson = function() {
@@ -215,13 +285,20 @@ Blockly.Events.CommentCreate.prototype.fromJson = function(json) {
  * @param {boolean} forward True if run forward, false if run backward (undo).
  */
 Blockly.Events.CommentCreate.prototype.run = function(forward) {
-  var workspace = this.getEventWorkspace_();
   if (forward) {
-    var xml = goog.dom.createDom('xml');
-    xml.appendChild(this.xml);
-    Blockly.Xml.domToWorkspace(xml, workspace);
+    var workspace = this.getEventWorkspace_();
+    if (this.blockId) {
+      var block = workspace.getBlockById(this.blockId);
+      if (block) {
+        block.setCommentText('', this.commentId, this.xy.x, this.xy.y, this.minimized);
+      }
+    } else {
+      var xml = goog.dom.createDom('xml');
+      xml.appendChild(this.xml);
+      Blockly.Xml.domToWorkspace(xml, workspace);
+    }
   } else {
-    var comment = workspace.getCommentById(this.commentId);
+    var comment = this.getComment_();
     if (comment) {
       comment.dispose(false, false);
     } else {
@@ -233,8 +310,8 @@ Blockly.Events.CommentCreate.prototype.run = function(forward) {
 
 /**
  * Class for a comment deletion event.
- * @param {Blockly.WorkspaceComment} comment The deleted comment.
- *     Null for a blank event.
+ * @param {Blockly.WorkspaceComment} comment
+ *     The deleted comment. Null for a blank event.
  * @extends {Blockly.Events.CommentBase}
  * @constructor
  */
@@ -243,6 +320,12 @@ Blockly.Events.CommentDelete = function(comment) {
     return;  // Blank event to be populated by fromJson.
   }
   Blockly.Events.CommentDelete.superClass_.constructor.call(this, comment);
+  this.xy = comment.getXY();
+  this.minimized = comment.isMinimized() || false;
+  this.text = comment.getContent();
+  var hw = comment.getHeightWidth();
+  this.height = hw.height;
+  this.width = hw.width;
 
   this.xml = comment.toXmlWithXY();
 };
@@ -256,7 +339,8 @@ Blockly.Events.CommentDelete.prototype.type = Blockly.Events.COMMENT_DELETE;
 
 /**
  * Encode the event as JSON.
- * TODO (#1266): "Full" and "minimal" serialization.
+ * TODO (github.com/google/blockly/issues/1266): "Full" and "minimal"
+ * serialization.
  * @return {!Object} JSON representation.
  */
 Blockly.Events.CommentDelete.prototype.toJson = function() {
@@ -277,26 +361,32 @@ Blockly.Events.CommentDelete.prototype.fromJson = function(json) {
  * @param {boolean} forward True if run forward, false if run backward (undo).
  */
 Blockly.Events.CommentDelete.prototype.run = function(forward) {
-  var workspace = this.getEventWorkspace_();
   if (forward) {
-    var comment = workspace.getCommentById(this.commentId);
+    var comment = this.getComment_();
     if (comment) {
       comment.dispose(false, false);
     } else {
       // Only complain about root-level block.
-      console.warn("Can't uncreate non-existent comment: " + this.commentId);
+      console.warn("Can't delete non-existent comment: " + this.commentId);
     }
   } else {
-    var xml = goog.dom.createDom('xml');
-    xml.appendChild(this.xml);
-    Blockly.Xml.domToWorkspace(xml, workspace);
+    var workspace = this.getEventWorkspace_();
+    if (this.blockId) {
+      var block = workspace.getBlockById(this.blockId);
+      block.setCommentText(this.text, this.commentId, this.xy.x, this.xy.y, this.minimized);
+      block.comment.setSize(this.width, this.height);
+    } else {
+      var xml = goog.dom.createDom('xml');
+      xml.appendChild(this.xml);
+      Blockly.Xml.domToWorkspace(xml, workspace);
+    }
   }
 };
 
 /**
  * Class for a comment move event.  Created before the move.
- * @param {Blockly.WorkspaceComment} comment The comment that is being moved.
- *     Null for a blank event.
+ * @param {Blockly.WorkspaceComment} comment
+ *     The comment that is being moved. Null for a blank event.
  * @extends {Blockly.Events.CommentBase}
  * @constructor
  */
@@ -304,7 +394,7 @@ Blockly.Events.CommentMove = function(comment) {
   if (!comment) {
     return;  // Blank event to be populated by fromJson.
   }
-  Blockly.Events.Move.superClass_.constructor.call(this, comment);
+  Blockly.Events.CommentMove.superClass_.constructor.call(this, comment);
 
   /**
    * The comment that is being moved.  Will be cleared after recording the new
@@ -313,11 +403,12 @@ Blockly.Events.CommentMove = function(comment) {
    */
   this.comment_ = comment;
 
+  this.workspaceWidth_ = comment.workspace.getWidth();
   /**
    * The location before the move, in workspace coordinates.
    * @type {!goog.math.Coordinate}
    */
-  this.oldCoordinate_ = comment.getXY();
+  this.oldCoordinate_ = this.currentLocation_();
 
   /**
    * The location after the move, in workspace coordinates.
@@ -328,6 +419,28 @@ Blockly.Events.CommentMove = function(comment) {
 goog.inherits(Blockly.Events.CommentMove, Blockly.Events.CommentBase);
 
 /**
+ * Calculate the current, language agnostic location of the comment.
+ * This value should not report different numbers in LTR vs. RTL.
+ * @return {goog.math.Coordinate} The location of the comment.
+ * @private
+ */
+Blockly.Events.CommentMove.prototype.currentLocation_ = function() {
+  var xy = this.comment_.getXY();
+  if (!this.comment_.workspace.RTL) {
+    return xy;
+  }
+
+  var rtlAwareX;
+  if (this.comment_ instanceof Blockly.ScratchBlockComment) {
+    var commentWidth = this.comment_.getBubbleSize().width;
+    rtlAwareX = this.workspaceWidth_ - xy.x - commentWidth;
+  } else {
+    rtlAwareX = this.workspaceWidth_ - xy.x;
+  }
+  return new goog.math.Coordinate(rtlAwareX, xy.y);
+};
+
+/**
  * Record the comment's new location.  Called after the move.  Can only be
  * called once.
  */
@@ -336,7 +449,7 @@ Blockly.Events.CommentMove.prototype.recordNew = function() {
     throw new Error('Tried to record the new position of a comment on the ' +
         'same event twice.');
   }
-  this.newCoordinate_ = this.comment_.getXY();
+  this.newCoordinate_ = this.currentLocation_();
   this.comment_ = null;
 };
 
@@ -353,12 +466,14 @@ Blockly.Events.CommentMove.prototype.type = Blockly.Events.COMMENT_MOVE;
  *     coordinates.
  */
 Blockly.Events.CommentMove.prototype.setOldCoordinate = function(xy) {
-  this.oldCoordinate_ = xy;
+  this.oldCoordinate_ = new goog.math.Coordinate(this.comment_.workspace.RTL ?
+      this.workspaceWidth_ - xy.x : xy.x, xy.y);
 };
 
 /**
  * Encode the event as JSON.
- * TODO (#1266): "Full" and "minimal" serialization.
+ * TODO (github.com/google/blockly/issues/1266): "Full" and "minimal"
+ * serialization.
  * @return {!Object} JSON representation.
  */
 Blockly.Events.CommentMove.prototype.toJson = function() {
@@ -397,8 +512,7 @@ Blockly.Events.CommentMove.prototype.isNull = function() {
  * @param {boolean} forward True if run forward, false if run backward (undo).
  */
 Blockly.Events.CommentMove.prototype.run = function(forward) {
-  var workspace = this.getEventWorkspace_();
-  var comment = workspace.getCommentById(this.commentId);
+  var comment = this.getComment_();
   if (!comment) {
     console.warn('Can\'t move non-existent comment: ' + this.commentId);
     return;
@@ -407,5 +521,10 @@ Blockly.Events.CommentMove.prototype.run = function(forward) {
   var target = forward ? this.newCoordinate_ : this.oldCoordinate_;
   // TODO: Check if the comment is being dragged, and give up if so.
   var current = comment.getXY();
-  comment.moveBy(target.x - current.x, target.y - current.y);
+  if (comment.workspace.RTL) {
+    var deltaX = target.x - (this.workspaceWidth_ - current.x);
+    comment.moveBy(-deltaX, target.y - current.y);
+  } else {
+    comment.moveBy(target.x - current.x, target.y - current.y);
+  }
 };
