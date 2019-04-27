@@ -34,3 +34,4 @@ tests/compile/*compiler*.jar
 local_build/*compiler*.jar
 local_build/local_blockly_compressed.js
 tmp
+package-lock.json
