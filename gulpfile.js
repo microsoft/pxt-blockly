@@ -5,6 +5,8 @@
 
 var gulp = require('gulp');
 var bump = require('gulp-bump');
+var git = require('gulp-git');
+var semver = require('semver');
 var fs = require('fs');
 var spawn = require('child_process').spawn;
 
@@ -89,12 +91,21 @@ gulp.task('publishts', ['generate-dts'], pxtPublishTsTask);
 
 gulp.task('publishall-nobuild', [], pxtPublishTask);
 
-gulp.task('release', ['python-build-all'], function (done) {
-	spawn('npm', ['publish'], { stdio: 'inherit' }).on('close', done);
-});
-
-gulp.task('bump', function () {
+gulp.task('bump', function (done) {
+    var v = semver.inc(JSON.parse(fs.readFileSync('./package.json', 'utf8')).version, 'patch');
 	gulp.src('./package.json')
-		.pipe(bump({ key: "version" }))
+		.pipe(bump({ "version": v }))
 		.pipe(gulp.dest('./'));
+
+    gulp.src('.')
+        .pipe(git.add())
+        .pipe(git.commit(v))
+        .on('end', function () {
+            git.tag('v' + v, v, function (error) {
+                if (error) {
+                  return done(error);
+                }
+                git.push('origin', '', {args: '--tags'}, done);
+            })
+        });
 });

@@ -42,6 +42,8 @@
     "graceful-fs": "4.1.11",
     "gulp": "^3.9.1",
     "gulp-bump": "^2.7.0",
+    "gulp-git": "^2.9.0",
+    "semver": "^6.0.0",
     "jshint": "^2.9.5",
     "rimraf": "2.6.2",
     "travis-after-all": "1.4.4",

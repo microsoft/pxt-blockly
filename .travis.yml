@@ -21,3 +21,11 @@ script:
   - set -x
   - npm test
   - cd tests/compile; compile.sh; cd ..
+
+deploy:
+  provider: npm
+  email: kindscript@microsoft.com
+  api_key: $NPM_ACCESS_TOKEN
+  on:
+    tags: true
+    branch: develop
