@@ -243,7 +243,7 @@ Blockly.Bubble.prototype.createDom_ = function(content, hasResize) {
   this.bubbleGroup_ = Blockly.utils.createSvgElement('g', {}, null);
   var filter =
       {'filter': 'url(#' + this.workspace_.options.embossFilterId + ')'};
-  if (goog.userAgent.getUserAgentString().indexOf('JavaFX') != -1) {
+  if (goog.userAgent.getUserAgentString().indexOf('JavaFX') != -1 || !this.useArrow_) {
     // Multiple reports that JavaFX can't handle filters.  UserAgent:
     // Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.44
     //     (KHTML, like Gecko) JavaFX/8.0 Safari/537.44
@@ -657,10 +657,15 @@ Blockly.Bubble.prototype.drawLine_ = function() {
  * Change the colour of a bubble.
  * @param {string} hexColour Hex code of colour.
  */
-Blockly.Bubble.prototype.setColour = function(hexColour) {
+Blockly.Bubble.prototype.setColour = function(hexColour, secondaryColour) {
   this.bubbleBack_.setAttribute('fill', hexColour);
   // pxt-blockly: Support line and arrow rendering
-  this.bubbleArrow_.setAttribute(this.useArrow_ ? 'fill' : 'stroke', hexColour);
+  if (this.useArrow_) {
+    this.bubbleArrow_.setAttribute('fill', hexColour);
+  } else {
+    this.bubbleBack_.setAttribute('stroke', secondaryColour);
+    this.bubbleArrow_.setAttribute('stroke', secondaryColour);
+  }
 };
 
 /**
