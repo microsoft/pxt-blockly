@@ -115,6 +115,14 @@ Blockly.Bubble.ARROW_BEND = 4;
 Blockly.Bubble.ANCHOR_RADIUS = 8;
 
 /**
+ * Thickness of the line connecting the bubble
+ * to the block.
+ * From https://github.com/LLK/scratch-blocks/blob/develop/core/scratch_bubble.js
+ * @private
+ */
+Blockly.Bubble.LINE_THICKNESS = 1;
+
+/**
  * Wrapper function called when a mouseUp occurs during a drag operation.
  * @type {Array.<!Array>}
  * @private
@@ -205,6 +213,12 @@ Blockly.Bubble.prototype.height_ = 0;
 Blockly.Bubble.prototype.autoLayout_ = true;
 
 /**
+ * pxt-blockly: Boolean for whether to use arrow or line connector
+ * @private
+ */
+Blockly.Bubble.prototype.useArrow_ = false;
+
+/**
  * Create the bubble's DOM.
  * @param {!Element} content SVG content for the bubble.
  * @param {boolean} hasResize Add diagonal resize gripper if true.
@@ -238,7 +252,9 @@ Blockly.Bubble.prototype.createDom_ = function(content, hasResize) {
   }
   var bubbleEmboss = Blockly.utils.createSvgElement('g',
       filter, this.bubbleGroup_);
-  this.bubbleArrow_ = Blockly.utils.createSvgElement('path', {}, bubbleEmboss);
+  // pxt-blockly: Support line and arrow rendering
+  this.bubbleArrow_ = Blockly.utils.createSvgElement(this.useArrow_ ? 'path' : 'line',
+      {}, bubbleEmboss);
   this.bubbleBack_ = Blockly.utils.createSvgElement('rect',
       {
         'class': 'blocklyDraggable',
@@ -521,10 +537,18 @@ Blockly.Bubble.prototype.setBubbleSize = function(width, height) {
 };
 
 /**
- * Draw the arrow between the bubble and the origin.
+ * pxt-blockly: Draw the connector between the bubble and the origin.
  * @private
  */
 Blockly.Bubble.prototype.renderArrow_ = function() {
+  this.useArrow_ ? this.drawArrow_() : this.drawLine_();
+}
+
+/**
+ * Draw the arrow between the bubble and the origin.
+ * @private
+ */
+Blockly.Bubble.prototype.drawArrow_ = function() {
   var steps = [];
   // Find the relative coordinates of the center of the bubble.
   var relBubbleX = this.width_ / 2;
@@ -595,13 +619,48 @@ Blockly.Bubble.prototype.renderArrow_ = function() {
   this.bubbleArrow_.setAttribute('d', steps.join(' '));
 };
 
+
+/**
+ * Draw the line between the bubble and the origin.
+ * From https://github.com/LLK/scratch-blocks/blob/develop/core/scratch_bubble.js
+ * @private
+ */
+Blockly.Bubble.prototype.drawLine_ = function() {
+  // Find the relative coordinates of the top bar center of the bubble.
+  var relBubbleX = this.width_ / 2;
+  var relBubbleY = Blockly.WorkspaceCommentSvg.TOP_BAR_HEIGHT / 2;
+  // Find the relative coordinates of the center of the anchor.
+  var relAnchorX = -this.relativeLeft_;
+  var relAnchorY = -this.relativeTop_;
+  if (relBubbleX != relAnchorX || relBubbleY != relAnchorY) {
+    // Compute the angle of the arrow's line.
+    var rise = relAnchorY - relBubbleY;
+    var run = relAnchorX - relBubbleX;
+    if (this.workspace_.RTL) {
+      run *= -1;
+      run -= this.width_;
+    }
+
+    var baseX1 = relBubbleX;
+    var baseY1 = relBubbleY;
+
+    this.bubbleArrow_.setAttribute('x1', baseX1);
+    this.bubbleArrow_.setAttribute('y1', baseY1);
+    this.bubbleArrow_.setAttribute('x2', baseX1 + run);
+    this.bubbleArrow_.setAttribute('y2', baseY1 + rise);
+    this.bubbleArrow_.setAttribute('stroke-width', Blockly.Bubble.LINE_THICKNESS);
+  }
+};
+
+
 /**
  * Change the colour of a bubble.
  * @param {string} hexColour Hex code of colour.
  */
 Blockly.Bubble.prototype.setColour = function(hexColour) {
   this.bubbleBack_.setAttribute('fill', hexColour);
-  this.bubbleArrow_.setAttribute('fill', hexColour);
+  // pxt-blockly: Support line and arrow rendering
+  this.bubbleArrow_.setAttribute(this.useArrow_ ? 'fill' : 'stroke', hexColour);
 };
 
 /**
