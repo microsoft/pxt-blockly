@@ -20,7 +20,7 @@ before_script:
 script:
   - set -x
   - npm test
-  - cd tests/compile; compile.sh; cd ..
+  - cd tests/compile; compile.sh; cd ../..
 
 deploy:
   provider: npm
