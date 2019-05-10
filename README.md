@@ -42,13 +42,19 @@ npm install .
 
 * `gulp generate-dts` to regenerate blockly.d.ts
 
-## Integrating in PXT
+## Integrating local changes in PXT
 
 * `gulp publish` from the ``develop`` branch.
 
 **Make sure you've checked out the correct closure-library (see above)**
 
 See [more tips about **pxt+pxt-blockly** testing](https://github.com/Microsoft/pxt/tree/master/scripts).
+
+## Updating pxt-blockly in PXT
+
+* `gulp bump` to bump blockly version, commit, and tag.
+
+* After the Travis has deployed the package to npm, update the pxt-blockly version in `package.json` in the pxt repo.
 
 ## Playground
 
