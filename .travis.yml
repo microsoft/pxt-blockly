@@ -22,10 +22,14 @@ script:
   - npm test
   - cd tests/compile; compile.sh; cd ../..
 
+before_deploy:
+  - npm i -g
+
 deploy:
   provider: npm
   email: kindscript@microsoft.com
-  api_key: $NPM_ACCESS_TOKEN
+  api_key: $NPM_TOKEN
+  skip_cleanup: true
   on:
     tags: true
     branch: develop
