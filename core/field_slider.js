@@ -16,13 +16,17 @@
 'use strict';
 goog.provide('Blockly.FieldSlider');
 
+
 goog.require('Blockly.FieldNumber');
+goog.require('Blockly.Slider');
 goog.require('goog.math');
 goog.require('goog.dom');
 goog.require('goog.events');
 goog.require('goog.style');
 
-goog.require('goog.ui.Slider');
+
+
+
 
 /**
  * Class for an editable number field.
@@ -171,7 +175,7 @@ Blockly.FieldSlider.prototype.showSlider_ = function() {
   Blockly.DropDownDiv.setColour('#ffffff', '#dddddd');
   Blockly.DropDownDiv.showPositionedByBlock(this, this.sourceBlock_);
 
-  if (this.slider_) this.slider_.setVisible(true);
+  //if (this.slider_) this.slider_.setVisible(true);
 };
 
 Blockly.FieldSlider.prototype.addSlider_ = function(contentDiv) {
@@ -180,12 +184,11 @@ Blockly.FieldSlider.prototype.addSlider_ = function(contentDiv) {
     contentDiv.appendChild(elements[0]);
     this.readout_ = elements[1];
   }
-  this.slider_ = new goog.ui.Slider();
+  this.slider_ = new Blockly.Slider();
   this.slider_.setMoveToPointEnabled(false);
   this.slider_.setMinimum(this.min_);
   this.slider_.setMaximum(this.max_);
-  if (this.step_) this.slider_.setUnitIncrement(this.step_);
-  this.slider_.setRightToLeft(this.sourceBlock_.RTL);
+  if (this.step_) this.slider_.setStep(this.step_);
 
   var value = parseFloat(this.getValue());
   value = isNaN(value) ? 0 : value;
@@ -193,12 +196,11 @@ Blockly.FieldSlider.prototype.addSlider_ = function(contentDiv) {
 
   this.slider_.render(contentDiv);
 
+
   // Configure event handler.
   var thisField = this;
-  Blockly.FieldSlider.changeEventKey_ = goog.events.listen(this.slider_,
-      goog.ui.Component.EventType.CHANGE,
-      function(event) {
-        var val = event.target.getValue() || 0;
+
+  this.slider_.onChangeEvent = function(val) {
         if (thisField.sourceBlock_) {
           // Call any validation function, and allow it to override.
           val = thisField.callValidator(val);
@@ -209,11 +211,11 @@ Blockly.FieldSlider.prototype.addSlider_ = function(contentDiv) {
           htmlInput.value = val;
           Blockly.FieldTextInput.focus();
         }
-      });
+  }
 
   Blockly.FieldSlider.focusEventKey_ = goog.events.listen(this.slider_.getElement(),
       goog.ui.Component.EventType.FOCUS,
-      function(/*event*/) {
+      function() {
         // Switch focus to the HTML input field
         Blockly.FieldTextInput.focus();
       });
