@@ -6,9 +6,6 @@ node_js:
 sudo: required
 addons:
   chrome: stable
-  apt:
-    packages:
-    - libgconf-2-4
 cache:
   directories:
   - node_modules
