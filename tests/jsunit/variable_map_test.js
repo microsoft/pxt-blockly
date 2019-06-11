@@ -185,6 +185,7 @@ function test_createVariableIdAlreadyExists() {
   variableMapTest_tearDown();
 }
 
+/** pxt-blockly: cannot have variables with the same name.
 function test_createVariableMismatchedIdAndType() {
   variableMapTest_setUp();
   variable_map.createVariable('name1', 'type1', 'id1');
@@ -202,6 +203,7 @@ function test_createVariableMismatchedIdAndType() {
   }
   variableMapTest_tearDown();
 }
+*/
 
 function test_createVariableTwoSameTypes() {
   variableMapTest_setUp();
