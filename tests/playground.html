@@ -1,118 +1,119 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-<meta charset="utf-8">
-<title>PXT-Blockly Playground</title>
-<script src="../blockly_uncompressed.js"></script>
-<script src="../generators/javascript.js"></script>
-<script src="../generators/javascript/logic.js"></script>
-<script src="../generators/javascript/loops.js"></script>
-<script src="../generators/javascript/math.js"></script>
-<script src="../generators/javascript/text.js"></script>
-<script src="../generators/javascript/lists.js"></script>
-<script src="../generators/javascript/colour.js"></script>
-<script src="../generators/javascript/variables.js"></script>
-<script src="../generators/javascript/variables_dynamic.js"></script>
-<script src="../generators/javascript/procedures.js"></script>
-<script src="../generators/python.js"></script>
-<script src="../generators/python/logic.js"></script>
-<script src="../generators/python/loops.js"></script>
-<script src="../generators/python/math.js"></script>
-<script src="../generators/python/text.js"></script>
-<script src="../generators/python/lists.js"></script>
-<script src="../generators/python/colour.js"></script>
-<script src="../generators/python/variables.js"></script>
-<script src="../generators/python/variables_dynamic.js"></script>
-<script src="../generators/python/procedures.js"></script>
-<script src="../generators/php.js"></script>
-<script src="../generators/php/logic.js"></script>
-<script src="../generators/php/loops.js"></script>
-<script src="../generators/php/math.js"></script>
-<script src="../generators/php/text.js"></script>
-<script src="../generators/php/lists.js"></script>
-<script src="../generators/php/colour.js"></script>
-<script src="../generators/php/variables.js"></script>
-<script src="../generators/php/variables_dynamic.js"></script>
-<script src="../generators/php/procedures.js"></script>
-<script src="../generators/lua.js"></script>
-<script src="../generators/lua/logic.js"></script>
-<script src="../generators/lua/loops.js"></script>
-<script src="../generators/lua/math.js"></script>
-<script src="../generators/lua/text.js"></script>
-<script src="../generators/lua/lists.js"></script>
-<script src="../generators/lua/colour.js"></script>
-<script src="../generators/lua/variables.js"></script>
-<script src="../generators/lua/variables_dynamic.js"></script>
-<script src="../generators/lua/procedures.js"></script>
-<script src="../generators/dart.js"></script>
-<script src="../generators/dart/logic.js"></script>
-<script src="../generators/dart/loops.js"></script>
-<script src="../generators/dart/math.js"></script>
-<script src="../generators/dart/text.js"></script>
-<script src="../generators/dart/lists.js"></script>
-<script src="../generators/dart/colour.js"></script>
-<script src="../generators/dart/variables.js"></script>
-<script src="../generators/dart/variables_dynamic.js"></script>
-<script src="../generators/dart/procedures.js"></script>
-<script src="../msg/messages.js"></script>
-<script src="../blocks/extensions.js"></script>
-<script src="../blocks/logic.js"></script>
-<script src="../blocks/loops.js"></script>
-<script src="../blocks/math.js"></script>
-<script src="../blocks/text.js"></script>
-<script src="../blocks/lists.js"></script>
-<script src="../blocks/colour.js"></script>
-<script src="../blocks/variables.js"></script>
-<script src="../blocks/variables_dynamic.js"></script>
-<script src="../blocks/procedures.js"></script>
-<script src="../blocks/pxt_blockly_functions.js"></script>
-<script src="blocks/test_blocks.js"></script>
-<script src="blocks/pxt_test_blocks.js"></script>
-<script>
-'use strict';
-var workspace = null;
+  <meta charset="utf-8">
+  <title>PXT-Blockly Playground</title>
+  <script src="../blockly_uncompressed.js"></script>
+  <script src="../generators/javascript.js"></script>
+  <script src="../generators/javascript/logic.js"></script>
+  <script src="../generators/javascript/loops.js"></script>
+  <script src="../generators/javascript/math.js"></script>
+  <script src="../generators/javascript/text.js"></script>
+  <script src="../generators/javascript/lists.js"></script>
+  <script src="../generators/javascript/colour.js"></script>
+  <script src="../generators/javascript/variables.js"></script>
+  <script src="../generators/javascript/variables_dynamic.js"></script>
+  <script src="../generators/javascript/procedures.js"></script>
+  <script src="../generators/python.js"></script>
+  <script src="../generators/python/logic.js"></script>
+  <script src="../generators/python/loops.js"></script>
+  <script src="../generators/python/math.js"></script>
+  <script src="../generators/python/text.js"></script>
+  <script src="../generators/python/lists.js"></script>
+  <script src="../generators/python/colour.js"></script>
+  <script src="../generators/python/variables.js"></script>
+  <script src="../generators/python/variables_dynamic.js"></script>
+  <script src="../generators/python/procedures.js"></script>
+  <script src="../generators/php.js"></script>
+  <script src="../generators/php/logic.js"></script>
+  <script src="../generators/php/loops.js"></script>
+  <script src="../generators/php/math.js"></script>
+  <script src="../generators/php/text.js"></script>
+  <script src="../generators/php/lists.js"></script>
+  <script src="../generators/php/colour.js"></script>
+  <script src="../generators/php/variables.js"></script>
+  <script src="../generators/php/variables_dynamic.js"></script>
+  <script src="../generators/php/procedures.js"></script>
+  <script src="../generators/lua.js"></script>
+  <script src="../generators/lua/logic.js"></script>
+  <script src="../generators/lua/loops.js"></script>
+  <script src="../generators/lua/math.js"></script>
+  <script src="../generators/lua/text.js"></script>
+  <script src="../generators/lua/lists.js"></script>
+  <script src="../generators/lua/colour.js"></script>
+  <script src="../generators/lua/variables.js"></script>
+  <script src="../generators/lua/variables_dynamic.js"></script>
+  <script src="../generators/lua/procedures.js"></script>
+  <script src="../generators/dart.js"></script>
+  <script src="../generators/dart/logic.js"></script>
+  <script src="../generators/dart/loops.js"></script>
+  <script src="../generators/dart/math.js"></script>
+  <script src="../generators/dart/text.js"></script>
+  <script src="../generators/dart/lists.js"></script>
+  <script src="../generators/dart/colour.js"></script>
+  <script src="../generators/dart/variables.js"></script>
+  <script src="../generators/dart/variables_dynamic.js"></script>
+  <script src="../generators/dart/procedures.js"></script>
+  <script src="../msg/messages.js"></script>
+  <script src="../blocks/extensions.js"></script>
+  <script src="../blocks/logic.js"></script>
+  <script src="../blocks/loops.js"></script>
+  <script src="../blocks/math.js"></script>
+  <script src="../blocks/text.js"></script>
+  <script src="../blocks/lists.js"></script>
+  <script src="../blocks/colour.js"></script>
+  <script src="../blocks/variables.js"></script>
+  <script src="../blocks/variables_dynamic.js"></script>
+  <script src="../blocks/procedures.js"></script>
+  <script src="../blocks/pxt_blockly_functions.js"></script>
+  <script src="blocks/test_blocks.js"></script>
+  <script src="blocks/pxt_test_blocks.js"></script>
+  <script>
+    'use strict';
+    var workspace = null;
 
-function start() {
-  setBackgroundColor();
+    function start() {
+      setBackgroundColor();
 
-  // Parse the URL arguments.
-  var match = location.search.match(/dir=([^&]+)/);
-  var rtl = match && match[1] == 'rtl';
-  document.forms.options.elements.dir.selectedIndex = Number(rtl);
-  var toolbox = getToolboxElement();
-  document.forms.options.elements.toolbox.selectedIndex =
-      getToolboxFormIndex(toolbox.id);
-  match = location.search.match(/side=([^&]+)/);
-  var side = match ? match[1] : 'start';
-  document.forms.options.elements.side.value = side;
-  // Create main workspace.
-  workspace = Blockly.inject('blocklyDiv',
-      {
-        comments: true,
-        collapse: true,
-        disable: true,
-        grid:
+      // Parse the URL arguments.
+      var match = location.search.match(/dir=([^&]+)/);
+      var rtl = match && match[1] == 'rtl';
+      document.forms.options.elements.dir.selectedIndex = Number(rtl);
+      var toolbox = getToolboxElement();
+      document.forms.options.elements.toolbox.selectedIndex =
+        getToolboxFormIndex(toolbox.id);
+      match = location.search.match(/side=([^&]+)/);
+      var side = match ? match[1] : 'start';
+      document.forms.options.elements.side.value = side;
+      // Create main workspace.
+      workspace = Blockly.inject('blocklyDiv',
+        {
+          comments: true,
+          collapse: true,
+          disable: true,
+          grid:
           {
             spacing: 25,
             length: 3,
             colour: '#ccc',
             snap: true
           },
-        horizontalLayout: side == 'top' || side == 'bottom',
-        maxBlocks: Infinity,
-        media: '../media/',
-        oneBasedIndex: true,
-        readOnly: false,
-        rtl: rtl,
-        scrollbars: true,
-        toolbox: toolbox,
-        toolboxPosition: side == 'top' || side == 'start' ? 'start' : 'end',
-        toolboxOptions:
+          horizontalLayout: side == 'top' || side == 'bottom',
+          maxBlocks: Infinity,
+          media: '../media/',
+          oneBasedIndex: true,
+          readOnly: false,
+          rtl: rtl,
+          scrollbars: true,
+          toolbox: toolbox,
+          toolboxPosition: side == 'top' || side == 'start' ? 'start' : 'end',
+          toolboxOptions:
           {
             color: true,
             inverted: true
           },
-        zoom:
+          zoom:
           {
             controls: true,
             wheel: true,
@@ -121,338 +122,356 @@ function start() {
             minScale: .25,
             scaleSpeed: 1.1
           }
+        });
+      // Restore previously displayed text.
+      if (sessionStorage) {
+        var text = sessionStorage.getItem('textarea');
+        if (text) {
+          document.getElementById('importExport').value = text;
+        }
+        // Restore event logging state.
+        var state = sessionStorage.getItem('logEvents');
+        logEvents(Boolean(Number(state)));
+      } else {
+        // MSIE 11 does not support sessionStorage on file:// URLs.
+        logEvents(false);
+      }
+      taChange();
+
+      // Register help icon handler
+      workspace.registerButtonCallback('GROUP_HELP', function (button) {
+        alert("Help icon triggered")
       });
-  // Restore previously displayed text.
-  if (sessionStorage) {
-    var text = sessionStorage.getItem('textarea');
-    if (text) {
-      document.getElementById('importExport').value = text;
     }
-    // Restore event logging state.
-    var state = sessionStorage.getItem('logEvents');
-    logEvents(Boolean(Number(state)));
-  } else {
-    // MSIE 11 does not support sessionStorage on file:// URLs.
-    logEvents(false);
-  }
-  taChange();
 
-  // Register help icon handler
-  workspace.registerButtonCallback('GROUP_HELP', function(button) {
-    alert("Help icon triggered")
-  });
-}
+    function setBackgroundColor() {
+      var lilac = '#d6d6ff';
 
-function setBackgroundColor() {
-  var lilac = '#d6d6ff';
+      var currentPage = window.location.href;
+      var regexFile = /^file[\S]*$/;
 
-  var currentPage = window.location.href;
-  var regexFile = /^file[\S]*$/;
-
-  if (regexFile.test(currentPage)) {
-    document.getElementsByTagName('body')[0].style.backgroundColor = lilac;
-  }
-}
-
-function getToolboxElement() {
-  var match = location.search.match(/toolbox=([^&]+)/);
-  // Default to the basic toolbox with categories and untyped variables,
-  // but override that if the toolbox type is set in the URL.
-  var toolboxSuffix = (match ? match[1] : 'categories');
-  // The three possible values are: "simple", "categories",
-  // "categories-typed-variables".
-  return document.getElementById('toolbox-' + toolboxSuffix);
-}
-
-function getToolboxFormIndex(id) {
-  if (id == 'toolbox-categories') {
-    return 0;
-  } else if (id == 'toolbox-categories-typed-variables') {
-    return 1;
-  } else if (id == 'toolbox-simple') {
-    return 2;
-  }
-  // Didn't recognize it.
-  return 0;
-}
-
-function toXml() {
-  var output = document.getElementById('importExport');
-  var xml = Blockly.Xml.workspaceToDom(workspace);
-  output.value = Blockly.Xml.domToPrettyText(xml);
-  output.focus();
-  output.select();
-  taChange();
-}
-
-function fromXml() {
-  var input = document.getElementById('importExport');
-  var xml = Blockly.Xml.textToDom(input.value);
-  Blockly.Xml.domToWorkspace(xml, workspace);
-  taChange();
-}
-
-function toCode(lang) {
-  var output = document.getElementById('importExport');
-  output.value = Blockly[lang].workspaceToCode(workspace);
-  taChange();
-}
-
-// Disable the "Import from XML" button if the XML is invalid.
-// Preserve text between page reloads.
-function taChange() {
-  var textarea = document.getElementById('importExport');
-  if (sessionStorage) {
-    sessionStorage.setItem('textarea', textarea.value);
-  }
-  var valid = true;
-  try {
-    Blockly.Xml.textToDom(textarea.value);
-  } catch (e) {
-    valid = false;
-  }
-  document.getElementById('import').disabled = !valid;
-}
-
-function logEvents(state) {
-  var checkbox = document.getElementById('logCheck');
-  checkbox.checked = state;
-  if (sessionStorage) {
-    sessionStorage.setItem('logEvents', Number(state));
-  }
-  if (state) {
-    workspace.addChangeListener(logger);
-  } else {
-    workspace.removeChangeListener(logger);
-  }
-}
-
-function logger(e) {
-  console.log(e);
-}
-
-function centerOnBlock() {
-  if (Blockly.selected) {
-    workspace.centerOnBlock(Blockly.selected.id, true);
-  }
-}
-
-function highlightBlock() {
-  if (Blockly.selected) {
-    workspace.highlightBlock(Blockly.selected.id, true);
-  }
-}
-
-function unhighlightBlock() {
-  if (Blockly.selected) {
-    workspace.highlightBlock(Blockly.selected.id, false);
-  }
-}
-
-function highlightBlockWarning() {
-  if (Blockly.selected) {
-    var block = workspace.getBlockById(Blockly.selected.id);
-    if (block) {
-      block.setHighlightWarning(true);
+      if (regexFile.test(currentPage)) {
+        document.getElementsByTagName('body')[0].style.backgroundColor = lilac;
+      }
     }
-  }
-}
 
-function unhighlightBlockWarning() {
-  if (Blockly.selected) {
-    var block = workspace.getBlockById(Blockly.selected.id);
-    if (block) {
-      block.setHighlightWarning(false);
+    function getToolboxElement() {
+      var match = location.search.match(/toolbox=([^&]+)/);
+      // Default to the basic toolbox with categories and untyped variables,
+      // but override that if the toolbox type is set in the URL.
+      var toolboxSuffix = (match ? match[1] : 'categories');
+      // The three possible values are: "simple", "categories",
+      // "categories-typed-variables".
+      return document.getElementById('toolbox-' + toolboxSuffix);
     }
-  }
-}
 
-function glowBlock() {
-  if (Blockly.selected) {
-    workspace.glowBlock(Blockly.selected.id, true);
-  }
-}
-
-function unglowBlock() {
-  if (Blockly.selected) {
-    workspace.glowBlock(Blockly.selected.id, false);
-  }
-}
-
-function glowStack() {
-  if (Blockly.selected) {
-    workspace.glowStack(Blockly.selected.id, true);
-  }
-}
-
-function unglowStack() {
-  if (Blockly.selected) {
-    workspace.glowStack(Blockly.selected.id, false);
-  }
-}
-
-function airstrike(n) {
-  var prototypes = [];
-  var toolbox = getToolboxElement();
-  var blocks = toolbox.getElementsByTagName('block');
-  for (var i = 0, block; block = blocks[i]; i++) {
-    prototypes.push(block.getAttribute('type'));
-  }
-  for (var i = 0; i < n; i++) {
-    var prototype = prototypes[Math.floor(Math.random() * prototypes.length)];
-    var block = workspace.newBlock(prototype);
-    block.initSvg();
-    block.getSvgRoot().setAttribute('transform', 'translate(' +
-        Math.round(Math.random() * 450 + 40) + ', ' +
-        Math.round(Math.random() * 600 + 40) + ')');
-    block.render();
-  }
-}
-
-function toggleBreakpoints() {
-  workspace.options.debugMode = !workspace.options.debugMode;
-  var blocks = workspace.getAllBlocks();
-  blocks.forEach(block => {
-    if (block.nextConnection && block.previousConnection) {
-      block.enableBreakpoint(workspace.options.debugMode);
+    function getToolboxFormIndex(id) {
+      if (id == 'toolbox-categories') {
+        return 0;
+      } else if (id == 'toolbox-categories-typed-variables') {
+        return 1;
+      } else if (id == 'toolbox-simple') {
+        return 2;
+      }
+      // Didn't recognize it.
+      return 0;
     }
-  });
-}
 
-function spaghetti(n) {
-  var xml = spaghettiXml;
-  for(var i = 0; i < n; i++) {
-    xml = xml.replace(/(<(statement|next)( name="DO0")?>)<\//g,
-        '$1' + spaghettiXml + '</');
-  }
-  xml = '<xml xmlns="http://www.w3.org/1999/xhtml">' + xml + '</xml>';
-  var dom = Blockly.Xml.textToDom(xml);
-  console.time('Spaghetti domToWorkspace');
-  Blockly.Xml.domToWorkspace(dom, workspace);
-  console.timeEnd('Spaghetti domToWorkspace');
-}
-var spaghettiXml = [
-  '  <block type="controls_if">',
-  '    <value name="IF0">',
-  '      <block type="logic_compare">',
-  '        <field name="OP">EQ</field>',
-  '        <value name="A">',
-  '          <block type="math_arithmetic">',
-  '            <field name="OP">MULTIPLY</field>',
-  '            <value name="A">',
-  '              <block type="math_number">',
-  '                <field name="NUM">6</field>',
-  '              </block>',
-  '            </value>',
-  '            <value name="B">',
-  '              <block type="math_number">',
-  '                <field name="NUM">7</field>',
-  '              </block>',
-  '            </value>',
-  '          </block>',
-  '        </value>',
-  '        <value name="B">',
-  '          <block type="math_number">',
-  '            <field name="NUM">42</field>',
-  '          </block>',
-  '        </value>',
-  '      </block>',
-  '    </value>',
-  '    <statement name="DO0"></statement>',
-  '    <next></next>',
-  '  </block>'].join('\n');
+    function toXml() {
+      var output = document.getElementById('importExport');
+      var xml = Blockly.Xml.workspaceToDom(workspace);
+      output.value = Blockly.Xml.domToPrettyText(xml);
+      output.focus();
+      output.select();
+      taChange();
+    }
 
-</script>
+    function fromXml() {
+      var input = document.getElementById('importExport');
+      var xml = Blockly.Xml.textToDom(input.value);
+      Blockly.Xml.domToWorkspace(xml, workspace);
+      taChange();
+    }
 
-<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
-<style>
-html, body {
-  height: 100%;
-}
-body {
-  background-color: #fff;
-  font-family: sans-serif;
-  overflow: hidden;
-}
-h1 {
-  font-weight: normal;
-  font-size: 140%;
-}
-#blocklyDiv {
-  float: right;
-  height: 95%;
-  width: 70%;
-}
-#importExport {
-  font-family: monospace;
-}
+    function toCode(lang) {
+      var output = document.getElementById('importExport');
+      output.value = Blockly[lang].workspaceToCode(workspace);
+      taChange();
+    }
 
-.ioLabel>.blocklyFlyoutLabelText {
-  font-style: italic;
-}
+    // Disable the "Import from XML" button if the XML is invalid.
+    // Preserve text between page reloads.
+    function taChange() {
+      var textarea = document.getElementById('importExport');
+      if (sessionStorage) {
+        sessionStorage.setItem('textarea', textarea.value);
+      }
+      var valid = true;
+      try {
+        Blockly.Xml.textToDom(textarea.value);
+      } catch (e) {
+        valid = false;
+      }
+      document.getElementById('import').disabled = !valid;
+    }
 
-.blocklyFlyoutLabelText {
-  fill: white !important;
-}
-.blocklyFlyoutHeading>.blocklyFlyoutLabelText {
-  font-size: 1.5rem;
-}
-line.blocklyFlyoutLine {
-  stroke: white;
-}
-.blocklyFlyoutLabelIcon {
-  font-family: 'Font Awesome\ 5 Free';
-  font-size: 1.5rem;
-  font-weight: 900;
-  fill: white;
-}
+    function logEvents(state) {
+      var checkbox = document.getElementById('logCheck');
+      checkbox.checked = state;
+      if (sessionStorage) {
+        sessionStorage.setItem('logEvents', Number(state));
+      }
+      if (state) {
+        workspace.addChangeListener(logger);
+      } else {
+        workspace.removeChangeListener(logger);
+      }
+    }
 
-.blocklyTreeRow {
-  height: 45px !important;
-}
+    function logger(e) {
+      console.log(e);
+    }
 
-.blocklyTreeIconCustom {
-  background: none !important;
-  font-family: 'Font Awesome\ 5 Free';
-  font-weight: 900;
-  font-size: 1.3rem;
-  margin: 0 .25em;
-  width: 30px !important;
-  height: 100% !important;
-  line-height: 45px;
-  min-height: 45px;
-  vertical-align: middle;
-}
-.blocklyTreeIconCustom::before {
-  content: "\f12e";
-}
-.blocklyTreeIconCustom.logic::before {
-  content: "\f074";
-}
-.blocklyTreeIconCustom.loops::before {
-  content: "\f01e";
-}
-.blocklyTreeIconCustom.math::before {
-  content: "\f1ec";
-}
-.blocklyTreeIconCustom.text::before {
-  content: "\f031";
-}
-.blocklyTreeIconCustom.lists::before {
-  content: "\f0ca";
-}
-.blocklyTreeIconCustom.colour::before {
-  content: "\f53f";
-}
-.blocklyTreeIconCustom.variables::before {
-  content: "\f0c9";
-}
-.blocklyTreeIconCustom.functions::before {
-  content: "\f141";
-}
+    function centerOnBlock() {
+      if (Blockly.selected) {
+        workspace.centerOnBlock(Blockly.selected.id, true);
+      }
+    }
 
-</style>
+    function highlightBlock() {
+      if (Blockly.selected) {
+        workspace.highlightBlock(Blockly.selected.id, true);
+      }
+    }
+
+    function unhighlightBlock() {
+      if (Blockly.selected) {
+        workspace.highlightBlock(Blockly.selected.id, false);
+      }
+    }
+
+    function highlightBlockWarning() {
+      if (Blockly.selected) {
+        var block = workspace.getBlockById(Blockly.selected.id);
+        if (block) {
+          block.setHighlightWarning(true);
+        }
+      }
+    }
+
+    function unhighlightBlockWarning() {
+      if (Blockly.selected) {
+        var block = workspace.getBlockById(Blockly.selected.id);
+        if (block) {
+          block.setHighlightWarning(false);
+        }
+      }
+    }
+
+    function glowBlock() {
+      if (Blockly.selected) {
+        workspace.glowBlock(Blockly.selected.id, true);
+      }
+    }
+
+    function unglowBlock() {
+      if (Blockly.selected) {
+        workspace.glowBlock(Blockly.selected.id, false);
+      }
+    }
+
+    function glowStack() {
+      if (Blockly.selected) {
+        workspace.glowStack(Blockly.selected.id, true);
+      }
+    }
+
+    function unglowStack() {
+      if (Blockly.selected) {
+        workspace.glowStack(Blockly.selected.id, false);
+      }
+    }
+
+    function airstrike(n) {
+      var prototypes = [];
+      var toolbox = getToolboxElement();
+      var blocks = toolbox.getElementsByTagName('block');
+      for (var i = 0, block; block = blocks[i]; i++) {
+        prototypes.push(block.getAttribute('type'));
+      }
+      for (var i = 0; i < n; i++) {
+        var prototype = prototypes[Math.floor(Math.random() * prototypes.length)];
+        var block = workspace.newBlock(prototype);
+        block.initSvg();
+        block.getSvgRoot().setAttribute('transform', 'translate(' +
+          Math.round(Math.random() * 450 + 40) + ', ' +
+          Math.round(Math.random() * 600 + 40) + ')');
+        block.render();
+      }
+    }
+
+    function toggleBreakpoints() {
+      workspace.options.debugMode = !workspace.options.debugMode;
+      var blocks = workspace.getAllBlocks();
+      blocks.forEach(block => {
+        if (block.nextConnection && block.previousConnection) {
+          block.enableBreakpoint(workspace.options.debugMode);
+        }
+      });
+    }
+
+    function spaghetti(n) {
+      var xml = spaghettiXml;
+      for (var i = 0; i < n; i++) {
+        xml = xml.replace(/(<(statement|next)( name="DO0")?>)<\//g,
+          '$1' + spaghettiXml + '</');
+      }
+      xml = '<xml xmlns="http://www.w3.org/1999/xhtml">' + xml + '</xml>';
+      var dom = Blockly.Xml.textToDom(xml);
+      console.time('Spaghetti domToWorkspace');
+      Blockly.Xml.domToWorkspace(dom, workspace);
+      console.timeEnd('Spaghetti domToWorkspace');
+    }
+    var spaghettiXml = [
+      '  <block type="controls_if">',
+      '    <value name="IF0">',
+      '      <block type="logic_compare">',
+      '        <field name="OP">EQ</field>',
+      '        <value name="A">',
+      '          <block type="math_arithmetic">',
+      '            <field name="OP">MULTIPLY</field>',
+      '            <value name="A">',
+      '              <block type="math_number">',
+      '                <field name="NUM">6</field>',
+      '              </block>',
+      '            </value>',
+      '            <value name="B">',
+      '              <block type="math_number">',
+      '                <field name="NUM">7</field>',
+      '              </block>',
+      '            </value>',
+      '          </block>',
+      '        </value>',
+      '        <value name="B">',
+      '          <block type="math_number">',
+      '            <field name="NUM">42</field>',
+      '          </block>',
+      '        </value>',
+      '      </block>',
+      '    </value>',
+      '    <statement name="DO0"></statement>',
+      '    <next></next>',
+      '  </block>'].join('\n');
+
+  </script>
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css"
+    integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
+  <style>
+    html,
+    body {
+      height: 100%;
+    }
+
+    body {
+      background-color: #fff;
+      font-family: sans-serif;
+      overflow: hidden;
+    }
+
+    h1 {
+      font-weight: normal;
+      font-size: 140%;
+    }
+
+    #blocklyDiv {
+      float: right;
+      height: 95%;
+      width: 70%;
+    }
+
+    #importExport {
+      font-family: monospace;
+    }
+
+    .ioLabel>.blocklyFlyoutLabelText {
+      font-style: italic;
+    }
+
+    .blocklyFlyoutLabelText {
+      fill: white !important;
+    }
+
+    .blocklyFlyoutHeading>.blocklyFlyoutLabelText {
+      font-size: 1.5rem;
+    }
+
+    line.blocklyFlyoutLine {
+      stroke: white;
+    }
+
+    .blocklyFlyoutLabelIcon {
+      font-family: 'Font Awesome\ 5 Free';
+      font-size: 1.5rem;
+      font-weight: 900;
+      fill: white;
+    }
+
+    .blocklyTreeRow {
+      height: 45px !important;
+    }
+
+    .blocklyTreeIconCustom {
+      background: none !important;
+      font-family: 'Font Awesome\ 5 Free';
+      font-weight: 900;
+      font-size: 1.3rem;
+      margin: 0 .25em;
+      width: 30px !important;
+      height: 100% !important;
+      line-height: 45px;
+      min-height: 45px;
+      vertical-align: middle;
+    }
+
+    .blocklyTreeIconCustom::before {
+      content: "\f12e";
+    }
+
+    .blocklyTreeIconCustom.logic::before {
+      content: "\f074";
+    }
+
+    .blocklyTreeIconCustom.loops::before {
+      content: "\f01e";
+    }
+
+    .blocklyTreeIconCustom.math::before {
+      content: "\f1ec";
+    }
+
+    .blocklyTreeIconCustom.text::before {
+      content: "\f031";
+    }
+
+    .blocklyTreeIconCustom.lists::before {
+      content: "\f0ca";
+    }
+
+    .blocklyTreeIconCustom.colour::before {
+      content: "\f53f";
+    }
+
+    .blocklyTreeIconCustom.variables::before {
+      content: "\f0c9";
+    }
+
+    .blocklyTreeIconCustom.functions::before {
+      content: "\f141";
+    }
+  </style>
 </head>
+
 <body onload="start()">
 
   <div id="blocklyDiv"></div>
@@ -460,7 +479,7 @@ line.blocklyFlyoutLine {
   <h1>PXT-Blockly Playground</h1>
 
   <p><a href="javascript:void(workspace.setVisible(true))">Show</a>
-   - <a href="javascript:void(workspace.setVisible(false))">Hide</a></p>
+    - <a href="javascript:void(workspace.setVisible(false))">Hide</a></p>
 
   <form id="options">
     <select name="dir" onchange="document.forms.options.submit()">
@@ -496,8 +515,7 @@ line.blocklyFlyoutLine {
     &nbsp;
     <input type="button" value="To Dart" onclick="toCode('Dart')">
     <br>
-    <textarea id="importExport" style="width: 26%; height: 12em"
-      onchange="taChange();" onkeyup="taChange()"></textarea>
+    <textarea id="importExport" style="width: 26%; height: 12em" onchange="taChange();" onkeyup="taChange()"></textarea>
   </p>
 
   <p>
@@ -1444,10 +1462,10 @@ line.blocklyFlyoutLine {
           </shadow>
         </value>
         <value name="HANDLER_DRAG_PARAM_myBool">
-            <shadow type="argument_reporter_number">
-              <field name="VALUE">myBool</field>
-            </shadow>
-          </value>
+          <shadow type="argument_reporter_number">
+            <field name="VALUE">myBool</field>
+          </shadow>
+        </value>
         <statement name="STACK"></statement>
       </block>
       <block type="event_with_draggable_variable">
@@ -1457,10 +1475,10 @@ line.blocklyFlyoutLine {
           </shadow>
         </value>
         <value name="HANDLER_DRAG_PARAM_myVar2">
-            <shadow type="variables_get_reporter">
-              <field name="VAR">myVar2</field>
-            </shadow>
-          </value>
+          <shadow type="variables_get_reporter">
+            <field name="VAR">myVar2</field>
+          </shadow>
+        </value>
         <statement name="STACK"></statement>
       </block>
       <block type="controls_forEach">
@@ -1535,9 +1553,19 @@ line.blocklyFlyoutLine {
         <field name="TEXT">Robot face in text field: &#x1f916;</field>
       </block>
       <block type="text">
-        <field name="TEXT">Zalgo in text field: B&#776;&#788;&#862;&#795;&#842;&#827;&#806;&#837;&#812;&#792;&#816;&#846;&#805;l&#771;&#832;&#833;&#864;&#849;&#849;&#789;&#861;&#801;&#854;&#863;&#811;&#826;&#812;&#790;&#803;&#819;o&#843;&#777;&#778;&#785;&#831;&#829;&#794;&#825;&#857;&#814;&#802;&#811;&#852;c&#843;&#786;&#849;&#778;&#861;&#775;&#825;&#825;&#796;&#857;&#825;&#800;&#824;k&#778;&#850;&#833;&#774;&#772;&#782;&#862;&#770;&#789;&#788;&#841;&#801;&#811;&#860;&#839;&#790;&#819;&#854;l&#832;&#774;&#836;&#831;&#776;&#787;&#855;&#816;&#793;&#798;&#819;&#809;&#800;&#854;&#815;y&#864;&#783;&#856;&#773;&#832;&#808;&#799;&#839;&#814;&#840;&#812;&#793;&#818;&#801;</field>
+        <field name="TEXT">Zalgo in text field:
+          B&#776;&#788;&#862;&#795;&#842;&#827;&#806;&#837;&#812;&#792;&#816;&#846;&#805;l&#771;&#832;&#833;&#864;&#849;&#849;&#789;&#861;&#801;&#854;&#863;&#811;&#826;&#812;&#790;&#803;&#819;o&#843;&#777;&#778;&#785;&#831;&#829;&#794;&#825;&#857;&#814;&#802;&#811;&#852;c&#843;&#786;&#849;&#778;&#861;&#775;&#825;&#825;&#796;&#857;&#825;&#800;&#824;k&#778;&#850;&#833;&#774;&#772;&#782;&#862;&#770;&#789;&#788;&#841;&#801;&#811;&#860;&#839;&#790;&#819;&#854;l&#832;&#774;&#836;&#831;&#776;&#787;&#855;&#816;&#793;&#798;&#819;&#809;&#800;&#854;&#815;y&#864;&#783;&#856;&#773;&#832;&#808;&#799;&#839;&#814;&#840;&#812;&#793;&#818;&#801;
+        </field>
       </block>
     </category>
   </xml>
+  <script>
+    // window.onreadystatechange(() => {
+    setTimeout(() => {
+      fromXml()
+    }, 100)
+    // })
+  </script>
 </body>
+
 </html>
