@@ -208,15 +208,21 @@ Blockly.Comment.prototype.createTopBarIcons_ = function() {
     'xlink:href', Blockly.mainWorkspace.options.pathToMedia + 'comment-arrow-down.svg');
 
   // Delete Icon in Comment Top Bar
-  this.deleteIcon_ = Blockly.utils.createSvgElement('image',
+  this.deleteIcon_ = Blockly.utils.createSvgElement(
+    'g',
+    {
+      'class': 'blocklyCommentDeleteIcon'
+    },
+    this.svgGroup_);
+  Blockly.utils.createSvgElement('rect',
       {
-        'x': xInset,
-        'y': topBarMiddleY - Blockly.WorkspaceCommentSvg.DELETE_ICON_SIZE / 2,
-        'width': Blockly.WorkspaceCommentSvg.DELETE_ICON_SIZE,
-        'height': Blockly.WorkspaceCommentSvg.DELETE_ICON_SIZE
-      }, this.svgGroup_);
-  this.deleteIcon_.setAttributeNS('http://www.w3.org/1999/xlink',
-      'xlink:href', Blockly.mainWorkspace.options.pathToMedia + 'delete-x.svg');
+        'x': '-12.5', 'y': '1',
+        'width': '27.5', 'height': '27.5',
+        'fill': 'transparent',
+        'class': 'blocklyDeleteIconShape'
+      },
+      this.deleteIcon_);
+  Blockly.WorkspaceCommentSvg.drawDeleteIcon(this.deleteIcon_)
 };
 
 /**
@@ -239,6 +245,8 @@ Blockly.Comment.prototype.deleteMouseUp_ = function(e) {
   this.block_.setCommentText(null);
   // This event has been handled.  No need to bubble up to the document.
   e.stopPropagation();
+  // pxt-blockly: clear touch identifier set by mousedown
+  Blockly.Touch.clearTouchIdentifier();
 };
 
 /**
@@ -251,6 +259,8 @@ Blockly.Comment.prototype.minimizeMouseUp_ = function(e) {
   this.block_.comment.setVisible(false);
   // This event has been handled.  No need to bubble up to the document.
   e.stopPropagation();
+  // pxt-blockly: clear touch identifier set by mousedown
+  Blockly.Touch.clearTouchIdentifier();
 };
 
 /**
@@ -287,15 +297,15 @@ Blockly.Comment.prototype.resizeBubble_ = function() {
       this.minimizeArrow_.setAttribute('x', size.width -
           (Blockly.WorkspaceCommentSvg.MINIMIZE_ICON_SIZE) -
           Blockly.WorkspaceCommentSvg.TOP_BAR_ICON_INSET);
-      this.deleteIcon_.setAttribute('x', (-size.width +
-          Blockly.WorkspaceCommentSvg.DELETE_ICON_SIZE -
-          Blockly.WorkspaceCommentSvg.TOP_BAR_ICON_INSET));
       this.minimizeArrow_.setAttribute('transform', 'translate(' + -size.width + ', 1)');
-      this.deleteIcon_.setAttribute('tranform', 'translate(' + -size.width + ', 1)');
+      this.deleteIcon_.setAttribute('transform', 'translate(' +
+          (-size.width + Blockly.WorkspaceCommentSvg.DELETE_ICON_SIZE +
+          Blockly.WorkspaceCommentSvg.TOP_BAR_ICON_INSET) + ',' + (0) + ') scale(-1 1)');
     } else {
-      this.deleteIcon_.setAttribute('x', size.width -
-          Blockly.WorkspaceCommentSvg.DELETE_ICON_SIZE -
-          Blockly.WorkspaceCommentSvg.TOP_BAR_ICON_INSET);
+      this.deleteIcon_.setAttribute('transform', 'translate(' +
+          (size.width - Blockly.WorkspaceCommentSvg.DELETE_ICON_SIZE -
+          Blockly.WorkspaceCommentSvg.TOP_BAR_ICON_INSET) + ',' +
+          (0) + ')');
     }
   }
 };
