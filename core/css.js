@@ -624,7 +624,8 @@ Blockly.Css.CONTENT = [
   '}',
 
   '.blocklyCommentText {',
-    'fill: #000',
+    'fill: #000;',
+    'pointer-events: none;',
   '}',
 
   '.blocklyCommentHandleTarget {',
