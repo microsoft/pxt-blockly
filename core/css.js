@@ -369,15 +369,20 @@ Blockly.Css.CONTENT = [
   'stroke-width: 4px;',
   '}',
 
-  '.blocklyPath {',
-  'stroke-width: 1px;',
-  'transition: stroke .4s;',
-  '}',
-
   // pxtblockly: highlight reporter blocks on hover
   '.blocklyDraggable:not(.blocklySelected)>.blocklyPath.blocklyReporterHover {',
   'stroke-width: 2px;',
   'stroke: white;',
+  '}',
+
+  // pxtblockly: highlight fields on hover
+  '.blocklyBlockBackground {',
+  'stroke-width: 0px;',
+  '}',
+
+  '.blocklyPath {',
+  'stroke-width: 4px;',
+  'transition: stroke .4s;',
   '}',
 
   // pxtblockly: highlight fields on hover

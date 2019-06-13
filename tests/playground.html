@@ -145,7 +145,8 @@
     }
 
     function setBackgroundColor() {
-      var lilac = '#d6d6ff';
+      // var lilac = '#d6d6ff';
+      var lilac = '#ffffff';
 
       var currentPage = window.location.href;
       var regexFile = /^file[\S]*$/;
@@ -213,6 +214,17 @@
         valid = false;
       }
       document.getElementById('import').disabled = !valid;
+    }
+
+    function refreshSpeedChanged(speed) {
+      // var input = document.getElementById('refreshSpeed');
+      // if (input != 0)
+      clearTimeout(window.refreshInt)
+      if (speed && speed > 0) {
+        window.refreshInt = setTimeout(() => {
+          window.location = window.location
+        }, speed)
+      }
     }
 
     function logEvents(state) {
@@ -559,6 +571,12 @@
   <p>
     Log events: &nbsp;
     <input type="checkbox" onclick="logEvents(this.checked)" id="logCheck">
+  </p>
+
+  <p>
+    Auto-refresh: &nbsp;
+    <input type="button" value="Start" id="refreshSpeedStart" onclick="refreshSpeedChanged(800);">
+    <input type="button" value="Stop" id="refreshSpeedStop" onclick="refreshSpeedChanged(0);">
   </p>
 
   <!-- The next three blocks of XML are sample toolboxes for testing basic
@@ -1560,11 +1578,12 @@
     </category>
   </xml>
   <script>
-    // window.onreadystatechange(() => {
     setTimeout(() => {
       fromXml()
-    }, 100)
-    // })
+    }, 50)
+    window.refreshInt = setTimeout(() => {
+      window.location = window.location
+    }, 800)
   </script>
 </body>
 

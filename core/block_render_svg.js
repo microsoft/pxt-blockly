@@ -60,13 +60,13 @@ Blockly.BlockSvg.SEP_SPACE_Y = 2 * Blockly.BlockSvg.GRID_UNIT;
  * Minimum width of a block.
  * @const
  */
-Blockly.BlockSvg.MIN_BLOCK_X = 16 * Blockly.BlockSvg.GRID_UNIT;
+Blockly.BlockSvg.MIN_BLOCK_X = 5 * Blockly.BlockSvg.GRID_UNIT;
 
 /**
  * Minimum width of a block with output (reporters).
  * @const
  */
-Blockly.BlockSvg.MIN_BLOCK_X_OUTPUT = 12 * Blockly.BlockSvg.GRID_UNIT;
+Blockly.BlockSvg.MIN_BLOCK_X_OUTPUT = 5 * Blockly.BlockSvg.GRID_UNIT;
 
 /**
  * Minimum width of a shadow block with output (single fields).
@@ -78,7 +78,7 @@ Blockly.BlockSvg.MIN_BLOCK_X_SHADOW_OUTPUT = 10 * Blockly.BlockSvg.GRID_UNIT;
  * Minimum height of a block.
  * @const
  */
-Blockly.BlockSvg.MIN_BLOCK_Y = 12 * Blockly.BlockSvg.GRID_UNIT;
+Blockly.BlockSvg.MIN_BLOCK_Y = 10 * Blockly.BlockSvg.GRID_UNIT;
 
 /**
  * Height of extra row after a statement input.
@@ -171,13 +171,15 @@ Blockly.BlockSvg.START_HAT_PATH = 'c 25,-22 71,-22 96,0';
  * @const
  */
 Blockly.BlockSvg.NOTCH_PATH_LEFT = (
-  'c 2,0 3,1 4,2 ' +
-  'l 4,4 ' +
-  'c 1,1 2,2 4,2 ' +
-  'h 12 ' +
-  'c 2,0 3,-1 4,-2 ' +
-  'l 4,-4 ' +
-  'c 1,-1 2,-2 4,-2'
+  // 'c 2,0 3,1 4,2 ' +
+  // 'l 4,4 ' +
+  // 'c 1,1 2,2 4,2 ' +
+  'h 12 '
+  // +
+  // 'c 2,0 3,-1 4,-2 ' +
+  // 'l 4,-4 ' +
+  // 'c 1,-1 2,-2 4,-2'
+  // 'l 1'
 );
 
 /**
@@ -185,13 +187,14 @@ Blockly.BlockSvg.NOTCH_PATH_LEFT = (
  * @const
  */
 Blockly.BlockSvg.NOTCH_PATH_RIGHT = (
-  'c -2,0 -3,1 -4,2 ' +
-  'l -4,4 ' +
-  'c -1,1 -2,2 -4,2 ' +
-  'h -12 ' +
-  'c -2,0 -3,-1 -4,-2 ' +
-  'l -4,-4 ' +
-  'c -1,-1 -2,-2 -4,-2'
+  // 'c -2,0 -3,1 -4,2 ' +
+  // 'l -4,4 ' +
+  // 'c -1,1 -2,2 -4,2 ' +
+  'h -12 '
+  //  +
+  // 'c -2,0 -3,-1 -4,-2 ' +
+  // 'l -4,-4 ' +
+  // 'c -1,-1 -2,-2 -4,-2'
 );
 
 /**
@@ -271,14 +274,15 @@ Blockly.BlockSvg.INNER_BOTTOM_LEFT_CORNER =
  * SVG path for an empty hexagonal input shape.
  * @const
  */
+let hexNum = 4
 Blockly.BlockSvg.INPUT_SHAPE_HEXAGONAL =
-  'M ' + 4 * Blockly.BlockSvg.GRID_UNIT + ',0 ' +
-  ' h ' + 4 * Blockly.BlockSvg.GRID_UNIT +
-  ' l ' + 4 * Blockly.BlockSvg.GRID_UNIT + ',' + 4 * Blockly.BlockSvg.GRID_UNIT +
-  ' l ' + -4 * Blockly.BlockSvg.GRID_UNIT + ',' + 4 * Blockly.BlockSvg.GRID_UNIT +
-  ' h ' + -4 * Blockly.BlockSvg.GRID_UNIT +
-  ' l ' + -4 * Blockly.BlockSvg.GRID_UNIT + ',' + -4 * Blockly.BlockSvg.GRID_UNIT +
-  ' l ' + 4 * Blockly.BlockSvg.GRID_UNIT + ',' + -4 * Blockly.BlockSvg.GRID_UNIT +
+  'M ' + hexNum * Blockly.BlockSvg.GRID_UNIT + ',0 ' +
+  ' h ' + hexNum * Blockly.BlockSvg.GRID_UNIT +
+  ' l ' + hexNum * Blockly.BlockSvg.GRID_UNIT + ',' + hexNum * Blockly.BlockSvg.GRID_UNIT +
+  ' l ' + -hexNum * Blockly.BlockSvg.GRID_UNIT + ',' + hexNum * Blockly.BlockSvg.GRID_UNIT +
+  ' h ' + -hexNum * Blockly.BlockSvg.GRID_UNIT +
+  ' l ' + -hexNum * Blockly.BlockSvg.GRID_UNIT + ',' + -hexNum * Blockly.BlockSvg.GRID_UNIT +
+  ' l ' + hexNum * Blockly.BlockSvg.GRID_UNIT + ',' + -hexNum * Blockly.BlockSvg.GRID_UNIT +
   ' z';
 
 /**
@@ -351,13 +355,13 @@ Blockly.BlockSvg.FIELD_WIDTH = 6 * Blockly.BlockSvg.GRID_UNIT;
  * Editable field padding (left/right of the text).
  * @const
  */
-Blockly.BlockSvg.EDITABLE_FIELD_PADDING = 6;
+Blockly.BlockSvg.EDITABLE_FIELD_PADDING = 1;
 
 /**
  * Square box field padding (left/right of the text).
  * @const
  */
-Blockly.BlockSvg.BOX_FIELD_PADDING = 2 * Blockly.BlockSvg.GRID_UNIT;
+Blockly.BlockSvg.BOX_FIELD_PADDING = 0 * Blockly.BlockSvg.GRID_UNIT;
 
 /**
  * Drop-down arrow padding.
@@ -382,6 +386,7 @@ Blockly.BlockSvg.FIELD_WIDTH_MAX_EDIT = Infinity;
  * @const
  */
 Blockly.BlockSvg.FIELD_HEIGHT_MAX_EDIT = Blockly.BlockSvg.FIELD_HEIGHT;
+// Blockly.BlockSvg.FIELD_HEIGHT_MAX_EDIT = 0 * Blockly.BlockSvg.GRID_UNIT;
 
 /**
  * Top padding of user inputs
@@ -418,13 +423,13 @@ Blockly.BlockSvg.MAX_DISPLAY_LENGTH = Infinity;
  * Ensures that inputs will not overlap with the top notch of blocks.
  * @const
  */
-Blockly.BlockSvg.INPUT_AND_FIELD_MIN_X = 12 * Blockly.BlockSvg.GRID_UNIT;
+Blockly.BlockSvg.INPUT_AND_FIELD_MIN_X = 1 * Blockly.BlockSvg.GRID_UNIT;
 
 /**
  * Vertical padding around inline elements.
  * @const
  */
-Blockly.BlockSvg.INLINE_PADDING_Y = 1 * Blockly.BlockSvg.GRID_UNIT;
+Blockly.BlockSvg.INLINE_PADDING_Y = 0 * Blockly.BlockSvg.GRID_UNIT;
 
 /**
  * Point size of text field before animation. Must match size in CSS.
@@ -460,7 +465,7 @@ Blockly.BlockSvg.FIELD_TEXTINPUT_ANIMATE_POSITIONING = false;
 Blockly.BlockSvg.SHAPE_IN_SHAPE_PADDING = {
   1: { // Outer shape: hexagon.
     0: 5 * Blockly.BlockSvg.GRID_UNIT, // Field in hexagon.
-    1: 2 * Blockly.BlockSvg.GRID_UNIT, // Hexagon in hexagon.
+    1: 4 * Blockly.BlockSvg.GRID_UNIT, // Hexagon in hexagon.
     2: 5 * Blockly.BlockSvg.GRID_UNIT, // Round in hexagon.
     3: 5 * Blockly.BlockSvg.GRID_UNIT // Square in hexagon.
   },
@@ -1445,8 +1450,10 @@ Blockly.BlockSvg.prototype.renderDrawLeft_ = function (steps) {
       steps.push('a ' + this.edgeShapeWidth_ + ' ' + this.edgeShapeWidth_ + ' 0 0 1 0 -' + this.edgeShapeWidth_ * 2);
     } else if (this.edgeShape_ === Blockly.OUTPUT_SHAPE_HEXAGONAL) {
       // Draw a half-hexagon.
-      steps.push('l ' + -this.edgeShapeWidth_ + ' ' + -this.edgeShapeWidth_ +
-        ' l ' + this.edgeShapeWidth_ + ' ' + -this.edgeShapeWidth_);
+      let hexWidth = this.edgeShapeWidth_
+      let hexDepth = this.edgeShapeWidth_ / 2
+      steps.push('l ' + -hexDepth + ' ' + -hexWidth +
+        ' l ' + hexDepth + ' ' + -hexWidth);
     }
   }
   steps.push('z');
@@ -1467,8 +1474,10 @@ Blockly.BlockSvg.prototype.drawEdgeShapeRight_ = function (steps) {
         ' 0 0 1 0 ' + this.edgeShapeWidth_ * 2);
     } else if (this.edgeShape_ === Blockly.OUTPUT_SHAPE_HEXAGONAL) {
       // Draw an half-hexagon.
-      steps.push('l ' + this.edgeShapeWidth_ + ' ' + this.edgeShapeWidth_ +
-        ' l ' + -this.edgeShapeWidth_ + ' ' + this.edgeShapeWidth_);
+      let hexWidth = this.edgeShapeWidth_
+      let hexDepth = this.edgeShapeWidth_ / 2
+      steps.push('l ' + hexDepth + ' ' + hexWidth +
+        ' l ' + -hexDepth + ' ' + hexWidth);
     }
   }
 };
