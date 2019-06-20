@@ -133,10 +133,10 @@ Blockly.Slider.prototype.render = function (parentElement, opt_beforeNode) {
 Blockly.Slider.prototype.createDom = function () {
     this.element_ = document.createElement('div');
     this.element_.classList.add('slider');
-    this.element_.classList.add('new-slider-horizontal');
+    this.element_.classList.add('slider-horizontal');
     this.thumb_ = document.createElement('div');
     this.thumb_.classList.add('thumb');
-    this.thumb_.classList.add('new-slider-thumb');
+    this.thumb_.classList.add('slider-thumb');
     this.element_.appendChild(this.thumb_);
     if (this.onChangeEvent) {
         this.onChangeEvent(this.value_);
