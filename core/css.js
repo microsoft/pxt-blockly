@@ -1232,8 +1232,8 @@ Blockly.Css.CONTENT = [
     'padding: 0;',
   '}',
 
-    /* pxtblockly: Field slider. */
-    '.blocklyDropDownDiv .slider-horizontal {',
+  /* pxtblockly: Field slider. */
+  '.blocklyDropDownDiv .slider-horizontal {',
     'margin: 18px;',
     'height: 22px;',
     'width: 150px;',
