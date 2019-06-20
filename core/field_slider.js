@@ -175,7 +175,7 @@ Blockly.FieldSlider.prototype.showSlider_ = function() {
   Blockly.DropDownDiv.setColour('#ffffff', '#dddddd');
   Blockly.DropDownDiv.showPositionedByBlock(this, this.sourceBlock_);
 
-  //if (this.slider_) this.slider_.setVisible(true);
+  if (this.slider_) this.slider_.setVisible(true);
 };
 
 Blockly.FieldSlider.prototype.addSlider_ = function(contentDiv) {
