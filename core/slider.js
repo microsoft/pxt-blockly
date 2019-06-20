@@ -26,7 +26,7 @@
 'use strict';
 
 goog.provide('Blockly.Slider');
-
+    
 Blockly.Slider = function() {
 
     // Set up default values
@@ -34,6 +34,7 @@ Blockly.Slider = function() {
     this.min_ = 0;
     this.max_ = 100;
     this.step_ = 1;
+    this.moveToPoint = true;
 
     this.createDom();
     
@@ -59,6 +60,9 @@ Blockly.Slider.prototype.setupEvents = function() {
             if (this.slider.onClickEvent) {
                 this.slider.onClickEvent();
             }
+            if (this.moveToPoint) {
+                this.updatePosition(ev.clientX);
+            }
         }
     })
 
@@ -70,23 +74,27 @@ Blockly.Slider.prototype.setupEvents = function() {
 
     Blockly.bindEvent_(window, "mousemove", this, function(ev) {
         if (this && this.slider && this.slider.mouseDown_) {
-            const rect = (this.slider.element_).getBoundingClientRect();
-            let value = ev.clientX - rect.left;
-            const sliderWidth = (this.slider.element_).clientWidth;
-            const pxPerUnit = (this.slider.max_ - this.slider.min_) / sliderWidth;
-            value = value * pxPerUnit;
-            if (this.slider.step_ > 1) {
-                value = Math.round((value - this.slider.min_) / this.slider.step_) * this.slider.step_ + this.slider.min_;
-            } else { // If a step is less than one, multiplying it by the number of notches may result in floating point math errors
-                value = Math.round(((value - this.slider.min_) / this.slider.step_) / (Math.round(1000 / this.slider.step_) / 1000)) + this.slider.min_;
-            }
-            value = Math.min(Math.max(value, this.slider.min_), this.slider.max_);
-            this.slider.setValue(value);
-            if (this.slider.onChangeEvent) {
-                this.slider.onChangeEvent(value);
-            }
+            this.updatePosition(ev.clientX);
         }
     })
+}
+
+Blockly.Slider.prototype.updatePosition = function(clientX) {
+    const rect = (this.slider.element_).getBoundingClientRect();
+    let value = clientX - rect.left;
+    const sliderWidth = (this.slider.element_).clientWidth;
+    const pxPerUnit = (this.slider.max_ - this.slider.min_) / sliderWidth;
+    value = value * pxPerUnit;
+    if (this.slider.step_ > 1) {
+        value = Math.round((value - this.slider.min_) / this.slider.step_) * this.slider.step_ + this.slider.min_;
+    } else { // If a step is less than one, multiplying it by the number of notches may result in floating point math errors
+        value = Math.round(((value - this.slider.min_) / this.slider.step_) / (Math.round(1000 / this.slider.step_) / 1000)) + this.slider.min_;
+    }
+    value = Math.min(Math.max(value, this.slider.min_), this.slider.max_);
+    this.slider.setValue(value);
+    if (this.slider.onChangeEvent) {
+        this.slider.onChangeEvent(value);
+    }
 }
 
 Blockly.Slider.prototype.setVisible = function (visible) {
@@ -104,6 +112,10 @@ Blockly.Slider.prototype.setMaximum = function (max) {
 Blockly.Slider.prototype.setStep = function (step) {
     this.step_ = step;
 };
+
+Blockly.Slider.prototype.setMoveToPointEnabled = function (enabled) {
+    this.moveToPoint = enabled;
+}
 
 Blockly.Slider.prototype.setValue = function (value) {
     this.value_ = value;
@@ -140,13 +152,3 @@ Blockly.Slider.prototype.createDom = function () {
 Blockly.Slider.prototype.getElement = function () {
     return this.element_;
 };
-
-/**
- * Construct a FieldSlider from a JSON arg object.
- * @returns {!Blockly.Slider} The new slider instance.
- * @package
- * @nocollapse
- */
-Blockly.FieldSlider.fromJson = function() {
-    return new Blockly.Slider();
-  };
