@@ -20,7 +20,6 @@
 
 /**
  * @fileoverview The slider class used for field sliders
- *  Based on the Google Closure Slider class
  * @author Chase Mortensen
  */
 'use strict';
@@ -30,16 +29,10 @@ goog.provide('Blockly.Slider');
 Blockly.Slider = function() {
 
     // Set up default values
-    this.value_ = 0;
-    this.min_ = 0;
-    this.max_ = 100;
     this.step_ = 1;
-    this.moveToPoint = true;
 
-    this.createDom();
-    
     this.slider = this;
-
+    this.createDom();
     this.setupEvents();
     
 }
