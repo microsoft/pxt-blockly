@@ -17,15 +17,15 @@
 goog.provide('Blockly.Slider');
     
 Blockly.Slider = function() {
-
-    // Set up default values
-    this.step_ = 1;
-
     this.createDom();
-    
     this.mouseDownWrapper = Blockly.bindEvent_(this.element_, "mousedown", this, this.onMouseDown);
-    
 }
+
+/**
+ * Slider step (The smallest difference of values obtained using the slider).
+ * @private
+ */
+Blockly.Slider.prototype.step_ = 1;
 
 Blockly.Slider.prototype.onMouseDown = function(e) {
     this.updatePosition(e.clientX);
