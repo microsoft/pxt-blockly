@@ -185,7 +185,6 @@ Blockly.FieldSlider.prototype.addSlider_ = function(contentDiv) {
     this.readout_ = elements[1];
   }
   this.slider_ = new Blockly.Slider();
-  this.slider_.setMoveToPointEnabled(true);
   this.slider_.setMinimum(this.min_);
   this.slider_.setMaximum(this.max_);
   if (this.step_) this.slider_.setStep(this.step_);

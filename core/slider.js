@@ -22,39 +22,23 @@ Blockly.Slider = function() {
     this.step_ = 1;
 
     this.createDom();
-    this.setupEvents();
+    
+    this.mouseDownWrapper = Blockly.bindEvent_(this.element_, "mousedown", this, this.onMouseDown);
     
 }
 
-Blockly.Slider.prototype.setupEvents = function() {
-    Blockly.bindEvent_(this.thumb_, "mousedown", this, function(ev) {
-        this.mouseDown_ = true;
-        if (this.onClickEvent) {
-            this.onClickEvent();
-        }
-    })
+Blockly.Slider.prototype.onMouseDown = function(e) {
+    this.updatePosition(e.clientX);
+    this.mouseUpWrapper = Blockly.bindEvent_(window, "mouseup", this, this.onMouseUp);
+    this.mouseMoveWrapper = Blockly.bindEvent_(window, "mousemove", this, this.onMouseMove);
+}
+Blockly.Slider.prototype.onMouseMove = function(e) {
+    this.updatePosition(e.clientX);
+}
 
-    Blockly.bindEvent_(this.element_, "mousedown", this, function(ev) {
-        this.mouseDown_ = true;
-        if (this.onClickEvent) {
-            this.onClickEvent();
-        }
-        if (this.moveToPoint) {
-            this.updatePosition(ev.clientX);
-        }
-    })
-
-    Blockly.bindEvent_(window, "mouseup", this, function (ev) {
-        if (this.mouseDown_) {
-            this.mouseDown_ = false;
-        }
-    })
-
-    Blockly.bindEvent_(window, "mousemove", this, function(ev) {
-        if (this.mouseDown_) {
-            this.updatePosition(ev.clientX);
-        }
-    })
+Blockly.Slider.prototype.onMouseUp = function(e) {
+    Blockly.unbindEvent_(this.mouseUpWrapper);
+    Blockly.unbindEvent_(this.mouseMoveWrapper);
 }
 
 Blockly.Slider.prototype.updatePosition = function(clientX) {
