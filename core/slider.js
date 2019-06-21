@@ -58,10 +58,10 @@ Blockly.Slider.prototype.setupEvents = function() {
 }
 
 Blockly.Slider.prototype.updatePosition = function(clientX) {
-    const rect = (this.element_).getBoundingClientRect();
-    let value = clientX - rect.left;
-    const sliderWidth = (this.element_).clientWidth;
-    const pxPerUnit = (this.max_ - this.min_) / sliderWidth;
+    var rect = this.element_.getBoundingClientRect();
+    var value = clientX - rect.left;
+    var sliderWidth = (this.element_).clientWidth;
+    var pxPerUnit = (this.max_ - this.min_) / sliderWidth;
     value = value * pxPerUnit;
     if (this.step_ > 1) {
         value = Math.round((value - this.min_) / this.step_) * this.step_ + this.min_;
