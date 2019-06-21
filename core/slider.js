@@ -21,7 +21,6 @@ Blockly.Slider = function() {
     // Set up default values
     this.step_ = 1;
 
-    this.slider = this;
     this.createDom();
     this.setupEvents();
     
@@ -29,54 +28,50 @@ Blockly.Slider = function() {
 
 Blockly.Slider.prototype.setupEvents = function() {
     Blockly.bindEvent_(this.thumb_, "mousedown", this, function(ev) {
-        if (this && this.slider) {
-            this.slider.mouseDown_ = true;
-            if (this.slider.onClickEvent) {
-                this.slider.onClickEvent();
-            }
+        this.mouseDown_ = true;
+        if (this.onClickEvent) {
+            this.onClickEvent();
         }
     })
 
     Blockly.bindEvent_(this.element_, "mousedown", this, function(ev) {
-        if (this && this.slider) {
-            this.slider.mouseDown_ = true;
-            if (this.slider.onClickEvent) {
-                this.slider.onClickEvent();
-            }
-            if (this.moveToPoint) {
-                this.updatePosition(ev.clientX);
-            }
+        this.mouseDown_ = true;
+        if (this.onClickEvent) {
+            this.onClickEvent();
+        }
+        if (this.moveToPoint) {
+            this.updatePosition(ev.clientX);
         }
     })
 
     Blockly.bindEvent_(window, "mouseup", this, function (ev) {
-        if (this && this.slider && this.slider.mouseDown_) {
-            this.slider.mouseDown_ = false;
+        if (this.mouseDown_) {
+            this.mouseDown_ = false;
         }
     })
 
     Blockly.bindEvent_(window, "mousemove", this, function(ev) {
-        if (this && this.slider && this.slider.mouseDown_) {
+        if (this.mouseDown_) {
             this.updatePosition(ev.clientX);
         }
     })
 }
 
 Blockly.Slider.prototype.updatePosition = function(clientX) {
-    const rect = (this.slider.element_).getBoundingClientRect();
+    const rect = (this.element_).getBoundingClientRect();
     let value = clientX - rect.left;
-    const sliderWidth = (this.slider.element_).clientWidth;
-    const pxPerUnit = (this.slider.max_ - this.slider.min_) / sliderWidth;
+    const sliderWidth = (this.element_).clientWidth;
+    const pxPerUnit = (this.max_ - this.min_) / sliderWidth;
     value = value * pxPerUnit;
-    if (this.slider.step_ > 1) {
-        value = Math.round((value - this.slider.min_) / this.slider.step_) * this.slider.step_ + this.slider.min_;
+    if (this.step_ > 1) {
+        value = Math.round((value - this.min_) / this.step_) * this.step_ + this.min_;
     } else { // If a step is less than one, multiplying it by the number of notches may result in floating point math errors
-        value = Math.round(((value - this.slider.min_) / this.slider.step_) / (Math.round(1000 / this.slider.step_) / 1000)) + this.slider.min_;
+        value = Math.round(((value - this.min_) / this.step_) / (Math.round(1000 / this.step_) / 1000)) + this.min_;
     }
-    value = Math.min(Math.max(value, this.slider.min_), this.slider.max_);
-    this.slider.setValue(value);
-    if (this.slider.onChangeEvent) {
-        this.slider.onChangeEvent(value);
+    value = Math.min(Math.max(value, this.min_), this.max_);
+    this.setValue(value);
+    if (this.onChangeEvent) {
+        this.onChangeEvent(value);
     }
 }
 
