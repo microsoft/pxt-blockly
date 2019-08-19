@@ -1,5 +1,7 @@
 *_compressed*.js
 *_uncompressed*.js
+blockly_node_javascript_en.js
+gulpfile.js
 /msg/*
 /core/css.js
 /tests/blocks/*
@@ -8,6 +10,8 @@
 /tests/workspace_svg/*
 /tests/blocks/*
 /tests/generators/*
+/tests/mocha/run_mocha_tests_in_browser.js
+/tests/test_runner.js
 /tests/workspace_svg/*
 /generators/*
 /demos/*
@@ -17,4 +21,4 @@
 /dist/*
 /gh-pages/*
 /webpack.config.js
-/externs/svg-externs.js
+/externs/*

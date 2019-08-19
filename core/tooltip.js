@@ -32,11 +32,10 @@
 /**
  * @name Blockly.Tooltip
  * @namespace
- **/
+ */
 goog.provide('Blockly.Tooltip');
 
-goog.require('goog.dom');
-goog.require('goog.dom.TagName');
+goog.require('Blockly.utils.string');
 
 
 /**
@@ -132,8 +131,8 @@ Blockly.Tooltip.createDom = function() {
     return;  // Already created.
   }
   // Create an HTML container for popup overlays (e.g. editor widgets).
-  Blockly.Tooltip.DIV =
-      goog.dom.createDom(goog.dom.TagName.DIV, 'blocklyTooltipDiv');
+  Blockly.Tooltip.DIV = document.createElement('div');
+  Blockly.Tooltip.DIV.className = 'blocklyTooltipDiv';
   document.body.appendChild(Blockly.Tooltip.DIV);
 };
 
@@ -166,8 +165,9 @@ Blockly.Tooltip.onMouseOver_ = function(e) {
   }
   // If the tooltip is an object, treat it as a pointer to the next object in
   // the chain to look at.  Terminate when a string or function is found.
-  var element = e.target;
-  while (!goog.isString(element.tooltip) && !goog.isFunction(element.tooltip)) {
+  var element = e.currentTarget;
+  while ((typeof element.tooltip != 'string') &&
+         (typeof element.tooltip != 'function')) {
     element = element.tooltip;
   }
   if (Blockly.Tooltip.element_ != element) {
@@ -210,9 +210,6 @@ Blockly.Tooltip.onMouseOut_ = function(_e) {
 Blockly.Tooltip.onMouseMove_ = function(e) {
   if (!Blockly.Tooltip.element_ || !Blockly.Tooltip.element_.tooltip) {
     // No tooltip here to show.
-    return;
-  } else if (Blockly.WidgetDiv.isVisible()) {
-    // Don't display a tooltip if a widget is open (tooltip would be under it).
     return;
   } else if (Blockly.Tooltip.blocked_) {
     // Someone doesn't want us to show tooltips.  We are probably handling a
@@ -286,13 +283,13 @@ Blockly.Tooltip.show_ = function() {
     return;
   }
   // Erase all existing text.
-  goog.dom.removeChildren(/** @type {!Element} */ (Blockly.Tooltip.DIV));
+  Blockly.Tooltip.DIV.innerHTML = '';
   // Get the new text.
   var tip = Blockly.Tooltip.element_.tooltip;
-  while (goog.isFunction(tip)) {
+  while (typeof tip == 'function') {
     tip = tip();
   }
-  tip = Blockly.utils.wrap(tip, Blockly.Tooltip.LIMIT);
+  tip = Blockly.utils.string.wrap(tip, Blockly.Tooltip.LIMIT);
   // Create new text, line by line.
   var lines = tip.split('\n');
   for (var i = 0; i < lines.length; i++) {
@@ -301,7 +298,8 @@ Blockly.Tooltip.show_ = function() {
     Blockly.Tooltip.DIV.appendChild(div);
   }
   var rtl = Blockly.Tooltip.element_.RTL;
-  var windowSize = goog.dom.getViewportSize();
+  var windowWidth = document.documentElement.clientWidth;
+  var windowHeight = document.documentElement.clientHeight;
   // Display the tooltip.
   Blockly.Tooltip.DIV.style.direction = rtl ? 'rtl' : 'ltr';
   Blockly.Tooltip.DIV.style.display = 'block';
@@ -316,7 +314,7 @@ Blockly.Tooltip.show_ = function() {
   var anchorY = Blockly.Tooltip.lastY_ + Blockly.Tooltip.OFFSET_Y;
 
   if (anchorY + Blockly.Tooltip.DIV.offsetHeight >
-      windowSize.height + window.scrollY) {
+      windowHeight + window.scrollY) {
     // Falling off the bottom of the screen; shift the tooltip up.
     anchorY -= Blockly.Tooltip.DIV.offsetHeight + 2 * Blockly.Tooltip.OFFSET_Y;
   }
@@ -325,10 +323,10 @@ Blockly.Tooltip.show_ = function() {
     anchorX = Math.max(Blockly.Tooltip.MARGINS - window.scrollX, anchorX);
   } else {
     if (anchorX + Blockly.Tooltip.DIV.offsetWidth >
-        windowSize.width + window.scrollX - 2 * Blockly.Tooltip.MARGINS) {
+        windowWidth + window.scrollX - 2 * Blockly.Tooltip.MARGINS) {
       // Falling off the right edge of the screen;
       // clamp the tooltip on the edge.
-      anchorX = windowSize.width - Blockly.Tooltip.DIV.offsetWidth -
+      anchorX = windowWidth - Blockly.Tooltip.DIV.offsetWidth -
           2 * Blockly.Tooltip.MARGINS;
     }
   }

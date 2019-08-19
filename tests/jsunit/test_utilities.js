@@ -28,6 +28,27 @@ goog.require('goog.testing');
 
 
 /**
+ * The normal blockly event fire function.  We sometimes override this.  This
+ * handle lets us reset after an override.
+ */
+var savedFireFunc = Blockly.Events.fire;
+
+// Asserts must be disabled or else errors can't be shown when running on
+// file:// URLs.
+goog.asserts.ENABLE_ASSERTS = false;
+
+/**
+ * A helper function to replace Blockly.Events.fire in tests.
+ */
+function temporary_fireEvent(event) {
+  if (!Blockly.Events.isEnabled()) {
+    return;
+  }
+  Blockly.Events.FIRE_QUEUE_.push(event);
+  Blockly.Events.fireNow_();
+}
+
+/**
  * Check that two arrays have the same content.
  * @param {!Array.<string>} array1 The first array.
  * @param {!Array.<string>} array2 The second array.

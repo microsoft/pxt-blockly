@@ -361,4 +361,14 @@ Blockly.FieldVariableGetter.prototype.updateEditable = function() {
   }
 };
 
+/**
+ * Overrides referencesVariables(), indicating this field refers to a variable.
+ * @return {boolean} True.
+ * @package
+ * @override
+ */
+Blockly.FieldVariableGetter.prototype.referencesVariables = function() {
+  return true;
+};
+
 Blockly.Field.register('field_variable_getter', Blockly.FieldVariableGetter);

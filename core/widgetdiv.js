@@ -29,12 +29,11 @@
 /**
  * @name Blockly.WidgetDiv
  * @namespace
- **/
+ */
 goog.provide('Blockly.WidgetDiv');
 
 goog.require('Blockly.Css');
-goog.require('goog.dom');
-goog.require('goog.dom.TagName');
+
 goog.require('goog.style');
 
 
@@ -91,8 +90,8 @@ Blockly.WidgetDiv.createDom = function() {
     return;  // Already created.
   }
   // Create an HTML container for popup overlays (e.g. editor widgets).
-  Blockly.WidgetDiv.DIV =
-      goog.dom.createDom(goog.dom.TagName.DIV, 'blocklyWidgetDiv');
+  Blockly.WidgetDiv.DIV = document.createElement('div');
+  Blockly.WidgetDiv.DIV.className = 'blocklyWidgetDiv';
   document.body.appendChild(Blockly.WidgetDiv.DIV);
 };
 
@@ -100,12 +99,8 @@ Blockly.WidgetDiv.createDom = function() {
  * Initialize and display the widget div.  Close the old one if needed.
  * @param {!Object} newOwner The object that will be using this container.
  * @param {boolean} rtl Right-to-left (true) or left-to-right (false).
- * @param {Function=} opt_dispose Optional cleanup function to be run when the widget
- *   is closed. If the dispose is animated, this function must start the animation.
- * @param {Function=} opt_disposeAnimationFinished Optional cleanup function to be run
- *   when the widget is done animating and must disappear.
- * @param {number=} opt_disposeAnimationTimerLength Length of animation time in seconds
-     if a dispose animation is provided.
+ * @param {Function} dispose Optional cleanup function to be run when the
+ *     widget is closed.
  */
 Blockly.WidgetDiv.show = function(newOwner, rtl, opt_dispose,
     opt_disposeAnimationFinished, opt_disposeAnimationTimerLength) {
@@ -164,19 +159,7 @@ Blockly.WidgetDiv.hide = function(opt_noAnimate) {
     // Start animation out (or immediately hide)
     Blockly.WidgetDiv.dispose_ && Blockly.WidgetDiv.dispose_();
     Blockly.WidgetDiv.dispose_ = null;
-    // If we want to animate out, set the appropriate timer for final dispose.
-    if (Blockly.WidgetDiv.disposeAnimationFinished_ && !opt_noAnimate) {
-      Blockly.WidgetDiv.disposeAnimationTimer_ = window.setTimeout(
-          Blockly.WidgetDiv.hide, // Come back to hide and take the first branch.
-          Blockly.WidgetDiv.disposeAnimationTimerLength_ * 1000
-      );
-    } else {
-      // No timer provided (or no animation desired) - auto-hide the DOM now.
-      Blockly.WidgetDiv.disposeAnimationFinished_ && Blockly.WidgetDiv.disposeAnimationFinished_();
-      Blockly.WidgetDiv.disposeAnimationFinished_ = null;
-      Blockly.WidgetDiv.owner_ = null;
-      Blockly.WidgetDiv.hideAndClearDom_();
-    }
+    Blockly.WidgetDiv.DIV.innerHTML = '';
   }
 };
 
@@ -202,42 +185,13 @@ Blockly.WidgetDiv.isVisible = function() {
 
 /**
  * Destroy the widget and hide the div if it is being used by the specified
- *   object.
+ * object.
  * @param {!Object} oldOwner The object that was using this container.
  */
 Blockly.WidgetDiv.hideIfOwner = function(oldOwner) {
   if (Blockly.WidgetDiv.owner_ == oldOwner) {
     Blockly.WidgetDiv.hide();
   }
-};
-
-/**
- * Position the widget at a given location.  Prevent the widget from going
- * offscreen top or left (right in RTL).
- * @param {number} anchorX Horizontal location (window coordinates, not body).
- * @param {number} anchorY Vertical location (window coordinates, not body).
- * @param {!goog.math.Size} windowSize Height/width of window.
- * @param {!goog.math.Coordinate} scrollOffset X/y of window scrollbars.
- * @param {boolean} rtl True if RTL, false if LTR.
- */
-Blockly.WidgetDiv.position = function(anchorX, anchorY, windowSize,
-    scrollOffset, rtl) {
-  // Don't let the widget go above the top edge of the window.
-  if (anchorY < scrollOffset.y) {
-    anchorY = scrollOffset.y;
-  }
-  if (rtl) {
-    // Don't let the widget go right of the right edge of the window.
-    if (anchorX > windowSize.width + scrollOffset.x) {
-      anchorX = windowSize.width + scrollOffset.x;
-    }
-  } else {
-    // Don't let the widget go left of the left edge of the window.
-    if (anchorX < scrollOffset.x) {
-      anchorX = scrollOffset.x;
-    }
-  }
-  Blockly.WidgetDiv.positionInternal_(anchorX, anchorY, windowSize.height);
 };
 
 /**
@@ -258,7 +212,7 @@ Blockly.WidgetDiv.positionInternal_ = function(x, y, height) {
  * Position the widget div based on an anchor rectangle.
  * The widget should be placed adjacent to but not overlapping the anchor
  * rectangle.  The preferred position is directly below and aligned to the left
- * (ltr) or right (rtl) side of the anchor.
+ * (LTR) or right (RTL) side of the anchor.
  * @param {!Object} viewportBBox The bounding rectangle of the current viewport,
  *     in window coordinates.
  * @param {!Object} anchorBBox The bounding rectangle of the anchor, in window
@@ -275,7 +229,11 @@ Blockly.WidgetDiv.positionWithAnchor = function(viewportBBox, anchorBBox,
   var x = Blockly.WidgetDiv.calculateX_(viewportBBox, anchorBBox, widgetSize,
       rtl);
 
-  Blockly.WidgetDiv.positionInternal_(x, y, widgetSize.height);
+  if (y < 0) {
+    Blockly.WidgetDiv.positionInternal_(x, 0, widgetSize.height + y);
+  } else {
+    Blockly.WidgetDiv.positionInternal_(x, y, widgetSize.height);
+  }
 };
 
 /**
@@ -295,17 +253,16 @@ Blockly.WidgetDiv.positionWithAnchor = function(viewportBBox, anchorBBox,
 Blockly.WidgetDiv.calculateX_ = function(viewportBBox, anchorBBox, widgetSize,
     rtl) {
   if (rtl) {
-    // Try to align the right side of the field and the right side of the widget.
+    // Try to align the right side of the field and the right side of widget.
     var widgetLeft = anchorBBox.right - widgetSize.width;
     // Don't go offscreen left.
     var x = Math.max(widgetLeft, viewportBBox.left);
     // But really don't go offscreen right:
     return Math.min(x, viewportBBox.right - widgetSize.width);
   } else {
-    // Try to align the left side of the field and the left side of the widget.
+    // Try to align the left side of the field and the left side of widget.
     // Don't go offscreen right.
-    var x = Math.min(anchorBBox.left,
-        viewportBBox.right - widgetSize.width);
+    var x = Math.min(anchorBBox.left, viewportBBox.right - widgetSize.width);
     // But left is more important, because that's where the text is.
     return Math.max(x, viewportBBox.left);
   }
@@ -326,12 +283,7 @@ Blockly.WidgetDiv.calculateX_ = function(viewportBBox, anchorBBox, widgetSize,
  */
 Blockly.WidgetDiv.calculateY_ = function(viewportBBox, anchorBBox, widgetSize) {
   // Flip the widget vertically if off the bottom.
-  if (anchorBBox.bottom + widgetSize.height >=
-      viewportBBox.bottom) {
-    if (anchorBBox.bottom - widgetSize.height <= viewportBBox.top) {
-      // The top of the widget is at the top of the viewport.
-      return viewportBBox.top;
-    }
+  if (anchorBBox.bottom + widgetSize.height >= viewportBBox.bottom) {
     // The bottom of the widget is at the top of the field.
     return anchorBBox.top - widgetSize.height;
     // The widget could go off the top of the window, but it would also go off

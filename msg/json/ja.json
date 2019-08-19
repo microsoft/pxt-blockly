@@ -9,7 +9,11 @@
 			"Sgk",
 			"TAKAHASHI Shuuji",
 			"Suiato",
-			"ネイ"
+			"ネイ",
+			"Aefgh39622",
+			"Omotecho",
+			"Gimite",
+			"Gulpin"
 		]
 	},
 	"VARIABLES_DEFAULT_NAME": "項目",
@@ -17,6 +21,7 @@
 	"DUPLICATE_BLOCK": "複製",
 	"ADD_COMMENT": "コメントを追加",
 	"REMOVE_COMMENT": "コメントを削除",
+	"DUPLICATE_COMMENT": "コメントを複製",
 	"EXTERNAL_INPUTS": "外部入力",
 	"INLINE_INPUTS": "インライン入力",
 	"DELETE_BLOCK": "ブロックを削除",
@@ -358,5 +363,6 @@
 	"PROCEDURES_HIGHLIGHT_DEF": "関数の内容を強調表示します。",
 	"PROCEDURES_CREATE_DO": "'%1' を作成",
 	"PROCEDURES_IFRETURN_TOOLTIP": "1番目の値が true の場合、2番目の値を返します。",
-	"PROCEDURES_IFRETURN_WARNING": "警告: このブロックは、関数定義内でのみ使用できます。"
+	"PROCEDURES_IFRETURN_WARNING": "警告: このブロックは、関数定義内でのみ使用できます。",
+	"WORKSPACE_COMMENT_DEFAULT_TEXT": "ここへ入力"
 }

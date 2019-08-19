@@ -36,9 +36,8 @@ goog.provide('Blockly.Events.Move');  // Deprecated.
 
 goog.require('Blockly.Events');
 goog.require('Blockly.Events.Abstract');
-
-goog.require('goog.array');
-goog.require('goog.math.Coordinate');
+goog.require('Blockly.utils.Coordinate');
+goog.require('Blockly.utils.xml');
 
 
 /**
@@ -145,7 +144,7 @@ Blockly.Events.Change.prototype.fromJson = function(json) {
 
 /**
  * Does this event record any change of state?
- * @return {boolean} True if something changed.
+ * @return {boolean} False if something changed.
  */
 Blockly.Events.Change.prototype.isNull = function() {
   return this.oldValue == this.newValue;
@@ -189,7 +188,7 @@ Blockly.Events.Change.prototype.run = function(forward) {
       block.setCollapsed(value);
       break;
     case 'disabled':
-      block.setDisabled(value);
+      block.setEnabled(!value);
       break;
     case 'inline':
       block.setInputsInline(value);
@@ -201,11 +200,9 @@ Blockly.Events.Change.prototype.run = function(forward) {
         oldMutation = oldMutationDom && Blockly.Xml.domToText(oldMutationDom);
       }
       if (block.domToMutation) {
-        value = value || '<mutation></mutation>';
-        var dom = Blockly.Xml.textToDom('<xml>' + value + '</xml>');
-        block.domToMutation(dom.firstChild);
-        // PXT Blockly
-        // Mutation may have added some elements that need initializing and re-rendering.
+        var dom = Blockly.Xml.textToDom(value || '<mutation/>');
+        block.domToMutation(dom);
+        // pxt-blockly: mutation may have added some elements that need initializing and re-rendering.
         block.initSvg();
         if (block.rendered) {
           block.render();
@@ -271,7 +268,7 @@ Blockly.Events.Create.prototype.toJson = function() {
  */
 Blockly.Events.Create.prototype.fromJson = function(json) {
   Blockly.Events.Create.superClass_.fromJson.call(this, json);
-  this.xml = Blockly.Xml.textToDom('<xml>' + json['xml'] + '</xml>').firstChild;
+  this.xml = Blockly.Xml.textToDom(json['xml']);
   this.ids = json['ids'];
 };
 
@@ -282,7 +279,7 @@ Blockly.Events.Create.prototype.fromJson = function(json) {
 Blockly.Events.Create.prototype.run = function(forward) {
   var workspace = this.getEventWorkspace_();
   if (forward) {
-    var xml = goog.dom.createDom('xml');
+    var xml = Blockly.utils.xml.createElement('xml');
     xml.appendChild(this.xml);
     Blockly.Xml.domToWorkspace(xml, workspace);
   } else {
@@ -309,7 +306,7 @@ Blockly.Events.Delete = function(block) {
     return;  // Blank event to be populated by fromJson.
   }
   if (block.getParent()) {
-    throw 'Connected blocks cannot be deleted.';
+    throw Error('Connected blocks cannot be deleted.');
   }
   Blockly.Events.Delete.superClass_.constructor.call(this, block);
 
@@ -372,7 +369,7 @@ Blockly.Events.Delete.prototype.run = function(forward) {
       }
     }
   } else {
-    var xml = goog.dom.createDom('xml');
+    var xml = Blockly.utils.xml.createElement('xml');
     xml.appendChild(this.oldXml);
     Blockly.Xml.domToWorkspace(xml, workspace);
   }
@@ -440,7 +437,7 @@ Blockly.Events.Move.prototype.fromJson = function(json) {
   if (json['newCoordinate']) {
     var xy = json['newCoordinate'].split(',');
     this.newCoordinate =
-        new goog.math.Coordinate(parseFloat(xy[0]), parseFloat(xy[1]));
+        new Blockly.utils.Coordinate(parseFloat(xy[0]), parseFloat(xy[1]));
   }
 };
 
@@ -479,12 +476,12 @@ Blockly.Events.Move.prototype.currentLocation_ = function() {
 
 /**
  * Does this event record any change of state?
- * @return {boolean} True if something changed.
+ * @return {boolean} False if something changed.
  */
 Blockly.Events.Move.prototype.isNull = function() {
   return this.oldParentId == this.newParentId &&
       this.oldInputName == this.newInputName &&
-      goog.math.Coordinate.equals(this.oldCoordinate, this.newCoordinate);
+      Blockly.utils.Coordinate.equals(this.oldCoordinate, this.newCoordinate);
 };
 
 /**

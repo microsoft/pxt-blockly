@@ -11,6 +11,7 @@
 	"DUPLICATE_BLOCK": "Капіяваць",
 	"ADD_COMMENT": "Дадаць камэнтар",
 	"REMOVE_COMMENT": "Выдаліць камэнтар",
+	"DUPLICATE_COMMENT": "Прадубляваць камэнтар",
 	"EXTERNAL_INPUTS": "Зьнешнія ўваходы",
 	"INLINE_INPUTS": "Унутраныя ўваходы",
 	"DELETE_BLOCK": "Выдаліць блёк",
@@ -183,6 +184,9 @@
 	"MATH_RANDOM_FLOAT_HELPURL": "https://en.wikipedia.org/wiki/Random_number_generation",
 	"MATH_RANDOM_FLOAT_TITLE_RANDOM": "выпадковая дроб",
 	"MATH_RANDOM_FLOAT_TOOLTIP": "Вяртае выпадковую дроб у дыяпазоне ад 0,0 (уключна) да 1,0.",
+	"MATH_ATAN2_HELPURL": "https://en.wikipedia.org/wiki/Atan2",
+	"MATH_ATAN2_TITLE": "atan2 ад X:%1 Y:%2",
+	"MATH_ATAN2_TOOLTIP": "Вяртае арктангенс пункту (X, Y) у градусах ад -180 да 180.",
 	"TEXT_TEXT_HELPURL": "https://en.wikipedia.org/wiki/String_(computer_science)",
 	"TEXT_TEXT_TOOLTIP": "Літара, слова ці радок тэксту.",
 	"TEXT_JOIN_TITLE_CREATEWITH": "стварыць тэкст з",
@@ -337,5 +341,7 @@
 	"PROCEDURES_CREATE_DO": "Стварыць '%1'",
 	"PROCEDURES_IFRETURN_TOOLTIP": "Калі значэньне ісьціна, вярнуць другое значэньне.",
 	"PROCEDURES_IFRETURN_HELPURL": "http://c2.com/cgi/wiki?GuardClause",
-	"PROCEDURES_IFRETURN_WARNING": "Папярэджаньне: гэты блёк можа выкарыстоўвацца толькі ў вызначанай функцыі."
+	"PROCEDURES_IFRETURN_WARNING": "Папярэджаньне: гэты блёк можа выкарыстоўвацца толькі ў вызначанай функцыі.",
+	"WORKSPACE_COMMENT_DEFAULT_TEXT": "Напішыце што-небудзь…",
+	"COLLAPSED_WARNINGS_WARNING": "Згорнутыя блёкі ўтрымліваюць папярэджаньні."
 }

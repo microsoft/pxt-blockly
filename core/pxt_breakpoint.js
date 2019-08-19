@@ -42,7 +42,7 @@ Blockly.Breakpoint.prototype.createIcon = function() {
     ...
   </g>
   */
-  this.iconGroup_ = Blockly.utils.createSvgElement('g',
+  this.iconGroup_ = Blockly.utils.dom.createSvgElement('g',
       {'class': 'blocklyBreakpointIconGroup'}, null);
   if (this.block_.isInFlyout) {
     Blockly.utils.addClass(
@@ -64,7 +64,7 @@ Blockly.Breakpoint.prototype.createIcon = function() {
 Blockly.Breakpoint.prototype.drawIcon_ = function(group) {
   var fill = this.block_.isBreakpointSet() ? '#f00' : "#ccc";
   // Red/Grey filled circle, for Set/Unset breakpoint respectively.
-  this.bigDot = Blockly.utils.createSvgElement('circle',
+  this.bigDot = Blockly.utils.dom.createSvgElement('circle',
   {
     'class': 'blocklyBreakpointSymbol',
     'fill': fill,
@@ -77,7 +77,7 @@ Blockly.Breakpoint.prototype.drawIcon_ = function(group) {
   group);
 
   // Dismissed stop sign.
-  // this.bigDot = Blockly.utils.createSvgElement('polygon',
+  // this.bigDot = Blockly.utils.dom.createSvgElement('polygon',
   // {
   //   'class': 'blocklyBreakpointSymbol',
   //   'points': '10,7 20,7 25,12 25,22 20,27 10,27 5,22 5,12',
@@ -140,7 +140,7 @@ Blockly.Breakpoint.prototype.isVisible = function() {
 
 /**
  * Notification that the icon has moved.
- * @param {!goog.math.Coordinate} xy Absolute location in workspace coordinates.
+ * @param {!Blockly.utils.Coordinate} xy Absolute location in workspace coordinates.
  */
 Blockly.Breakpoint.prototype.setIconLocation = function(xy) {
   this.iconXY_ = xy;

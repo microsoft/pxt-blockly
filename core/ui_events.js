@@ -29,13 +29,15 @@ goog.provide('Blockly.Events.Ui');
 goog.require('Blockly.Events');
 goog.require('Blockly.Events.Abstract');
 
-goog.require('goog.array');
-goog.require('goog.math.Coordinate');
 
 /**
  * Class for a UI event.
+ * UI events are events that don't need to be sent over the wire for multi-user
+ * editing to work (e.g. scrolling the workspace, zooming, opening toolbox
+ * categories).
+ * UI events do not undo or redo.
  * @param {Blockly.Block} block The affected block.
- * @param {string} element One of 'selected', 'comment', 'mutator', 'breakpoint' etc.
+ * @param {string} element One of 'selected', 'comment', 'mutatorOpen', 'breakpoint' etc.
  * @param {*} oldValue Previous value of element.
  * @param {*} newValue New value of element.
  * @extends {Blockly.Events.Abstract}

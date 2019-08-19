@@ -20,6 +20,7 @@
 	"DUPLICATE_BLOCK": "Kaksoiskappale",
 	"ADD_COMMENT": "Lisää kommentti",
 	"REMOVE_COMMENT": "Poista kommentti",
+	"DUPLICATE_COMMENT": "Kahdenna kommentti",
 	"EXTERNAL_INPUTS": "Ulkoiset syötteet",
 	"INLINE_INPUTS": "Tuo syötteet",
 	"DELETE_BLOCK": "Poista lohko",
@@ -201,6 +202,7 @@
 	"MATH_RANDOM_FLOAT_HELPURL": "https://fi.wikipedia.org/wiki/Satunnaisluku",
 	"MATH_RANDOM_FLOAT_TITLE_RANDOM": "satunnainen murtoluku",
 	"MATH_RANDOM_FLOAT_TOOLTIP": "Palauttaa satunnaisen luvun oikealta puoliavoimesta välistä [0.0, 1.0).",
+	"MATH_ATAN2_HELPURL": "https://en.wikipedia.org/wiki/Atan2",
 	"TEXT_TEXT_HELPURL": "https://fi.wikipedia.org/wiki/Merkkijono",
 	"TEXT_TEXT_TOOLTIP": "Kirjain, sana tai rivi tekstiä.",
 	"TEXT_JOIN_TITLE_CREATEWITH": "luo teksti",
@@ -248,6 +250,7 @@
 	"TEXT_PROMPT_TOOLTIP_TEXT": "Kehottaa käyttäjää syöttämään tekstiä.",
 	"TEXT_COUNT_MESSAGE0": "laske määrä '%1' '%2' sisällä",
 	"TEXT_COUNT_TOOLTIP": "Laske kuiunka monta kertaa jokin teksti esiintyy jossakin toisessa tekstissä.",
+	"TEXT_REPLACE_MESSAGE0": "Korvaa teksti %1 tekstillä %2 tekstissä %3",
 	"TEXT_REVERSE_MESSAGE0": "%1 takaperin",
 	"TEXT_REVERSE_TOOLTIP": "Muuttaa tekstin kirjainten järjestyksen toisin päin.",
 	"LISTS_CREATE_EMPTY_TITLE": "Luo tyhjä lista",
@@ -320,6 +323,7 @@
 	"LISTS_SPLIT_WITH_DELIMITER": "erottimen kanssa",
 	"LISTS_SPLIT_TOOLTIP_SPLIT": "Jaa teksti osiin erotinmerkin perusteella ja järjestä osat listaksi.",
 	"LISTS_SPLIT_TOOLTIP_JOIN": "Yhdistä luettelon tekstit yhdeksi tekstiksi, erotettuina välimerkillä.",
+	"LISTS_REVERSE_MESSAGE0": "%1 takaperin",
 	"VARIABLES_GET_TOOLTIP": "Palauttaa muuttujan arvon.",
 	"VARIABLES_GET_CREATE_SET": "Luo 'aseta %1'",
 	"VARIABLES_SET": "aseta %1 arvoksi %2",
@@ -347,5 +351,6 @@
 	"PROCEDURES_CREATE_DO": "Luo '%1'",
 	"PROCEDURES_IFRETURN_TOOLTIP": "Jos arvo on tosi, palauta toinen arvo.",
 	"PROCEDURES_IFRETURN_HELPURL": "http://c2.com/cgi/wiki?GuardClause",
-	"PROCEDURES_IFRETURN_WARNING": "Varoitus: tätä lohkoa voi käyttää vain funktion määrityksessä."
+	"PROCEDURES_IFRETURN_WARNING": "Varoitus: tätä lohkoa voi käyttää vain funktion määrityksessä.",
+	"WORKSPACE_COMMENT_DEFAULT_TEXT": "Sano jotakin..."
 }

@@ -34,8 +34,7 @@ goog.require('Blockly.Events');
 goog.require('Blockly.Events.Abstract');
 goog.require('Blockly.Events.BlockBase');
 
-goog.require('goog.array');
-goog.require('goog.math.Coordinate');
+goog.require('Blockly.utils.Coordinate');
 
 /**
  * Abstract class for a comment event.
@@ -225,7 +224,7 @@ Blockly.Events.CommentCreate = function(comment) {
 
   /**
    * The XY position of this comment on the workspace.
-   * @type {goog.math.Coordinate}
+   * @type {Blockly.utils.Coordinate}
    */
   this.xy = comment.getXY();
 
@@ -406,13 +405,13 @@ Blockly.Events.CommentMove = function(comment) {
   this.workspaceWidth_ = comment.workspace.getWidth();
   /**
    * The location before the move, in workspace coordinates.
-   * @type {!goog.math.Coordinate}
+   * @type {!Blockly.utils.Coordinate}
    */
   this.oldCoordinate_ = this.currentLocation_();
 
   /**
    * The location after the move, in workspace coordinates.
-   * @type {!goog.math.Coordinate}
+   * @type {!Blockly.utils.Coordinate}
    */
   this.newCoordinate_ = null;
 };
@@ -421,7 +420,7 @@ goog.inherits(Blockly.Events.CommentMove, Blockly.Events.CommentBase);
 /**
  * Calculate the current, language agnostic location of the comment.
  * This value should not report different numbers in LTR vs. RTL.
- * @return {goog.math.Coordinate} The location of the comment.
+ * @return {Blockly.utils.Coordinate} The location of the comment.
  * @private
  */
 Blockly.Events.CommentMove.prototype.currentLocation_ = function() {
@@ -437,7 +436,7 @@ Blockly.Events.CommentMove.prototype.currentLocation_ = function() {
   } else {
     rtlAwareX = this.workspaceWidth_ - xy.x;
   }
-  return new goog.math.Coordinate(rtlAwareX, xy.y);
+  return new Blockly.utils.Coordinate(rtlAwareX, xy.y);
 };
 
 /**
@@ -462,11 +461,11 @@ Blockly.Events.CommentMove.prototype.type = Blockly.Events.COMMENT_MOVE;
 /**
  * Override the location before the move.  Use this if you don't create the
  * event until the end of the move, but you know the original location.
- * @param {!goog.math.Coordinate} xy The location before the move, in workspace
+ * @param {!Blockly.utils.Coordinate} xy The location before the move, in workspace
  *     coordinates.
  */
 Blockly.Events.CommentMove.prototype.setOldCoordinate = function(xy) {
-  this.oldCoordinate_ = new goog.math.Coordinate(this.comment_.workspace.RTL ?
+  this.oldCoordinate_ = new Blockly.utils.Coordinate(this.comment_.workspace.RTL ?
       this.workspaceWidth_ - xy.x : xy.x, xy.y);
 };
 
@@ -495,7 +494,7 @@ Blockly.Events.CommentMove.prototype.fromJson = function(json) {
   if (json['newCoordinate']) {
     var xy = json['newCoordinate'].split(',');
     this.newCoordinate_ =
-        new goog.math.Coordinate(parseFloat(xy[0]), parseFloat(xy[1]));
+        new Blockly.utils.Coordinate(parseFloat(xy[0]), parseFloat(xy[1]));
   }
 };
 
@@ -504,7 +503,7 @@ Blockly.Events.CommentMove.prototype.fromJson = function(json) {
  * @return {boolean} False if something changed.
  */
 Blockly.Events.CommentMove.prototype.isNull = function() {
-  return goog.math.Coordinate.equals(this.oldCoordinate_, this.newCoordinate_);
+  return Blockly.utils.Coordinate.equals(this.oldCoordinate_, this.newCoordinate_);
 };
 
 /**

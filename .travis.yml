@@ -2,10 +2,14 @@ language: node_js
 os: linux
 dist: trusty
 node_js:
-- "8"
+  - 8
+  - 10
 sudo: required
 addons:
-  chrome: stable
+  firefox: latest
+  apt:
+    packages:
+    - google-chrome-stable
 cache:
   directories:
   - node_modules
@@ -15,6 +19,8 @@ before_install:
 - ln -s $(npm root)/google-closure-library ../closure-library
 
 before_script:
+  # Symlink closure library used by test/jsunit
+  - ln -s $(npm root)/google-closure-library ../closure-library
   - export DISPLAY=:99.0
   - tests/scripts/setup_linux_env.sh
   - sleep 2
@@ -23,6 +29,7 @@ script:
   - set -x
   - npm test
   - cd tests/compile; compile.sh; cd ../..
+  # - tests/run_all_tests.sh
 
 before_deploy:
   - npm i -g

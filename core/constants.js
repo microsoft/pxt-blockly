@@ -26,6 +26,17 @@
 
 goog.provide('Blockly.constants');
 
+/**
+ * The multiplier for scroll wheel deltas using the line delta mode.
+ * @type {number}
+ */
+Blockly.LINE_MODE_MULTIPLIER = 40;
+
+/**
+ * The multiplier for scroll wheel deltas using the page delta mode.
+ * @type {number}
+ */
+Blockly.PAGE_MODE_MULTIPLIER = 125;
 
 /**
  * Number of pixels the mouse must move before a drag starts.
@@ -61,6 +72,11 @@ Blockly.CURRENT_CONNECTION_PREFERENCE = 20;
  * Delay in ms between trigger and bumping unconnected block out of alignment.
  */
 Blockly.BUMP_DELAY = 0;
+
+/**
+ * Maximum randomness in workspace units for bumping a block.
+ */
+Blockly.BUMP_RANDOMNESS = 10;
 
 /**
  * Number of characters to truncate a collapsed block to.
@@ -106,18 +122,6 @@ Blockly.SPRITE = {
 };
 
 // Constants below this point are not intended to be changed.
-
-/**
- * Required name space for SVG elements.
- * @const
- */
-Blockly.SVG_NS = 'http://www.w3.org/2000/svg';
-
-/**
- * Required name space for HTML elements.
- * @const
- */
-Blockly.HTML_NS = 'http://www.w3.org/1999/xhtml';
 
 /**
  * ENUM for a right-facing value input.  E.g. 'set item to' or 'return'.
@@ -265,14 +269,14 @@ Blockly.DELETE_AREA_TRASH = 1;
 Blockly.DELETE_AREA_TOOLBOX = 2;
 
 /**
- * String for use in the "custom" attribute of a category in toolbox xml.
+ * String for use in the "custom" attribute of a category in toolbox XML.
  * This string indicates that the category should be dynamically populated with
  * variable blocks.
  * @const {string}
  */
 Blockly.VARIABLE_CATEGORY_NAME = 'VARIABLE';
 /**
- * String for use in the "custom" attribute of a category in toolbox xml.
+ * String for use in the "custom" attribute of a category in toolbox XML.
  * This string indicates that the category should be dynamically populated with
  * variable blocks.
  * @const {string}
@@ -280,7 +284,7 @@ Blockly.VARIABLE_CATEGORY_NAME = 'VARIABLE';
 Blockly.VARIABLE_DYNAMIC_CATEGORY_NAME = 'VARIABLE_DYNAMIC';
 
 /**
- * String for use in the "custom" attribute of a category in toolbox xml.
+ * String for use in the "custom" attribute of a category in toolbox XML.
  * This string indicates that the category should be dynamically populated with
  * procedure blocks.
  * @const {string}
