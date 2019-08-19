@@ -35,6 +35,7 @@ goog.provide('Blockly.utils');
 goog.require('Blockly.Msg');
 goog.require('Blockly.utils.base');
 goog.require('Blockly.utils.Coordinate');
+goog.require('Blockly.utils.dom');
 goog.require('Blockly.utils.string');
 goog.require('Blockly.utils.userAgent');
 
@@ -47,7 +48,7 @@ goog.require('goog.style');
  * @return {Node} The node removed if removed; else, null.
  */
 // Copied from Closure goog.dom.removeNode
-Blockly.utils.removeNode = function(node) {
+Blockly.utils.dom.removeNode = function(node) {
   return node && node.parentNode ? node.parentNode.removeChild(node) : null;
 };
 

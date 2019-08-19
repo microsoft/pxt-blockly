@@ -182,16 +182,7 @@ Blockly.Toolbox.prototype.init = function() {
    * @type {!Blockly.Flyout}
    * @private
    */
-  this.flyout_ = null;
-  if (workspace.horizontalLayout) {
-    this.flyout_ = new Blockly.HorizontalFlyout(workspaceOptions);
-  } else {
-    this.flyout_ = new Blockly.VerticalFlyout(workspaceOptions);
-  }
-  // Insert the flyout after the workspace.
-  Blockly.utils.dom.insertAfter(this.flyout_.createDom('svg'),
-      this.workspace_.getParentSvg());
-  this.flyout_.init(workspace);
+  this.flyout_ = flyout;
 
   this.config_['cleardotPath'] = workspace.options.pathToMedia + '1x1.gif';
   this.config_['cssCollapsedFolderIcon'] =

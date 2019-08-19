@@ -820,7 +820,7 @@ Blockly.Block.prototype.setInsertionMarker = function(insertionMarker) {
     // TODO shakao needs to be Blockly.INSERTION_MARKER_COLOUR ?
     this.setColour(Blockly.Colours.insertionMarker);
     this.setOpacity(Blockly.Colours.insertionMarkerOpacity);
-    Blockly.utils.addClass(/** @type {!Element} */ (this.svgGroup_),
+    Blockly.utils.dom.addClass(/** @type {!Element} */ (this.svgGroup_),
         'blocklyInsertionMarker');
   }
 };
@@ -1091,15 +1091,13 @@ Blockly.Block.prototype.setColour = function(colour, colourSecondary, colourTert
     this.colourSecondary_ = this.makeColour_(colourSecondary);
   } else {
     this.colourSecondary_ = Blockly.utils.colour.rgbArrayToHex(
-        Blockly.utils.colour.darken(Blockly.utils.colour.hexToRgb(this.colour_),
-            0.15));
+        Blockly.utils.colour.darken(this.colour_, 0.15));
   }
   if (colourTertiary !== undefined) {
     this.colourTertiary_ = this.makeColour_(colourTertiary);
   } else {
     this.colourTertiary_ = Blockly.utils.colour.rgbArrayToHex(
-        Blockly.utils.colour.darken(Blockly.utils.colour.hexToRgb(this.colour_),
-            0.25));
+        Blockly.utils.colour.darken(this.colour_, 0.25));
   }
   if (this.rendered) {
     this.updateColour();

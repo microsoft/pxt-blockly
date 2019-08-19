@@ -117,6 +117,8 @@ Blockly.FieldImage.prototype.isDirty_ = false;
  * @package
  */
 Blockly.FieldImage.prototype.initView = function() {
+  Blockly.FieldImage.superClass_.initView.call(this);
+
   this.imageElement_ = Blockly.utils.dom.createSvgElement(
       'image',
       {

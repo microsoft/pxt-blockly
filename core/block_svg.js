@@ -369,7 +369,7 @@ Blockly.BlockSvg.prototype.setSelectedBlock = function(isSelectingBlock) {
   if (this.isSelectingBlock_ && !this.svgPathSelected_) {
     var selectedGlowFilterId = Blockly.mainWorkspace.options.selectedGlowFilterId || 'blocklySelectedGlowFilter';
     this.svgPathSelected_ = this.svgPath_.cloneNode(true);
-    Blockly.utils.removeClass(/** @type {!Element} */ (this.svgPathSelected_), 'hover-emphasis');
+    Blockly.utils.dom.removeClass(/** @type {!Element} */ (this.svgPathSelected_), 'hover-emphasis');
     this.svgPathSelected_.setAttribute('fill', 'none');
     this.svgPathSelected_.setAttribute('stroke', Blockly.Colours.selectedGlow);
     this.svgPathSelected_.setAttribute('filter', 'url(#' + selectedGlowFilterId + ')');
@@ -1763,7 +1763,7 @@ Blockly.BlockSvg.prototype.bindReporterHoverEvents_ = function() {
       target = target.parentBlock_;
     }
     if (target.parentBlock_ && target.outputConnection) {
-      Blockly.utils.addClass(/** @type {!Element} */ (target.svgPath_), 'blocklyReporterHover');
+      Blockly.utils.dom.addClass(/** @type {!Element} */ (target.svgPath_), 'blocklyReporterHover');
       e.stopPropagation();
     }
   });
@@ -1772,7 +1772,7 @@ Blockly.BlockSvg.prototype.bindReporterHoverEvents_ = function() {
     var target = that;
     if (target.isInFlyout) return;
 
-    Blockly.utils.removeClass(/** @type {!Element} */ (that.svgPath_), 'blocklyReporterHover');
+    Blockly.utils.dom.removeClass(/** @type {!Element} */ (that.svgPath_), 'blocklyReporterHover');
   });
 };
 

@@ -149,7 +149,7 @@ Blockly.FieldVariableGetter.prototype.onMouseOver_ = function(e) {
   var gesture = this.sourceBlock_.workspace.getGesture(e);
   if (gesture && gesture.isDragging()) return;
   if (this.sourceBlock_.svgPath_) {
-    Blockly.utils.addClass(this.sourceBlock_.svgPath_, 'blocklyFieldHover');
+    Blockly.utils.dom.addClass(this.sourceBlock_.svgPath_, 'blocklyFieldHover');
     this.sourceBlock_.svgPath_.style.strokeDasharray = '2';
   }
 };
@@ -160,7 +160,7 @@ Blockly.FieldVariableGetter.prototype.onMouseOver_ = function(e) {
  */
 Blockly.FieldVariableGetter.prototype.clearHover = function() {
   if (this.sourceBlock_.svgPath_) {
-    Blockly.utils.removeClass(this.sourceBlock_.svgPath_, 'blocklyFieldHover');
+    Blockly.utils.dom.removeClass(this.sourceBlock_.svgPath_, 'blocklyFieldHover');
     this.sourceBlock_.svgPath_.style.strokeDasharray = '';
   }
 };

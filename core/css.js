@@ -35,7 +35,7 @@ goog.provide('Blockly.Css');
 
 goog.require('Blockly.Colours');
 
-goog.require('goog.userAgent');
+goog.require('Blockly.utils.userAgent');
 
 /**
  * List of cursors.

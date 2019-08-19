@@ -121,7 +121,7 @@ Blockly.WorkspaceCommentSvg.prototype.render = function() {
   var size = this.getHeightWidth();
 
   // Add text area
-  if (!this.isEditable() || goog.userAgent.IE) {
+  if (!this.isEditable() || Blockly.utils.userAgent.IE) {
     this.createUneditableText_()
     this.svgGroup_.appendChild(this.uneditableTextGroup_);
   } else {
@@ -149,7 +149,7 @@ Blockly.WorkspaceCommentSvg.prototype.render = function() {
       }, this.svgGroup_);
 
   // Add the resize icon
-  if (this.isEditable() && !goog.userAgent.IE) {
+  if (this.isEditable() && !Blockly.utils.userAgent.IE) {
     this.addResizeDom_();
   }
 
@@ -179,7 +179,7 @@ Blockly.WorkspaceCommentSvg.prototype.render = function() {
     }
   }
 
-  if (this.isEditable() && !goog.userAgent.IE) {
+  if (this.isEditable() && !Blockly.utils.userAgent.IE) {
     this.setSize(size.width, size.height);
   } else {
     var width = Blockly.WorkspaceCommentSvg.UNEDITABLE_TEXT_LENGTH * 8;

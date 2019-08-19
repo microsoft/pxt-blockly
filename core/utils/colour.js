@@ -198,7 +198,7 @@ Blockly.utils.colour.blend = function(colour1, colour2, factor) {
  * @return {string} Combined colour represented in hex.
  */
 Blockly.utils.colour.darken = function(colour, factor) {
-  var black = [0, 0, 0];
+  var black = "#000000";
   return Blockly.utils.colour.blend(black, colour, factor);
 };
 
@@ -211,7 +211,7 @@ Blockly.utils.colour.darken = function(colour, factor) {
  * @return {string} Combined colour represented in hex.
  */
 Blockly.utils.colour.lighten = function(colour, factor) {
-  var white = [255, 255, 255];
+  var white = "#ffffff";
   return Blockly.utils.colour.blend(white, colour, factor);
 };
 

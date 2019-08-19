@@ -349,15 +349,13 @@ Blockly.Field.prototype.createBorderRect_ = function() {
 Blockly.Field.prototype.createTextElement_ = function() {
   // pxt-blockly: Adjust X to be flipped for RTL. Position is relative to
   // horizontal start of source block.
-  var size = this.getSize();
-  var fieldX = (this.sourceBlock_.RTL) ? -size.width / 2 : size.width / 2;
+  var fieldX = (this.sourceBlock_.RTL) ? -this.size_.width / 2 : this.size_.width / 2;
   this.textElement_ = Blockly.utils.dom.createSvgElement('text',
       {
         'class': this.className_,
         'x': fieldX,
-        'y': size.height / 2 + Blockly.BlockSvg.FIELD_TOP_PADDING,
-        'dominant-baseline': 'middle',
-        'dy': goog.userAgent.EDGE_OR_IE ? Blockly.Field.IE_TEXT_OFFSET : '0',
+        'y': this.size_.height / 2 + Blockly.BlockSvg.FIELD_TOP_PADDING,
+        'dy': Blockly.utils.userAgent.EDGE_OR_IE ? Blockly.Field.IE_TEXT_OFFSET : '0',
         'text-anchor': 'middle'
       }, this.fieldGroup_);
   this.textContent_ = document.createTextNode('');
@@ -1144,7 +1142,7 @@ Blockly.Field.prototype.getTotalFields_ = function() {
 /**
  * Return the absolute coordinates of the top-left corner of this field.
  * The origin (0,0) is the top-left corner of the page body.
- * @return {!goog.math.Coordinate} Object with .x and .y properties.
+ * @return {!Blockly.utils.Coordinate} Object with .x and .y properties.
  * @private
  */
 Blockly.Field.prototype.getAbsoluteXY_ = function() {

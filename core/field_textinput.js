@@ -46,10 +46,14 @@ goog.require('Blockly.utils.userAgent');
  * @param {Function=} opt_validator A function that is called to validate
  *    changes to the field's value. Takes in a string & returns a validated
  *    string, or null to abort the change.
+ * @param {RegExp=} opt_restrictor An optional regular expression to restrict
+ *    typed text to. Text that doesn't match the restrictor will never show
+ *    in the text field.
+ * @extends {Blockly.Field}
  * @extends {Blockly.Field}
  * @constructor
  */
-Blockly.FieldTextInput = function(opt_value, opt_validator) {
+Blockly.FieldTextInput = function(opt_value, opt_validator, opt_restrictor) {
   opt_value = this.doClassValidation_(opt_value);
   if (opt_value === null) {
     opt_value = '';
@@ -139,7 +143,7 @@ Blockly.FieldTextInput.prototype.init = function() {
   Blockly.FieldTextInput.superClass_.init.call(this);
   // If not in a shadow block, draw a box
   if (notInShadow) {
-    this.box_ = Blockly.utils.createSvgElement('rect', {
+    this.box_ = Blockly.utils.dom.createSvgElement('rect', {
       'rx': Blockly.BlockSvg.CORNER_RADIUS,
       'ry': Blockly.BlockSvg.CORNER_RADIUS,
       'x': 0,
@@ -173,7 +177,7 @@ Blockly.FieldTextInput.prototype.onMouseOver_ = function(e) {
   var gesture = this.sourceBlock_.workspace.getGesture(e);
   if (gesture && gesture.isDragging()) return;
   if (this.sourceBlock_.svgPath_) {
-    Blockly.utils.addClass(this.sourceBlock_.svgPath_, 'blocklyFieldHover');
+    Blockly.utils.dom.addClass(this.sourceBlock_.svgPath_, 'blocklyFieldHover');
   }
 };
 
@@ -187,7 +191,7 @@ Blockly.FieldTextInput.prototype.onMouseOut_ = function(e) {
   var gesture = this.sourceBlock_.workspace.getGesture(e);
   if (gesture && gesture.isDragging()) return;
   if (this.sourceBlock_.svgPath_) {
-    Blockly.utils.removeClass(this.sourceBlock_.svgPath_, 'blocklyFieldHover');
+    Blockly.utils.dom.removeClass(this.sourceBlock_.svgPath_, 'blocklyFieldHover');
   }
 };
 

@@ -7,7 +7,7 @@ goog.provide('Blockly.Breakpoint');
 goog.require('Blockly.Events.BlockChange');
 goog.require('Blockly.Events.Ui');
 goog.require('Blockly.Icon');
-goog.require('goog.userAgent');
+goog.require('Blockly.utils.userAgent');
 
 /**
  * Class for a breakpoint.
@@ -45,7 +45,7 @@ Blockly.Breakpoint.prototype.createIcon = function() {
   this.iconGroup_ = Blockly.utils.dom.createSvgElement('g',
       {'class': 'blocklyBreakpointIconGroup'}, null);
   if (this.block_.isInFlyout) {
-    Blockly.utils.addClass(
+    Blockly.utils.dom.addClass(
         /** @type {!Element} */ (this.iconGroup_), 'blocklyBreakpointIconGroupReadonly');
   }
   this.drawIcon_(this.iconGroup_);

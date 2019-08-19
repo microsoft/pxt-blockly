@@ -198,7 +198,7 @@ Blockly.FlyoutButton.prototype.createDom = function() {
     if (this.iconColor_) svgIcon.setAttribute('style', 'fill: ' + this.iconColor_);
 
     svgIcon.setAttribute('dominant-baseline', 'central');
-    svgIcon.setAttribute('dy', goog.userAgent.EDGE_OR_IE ?
+    svgIcon.setAttribute('dy', Blockly.utils.userAgent.EDGE_OR_IE ?
       Blockly.Field.IE_TEXT_OFFSET : '0');
     svgIcon.setAttribute('x', this.targetWorkspace_.RTL ? this.width + Blockly.FlyoutButton.MARGIN : 0);
     svgIcon.setAttribute('y', this.height / 2);
@@ -248,7 +248,7 @@ Blockly.FlyoutButton.prototype.createDom = function() {
 
   svgText.setAttribute('text-anchor', 'middle');
   svgText.setAttribute('dominant-baseline', 'central');
-  svgText.setAttribute('dy', goog.userAgent.EDGE_OR_IE ?
+  svgText.setAttribute('dy', Blockly.utils.userAgent.EDGE_OR_IE ?
     Blockly.Field.IE_TEXT_OFFSET : '0');
   svgText.setAttribute('x', this.width / 2);
   svgText.setAttribute('y', this.height / 2);

@@ -27,7 +27,7 @@
 goog.provide('Blockly.FieldNumberDropdown');
 
 goog.require('Blockly.FieldTextDropdown');
-goog.require('goog.userAgent');
+goog.require('Blockly.utils.userAgent');
 
 
 /**

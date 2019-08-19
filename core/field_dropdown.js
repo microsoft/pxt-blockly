@@ -159,7 +159,7 @@ Blockly.FieldDropdown.prototype.initView = function() {
 
   // IE and iOS have issues with the <use> element, place the image inline instead
   // https://developer.mozilla.org/en-US/docs/Web/SVG/Element/use#Browser_compatibility
-  var placeImageInline = goog.userAgent.IE || goog.userAgent.IOS;
+  var placeImageInline = Blockly.utils.userAgent.IE || Blockly.utils.userAgent.IOS;
   var arrowElement = placeImageInline ? 'image' : 'use';
   var arrowHref = placeImageInline ? Blockly.FieldDropdown.DROPDOWN_SVG_DATAURI : '#blocklyDropdownArrowSvg';
 
@@ -172,7 +172,7 @@ Blockly.FieldDropdown.prototype.initView = function() {
 
   // If not in a shadow block, draw a box.
   if (this.shouldShowRect_()) {
-    this.box_ = Blockly.utils.createSvgElement('rect', {
+    this.box_ = Blockly.utils.dom.createSvgElement('rect', {
       'rx': Blockly.BlockSvg.CORNER_RADIUS,
       'ry': Blockly.BlockSvg.CORNER_RADIUS,
       'x': 0,
@@ -217,10 +217,10 @@ Blockly.FieldDropdown.prototype.onMouseOver_ = function(e) {
   var gesture = this.sourceBlock_.workspace.getGesture(e);
   if (gesture && gesture.isDragging()) return;
   if (this.box_) {
-    Blockly.utils.addClass(this.box_, 'blocklyFieldHover');
+    Blockly.utils.dom.addClass(this.box_, 'blocklyFieldHover');
   }
   else if (this.sourceBlock_.svgPath_) {
-    Blockly.utils.addClass(this.sourceBlock_.svgPath_, 'blocklyFieldHover');
+    Blockly.utils.dom.addClass(this.sourceBlock_.svgPath_, 'blocklyFieldHover');
   }
 };
 
@@ -234,10 +234,10 @@ Blockly.FieldDropdown.prototype.onMouseOut_ = function(e) {
   var gesture = this.sourceBlock_.workspace.getGesture(e);
   if (gesture && gesture.isDragging()) return;
   if (this.box_) {
-    Blockly.utils.removeClass(this.box_, 'blocklyFieldHover');
+    Blockly.utils.dom.removeClass(this.box_, 'blocklyFieldHover');
   }
   else if (this.sourceBlock_.svgPath_) {
-    Blockly.utils.removeClass(this.sourceBlock_.svgPath_, 'blocklyFieldHover');
+    Blockly.utils.dom.removeClass(this.sourceBlock_.svgPath_, 'blocklyFieldHover');
   }
 };
 
@@ -533,14 +533,13 @@ Blockly.FieldDropdown.applyTrim_ = function(options,
     prefixLength, suffixLength) {
   var newOptions = [];
   // Remove the prefix and suffix from the options.
-  var newOptions = [];
   for (var i = 0; i < options.length; i++) {
     var text = options[i][0];
     var value = options[i][1];
     text = text.substring(prefixLength, text.length - suffixLength);
     newOptions[i] = [text, value];
   }
-  this.menuGenerator_ = newOptions;
+  return newOptions;
 };
 
 /**

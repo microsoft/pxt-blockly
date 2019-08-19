@@ -1924,7 +1924,7 @@ Blockly.WorkspaceSvg.prototype.centerOnBlock = function(id, animate) {
 
   // If we're animating, apply a transition class to the workspace
   if (animate) {
-    Blockly.utils.addClass(this.svgBlockCanvas_, 'blocklyTransitioning');
+    Blockly.utils.dom.addClass(this.svgBlockCanvas_, 'blocklyTransitioning');
   }
 
   // XY is in workspace coordinates.
@@ -1972,7 +1972,7 @@ Blockly.WorkspaceSvg.prototype.centerOnBlock = function(id, animate) {
 
   var blockCanvas = this.svgBlockCanvas_;
   setTimeout(function() {
-    Blockly.utils.removeClass(blockCanvas, 'blocklyTransitioning');
+    Blockly.utils.dom.removeClass(blockCanvas, 'blocklyTransitioning');
   }, Blockly.Colours.canvasTransitionLength);
 };
 
