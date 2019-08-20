@@ -1073,7 +1073,7 @@ Blockly.BlockSvg.prototype.setInsertionMarker = function(insertionMarker, opt_mi
   if (this.isInsertionMarker_) {
     Blockly.BlockSvg.superClass_.setInsertionMarker.call(this, insertionMarker);
     this.insertionMarkerMinWidth_ = opt_minWidth;
-    this.setColour(Blockly.INSERTION_MARKER_COLOUR);
+    this.setColour(Blockly.Colours.insertionMarker); // TODO shakao needs to be Blockly.INSERTION_MARKER_COLOR ?
     Blockly.utils.dom.addClass(/** @type {!Element} */ (this.svgGroup_),
         'blocklyInsertionMarker');
   }

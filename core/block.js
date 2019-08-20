@@ -84,7 +84,7 @@ Blockly.Block = function(workspace, prototypeName, opt_id) {
   /** @type {!Array.<!Blockly.Input>} */
   this.inputList = [];
   /** @type {boolean|undefined} */
-  this.inputsInline = undefined;
+  this.inputsInline = true;
   /** @type {boolean|undefined} */
   this.startHat = false;
   /**
@@ -270,7 +270,7 @@ Blockly.Block.prototype.colour_ = '#000000';
  * @type {?string}
  * @private
  */
-Blockly.Block.prototype.colourSecondary_ = null;
+Blockly.Block.prototype.colourSecondary_ = '#000000';
 
 /**
  * Tertiary colour of the block.
@@ -278,7 +278,7 @@ Blockly.Block.prototype.colourSecondary_ = null;
  * @type {?string}
  * @private
  */
-Blockly.Block.prototype.colourTertiary_ = null;
+Blockly.Block.prototype.colourTertiary_ = '#000000';
 
 /**
  * Fill colour used to override default shadow colour behaviour.
@@ -296,7 +296,7 @@ Blockly.Block.prototype.styleName_ = null;
 
 /**
  * Dispose of this block.
- * @param {boolean=} healStack If true, then try to heal any gap by connecting
+ * @param {boolean} healStack If true, then try to heal any gap by connecting
  *     the next statement with the previous statement.  Otherwise, dispose of
  *     all children of this block.
  */
@@ -1569,7 +1569,6 @@ Blockly.Block.prototype.jsonInit = function(json) {
     throw Error(warningPrefix +
         'Must not have both an output and a previousStatement.');
   }
-
 
   // Set basic properties of block.
   // Makes styles backward compatible with old way of defining hat style.

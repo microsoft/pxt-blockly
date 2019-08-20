@@ -76,7 +76,7 @@ goog.inherits(Blockly.FieldTextInput, Blockly.Field);
  */
 Blockly.FieldTextInput.fromJson = function(options) {
   var text = Blockly.utils.replaceMessageReferences(options['text']);
-  var field = new Blockly.FieldTextInput(text);
+  var field = new Blockly.FieldTextInput(text, options['class']);
   if (typeof options['spellcheck'] === 'boolean') {
     field.setSpellcheck(options['spellcheck']);
   }
@@ -92,6 +92,14 @@ Blockly.FieldTextInput.ANIMATION_TIME = 0.25;
  * Padding to use for text measurement for the field during editing, in px.
  */
 Blockly.FieldTextInput.TEXT_MEASURE_PADDING_MAGIC = 45;
+
+/**
+ * The HTML input element for the user to type, or null if no FieldTextInput
+ * editor is currently open.
+ * @type {HTMLInputElement}
+ * @private
+ */
+Blockly.FieldTextInput.htmlInput_ = null;
 
 /**
  * Serializable fields are saved by the XML renderer, non-serializable fields
@@ -299,43 +307,84 @@ Blockly.FieldTextInput.prototype.setAutoCapitalize = function(autoCapitalize) {
 };
 
 /**
+ * Set the restrictor regex for this text input.
+ * Text that doesn't match the restrictor will never show in the text field.
+ * @param {?RegExp} restrictor Regular expression to restrict text.
+ */
+Blockly.FieldTextInput.prototype.setRestrictor = function(restrictor) {
+  this.restrictor_ = restrictor;
+};
+
+/**
  * Show the inline free-text editor on top of the text.
- * @param {!Event} e A mouse down or touch start event.
  * @param {boolean=} opt_quietInput True if editor should be created without
  *     focus.  Defaults to false.
- * @param {boolean=} opt_readOnly True if editor should be created with HTML
- *     input set to read-only, to prevent virtual keyboards.
- * @param {boolean=} opt_withArrow True to show drop-down arrow in text editor.
- * @param {Function=} opt_arrowCallback Callback for when drop-down arrow clicked.
  * @protected
  */
-Blockly.FieldTextInput.prototype.showEditor_ = function(
-    e, opt_quietInput, opt_readOnly, opt_withArrow, opt_arrowCallback) {
+Blockly.FieldTextInput.prototype.showEditor_ = function(opt_quietInput) {
   this.workspace_ = this.sourceBlock_.workspace;
   var quietInput = opt_quietInput || false;
-  var readOnly = opt_readOnly || false;
-  Blockly.WidgetDiv.show(this, this.sourceBlock_.RTL,
-      this.widgetDispose_(), this.widgetDisposeAnimationFinished_(),
-      Blockly.FieldTextInput.ANIMATION_TIME);
+  if (!quietInput && (Blockly.utils.userAgent.MOBILE ||
+                      Blockly.utils.userAgent.ANDROID ||
+                      Blockly.utils.userAgent.IPAD)) {
+    this.showPromptEditor_();
+  } else {
+    this.showInlineEditor_(quietInput);
+  }
+};
+
+/**
+ * Create and show a text input editor that is a prompt (usually a popup).
+ * Mobile browsers have issues with in-line textareas (focus and keyboards).
+ * @private
+ */
+Blockly.FieldTextInput.prototype.showPromptEditor_ = function() {
+  var fieldText = this;
+  Blockly.prompt(Blockly.Msg['CHANGE_VALUE_TITLE'], this.text_,
+      function(newValue) {
+        fieldText.setValue(newValue);
+      });
+};
+
+/**
+ * Create and show a text input editor that sits directly over the text input.
+ * @param {boolean} quietInput True if editor should be created without
+ *     focus.
+ * @param {boolean=} withArrow True to show drop-down arrow in text editor.
+ * @param {Function=} arrowCallback Callback for when drop-down arrow clicked.
+ * @private
+ */
+Blockly.FieldTextInput.prototype.showInlineEditor_ = function(
+  quietInput, withArrow, arrowCallback) {
+  this.isBeingEdited_ = true;
+  Blockly.WidgetDiv.show(
+      this, this.sourceBlock_.RTL, this.widgetDispose_.bind(this));
+  this.htmlInput_ = this.widgetCreate_(withArrow, arrowCallback);
+
+  if (!quietInput) {
+    this.htmlInput_.focus();
+    this.htmlInput_.select();
+  }
+};
+
+/**
+ * Create the text input editor widget.
+ * @return {!HTMLInputElement} The newly created text input editor.
+ * @param {boolean=} withArrow True to show drop-down arrow in text editor.
+ * @param {Function=} arrowCallback Callback for when drop-down arrow clicked.
+ * @private
+ */
+Blockly.FieldTextInput.prototype.widgetCreate_ = function(withArrow, arrowCallback) {
   var div = Blockly.WidgetDiv.DIV;
-  // Apply text-input-specific fixed CSS
-  div.className += ' fieldTextInput';
-  // Create the input.
+
   var htmlInput = document.createElement('input');
   htmlInput.className = 'blocklyHtmlInput';
   htmlInput.setAttribute('spellcheck', this.spellcheck_);
-  if (readOnly) {
-    htmlInput.setAttribute('readonly', 'true');
-  }
-  // pxt-blockly: disable auto-capitalization if configured to do so.
-  if (!this.autoCapitalize_) {
-    htmlInput.setAttribute('autocapitalize', 'none');
-  }
-  /** @type {!HTMLInputElement} */
-  Blockly.FieldTextInput.htmlInput_ = htmlInput;
+  // The animated properties themselves
+  htmlInput.style.fontSize = Blockly.BlockSvg.FIELD_TEXTINPUT_FONTSIZE_FINAL + 'pt';
   div.appendChild(htmlInput);
 
-  if (opt_withArrow) {
+  if (withArrow) {
     // Move text in input to account for displayed drop-down arrow.
     if (this.sourceBlock_.RTL) {
       htmlInput.style.paddingLeft = (this.arrowSize_ + Blockly.BlockSvg.DROPDOWN_ARROW_PADDING) + 'px';
@@ -356,91 +405,12 @@ Blockly.FieldTextInput.prototype.showEditor_ = function(
     } else {
       dropDownArrow.style.right = dropdownArrowMagic;
     }
-    if (opt_arrowCallback) {
+    if (arrowCallback) {
       htmlInput.dropDownArrowMouseWrapper_ = Blockly.bindEventWithChecks_(dropDownArrow,
-          'mousedown', this, opt_arrowCallback);
+          'mousedown', this, arrowCallback);
     }
     div.appendChild(dropDownArrow);
   }
-
-  htmlInput.value = htmlInput.defaultValue = this.text_;
-  htmlInput.oldValue_ = null;
-  this.resizeEditor_();
-  // pxtblockly: execute the arrow callback when the editor is opened as well
-  if (opt_arrowCallback) {
-    opt_arrowCallback.call(this);
-  }
-  if (!quietInput) {
-    Blockly.FieldTextInput.focusAndSelect();
-  }
-
-  this.bindEvents_(htmlInput);
-
-  // Add animation transition properties
-  var transitionProperties = 'box-shadow ' + Blockly.FieldTextInput.ANIMATION_TIME + 's';
-  if (Blockly.BlockSvg.FIELD_TEXTINPUT_ANIMATE_POSITIONING) {
-    div.style.transition += ',padding ' + Blockly.FieldTextInput.ANIMATION_TIME + 's,' +
-      'width ' + Blockly.FieldTextInput.ANIMATION_TIME + 's,' +
-      'height ' + Blockly.FieldTextInput.ANIMATION_TIME + 's,' +
-      'margin-left ' + Blockly.FieldTextInput.ANIMATION_TIME + 's';
-  }
-  div.style.transition = transitionProperties;
-  htmlInput.style.transition = 'font-size ' + Blockly.FieldTextInput.ANIMATION_TIME + 's';
-  // The animated properties themselves
-  htmlInput.style.fontSize = Blockly.BlockSvg.FIELD_TEXTINPUT_FONTSIZE_FINAL + 'pt';
-  div.style.boxShadow = '0px 0px 0px 4px ' + Blockly.Colours.fieldShadow;
-};
-
-/**
- * Set the restrictor regex for this text input.
- * Text that doesn't match the restrictor will never show in the text field.
- * @param {?RegExp} restrictor Regular expression to restrict text.
- */
-Blockly.FieldTextInput.prototype.setRestrictor = function(restrictor) {
-  this.restrictor_ = restrictor;
-};
-
-// TODO shakao check if showPromptEditor needed
-
-/**
- * Show the inline free-text editor on top of the text.
- * @param {!Event} e A mouse down or touch start event.
- * @param {boolean=} opt_quietInput True if editor should be created without
- *     focus.  Defaults to false.
- * @param {boolean=} opt_readOnly True if editor should be created with HTML
- *     input set to read-only, to prevent virtual keyboards.
- * @param {boolean=} opt_withArrow True to show drop-down arrow in text editor.
- * @param {Function=} opt_arrowCallback Callback for when drop-down arrow clicked.
- * @private
- */
-Blockly.FieldTextInput.prototype.showInlineEditor_ = function(quietInput) {
-  this.isBeingEdited_ = true;
-  Blockly.WidgetDiv.show(
-      this, this.sourceBlock_.RTL, this.widgetDispose_.bind(this));
-  this.htmlInput_ = this.widgetCreate_();
-
-  if (!quietInput) {
-    this.htmlInput_.focus();
-    this.htmlInput_.select();
-  }
-};
-
-/**
- * Create the text input editor widget.
- * @return {!HTMLInputElement} The newly created text input editor.
- * @private
- */
-Blockly.FieldTextInput.prototype.widgetCreate_ = function() {
-  var div = Blockly.WidgetDiv.DIV;
-
-  var htmlInput = document.createElement('input');
-  htmlInput.className = 'blocklyHtmlInput';
-  htmlInput.setAttribute('spellcheck', this.spellcheck_);
-  var fontSize =
-      (Blockly.FieldTextInput.FONTSIZE * this.workspace_.scale) + 'pt';
-  div.style.fontSize = fontSize;
-  htmlInput.style.fontSize = fontSize;
-  div.appendChild(htmlInput);
 
   htmlInput.value = htmlInput.defaultValue = this.value_;
   htmlInput.untypedDefaultValue_ = this.value_;
@@ -481,12 +451,29 @@ Blockly.FieldTextInput.prototype.widgetDispose_ = function() {
 
   // Remove htmlInput events.
   this.unbindInputEvents_();
+  if (this.htmlInput_.dropDownArrowMouseWrapper_) {
+    Blockly.unbindEvent_(this.htmlInput_.dropDownArrowMouseWrapper_);
+  }
+  Blockly.Events.setGroup(false);
 
-  // Delete style properties.
+  // Animation of disposal
+  this.htmlInput_.style.fontSize = Blockly.BlockSvg.FIELD_TEXTINPUT_FONTSIZE_INITIAL + 'pt';
+
+
   var style = Blockly.WidgetDiv.DIV.style;
-  style.width = 'auto';
-  style.height = 'auto';
-  style.fontSize = '';
+  style.boxShadow = '';
+  // Resize to actual size of final source block.
+  if (this.sourceBlock_) {
+    if (this.sourceBlock_.isShadow()) {
+      var size = this.sourceBlock_.getHeightWidth();
+      style.width = (size.width + 1) + 'px';
+      style.height = (size.height + 1) + 'px';
+    } else {
+      style.width = (this.size_.width + 1) + 'px';
+      style.height = (Blockly.BlockSvg.FIELD_HEIGHT_MAX_EDIT + 1) + 'px';
+    }
+  }
+  style.marginLeft = 0;
 }
 
 /**
@@ -625,15 +612,13 @@ Blockly.FieldTextInput.prototype.onHtmlInputChange_ = function(e) {
   // Update source block.
   var text = this.htmlInput_.value;
   if (text !== this.htmlInput_.oldValue_) {
-    this.htmlInput.oldValue_ = text;
+    this.htmlInput_.oldValue_ = text;
 
     // TODO(#2169): Once issue is fixed the setGroup functionality could be
     //              moved up to the Field setValue method. This would create a
     //              broader fix for all field types.
     Blockly.Events.setGroup(true);
     this.setValue(text);
-    //pxtblockly: this.setValue(text);
-    this.validate_();
   } else if (Blockly.utils.userAgent.WEBKIT) {
     // Cursor key.  Render the source block to show the caret moving.
     // Chrome only (version 26, OS X).
@@ -739,67 +724,6 @@ Blockly.FieldTextInput.prototype.getBorderRadius = function() {
     return Blockly.BlockSvg.NUMBER_FIELD_CORNER_RADIUS;
   }
   return Blockly.BlockSvg.TEXT_FIELD_CORNER_RADIUS;
-};
-
-/**
- * Close the editor, save the results, and start animating the disposal of elements.
- * @return {!Function} Closure to call on destruction of the WidgetDiv.
- * @private
- */
-Blockly.FieldTextInput.prototype.widgetDispose_ = function() {
-  var thisField = this;
-  return function() {
-    var div = Blockly.WidgetDiv.DIV;
-    var htmlInput = Blockly.FieldTextInput.htmlInput_;
-    // Save the edit (if it validates).
-    thisField.maybeSaveEdit_();
-
-    thisField.unbindEvents_(htmlInput);
-    if (htmlInput.dropDownArrowMouseWrapper_) {
-      Blockly.unbindEvent_(htmlInput.dropDownArrowMouseWrapper_);
-    }
-    Blockly.Events.setGroup(false);
-
-    // Animation of disposal
-    htmlInput.style.fontSize = Blockly.BlockSvg.FIELD_TEXTINPUT_FONTSIZE_INITIAL + 'pt';
-    div.style.boxShadow = '';
-    // Resize to actual size of final source block.
-    if (thisField.sourceBlock_) {
-      if (thisField.sourceBlock_.isShadow()) {
-        var size = thisField.sourceBlock_.getHeightWidth();
-        div.style.width = (size.width + 1) + 'px';
-        div.style.height = (size.height + 1) + 'px';
-      } else {
-        div.style.width = (thisField.size_.width + 1) + 'px';
-        div.style.height = (Blockly.BlockSvg.FIELD_HEIGHT_MAX_EDIT + 1) + 'px';
-      }
-    }
-    div.style.marginLeft = 0;
-  };
-};
-
-/**
- * Final disposal of the text field's elements and properties.
- * @return {!Function} Closure to call on finish animation of the WidgetDiv.
- * @private
- */
-Blockly.FieldTextInput.prototype.widgetDisposeAnimationFinished_ = function() {
-  return function() {
-    // Delete style properties.
-    var style = Blockly.WidgetDiv.DIV.style;
-    style.width = 'auto';
-    style.height = 'auto';
-    style.fontSize = '';
-    // Reset class
-    // pxt-blockly keep the functioneditor class if present, so the widgetdiv
-    // can appear above modals when editing functions.
-    var wasFunctionEditor = Blockly.WidgetDiv.DIV.classList.contains('functioneditor');
-    Blockly.WidgetDiv.DIV.className = 'blocklyWidgetDiv' + (wasFunctionEditor ? ' functioneditor' : '');
-    // Remove all styles
-    Blockly.WidgetDiv.DIV.removeAttribute('style');
-    Blockly.FieldTextInput.htmlInput_.style.transition = '';
-    Blockly.FieldTextInput.htmlInput_ = null;
-  };
 };
 
 Blockly.FieldTextInput.prototype.maybeSaveEdit_ = function() {

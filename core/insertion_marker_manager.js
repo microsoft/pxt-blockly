@@ -466,15 +466,10 @@ Blockly.InsertionMarkerManager.prototype.shouldReplace_ = function() {
   var closest = this.closestConnection_;
   var local = this.localConnection_;
 
-  // Dragging a block over an existing block in an input.
+  // TODO shakao check if need additional blockly checks
+  // Dragging a block over an existing block in an input should replace the
+  // existing block and bump it out.
   if (local.type == Blockly.OUTPUT_VALUE) {
-    // Insert the dragged block into the stack if possible.
-    if (!closest.isConnected() ||
-      Blockly.Connection.lastConnectionInRow_(this.topBlock_,
-          closest.targetConnection.getSourceBlock())) {
-      return false; // Insert.
-    }
-    // Otherwise replace the existing block and bump it out.
     return true; // Replace.
   }
 
@@ -565,10 +560,6 @@ Blockly.InsertionMarkerManager.prototype.showPreview_ = function() {
     this.highlightBlock_();
   } else {  // Should insert
     this.connectMarker_();
-  }
-  // Also highlight the actual connection, as a nod to previous behaviour.
-  if (this.closestConnection_) {
-    this.closestConnection_.highlight();
   }
 };
 

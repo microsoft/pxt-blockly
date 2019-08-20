@@ -80,8 +80,7 @@ Blockly.FieldVariable.fromJson = function(options) {
   var varname = Blockly.utils.replaceMessageReferences(options['variable']);
   var variableTypes = options['variableTypes'];
   var defaultType = options['defaultType'];
-  return new Blockly.FieldVariable(varname, null,
-      variableTypes, defaultType);
+  return new Blockly.FieldVariable(varname, null, variableTypes, defaultType);
 };
 
 /**
@@ -132,8 +131,9 @@ Blockly.FieldVariable.prototype.fromXml = function(fieldElement) {
   var variableType = fieldElement.getAttribute('variabletype') ||
       fieldElement.getAttribute('variableType') || '';
 
+  // pxt-blockly: variable ID and variable name are both unique, only use name
   var variable = Blockly.Variables.getOrCreateVariablePackage(
-      this.workspace_, id, variableName, variableType);
+      this.workspace_, null, variableName, variableType);
 
   // This should never happen :)
   if (variableType != null && variableType !== variable.type) {
@@ -203,6 +203,30 @@ Blockly.FieldVariable.prototype.getText = function() {
  */
 Blockly.FieldVariable.prototype.getVariable = function() {
   return this.variable_;
+};
+
+Blockly.FieldVariableGetter.prototype.setValue = function(id) {
+  var workspace = this.sourceBlock_.workspace;
+  var variable = Blockly.Variables.getVariable(workspace, id);
+
+  if (!variable) {
+    throw new Error('Variable id doesn\'t point to a real variable!  ID was ' +
+        id);
+  }
+  // Type checks!
+  var type = variable.type;
+  if (!this.typeIsAllowed_(type)) {
+    throw new Error('Variable type doesn\'t match this field!  Type was ' +
+        type);
+  }
+  if (this.sourceBlock_ && Blockly.Events.isEnabled()) {
+    var oldValue = this.variable_ ? this.variable_.getId() : null;
+    Blockly.Events.fire(new Blockly.Events.BlockChange(
+        this.sourceBlock_, 'field', this.name, oldValue, id));
+  }
+  this.variable_ = variable;
+  this.value_ = id;
+  this.setText(variable.name);
 };
 
 /**
@@ -395,7 +419,7 @@ Blockly.FieldVariable.dropdownCreate = function() {
 
 /**
  * Handle the selection of an item in the variable dropdown menu.
- * Special case the 'Rename variable...', 'Delete variable...' options.
+ * Special case the 'Rename variable...' and 'Delete variable...' options.
  * In the rename case, prompt the user for a new name.
  * @param {!goog.ui.Menu} menu The Menu component clicked.
  * @param {!goog.ui.MenuItem} menuItem The MenuItem selected within menu.
@@ -448,3 +472,4 @@ Blockly.FieldVariable.prototype.referencesVariables = function() {
   return true;
 };
 
+Blockly.Field.register('field_variable', Blockly.FieldVariable);

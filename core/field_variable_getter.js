@@ -72,6 +72,13 @@ Blockly.FieldVariableGetter.fromJson = function(options) {
 };
 
 /**
+ * The workspace that this variable field belongs to.
+ * @type {?Blockly.Workspace}
+ * @private
+ */
+Blockly.FieldVariableGetter.prototype.workspace_ = null;
+
+/**
  * Mouse cursor style when over the hotspot that initiates the editor.
  */
 Blockly.FieldVariableGetter.prototype.CURSOR = 'copy';
@@ -196,6 +203,52 @@ Blockly.FieldVariableGetter.dispose = function() {
 };
 
 /**
+ * Initialize this field based on the given XML.
+ * @param {!Element} fieldElement The element containing information about the
+ *    variable field's state.
+ */
+Blockly.FieldVariableGetter.prototype.fromXml = function(fieldElement) {
+  var id = fieldElement.getAttribute('id');
+  var variableName = fieldElement.textContent;
+  // 'variabletype' should be lowercase, but until July 2019 it was sometimes
+  // recorded as 'variableType'.  Thus we need to check for both.
+  var variableType = fieldElement.getAttribute('variabletype') ||
+      fieldElement.getAttribute('variableType') || '';
+
+  // pxt-blockly: variable ID and variable name are both unique, only use name
+  var variable = Blockly.Variables.getOrCreateVariablePackage(
+      this.workspace_, null, variableName, variableType);
+
+  // This should never happen :)
+  if (variableType != null && variableType !== variable.type) {
+    throw Error('Serialized variable type with id \'' +
+      variable.getId() + '\' had type ' + variable.type + ', and ' +
+      'does not match variable field that references it: ' +
+      Blockly.Xml.domToText(fieldElement) + '.');
+  }
+
+  this.setValue(variable.getId());
+};
+
+/**
+ * Serialize this field to XML.
+ * @param {!Element} fieldElement The element to populate with info about the
+ *    field's state.
+ * @return {!Element} The element containing info about the field's state.
+ */
+Blockly.FieldVariableGetter.prototype.toXml = function(fieldElement) {
+  // Make sure the variable is initialized.
+  this.initModel();
+
+  fieldElement.id = this.variable_.getId();
+  fieldElement.textContent = this.variable_.name;
+  if (this.variable_.type) {
+    fieldElement.setAttribute('variabletype', this.variable_.type);
+  }
+  return fieldElement;
+};
+
+/**
  * Attach this field to a block.
  * @param {!Blockly.Block} block The block containing this field.
  */
@@ -203,6 +256,7 @@ Blockly.FieldVariableGetter.prototype.setSourceBlock = function(block) {
   goog.asserts.assert(!block.isShadow(),
       'Variable fields are not allowed to exist on shadow blocks.');
   Blockly.FieldVariableGetter.superClass_.setSourceBlock.call(this, block);
+  this.workspace_ = block.workspace; // TODO shakao verify this is correct
 };
 
 /**

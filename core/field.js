@@ -36,6 +36,7 @@ goog.require('Blockly.utils.userAgent');
 
 goog.require('goog.math.Size');
 goog.require('goog.style');
+goog.require('goog.dom');
 
 
 /**
@@ -636,38 +637,41 @@ Blockly.Field.prototype.updateColour = function() {
  * @protected
  */
 Blockly.Field.prototype.render_ = function() {
-  this.textContent_.nodeValue = this.getDisplayText_();
-  this.updateSize_();
+  if (this.visible_ && this.textElement_) {
+    // Replace the text.
+    this.textElement_.textContent = this.getDisplayText_();
+    this.updateSize_();
 
-  // Update text centering, based on newly calculated width.
-  var leftMargin = this.leftMargin_ || 0;
-  var centerTextX = (this.size_.width + leftMargin - this.arrowWidth_) / 2;
-  if (this.sourceBlock_.RTL) {
-    centerTextX += this.arrowWidth_;
-    centerTextX -= leftMargin;
-  }
-
-  // In a text-editing shadow block's field,
-  // if half the text length is not at least center of
-  // visible field (FIELD_WIDTH), center it there instead,
-  // unless there is a drop-down arrow.
-  if (this.sourceBlock_.isShadow() && !this.positionArrow) {
-    var minOffset = Blockly.BlockSvg.FIELD_WIDTH / 2;
+    // Update text centering, based on newly calculated width.
+    var leftMargin = this.leftMargin_ || 0;
+    var centerTextX = (this.size_.width + leftMargin - this.arrowWidth_) / 2;
     if (this.sourceBlock_.RTL) {
-      // X position starts at the left edge of the block, in both RTL and LTR.
-      // First offset by the width of the block to move to the right edge,
-      // and then subtract to move to the same position as LTR.
-      var minCenter = this.size_.width - minOffset;
-      centerTextX = Math.min(minCenter, centerTextX);
-    } else {
-      // (width / 2) should exceed Blockly.BlockSvg.FIELD_WIDTH / 2
-      // if the text is longer.
-      centerTextX = Math.max(minOffset, centerTextX);
+      centerTextX += this.arrowWidth_;
+      centerTextX -= leftMargin;
     }
-  }
 
-  // Apply new text element x position.
-  this.textElement_.setAttribute('x', centerTextX);
+    // In a text-editing shadow block's field,
+    // if half the text length is not at least center of
+    // visible field (FIELD_WIDTH), center it there instead,
+    // unless there is a drop-down arrow.
+    if (this.sourceBlock_.isShadow() && !this.positionArrow) {
+      var minOffset = Blockly.BlockSvg.FIELD_WIDTH / 2;
+      if (this.sourceBlock_.RTL) {
+        // X position starts at the left edge of the block, in both RTL and LTR.
+        // First offset by the width of the block to move to the right edge,
+        // and then subtract to move to the same position as LTR.
+        var minCenter = this.size_.width - minOffset;
+        centerTextX = Math.min(minCenter, centerTextX);
+      } else {
+        // (width / 2) should exceed Blockly.BlockSvg.FIELD_WIDTH / 2
+        // if the text is longer.
+        centerTextX = Math.max(minOffset, centerTextX);
+      }
+    }
+
+    // Apply new text element x position.
+    this.textElement_.setAttribute('x', centerTextX);
+  }
 
   // Update any drawn box to the correct width and height.
   if (this.box_) {

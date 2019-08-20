@@ -181,7 +181,7 @@ Blockly.FieldColour.prototype.doValueUpdate_ = function(newValue) {
 
   // pxt-blockly: Scratch rendering
   if (this.sourceBlock_) {
-    this.sourceBlock_.setColour(colour, colour, colour);
+    this.sourceBlock_.setColour(newValue, newValue, newValue);
   }
 };
 
