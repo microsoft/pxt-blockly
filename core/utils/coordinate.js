@@ -137,3 +137,11 @@ Blockly.utils.Coordinate.prototype.translate = function(tx, ty) {
   this.y += ty;
   return this;
 };
+
+/**
+ * Clones this coordinate.
+ * @return {!Blockly.utils.Coordinate} This coordinate after translating.
+ */
+Blockly.utils.Coordinate.prototype.clone = function() {
+  return new Blockly.utils.Coordinate(this.x, this.y);
+};

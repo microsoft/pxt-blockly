@@ -128,6 +128,13 @@ Blockly.FieldColour.prototype.titles_ = null;
 Blockly.FieldColour.prototype.columns_ = 0;
 
 /**
+ * The color picker.
+ * @type {!Element}
+ * @private
+ */
+Blockly.FieldColour.prototype.colorPicker_ = null;
+
+/**
  * Border colour for the dropdown div showing the colour picker.  Must be a CSS
  * string.
  * @type {string}
@@ -258,7 +265,7 @@ Blockly.FieldColour.COLUMNS = 7;
  * Set a custom colour grid for this field.
  * @param {Array.<string>} colours Array of colours for this block,
  *     or null to use default (Blockly.FieldColour.COLOURS).
- * @param {Array.<string>} opt_titles Optional array of colour tooltips,
+ * @param {Array.<string>=} opt_titles Optional array of colour tooltips,
  *     or null to use default (Blockly.FieldColour.TITLES).
  * @return {!Blockly.FieldColour} Returns itself (for method chaining).
  */
@@ -286,7 +293,7 @@ Blockly.FieldColour.prototype.setColumns = function(columns) {
  * @private
  */
 Blockly.FieldColour.prototype.showEditor_ = function() {
-  var picker = this.dropdownCreate_();
+  this.colorPicker_ = this.dropdownCreate_(); // pxt-blockly: expose color picker
   Blockly.DropDownDiv.getContentDiv().appendChild(picker);
 
   Blockly.DropDownDiv.setColour(

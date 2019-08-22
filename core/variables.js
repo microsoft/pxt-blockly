@@ -450,6 +450,27 @@ Blockly.Variables.nameUsedWithAnyType_ = function(name, workspace) {
 };
 
 /**
+ * Generate XML string for variable field.
+ * @param {!Blockly.VariableModel} variableModel The variable model to generate
+ *     an XML string from.
+ * @return {string} The generated XML.
+ * @package
+ */
+Blockly.Variables.generateVariableFieldXmlString = function(variableModel) {
+  // The variable name may be user input, so it may contain characters that need
+  // to be escaped to create valid XML.
+  var typeString = variableModel.type;
+  if (typeString == '') {
+    typeString = '\'\'';
+  }
+  // TODO shakao remove goog.string
+  var text = '<field name="VAR" id="' + variableModel.getId() +
+      '" variabletype="' + goog.string.htmlEscape(typeString) +
+      '">' + goog.string.htmlEscape(variableModel.name) + '</field>';
+  return text;
+};
+
+/**
  * Generate DOM objects representing a variable field.
  * @param {!Blockly.VariableModel} variableModel The variable model to
  *     represent.

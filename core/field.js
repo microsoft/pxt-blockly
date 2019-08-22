@@ -137,6 +137,20 @@ Blockly.Field.prototype.name = undefined;
 Blockly.Field.prototype.className_ = 'blocklyText';
 
 /**
+ * Has this field been disposed of?
+ * @type {boolean}
+ * @package
+ */
+Blockly.Field.prototype.disposed = false;
+
+/**
+ * Maximum characters of text to display before adding an ellipsis.
+ * @type {number}
+ * @protected
+ */
+Blockly.Field.prototype.maxDisplayLength = 50;
+
+/**
  * A generic value possessed by the field.
  * Should generally be non-null, only null when the field is created.
  * @type {*}
@@ -352,6 +366,7 @@ Blockly.Field.prototype.createTextElement_ = function() {
   // pxt-blockly: Adjust X to be flipped for RTL. Position is relative to
   // horizontal start of source block.
   var fieldX = (this.sourceBlock_.RTL) ? -this.size_.width / 2 : this.size_.width / 2;
+  /** @type {!Element} */
   this.textElement_ = Blockly.utils.dom.createSvgElement('text',
       {
         'class': this.className_,
@@ -1072,7 +1087,7 @@ Blockly.Field.prototype.onMouseDown_ = function(e) {
 
 /**
  * Change the tooltip text for this field.
- * @param {string|function|!Element} newTip Text for tooltip or a parent
+ * @param {string|Function|!Element} newTip Text for tooltip or a parent
  *    element to link to for its tooltip.
  */
 Blockly.Field.prototype.setTooltip = function(newTip) {

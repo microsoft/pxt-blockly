@@ -294,7 +294,6 @@ Blockly.WorkspaceSvg.prototype.flyout_ = null;
  * Category-based toolbox providing blocks which may be dragged into this
  * workspace.
  * @type {Blockly.Toolbox}
- * @private
  */
 Blockly.WorkspaceSvg.prototype.toolbox_ = null;
 

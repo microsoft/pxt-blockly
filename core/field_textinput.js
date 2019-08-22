@@ -50,7 +50,6 @@ goog.require('Blockly.utils.userAgent');
  *    typed text to. Text that doesn't match the restrictor will never show
  *    in the text field.
  * @extends {Blockly.Field}
- * @extends {Blockly.Field}
  * @constructor
  */
 Blockly.FieldTextInput = function(opt_value, opt_validator, opt_restrictor) {

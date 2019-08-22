@@ -1,4 +1,3 @@
-
 declare module Blockly {
 
   interface BlocklyOptions {

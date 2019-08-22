@@ -74,6 +74,18 @@ Blockly.Msg["ENABLE_BLOCK"] = "أعد تفعيل القطعة";
 Blockly.Msg["EXPAND_ALL"] = "وسٌّع القطع";
 Blockly.Msg["EXPAND_BLOCK"] = "وسٌّع القطعة";
 Blockly.Msg["EXTERNAL_INPUTS"] = "ادخال خارجي";
+Blockly.Msg["FUNCTIONS_CALL_TITLE"] = "call";  // untranslated
+Blockly.Msg["FUNCTIONS_DEFAULT_BOOLEAN_ARG_NAME"] = "bool";  // untranslated
+Blockly.Msg["FUNCTIONS_DEFAULT_CUSTOM_ARG_NAME"] = "arg";  // untranslated
+Blockly.Msg["FUNCTIONS_DEFAULT_FUNCTION_NAME"] = "do_something";  // untranslated
+Blockly.Msg["FUNCTIONS_DEFAULT_NUMBER_ARG_NAME"] = "num";  // untranslated
+Blockly.Msg["FUNCTIONS_DEFAULT_STRING_ARG_NAME"] = "text";  // untranslated
+Blockly.Msg["FUNCTIONS_EDIT_OPTION"] = "Edit";  // untranslated
+Blockly.Msg["FUNCTION_CALL_TOOLTIP"] = "Call a function that was previously defined.";  // untranslated
+Blockly.Msg["FUNCTION_CREATE_NEW"] = "Create a Function";  // untranslated
+Blockly.Msg["FUNCTION_WARNING_ARG_NAME_IS_FUNCTION_NAME"] = "Argument names must not be the same as the function name.";  // untranslated
+Blockly.Msg["FUNCTION_WARNING_DUPLICATE_ARG"] = "Functions cannot use the same argument name more than once.";  // untranslated
+Blockly.Msg["FUNCTION_WARNING_EMPTY_NAME"] = "Function and argument names cannot be empty.";  // untranslated
 Blockly.Msg["HELP"] = "مساعدة";
 Blockly.Msg["INLINE_INPUTS"] = "ادخال خطي";
 Blockly.Msg["IOS_CANCEL"] = "إلغاء";
@@ -290,7 +302,9 @@ Blockly.Msg["NEW_COLOUR_VARIABLE"] = "انشاء متغير لوني...";
 Blockly.Msg["NEW_NUMBER_VARIABLE"] = "انشاء متغير رقمي...";
 Blockly.Msg["NEW_STRING_VARIABLE"] = "انشاء متغير نصي...";
 Blockly.Msg["NEW_VARIABLE"] = "إنشاء متغير...";
+Blockly.Msg["NEW_VARIABLE_DROPDOWN"] = "New variable...";  // untranslated
 Blockly.Msg["NEW_VARIABLE_TITLE"] = "اسم المتغير الجديد:";
+Blockly.Msg["NEW_VARIABLE_TYPE_DROPDOWN"] = "New %1 variable...";  // untranslated
 Blockly.Msg["NEW_VARIABLE_TYPE_TITLE"] = "نوع متغير جديد:";
 Blockly.Msg["ORDINAL_NUMBER_SUFFIX"] = "";  // untranslated
 Blockly.Msg["PROCEDURES_ALLOW_STATEMENTS"] = "اسمح بالبيانات";
@@ -324,7 +338,7 @@ Blockly.Msg["REMOVE_COMMENT"] = "أزل التعليق";
 Blockly.Msg["RENAME_VARIABLE"] = "إعادة تسمية المتغير...";
 Blockly.Msg["RENAME_VARIABLE_TITLE"] = "إعادة تسمية كافة المتغيرات '%1' إلى:";
 Blockly.Msg["TEXT_APPEND_HELPURL"] = "https://github.com/google/blockly/wiki/Text#text-modification";  // untranslated
-Blockly.Msg["TEXT_APPEND_TITLE"] = "إلى %1 إلصق نص %2";
+Blockly.Msg["TEXT_APPEND_TITLE"] = "to %1 append text %2";  // untranslated
 Blockly.Msg["TEXT_APPEND_TOOLTIP"] = "إلصق جزءا من النص إلى متغير '%1'.";
 Blockly.Msg["TEXT_CHANGECASE_HELPURL"] = "https://github.com/google/blockly/wiki/Text#adjusting-text-case";  // untranslated
 Blockly.Msg["TEXT_CHANGECASE_OPERATOR_LOWERCASE"] = "الى حروف صغيرة";
@@ -359,7 +373,7 @@ Blockly.Msg["TEXT_GET_SUBSTRING_TOOLTIP"] = "يرجع جزء معين من ال�
 Blockly.Msg["TEXT_INDEXOF_HELPURL"] = "https://github.com/google/blockly/wiki/Text#finding-text";  // untranslated
 Blockly.Msg["TEXT_INDEXOF_OPERATOR_FIRST"] = "ابحث عن التواجد الأول للنص";
 Blockly.Msg["TEXT_INDEXOF_OPERATOR_LAST"] = "ابحث عن التواجد الأخير للنص";
-Blockly.Msg["TEXT_INDEXOF_TITLE"] = "في النص %1 %2 %3";
+Blockly.Msg["TEXT_INDEXOF_TITLE"] = "in text %1 %2 %3";  // untranslated
 Blockly.Msg["TEXT_INDEXOF_TOOLTIP"] = "تقوم بإرجاع مؤشر التواجد الأول/الأخير للنص الأول في النص الثاني.  تقوم بإرجاع %1 إذا لم يتم العثور على النص.";
 Blockly.Msg["TEXT_ISEMPTY_HELPURL"] = "https://github.com/google/blockly/wiki/Text#checking-for-empty-text";  // untranslated
 Blockly.Msg["TEXT_ISEMPTY_TITLE"] = "%1 فارغ";
@@ -425,12 +439,13 @@ Blockly.Msg["PROCEDURES_DEFRETURN_TITLE"] = Blockly.Msg["PROCEDURES_DEFNORETURN_
 Blockly.Msg["TEXT_APPEND_VARIABLE"] = Blockly.Msg["VARIABLES_DEFAULT_NAME"];
 Blockly.Msg["TEXT_CREATE_JOIN_ITEM_TITLE_ITEM"] = Blockly.Msg["VARIABLES_DEFAULT_NAME"];
 
-Blockly.Msg["MATH_HUE"] = "230";
-Blockly.Msg["LOOPS_HUE"] = "120";
-Blockly.Msg["LISTS_HUE"] = "260";
 Blockly.Msg["LOGIC_HUE"] = "210";
-Blockly.Msg["VARIABLES_HUE"] = "330";
+Blockly.Msg["LOOPS_HUE"] = "120";
+Blockly.Msg["MATH_HUE"] = "230";
 Blockly.Msg["TEXTS_HUE"] = "160";
-Blockly.Msg["PROCEDURES_HUE"] = "290";
+Blockly.Msg["LISTS_HUE"] = "260";
 Blockly.Msg["COLOUR_HUE"] = "20";
+Blockly.Msg["VARIABLES_HUE"] = "330";
 Blockly.Msg["VARIABLES_DYNAMIC_HUE"] = "310";
+Blockly.Msg["PROCEDURES_HUE"] = "290";
+Blockly.Msg["REPORTERS_HUE"] = "290";

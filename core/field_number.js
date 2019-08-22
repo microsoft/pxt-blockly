@@ -41,6 +41,7 @@ goog.require('Blockly.utils.userAgent');
  * @param {Function=} opt_validator A function that is called to validate
  *    changes to the field's value. Takes in a number & returns a validated
  *    number, or null to abort the change.
+ * @extends {Blockly.FieldTextInput}
  * @constructor
  */
 Blockly.FieldNumber = function(opt_value, opt_min, opt_max, opt_precision,
@@ -354,6 +355,7 @@ Blockly.FieldNumber.prototype.onHide_ = function() {
  * @param {string|number=} newValue The input value.
  * @return {?number} A valid number, or null if invalid.
  * @protected
+ * @override
  */
 Blockly.FieldNumber.prototype.doClassValidation_ = function(newValue) {
   if (newValue === null || newValue === undefined) {
