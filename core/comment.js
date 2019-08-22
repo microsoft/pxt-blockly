@@ -299,8 +299,8 @@ Blockly.Comment.prototype.resizeBubble_ = function() {
     var size = this.bubble_.getBubbleSize();
     var doubleBorderWidth = 2 * Blockly.Bubble.BORDER_WIDTH;
     var topBarHeight = Blockly.WorkspaceCommentSvg.TOP_BAR_HEIGHT
-    this.foreignObject_.setAttribute('width', size.width - doubleBorderWidth);
-    this.foreignObject_.setAttribute('height', size.height - doubleBorderWidth - topBarHeight); // PXT Blockly: add space for top bar height
+    this.foreignObject_.setAttribute('width', Math.max(size.width - doubleBorderWidth, 0));
+    this.foreignObject_.setAttribute('height', Math.max(size.height - doubleBorderWidth - topBarHeight, 0)); // PXT Blockly: add space for top bar height
     this.textarea_.style.width = (size.width - doubleBorderWidth - 4) + 'px';
     this.textarea_.style.height = (size.height - doubleBorderWidth - topBarHeight - 4) + 'px'; // PXT Blockly: add space for top bar height
 

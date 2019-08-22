@@ -110,7 +110,6 @@ Blockly.Xml.blockToDomWithXY = function(block, opt_noId) {
  * @private
  */
 Blockly.Xml.fieldToDom_ = function(field) {
-  // TODO shakao check if Blockly.FieldVariableGetter check needed
   if (field.isSerializable()) {
     var container = Blockly.utils.xml.createElement('field');
     container.setAttribute('name', field.name);

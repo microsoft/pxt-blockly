@@ -56,14 +56,13 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
     }],
     "output": "Number",
     "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
-    "style": "num_blocks",
+    "style": "field_blocks",
     "helpUrl": "%{BKY_MATH_NUMBER_HELPURL}",
     "tooltip": "%{BKY_MATH_NUMBER_TOOLTIP}",
     "extensions": ["parent_tooltip_when_inline"]
   },
 
   // Block for integer numeric value.
-  // TODO shakao fill in colourSecondary/tertiary on math blocks
   {
     "type": "math_integer",
     "message0": "%1",
@@ -74,7 +73,7 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
     }],
     "output": "Number",
     "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
-    "style": "num_blocks",
+    "style": "field_blocks",
     "helpUrl": "%{BKY_MATH_NUMBER_HELPURL}",
     "tooltip": "%{BKY_MATH_NUMBER_TOOLTIP}",
     "extensions": ["parent_tooltip_when_inline"]
@@ -92,7 +91,7 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
     }],
     "output": "Number",
     "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
-    "style": "num_blocks",
+    "style": "field_blocks",
     "helpUrl": "%{BKY_MATH_NUMBER_HELPURL}",
     "tooltip": "%{BKY_MATH_NUMBER_TOOLTIP}",
     "extensions": ["parent_tooltip_when_inline"]
@@ -109,7 +108,7 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
     }],
     "output": "Number",
     "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
-    "style": "num_blocks",
+    "style": "field_blocks",
     "helpUrl": "%{BKY_MATH_NUMBER_HELPURL}",
     "tooltip": "%{BKY_MATH_NUMBER_TOOLTIP}",
     "extensions": ["parent_tooltip_when_inline"]
@@ -128,7 +127,7 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
     }],
     "output": "Number",
     "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
-    "style": "num_blocks",
+    "style": "field_blocks",
     "helpUrl": "%{BKY_MATH_NUMBER_HELPURL}",
     "tooltip": "%{BKY_MATH_NUMBER_TOOLTIP}",
     "mutator": "math_number_minmax_mutator",

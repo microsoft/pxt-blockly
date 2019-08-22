@@ -675,14 +675,14 @@ Blockly.Css.CONTENT = [
   '}',
 
   '.blocklyCommentRect {',
-    'fill: #E7DE8E;',
-    'stroke: #bcA903;',
+    'fill: #FAF6BD;',
+    'stroke: #F9F3A1;',
     'stroke-width: 1px',
   '}',
 
   '.blocklyCommentTarget {',
     'fill: transparent;',
-    'stroke: #bcA903;',
+    'stroke: #F9F3A1;',
   '}',
 
   '.blocklyCommentTargetFocused {',
@@ -696,17 +696,6 @@ Blockly.Css.CONTENT = [
   '.blocklyCommentHandleTargetFocused {',
     'fill: transparent;',
   '}',
-
-  '.blocklyFocused>.blocklyCommentRect {',
-    'fill: #B9B272;',
-    'stroke: #B9B272;',
-  '}',
-
-  '.blocklySelected>.blocklyCommentTarget {',
-    'stroke: #fc3;',
-    'stroke-width: 3px;',
-  '}',
-
 
   '.blocklyCommentTextarea {',
     'background-color: #FAF6BD;',
@@ -748,16 +737,6 @@ Blockly.Css.CONTENT = [
 
   '.blocklySelected > .blocklyCommentDeleteIcon {',
     'display: block',
-  '}',
-
-  '.blocklyDeleteIconShape {',
-    'fill: #000;',
-    'stroke: #000;',
-    'stroke-width: 1px;',
-  '}',
-
-  '.blocklyDeleteIconShape.blocklyDeleteIconHighlighted {',
-    'stroke: #fc3;',
   '}',
 
   '.blocklyHtmlInput {',

@@ -26,6 +26,7 @@
 
 goog.provide('Blockly.Themes.Classic');
 
+goog.require('Blockly.Colours');
 goog.require('Blockly.Theme');
 
 
@@ -35,6 +36,11 @@ Blockly.Themes.Classic = {};
 Blockly.Themes.Classic.defaultBlockStyles = {
   "colour_blocks": {
     "colourPrimary": "20"
+  },
+  "field_blocks": {
+    "colourPrimary": Blockly.Colours.textField,
+    "colourSecondary": Blockly.Colours.textField,
+    "colourTertiary": Blockly.Colours.textField,
   },
   "list_blocks": {
     "colourPrimary": "260"
@@ -48,16 +54,8 @@ Blockly.Themes.Classic.defaultBlockStyles = {
   "math_blocks": {
     "colourPrimary": "230"
   },
-  "num_blocks": {
-    "colourPrimary": "#FFFFFF",
-    "colourSecondary": "#FFFFFF"
-  },
   "procedure_blocks": {
     "colourPrimary": "290"
-  },
-  "string_blocks": {
-    "colourPrimary": "#FFFFFF",
-    "colourSecondary": "#FFFFFF"
   },
   "text_blocks": {
     "colourPrimary": "160"

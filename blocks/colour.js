@@ -58,9 +58,8 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
     ],
     "output": "Colour",
     "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
-    // TODO shakao check if colourSecondary, colourTertiary needed
     "helpUrl": "%{BKY_COLOUR_PICKER_HELPURL}",
-    "style": "colour_blocks",
+    "style": "field_blocks",
     "tooltip": "%{BKY_COLOUR_PICKER_TOOLTIP}",
     "extensions": ["parent_tooltip_when_inline"]
   },

@@ -50,8 +50,7 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
     }],
     "output": "String",
     "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
-    // TODO shakao verify colourSecondary/tertiary not needed
-    "style": "string_blocks",
+    "style": "field_blocks",
     "helpUrl": "%{BKY_TEXT_TEXT_HELPURL}",
     "tooltip": "%{BKY_TEXT_TEXT_TOOLTIP}",
     "extensions": [

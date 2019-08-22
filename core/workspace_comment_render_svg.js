@@ -594,7 +594,7 @@ Blockly.WorkspaceCommentSvg.prototype.setRenderedMinimizeState_ = function(minim
       // TODO is there a better way to do this?
       this.topBarLabel_.textContent = labelText;
     }
-    Blockly.utils.removeAttribute(this.topBarLabel_, 'display');
+    this.topBarLabel_.removeAttribute('display');
   } else {
     // Change minimize icon
     this.minimizeArrow_.setAttributeNS('http://www.w3.org/1999/xlink',
@@ -602,10 +602,10 @@ Blockly.WorkspaceCommentSvg.prototype.setRenderedMinimizeState_ = function(minim
     // Hide label
     this.topBarLabel_.setAttribute('display', 'none');
     // Show text area
-    Blockly.utils.removeAttribute(backdrop, 'display');
+    backdrop.removeAttribute('display');
     // Display resize handle if it exists
     if (this.resizeGroup_) {
-      Blockly.utils.removeAttribute(this.resizeGroup_, 'display');
+      this.resizeGroup_.removeAttribute('display');
     }
   }
 };
