@@ -77,7 +77,7 @@ Blockly.BlockSvg = function(workspace, prototypeName, opt_id) {
    * @private
    */
   this.svgPath_ = Blockly.utils.dom.createSvgElement('path',
-      {'class': 'blocklyPath'}, this.svgGroup_);
+      {'class': 'blocklyPath blocklyBlockBackground'}, this.svgGroup_);
 
   /**
    * @type {SVGElement}

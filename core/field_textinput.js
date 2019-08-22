@@ -317,19 +317,26 @@ Blockly.FieldTextInput.prototype.setRestrictor = function(restrictor) {
 
 /**
  * Show the inline free-text editor on top of the text.
+ * @param {!Event} e A mouse down or touch start event.
  * @param {boolean=} opt_quietInput True if editor should be created without
  *     focus.  Defaults to false.
+ * @param {boolean=} opt_readOnly True if editor should be created with HTML
+ *     input set to read-only, to prevent virtual keyboards.
+ * @param {boolean=} opt_withArrow True to show drop-down arrow in text editor.
+ * @param {Function=} opt_arrowCallback Callback for when drop-down arrow clicked.
  * @protected
  */
-Blockly.FieldTextInput.prototype.showEditor_ = function(opt_quietInput) {
+Blockly.FieldTextInput.prototype.showEditor_ = function(
+    e, opt_quietInput, opt_readOnly, opt_withArrow, opt_arrowCallback) {
   this.workspace_ = this.sourceBlock_.workspace;
   var quietInput = opt_quietInput || false;
+  var readOnly = opt_readOnly || false;
   if (!quietInput && (Blockly.utils.userAgent.MOBILE ||
                       Blockly.utils.userAgent.ANDROID ||
                       Blockly.utils.userAgent.IPAD)) {
     this.showPromptEditor_();
   } else {
-    this.showInlineEditor_(quietInput);
+    this.showInlineEditor_(quietInput, readOnly, opt_withArrow, opt_arrowCallback);
   }
 };
 
@@ -355,15 +362,17 @@ Blockly.FieldTextInput.prototype.showPromptEditor_ = function() {
  * @private
  */
 Blockly.FieldTextInput.prototype.showInlineEditor_ = function(
-  quietInput, withArrow, arrowCallback) {
+  quietInput, readOnly, withArrow, arrowCallback) {
   this.isBeingEdited_ = true;
   Blockly.WidgetDiv.show(
       this, this.sourceBlock_.RTL, this.widgetDispose_.bind(this));
-  this.htmlInput_ = this.widgetCreate_(withArrow, arrowCallback);
+  this.htmlInput_ = this.widgetCreate_(readOnly, withArrow, arrowCallback);
 
   if (!quietInput) {
     this.htmlInput_.focus();
     this.htmlInput_.select();
+    // iOS only
+    this.htmlInput_.setSelectionRange(0, 99999);
   }
 };
 
@@ -374,13 +383,21 @@ Blockly.FieldTextInput.prototype.showInlineEditor_ = function(
  * @param {Function=} arrowCallback Callback for when drop-down arrow clicked.
  * @private
  */
-Blockly.FieldTextInput.prototype.widgetCreate_ = function(withArrow, arrowCallback) {
+Blockly.FieldTextInput.prototype.widgetCreate_ = function(
+    readOnly, withArrow, arrowCallback) {
   var div = Blockly.WidgetDiv.DIV;
   // Apply text-input-specific fixed CSS
   div.className += ' fieldTextInput';
   var htmlInput = document.createElement('input');
   htmlInput.className = 'blocklyHtmlInput';
   htmlInput.setAttribute('spellcheck', this.spellcheck_);
+  if (readOnly) {
+    htmlInput.setAttribute('readonly', 'true');
+  }
+  // pxt-blockly: disable auto-capitalization if configured to do so.
+  if (!this.autoCapitalize_) {
+    htmlInput.setAttribute('autocapitalize', 'none');
+  }
   // The animated properties themselves
   htmlInput.style.fontSize = Blockly.BlockSvg.FIELD_TEXTINPUT_FONTSIZE_FINAL + 'pt';
   div.appendChild(htmlInput);
@@ -476,25 +493,6 @@ Blockly.FieldTextInput.prototype.widgetDispose_ = function() {
   }
   style.marginLeft = 0;
 }
-
-/**
- * Focus and select the html text field of this input.
- */
-Blockly.FieldTextInput.focusAndSelect = function() {
-  Blockly.FieldTextInput.focus();
-  var htmlInput = Blockly.FieldTextInput.htmlInput_;
-  htmlInput.select();
-  // For iOS only
-  htmlInput.setSelectionRange(0, 99999);
-};
-
-/**
- * Focus the html text field of this input.
- */
-Blockly.FieldTextInput.focus = function() {
-  var htmlInput = Blockly.FieldTextInput.htmlInput_;
-  htmlInput.focus();
-};
 
 /**
  * Bind handlers for user input on the text input field's editor.
@@ -629,7 +627,7 @@ Blockly.FieldTextInput.prototype.onHtmlInputChange_ = function(e) {
   this.text_ = this.htmlInput_.value;
   this.forceRerender();
   Blockly.Events.setGroup(false);
-  // this.resizeEditor_(); // TODO shakao necessary?
+  this.resizeEditor_();
 };
 
 /**

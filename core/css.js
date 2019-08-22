@@ -1187,12 +1187,6 @@ Blockly.Css.CONTENT = [
     'padding-right: 20px;',
   '}',
 
-  '.blocklyWidgetDiv .goog-menuitem-content, ',
-  '.blocklyDropDownDiv .goog-menuitem-content {',
-    'color: #000;',
-    'font: normal 13px "Helvetica Neue", Helvetica, sans-serif;',
-  '}',
-
   /* State: disabled. */
   '.blocklyWidgetDiv .goog-menuitem-disabled .goog-menuitem-accel, ',
   '.blocklyWidgetDiv .goog-menuitem-disabled .goog-menuitem-content, ',
