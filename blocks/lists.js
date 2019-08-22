@@ -351,11 +351,7 @@ Blockly.Blocks['lists_create_with'] = {
     // Add new inputs.
     for (i = 0; i < this.itemCount_; i++) {
       if (!this.getInput('ADD' + i)) {
-        var input = this.appendValueInput('ADD' + i);
-        if (i == 0) {
-          // TODO shakao verifypxt-blockly/pull/102/files not needed
-          input.appendField(Blockly.Msg['LISTS_CREATE_WITH_INPUT_WITH']);
-        }
+        this.appendValueInput('ADD' + i);
       }
     }
     // Remove deleted inputs.
@@ -366,9 +362,9 @@ Blockly.Blocks['lists_create_with'] = {
     if (this.getInput('BUTTONS')) this.removeInput('BUTTONS');
     var buttons = this.appendDummyInput('BUTTONS');
     if (this.itemCount_ > 0) {
-      buttons.appendField(new Blockly.FieldImage(this.REMOVE_IMAGE_DATAURI, 24, 24, false, "*", remove));
+      buttons.appendField(new Blockly.FieldImage(this.REMOVE_IMAGE_DATAURI, 24, 24, "*", remove,  false));
     }
-    buttons.appendField(new Blockly.FieldImage(this.ADD_IMAGE_DATAURI, 24, 24, false, "*", add));
+    buttons.appendField(new Blockly.FieldImage(this.ADD_IMAGE_DATAURI, 24, 24, "*", add, false));
 
     /* Switch to vertical list when the list is too long */
     var showHorizontalList = this.itemCount_ <= 5;

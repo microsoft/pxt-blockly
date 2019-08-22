@@ -51,7 +51,7 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
     "output": "String",
     "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
     // TODO shakao verify colourSecondary/tertiary not needed
-    "style": "text_blocks",
+    "style": "string_blocks",
     "helpUrl": "%{BKY_TEXT_TEXT_HELPURL}",
     "tooltip": "%{BKY_TEXT_TEXT_TOOLTIP}",
     "extensions": [
@@ -872,9 +872,9 @@ Blockly.Constants.Text.TEXT_JOIN_MUTATOR_MIXIN = {
     if (this.getInput('BUTTONS')) this.removeInput('BUTTONS');
     var buttons = this.appendDummyInput('BUTTONS');
     if (this.itemCount_ > 1) {
-      buttons.appendField(new Blockly.FieldImage(this.REMOVE_IMAGE_DATAURI, 24, 24, false, "*", remove));
+      buttons.appendField(new Blockly.FieldImage(this.REMOVE_IMAGE_DATAURI, 24, 24, "*", remove, false));
     }
-    buttons.appendField(new Blockly.FieldImage(this.ADD_IMAGE_DATAURI, 24, 24, false, "*", add));
+    buttons.appendField(new Blockly.FieldImage(this.ADD_IMAGE_DATAURI, 24, 24, "*", add, false));
 
     // Switch to vertical list when there are too many items
     var horizontalLayout = this.itemCount_ <= 4;

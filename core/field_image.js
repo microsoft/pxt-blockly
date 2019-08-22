@@ -27,8 +27,6 @@
 goog.provide('Blockly.FieldImage');
 
 goog.require('Blockly.Field');
-goog.require('Blockly.Tooltip');
-goog.require('Blockly.utils');
 goog.require('Blockly.utils.dom');
 
 goog.require('goog.math.Size');
@@ -50,23 +48,12 @@ Blockly.FieldImage = function(src, width, height,
     opt_alt, opt_onClick, opt_flipRtl) {
   this.sourceBlock_ = null;
 
-
-  if (isNaN(height) || isNaN(width)) {
-    throw Error('Height and width values of an image field must cast to' +
-      ' numbers.');
-  }
-
   // Ensure height and width are numbers.  Strings are bad at math.
   this.height_ = Number(height);
   this.width_ = Number(width);
-  if (this.height_ <= 0 || this.width_ <= 0) {
-    throw Error('Height and width values of an image field must be greater' +
-      ' than 0.');
-  }
   this.size_ = new goog.math.Size(this.width_, this.height_);
-
-  this.flipRtl_ = opt_flipRtl;
   this.text_ = opt_alt || '';
+  this.flipRtl_ = opt_flipRtl;
   this.setValue(src || '');
 
   if (typeof opt_onClick == 'function') {
@@ -89,7 +76,7 @@ Blockly.FieldImage.fromJson = function(options) {
   var src = Blockly.utils.replaceMessageReferences(options['src']);
   var width = Number(Blockly.utils.replaceMessageReferences(options['width']));
   var height =
-    Number(Blockly.utils.replaceMessageReferences(options['height']));
+      Number(Blockly.utils.replaceMessageReferences(options['height']));
   var alt = Blockly.utils.replaceMessageReferences(options['alt']);
   var flipRtl = !!options['flipRtl'];
   return new Blockly.FieldImage(src, width, height, alt, null, flipRtl);
@@ -113,50 +100,94 @@ Blockly.FieldImage.prototype.EDITABLE = false;
 Blockly.FieldImage.prototype.isDirty_ = false;
 
 /**
- * Create the block UI for this image.
- * @package
+ * Install this image on a block.
+ * TODO shakao override initView instead of init
  */
-Blockly.FieldImage.prototype.initView = function() {
-  Blockly.FieldImage.superClass_.initView.call(this);
-
+Blockly.FieldImage.prototype.init = function() {
+  if (this.fieldGroup_) {
+    // Image has already been initialized once.
+    return;
+  }
+  // Build the DOM.
+  /** @type {SVGElement} */
+  this.fieldGroup_ = Blockly.utils.dom.createSvgElement('g', {}, null);
+  if (!this.visible_) {
+    this.fieldGroup_.style.display = 'none';
+  }
+  /** @type {SVGElement} */
   this.imageElement_ = Blockly.utils.dom.createSvgElement(
       'image',
       {
         'height': this.height_ + 'px',
-        'width': this.width_ + 'px',
-        'alt': this.text_
+        'width': this.width_ + 'px'
       },
       this.fieldGroup_);
-  this.imageElement_.setAttributeNS(Blockly.utils.dom.XLINK_NS,
-      'xlink:href', this.value_);
+  this.setValue(this.src_);
+  this.sourceBlock_.getSvgRoot().appendChild(this.fieldGroup_);
 
-  // pxtblockly: if a click handler is attached to the image, change the cursor to a pointer
-  if (this.imageElement_ && this.clickHandler_) this.imageElement_.style.cursor = 'pointer';
+  // Configure the field to be transparent with respect to tooltips.
+  this.setTooltip(this.sourceBlock_);
+  Blockly.Tooltip.bindMouseEvents(this.imageElement_);
+
+  this.maybeAddClickHandler_();
 };
 
 /**
- * Ensure that the input value (the source URL) is a string.
- * @param {string=} newValue The input value
- * @return {?string} A string, or null if invalid.
- * @protected
+ * Dispose of all DOM objects belonging to this text.
  */
-Blockly.FieldImage.prototype.doClassValidation_ = function(newValue) {
-  if (typeof newValue != 'string') {
-    return null;
+Blockly.FieldImage.prototype.dispose = function() {
+  Blockly.utils.dom.removeNode(this.fieldGroup_);
+  this.fieldGroup_ = null;
+  this.imageElement_ = null;
+};
+
+/**
+ * Bind events for a mouse down on the image, but only if a click handler has
+ * been defined.
+ * @private
+ */
+Blockly.FieldImage.prototype.maybeAddClickHandler_ = function() {
+  if (this.clickHandler_) {
+    this.mouseDownWrapper_ =
+        Blockly.bindEventWithChecks_(
+            this.fieldGroup_, 'mousedown', this, this.onMouseDown_);
+    //pxtblockly: if a click handler is attached to the image, change the cursor to a pointer
+    if (this.imageElement_) this.imageElement_.style.cursor = 'pointer';
   }
-  return newValue;
 };
 
 /**
- * Update the value of this image field, and update the displayed image.
- * @param {string} newValue The new image src.
- * @protected
+ * Change the tooltip text for this field.
+ * @param {string|!Element} newTip Text for tooltip or a parent element to
+ *     link to for its tooltip.
  */
-Blockly.FieldImage.prototype.doValueUpdate_ = function(newValue) {
-  this.value_ = newValue;
+Blockly.FieldImage.prototype.setTooltip = function(newTip) {
+  this.imageElement_.tooltip = newTip;
+};
+
+/**
+ * Get the source URL of this image.
+ * @return {string} Current text.
+ * @override
+ */
+Blockly.FieldImage.prototype.getValue = function() {
+  return this.src_;
+};
+
+/**
+ * Set the source URL of this image.
+ * @param {?string} src New source.
+ * @override
+ */
+Blockly.FieldImage.prototype.setValue = function(src) {
+  if (src === null) {
+    // No change if null.
+    return;
+  }
+  this.src_ = src;
   if (this.imageElement_) {
-    this.imageElement_.setAttributeNS(Blockly.utils.dom.XLINK_NS,
-        'xlink:href', this.value_ || '');
+    this.imageElement_.setAttributeNS('http://www.w3.org/1999/xlink',
+        'xlink:href', src || '');
   }
 };
 
@@ -166,14 +197,6 @@ Blockly.FieldImage.prototype.doValueUpdate_ = function(newValue) {
  */
 Blockly.FieldImage.prototype.getFlipRtl = function() {
   return this.flipRtl_;
-};
-
-/**
- * Get whether to flip this image in RTL
- * @return {boolean} True if we should flip in RTL.
- */
-Blockly.FieldImage.prototype.getFlipRTL = function() {
-  return this.flipRTL_;
 };
 
 /**
@@ -187,9 +210,29 @@ Blockly.FieldImage.prototype.setText = function(alt) {
     return;
   }
   this.text_ = alt;
-  if (this.imageElement_) {
-    this.imageElement_.setAttribute('alt', alt || '');
-  }
+};
+
+/**
+ * Images are fixed width, no need to render.
+ * @private
+ */
+Blockly.FieldImage.prototype.render_ = function() {
+  // NOP
+};
+
+/**
+ * Images are fixed width, no need to render even if forced.
+ */
+Blockly.FieldImage.prototype.forceRerender = function() {
+  // NOP
+};
+
+/**
+ * Images are fixed width, no need to update.
+ * @private
+ */
+Blockly.FieldImage.prototype.updateWidth = function() {
+  // NOP
 };
 
 /**

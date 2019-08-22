@@ -242,7 +242,8 @@ Blockly.Css.CONTENT = [
     'z-index: 1000;',
     'display: none;',
     'border: 1px solid;',
-    'border-radius: 2px;', /* TODO shakao verify drop shadow removed ok */
+    'border-radius: 2px;',
+    'box-shadow: 0px 0px 8px 1px ' + Blockly.Colours.dropDownShadow + ';',
     'padding: 4px;',
     '-webkit-user-select: none;',
   '}',
@@ -494,11 +495,13 @@ Blockly.Css.CONTENT = [
     'font-size: 11pt;',
   '}',
 
-  '.blocklyNonEditableText>text {',
+  '.blocklyNonEditableText>g>text {',
     'pointer-events: none;',
   '}',
   '.blocklyNonEditableText>text,',
-  '.blocklyEditableText>text {',
+  '.blocklyEditableText>text,',
+  '.blocklyNonEditableText>g>text,',
+  '.blocklyEditableText>g>text {',
     'fill: $colour_text;',
   '}',
 
@@ -1012,27 +1015,55 @@ Blockly.Css.CONTENT = [
   '}',
 
   /* Colour Picker Field */
-  '.blocklyColourTable {',
+
+  /* Copied from: goog/css/colorpicker-simplegrid.css */
+  /*
+   * Copyright 2007 The Closure Library Authors. All Rights Reserved.
+   *
+   * Use of this source code is governed by the Apache License, Version 2.0.
+   * See the COPYING file for details.
+   */
+
+  /* Author: pupius@google.com (Daniel Pupius) */
+
+  /*
+    Styles to make the colorpicker look like the old gmail color picker
+    NOTE: without CSS scoping this will override styles defined in palette.css
+  */
+ '.blocklyColourTable {',
+    'outline: none;',
+    'border-radius: 11px;',
+    'margin-bottom: 20px;',
     'border-collapse: collapse;',
   '}',
 
-  '.blocklyColourTable>tr>td {',
-    'border: 1px solid #666;',
-    'padding: 0;',
+  '.blocklyColourTable > tr > td {',
+    'height: 22px;',
+    'width: 22px;',
+    'margin: 0;',
+    'padding: 2px;',
+    'border: 0;',
+    'text-align: center;',
+    'cursor: pointer;',
   '}',
 
-  '.blocklyColourTable>tr>td>div {',
-    'border: 1px solid #666;',
-    'height: 13px;',
-    'width: 15px;',
+  '.blocklyColourTable > tr > td > div {',
+    'position: relative;',
+    'height: 22px;',
+    'width: 22px;',
+    'border-radius: 4px;',
+    'border: 2px solid rgba(0,0,0,.1);',
   '}',
 
-  '.blocklyColourTable>tr>td>div:hover {',
-    'border: 1px solid #fff;',
+  '.blocklyColourTable > tr > td:hover > div {',
+    'border: 1px solid #FFF;',
+    'box-sizing: border-box;',
   '}',
 
-  '.blocklyColourSelected, .blocklyColourSelected:hover {',
-    'border: 1px solid #000 !important;',
+  '.blocklyColourTable > tr > td > .blocklyColourSelected {',
+    'border: 1px solid #000;',
+    'box-sizing: border-box;',
+    'color: #fff;',
   '}',
 
   /* Copied from: goog/css/menu.css */

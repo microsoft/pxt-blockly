@@ -222,7 +222,7 @@ Blockly.Blocks['controls_if'] = {
           .appendField(Blockly.Msg.CONTROLS_IF_MSG_THEN);
       this.appendDummyInput('IFBUTTONS' + i)
           .appendField(
-              new Blockly.FieldImage(this.REMOVE_IMAGE_DATAURI, 24, 24, false, "*", removeElseIf))
+              new Blockly.FieldImage(this.REMOVE_IMAGE_DATAURI, 24, 24, "*", removeElseIf, false))
           .setAlign(Blockly.ALIGN_RIGHT);
       this.appendStatementInput('DO' + i);
     }
@@ -232,7 +232,7 @@ Blockly.Blocks['controls_if'] = {
       this.appendDummyInput('ELSEBUTTONS')
           .setAlign(Blockly.ALIGN_RIGHT)
           .appendField(
-              new Blockly.FieldImage(this.REMOVE_IMAGE_DATAURI, 24, 24, false, "*", that.removeElse_.bind(that)));
+              new Blockly.FieldImage(this.REMOVE_IMAGE_DATAURI, 24, 24, "*", that.removeElse_.bind(that), false));
       this.appendStatementInput('ELSE');
     }
     if (this.getInput('ADDBUTTON')) this.removeInput('ADDBUTTON');
@@ -249,7 +249,7 @@ Blockly.Blocks['controls_if'] = {
     }();
     this.appendDummyInput('ADDBUTTON')
         .appendField(
-            new Blockly.FieldImage(this.ADD_IMAGE_DATAURI, 24, 24, false, "*", addElseIf));
+            new Blockly.FieldImage(this.ADD_IMAGE_DATAURI, 24, 24, "*", addElseIf, false));
   },
   /**
    * Reconstructs the block with all child blocks attached.

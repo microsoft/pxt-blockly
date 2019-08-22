@@ -56,7 +56,7 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
     }],
     "output": "Number",
     "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
-    "style": "math_blocks",
+    "style": "num_blocks",
     "helpUrl": "%{BKY_MATH_NUMBER_HELPURL}",
     "tooltip": "%{BKY_MATH_NUMBER_TOOLTIP}",
     "extensions": ["parent_tooltip_when_inline"]
@@ -74,7 +74,7 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
     }],
     "output": "Number",
     "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
-    "style": "math_blocks",
+    "style": "num_blocks",
     "helpUrl": "%{BKY_MATH_NUMBER_HELPURL}",
     "tooltip": "%{BKY_MATH_NUMBER_TOOLTIP}",
     "extensions": ["parent_tooltip_when_inline"]
@@ -92,7 +92,7 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
     }],
     "output": "Number",
     "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
-    "style": "math_blocks",
+    "style": "num_blocks",
     "helpUrl": "%{BKY_MATH_NUMBER_HELPURL}",
     "tooltip": "%{BKY_MATH_NUMBER_TOOLTIP}",
     "extensions": ["parent_tooltip_when_inline"]
@@ -109,7 +109,7 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
     }],
     "output": "Number",
     "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
-    "style": "math_blocks",
+    "style": "num_blocks",
     "helpUrl": "%{BKY_MATH_NUMBER_HELPURL}",
     "tooltip": "%{BKY_MATH_NUMBER_TOOLTIP}",
     "extensions": ["parent_tooltip_when_inline"]
@@ -128,9 +128,8 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
     }],
     "output": "Number",
     "outputShape": Blockly.OUTPUT_SHAPE_ROUND,
-    "style": "math_blocks",
+    "style": "num_blocks",
     "helpUrl": "%{BKY_MATH_NUMBER_HELPURL}",
-    "style": "math_blocks",
     "tooltip": "%{BKY_MATH_NUMBER_TOOLTIP}",
     "mutator": "math_number_minmax_mutator",
     "extensions": ["parent_tooltip_when_inline"]

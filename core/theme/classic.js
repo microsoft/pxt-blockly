@@ -48,8 +48,16 @@ Blockly.Themes.Classic.defaultBlockStyles = {
   "math_blocks": {
     "colourPrimary": "230"
   },
+  "num_blocks": {
+    "colourPrimary": "#FFFFFF",
+    "colourSecondary": "#FFFFFF"
+  },
   "procedure_blocks": {
     "colourPrimary": "290"
+  },
+  "string_blocks": {
+    "colourPrimary": "#FFFFFF",
+    "colourSecondary": "#FFFFFF"
   },
   "text_blocks": {
     "colourPrimary": "160"

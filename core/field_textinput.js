@@ -376,7 +376,8 @@ Blockly.FieldTextInput.prototype.showInlineEditor_ = function(
  */
 Blockly.FieldTextInput.prototype.widgetCreate_ = function(withArrow, arrowCallback) {
   var div = Blockly.WidgetDiv.DIV;
-
+  // Apply text-input-specific fixed CSS
+  div.className += ' fieldTextInput';
   var htmlInput = document.createElement('input');
   htmlInput.className = 'blocklyHtmlInput';
   htmlInput.setAttribute('spellcheck', this.spellcheck_);

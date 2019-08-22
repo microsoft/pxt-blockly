@@ -151,8 +151,13 @@ Blockly.FieldColour.prototype.initView = function() {
   this.size_ = new goog.math.Size(Blockly.FieldColour.DEFAULT_WIDTH,
       Blockly.FieldColour.DEFAULT_HEIGHT);
   this.createBorderRect_();
-  this.borderRect_.style['fillOpacity'] = 1;
-  this.borderRect_.style.fill = this.value_;
+  // pxt-blockly: use source block color instead of rect
+  this.borderRect_.style['fillOpacity'] = 0;
+
+  // pxt-blockly: Scratch rendering
+  if (this.sourceBlock_) {
+    this.sourceBlock_.setColour(this.value_, this.value_, this.value_);
+  }
 };
 
 /**

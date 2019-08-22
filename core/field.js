@@ -330,13 +330,14 @@ Blockly.Field.prototype.initView = function() {
  * @protected
  */
 Blockly.Field.prototype.createBorderRect_ = function() {
+  // pxt-blockly: resize to match Scratch rendering
   this.borderRect_ = Blockly.utils.dom.createSvgElement('rect',
       {
         'rx': 4,
         'ry': 4,
-        'x': -Blockly.BlockSvg.SEP_SPACE_X / 2,
+        'x': -Blockly.BlockSvg.SEP_SPACE_X / 4,
         'y': 0,
-        'height': 16,
+        'height': 24,
         'width': this.size_.width + Blockly.BlockSvg.SEP_SPACE_X
       }, this.fieldGroup_);
 };

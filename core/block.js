@@ -1090,14 +1090,12 @@ Blockly.Block.prototype.setColour = function(colour, colourSecondary, colourTert
   if (colourSecondary !== undefined) {
     this.colourSecondary_ = this.makeColour_(colourSecondary);
   } else {
-    this.colourSecondary_ = Blockly.utils.colour.rgbArrayToHex(
-        Blockly.utils.colour.darken(this.colour_, 0.15));
+    this.colourSecondary_ = Blockly.utils.colour.darken(this.colour_, 0.15);
   }
   if (colourTertiary !== undefined) {
     this.colourTertiary_ = this.makeColour_(colourTertiary);
   } else {
-    this.colourTertiary_ = Blockly.utils.colour.rgbArrayToHex(
-        Blockly.utils.colour.darken(this.colour_, 0.25));
+    this.colourTertiary_ = Blockly.utils.colour.darken(this.colour_, 0.25);
   }
   if (this.rendered) {
     this.updateColour();
@@ -1119,11 +1117,10 @@ Blockly.Block.prototype.setStyle = function(blockStyleName) {
   this.styleName_ = blockStyleName;
 
   if (blockStyle) {
-    this.colourSecondary_ = blockStyle['colourSecondary'];
-    this.colourTertiary_ = blockStyle['colourTertiary'];
     this.hat = blockStyle.hat;
     // Set colour will trigger an updateColour() on a block_svg
-    this.setColour(blockStyle['colourPrimary']);
+    this.setColour(blockStyle['colourPrimary'], blockStyle['colourSecondary'],
+      blockStyle['colourTertiary']);
   } else {
     throw Error('Invalid style name: ' + blockStyleName);
   }
