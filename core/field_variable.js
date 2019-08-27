@@ -398,7 +398,7 @@ Blockly.FieldVariable.dropdownCreate = function() {
     options[i] = [variableModelList[i].name, variableModelList[i].getId()];
   }
   // pxtblockly: add a new variable dropdown option
-  var selectedValueType = workspace.getVariableById(this.getValue()).type;
+  var selectedValueType = this.workspace_.getVariableById(this.getValue()).type;
   options.push([selectedValueType ?
     Blockly.Msg['NEW_VARIABLE_TYPE_DROPDOWN'].replace('%1', selectedValueType) :
     Blockly.Msg['NEW_VARIABLE_DROPDOWN'], Blockly.CREATE_VARIABLE_ID]);
@@ -439,9 +439,9 @@ Blockly.FieldVariable.prototype.onItemSelected = function(menu, menuItem) {
     } else if (id == Blockly.CREATE_VARIABLE_ID) {
       // Create a variable.
       var that = this;
-      var selectedValueType = workspace.getVariableById(this.getValue()).type;
-      Blockly.Variables.createVariableButtonHandler(workspace, function(text) {
-        var variable = workspace.getVariable(text, selectedValueType);
+      var selectedValueType = this.workspace_.getVariableById(this.getValue()).type;
+      Blockly.Variables.createVariableButtonHandler(this.workspace_, function(text) {
+        var variable = this.workspace_.getVariable(text, selectedValueType);
         that.setValue(variable.getId());
       }, selectedValueType);
       return;

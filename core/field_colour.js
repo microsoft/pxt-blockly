@@ -294,7 +294,7 @@ Blockly.FieldColour.prototype.setColumns = function(columns) {
  */
 Blockly.FieldColour.prototype.showEditor_ = function() {
   this.colorPicker_ = this.dropdownCreate_(); // pxt-blockly: expose color picker
-  Blockly.DropDownDiv.getContentDiv().appendChild(picker);
+  Blockly.DropDownDiv.getContentDiv().appendChild(this.colorPicker_);
 
   Blockly.DropDownDiv.setColour(
       this.DROPDOWN_BACKGROUND_COLOUR, this.DROPDOWN_BORDER_COLOUR);

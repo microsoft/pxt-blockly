@@ -735,7 +735,7 @@ Blockly.BlockSvg.prototype.renderCompute_ = function(iconWidth) {
         input.type == Blockly.NEXT_STATEMENT) {
       // Create new row.
       lastType = input.type;
-      row = this.createRowForInput_(input, isInline);
+      row = this.createRowForInput_(input);
       inputRows.push(row);
     } else {
       row = inputRows[inputRows.length - 1];
@@ -902,13 +902,12 @@ Blockly.BlockSvg.prototype.computeInputHeight_ = function(input, row,
 /**
  * Create a row for an input and associated fields.
  * @param {!Blockly.Input} input The input that the row is based on.
- * @param {boolean} isInline Whether this block has inline inputs.
  * @return {!Object} The new row, with the correct type and default sizing info.
  */
-Blockly.BlockSvg.prototype.createRowForInput_ = function(input, isInline) {
+Blockly.BlockSvg.prototype.createRowForInput_ = function(input) {
   // Create new row.
   var row = [];
-  if (!isInline || input.type != Blockly.NEXT_STATEMENT) {
+  if (input.type != Blockly.NEXT_STATEMENT) {
     row.type = Blockly.BlockSvg.INLINE;
   } else {
     row.type = input.type;
@@ -1319,7 +1318,7 @@ Blockly.BlockSvg.prototype.renderDrawRight_ = function(pathObject, inputRows,
     if (row.type == Blockly.BlockSvg.INLINE) {
       // Inline inputs.
       rowHeight += this.renderInlineRow_(
-          pathObject, row, cursor, connectionPos, inputRows.rightEdge, y);
+          pathObject, row, cursor, connectionPos, inputRows, y);
       prevCursorX = cursor.x;
     } else if (row.type == Blockly.NEXT_STATEMENT) {
       // pxtblockly:
@@ -1451,13 +1450,13 @@ Blockly.BlockSvg.prototype.renderDrawLeft_ = function(pathObject) {
 *     which determines where to start laying out fields.
 * @param {!Object} connectionPos An object containing the position of the
 *     connection on this input.
-* @param {number} rightEdge The position of the right edge of the block, which
-*     is based on the widest row that has been encountered so far.
+ * @param {!Array.<!Array.<!Object>>} inputRows 2D array of objects, each
+ *     containing position information. (pxt-blockly)
 * @return {number} The cumulative row height.
 * @private
 */
 Blockly.BlockSvg.prototype.renderInlineRow_ = function (pathObject, row, cursor,
-  connectionPos, rightEdge, index) {
+  connectionPos, inputRows, index) {
   for (var x = 0, input; input = row[x]; x++) {
     // Align fields vertically within the row.
     // Moves the field to half of the row's height.
@@ -1465,7 +1464,7 @@ Blockly.BlockSvg.prototype.renderInlineRow_ = function (pathObject, row, cursor,
     // by its own rendered height.
     var fieldY = cursor.y + row.height / 2;
     var fieldX = Blockly.BlockSvg.getAlignedCursor_(cursor.x, input,
-      rightEdge);
+      inputRows.rightEdge);
 
     cursor.x = this.renderFields_(input.fieldRow, fieldX, fieldY, index);
     if (input.type == Blockly.INPUT_VALUE) {
@@ -1492,9 +1491,9 @@ Blockly.BlockSvg.prototype.renderInlineRow_ = function (pathObject, row, cursor,
   cursor.x += row.paddingEnd;
   // Update right edge for all inputs, such that all rows
   // stretch to be at least the size of all previous rows.
-  rightEdge = Math.max(cursor.x, rightEdge);
+  inputRows.rightEdge = Math.max(cursor.x, inputRows.rightEdge);
   // Move to the right edge
-  cursor.x = Math.max(cursor.x, rightEdge);
+  cursor.x = Math.max(cursor.x, inputRows.rightEdge);
   this.width = Math.max(this.width, cursor.x);
   // pxtblockly: keep track of row height
   return row.height;
