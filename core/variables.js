@@ -463,7 +463,7 @@ Blockly.Variables.generateVariableFieldXmlString = function(variableModel) {
   if (typeString == '') {
     typeString = '\'\'';
   }
-  // TODO shakao remove goog.string
+  // TODO shakao remove goog.string (pxt htmlEscape function)
   var text = '<field name="VAR" id="' + variableModel.getId() +
       '" variabletype="' + goog.string.htmlEscape(typeString) +
       '">' + goog.string.htmlEscape(variableModel.name) + '</field>';

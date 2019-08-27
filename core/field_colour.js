@@ -128,7 +128,7 @@ Blockly.FieldColour.prototype.titles_ = null;
 Blockly.FieldColour.prototype.columns_ = 0;
 
 /**
- * The color picker.
+ * The color picker. // TODO shakao rename to colourPicker_
  * @type {!Element}
  * @private
  */
