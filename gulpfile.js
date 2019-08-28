@@ -37,6 +37,7 @@ var path = require('path');
 var fs = require('fs');
 var rimraf = require('rimraf');
 var execSync = require('child_process').execSync;
+var semver = require('semver');
 
 
 // Rebuilds Blockly, including the following:
