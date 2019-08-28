@@ -27,10 +27,12 @@
 goog.provide('Blockly.Comment');
 
 goog.require('Blockly.Bubble');
+goog.require('Blockly.Events');
 goog.require('Blockly.Events.BlockChange');
 goog.require('Blockly.Events.Ui');
 goog.require('Blockly.Icon');
-goog.require('goog.userAgent');
+goog.require('Blockly.utils.dom');
+goog.require('Blockly.utils.userAgent');
 
 
 /**
@@ -70,14 +72,21 @@ Blockly.Comment.prototype.height_ = 80;
  * @private
  */
 Blockly.Comment.prototype.drawIcon_ = function(group) {
-  Blockly.utils.createSvgElement('path',
+  // Circle.
+  // Blockly.utils.dom.createSvgElement('circle',
+  //    {'class': 'blocklyIconShape', 'r': '8', 'cx': '8', 'cy': '8'},
+  //    group);
+  // Can't use a real '?' text character since different browsers and operating
+  // systems render it differently.
+  // Body of question mark.
+  Blockly.utils.dom.createSvgElement('path',
       {
         'class': 'blocklyIconShape',
         'd': 'm 2,2 0,9.2211 3.0026599,0 1.6008929,1.5989 1.8138195,-1.5989 6.6046683,0 0,-9.2211 -13.0220406,0 z',
         'style': 'fill: #fff;'
       },
       group);
-  Blockly.utils.createSvgElement('rect',
+  Blockly.utils.dom.createSvgElement('rect',
       {
         'class': 'blocklyIconSymbol',
         'x': '4',
@@ -87,7 +96,8 @@ Blockly.Comment.prototype.drawIcon_ = function(group) {
         'style': 'fill: #575E75;'
       },
       group);
-  Blockly.utils.createSvgElement('rect',
+  // Dot of question mark.
+  Blockly.utils.dom.createSvgElement('rect',
       {
         'class': 'blocklyIconSymbol',
         'x': '4',
@@ -97,7 +107,7 @@ Blockly.Comment.prototype.drawIcon_ = function(group) {
         'style': 'fill: #575E75;'
       },
       group);
-  Blockly.utils.createSvgElement('rect',
+  Blockly.utils.dom.createSvgElement('rect',
       {
         'class': 'blocklyIconSymbol',
         'x': '4',
@@ -122,7 +132,7 @@ Blockly.Comment.prototype.createEditor_ = function() {
    * @type {SVGElement}
    * @private
    */
-  this.svgGroup_ = Blockly.utils.createSvgElement(
+  this.svgGroup_ = Blockly.utils.dom.createSvgElement(
       'g', {'class': 'blocklyCommentBubble'}, null);
   this.svgGroup_.translate_ = '';
 
@@ -157,19 +167,21 @@ Blockly.Comment.prototype.createTextEditor_ = function() {
       </body>
     </foreignObject>
   */
-  this.foreignObject_ = Blockly.utils.createSvgElement('foreignObject',
-      {'x': Blockly.Bubble.BORDER_WIDTH, 'y': Blockly.Bubble.BORDER_WIDTH + Blockly.WorkspaceCommentSvg.TOP_BAR_HEIGHT},
-      null); // PXT Blockly: add space for top bar height
-  var body = document.createElementNS(Blockly.HTML_NS, 'body');
-  body.setAttribute('xmlns', Blockly.HTML_NS);
+  this.foreignObject_ = Blockly.utils.dom.createSvgElement('foreignObject',
+      {'x': Blockly.Bubble.BORDER_WIDTH, 
+       'y': Blockly.Bubble.BORDER_WIDTH + Blockly.WorkspaceCommentSvg.TOP_BAR_HEIGHT}, // pxt-blockly: add space for top bar height
+      null);
+  var body = document.createElementNS(Blockly.utils.dom.HTML_NS, 'body');
+  body.setAttribute('xmlns', Blockly.utils.dom.HTML_NS);
   body.className = 'blocklyMinimalBody';
-  var textarea = document.createElementNS(Blockly.HTML_NS, 'textarea');
+  var textarea = document.createElementNS(Blockly.utils.dom.HTML_NS, 'textarea');
   textarea.className = 'blocklyCommentTextarea';
   textarea.setAttribute('dir', this.block_.RTL ? 'RTL' : 'LTR');
   body.appendChild(textarea);
   this.textarea_ = textarea;
   this.foreignObject_.appendChild(body);
-  Blockly.bindEventWithChecks_(textarea, 'mouseup', this, this.textareaFocus_);
+  Blockly.bindEventWithChecks_(textarea, 'mouseup', this, this.textareaFocus_,
+      true, true);
   // Don't zoom with mousewheel.
   Blockly.bindEventWithChecks_(textarea, 'wheel', this, function(e) {
     e.stopPropagation();
@@ -197,7 +209,7 @@ Blockly.Comment.prototype.createTopBarIcons_ = function() {
 
   // Minimize Toggle Icon in Comment Top Bar
   var xInset = Blockly.WorkspaceCommentSvg.TOP_BAR_ICON_INSET;
-  this.minimizeArrow_ = Blockly.utils.createSvgElement('image',
+  this.minimizeArrow_ = Blockly.utils.dom.createSvgElement('image',
       {
         'x': xInset,
         'y': topBarMiddleY - Blockly.WorkspaceCommentSvg.MINIMIZE_ICON_SIZE / 2,
@@ -208,13 +220,13 @@ Blockly.Comment.prototype.createTopBarIcons_ = function() {
     'xlink:href', Blockly.mainWorkspace.options.pathToMedia + 'comment-arrow-down.svg');
 
   // Delete Icon in Comment Top Bar
-  this.deleteIcon_ = Blockly.utils.createSvgElement(
+  this.deleteIcon_ = Blockly.utils.dom.createSvgElement(
     'g',
     {
       'class': 'blocklyCommentDeleteIcon'
     },
     this.svgGroup_);
-  Blockly.utils.createSvgElement('rect',
+  Blockly.utils.dom.createSvgElement('rect',
       {
         'x': '-12.5', 'y': '1',
         'width': '27.5', 'height': '27.5',
@@ -287,8 +299,8 @@ Blockly.Comment.prototype.resizeBubble_ = function() {
     var size = this.bubble_.getBubbleSize();
     var doubleBorderWidth = 2 * Blockly.Bubble.BORDER_WIDTH;
     var topBarHeight = Blockly.WorkspaceCommentSvg.TOP_BAR_HEIGHT
-    this.foreignObject_.setAttribute('width', size.width - doubleBorderWidth);
-    this.foreignObject_.setAttribute('height', size.height - doubleBorderWidth - topBarHeight); // PXT Blockly: add space for top bar height
+    this.foreignObject_.setAttribute('width', Math.max(size.width - doubleBorderWidth, 0));
+    this.foreignObject_.setAttribute('height', Math.max(size.height - doubleBorderWidth - topBarHeight, 0)); // PXT Blockly: add space for top bar height
     this.textarea_.style.width = (size.width - doubleBorderWidth - 4) + 'px';
     this.textarea_.style.height = (size.height - doubleBorderWidth - topBarHeight - 4) + 'px'; // PXT Blockly: add space for top bar height
 
@@ -321,10 +333,11 @@ Blockly.Comment.prototype.setVisible = function(visible) {
   }
   Blockly.Events.fire(
       new Blockly.Events.Ui(this.block_, 'commentOpen', !visible, visible));
-  if ((!this.block_.isEditable() && !this.textarea_) || goog.userAgent.IE) {
+  if ((!this.block_.isEditable() && !this.textarea_) ||
+      Blockly.utils.userAgent.IE) {
     // Steal the code from warnings to make an uneditable text bubble.
     // MSIE does not support foreignobject; textareas are impossible.
-    // http://msdn.microsoft.com/en-us/library/hh834675%28v=vs.85%29.aspx
+    // https://docs.microsoft.com/en-us/openspecs/ie_standards/ms-svg/56e6e04c-7c8c-44dd-8100-bd745ee42034
     // Always treat comments in IE as uneditable.
     Blockly.Warning.prototype.setVisible.call(this, visible);
     return;

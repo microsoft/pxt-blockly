@@ -170,7 +170,7 @@ Blockly.JavaScript['lists_getIndex'] = function(block) {
       }
       break;
   }
-  throw 'Unhandled combination (lists_getIndex).';
+  throw Error('Unhandled combination (lists_getIndex).');
 };
 
 Blockly.JavaScript['lists_setIndex'] = function(block) {
@@ -247,16 +247,16 @@ Blockly.JavaScript['lists_setIndex'] = function(block) {
       }
       break;
   }
-  throw 'Unhandled combination (lists_setIndex).';
+  throw Error('Unhandled combination (lists_setIndex).');
 };
 
 /**
  * Returns an expression calculating the index into a list.
- * @private
  * @param {string} listName Name of the list, used to calculate length.
  * @param {string} where The method of indexing, selected by dropdown in Blockly
  * @param {string=} opt_at The optional offset when indexing from start/end.
  * @return {string} Index expression.
+ * @private
  */
 Blockly.JavaScript.lists.getIndex_ = function(listName, where, opt_at) {
   if (where == 'FIRST') {
@@ -295,7 +295,7 @@ Blockly.JavaScript['lists_getSublist'] = function(block) {
         var at1 = '0';
         break;
       default:
-        throw 'Unhandled option (lists_getSublist).';
+        throw Error('Unhandled option (lists_getSublist).');
     }
     switch (where2) {
       case 'FROM_START':
@@ -310,7 +310,7 @@ Blockly.JavaScript['lists_getSublist'] = function(block) {
         var at2 = list + '.length';
         break;
       default:
-        throw 'Unhandled option (lists_getSublist).';
+        throw Error('Unhandled option (lists_getSublist).');
     }
     code = list + '.slice(' + at1 + ', ' + at2 + ')';
   } else {
@@ -387,7 +387,7 @@ Blockly.JavaScript['lists_split'] = function(block) {
     }
     var functionName = 'join';
   } else {
-    throw 'Unknown mode: ' + mode;
+    throw Error('Unknown mode: ' + mode);
   }
   var code = input + '.' + functionName + '(' + delimiter + ')';
   return [code, Blockly.JavaScript.ORDER_FUNCTION_CALL];

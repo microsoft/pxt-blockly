@@ -136,7 +136,7 @@ Blockly.Dart['text_charAt'] = function(block) {
       code = functionName + '(' + text + ')';
       return [code, Blockly.Dart.ORDER_UNARY_POSTFIX];
   }
-  throw 'Unhandled option (text_charAt).';
+  throw Error('Unhandled option (text_charAt).');
 };
 
 Blockly.Dart['text_getSubstring'] = function(block) {
@@ -164,7 +164,7 @@ Blockly.Dart['text_getSubstring'] = function(block) {
         var at1 = '0';
         break;
       default:
-        throw 'Unhandled option (text_getSubstring).';
+        throw Error('Unhandled option (text_getSubstring).');
     }
     switch (where2) {
       case 'FROM_START':
@@ -178,7 +178,7 @@ Blockly.Dart['text_getSubstring'] = function(block) {
       case 'LAST':
         break;
       default:
-        throw 'Unhandled option (text_getSubstring).';
+        throw Error('Unhandled option (text_getSubstring).');
     }
     if (where2 == 'LAST') {
       var code = text + '.substring(' + at1 + ')';
@@ -190,9 +190,9 @@ Blockly.Dart['text_getSubstring'] = function(block) {
     var at2 = Blockly.Dart.getAdjusted(block, 'AT2');
     var functionName = Blockly.Dart.provideFunction_(
         'text_get_substring',
-        ['List ' + Blockly.Dart.FUNCTION_NAME_PLACEHOLDER_ +
-            '(text, where1, at1, where2, at2) {',
-         '  int getAt(where, at) {',
+        ['String ' + Blockly.Dart.FUNCTION_NAME_PLACEHOLDER_ +
+            '(String text, String where1, num at1, String where2, num at2) {',
+         '  int getAt(String where, num at) {',
          '    if (where == \'FROM_END\') {',
          '      at = text.length - 1 - at;',
          '    } else if (where == \'FIRST\') {',

@@ -31,7 +31,7 @@ goog.require('Blockly.DropDownDiv');
 goog.require('goog.dom');
 goog.require('goog.events');
 goog.require('goog.style');
-goog.require('goog.color');
+goog.require('Blockly.utils.colour');
 goog.require('goog.ui.Slider');
 
 /**
@@ -110,13 +110,13 @@ Blockly.FieldColourSlider.prototype.createColourStops_ = function(channel) {
   for (var n = 0; n <= 360; n += 20) {
     switch (channel) {
       case 'hue':
-        stops.push(goog.color.hsvToHex(n, this.saturation_, this.brightness_));
+        stops.push(Blockly.utils.colour.hsvToHex(n, this.saturation_, this.brightness_));
         break;
       case 'saturation':
-        stops.push(goog.color.hsvToHex(this.hue_, n / 360, this.brightness_));
+        stops.push(Blockly.utils.colour.hsvToHex(this.hue_, n / 360, this.brightness_));
         break;
       case 'brightness':
-        stops.push(goog.color.hsvToHex(this.hue_, this.saturation_, 255 * n / 360));
+        stops.push(Blockly.utils.colour.hsvToHex(this.hue_, this.saturation_, 255 * n / 360));
         break;
       default:
         throw new Error("Unknown channel for colour sliders: " + channel);
@@ -218,7 +218,7 @@ Blockly.FieldColourSlider.prototype.sliderCallbackFactory_ = function(channel) {
   var thisField = this;
   return function(event) {
     var channelValue = event.target.getValue();
-    var hsv = goog.color.hexToHsv(thisField.getValue());
+    var hsv = Blockly.utils.colour.hexToHsv(thisField.getValue());
     switch (channel) {
       case 'hue':
         hsv[0] = thisField.hue_ = channelValue;
@@ -230,7 +230,7 @@ Blockly.FieldColourSlider.prototype.sliderCallbackFactory_ = function(channel) {
         hsv[2] = thisField.brightness_ = channelValue;
         break;
     }
-    var colour = goog.color.hsvToHex(hsv[0], hsv[1], hsv[2]);
+    var colour = Blockly.utils.colour.hsvToHex(hsv[0], hsv[1], hsv[2]);
     if (thisField.sourceBlock_) {
       // Call any validation function, and allow it to override.
       colour = thisField.callValidator(colour);
@@ -252,7 +252,7 @@ Blockly.FieldColourSlider.prototype.showEditor_ = function() {
 
   // Init color component values that are used while the editor is open
   // in order to keep the slider values stable.
-  var hsv = goog.color.hexToHsv(this.getValue());
+  var hsv = Blockly.utils.colour.hexToHsv(this.getValue());
   this.hue_ = hsv[0];
   this.saturation_ = hsv[1];
   this.brightness_ = hsv[2];

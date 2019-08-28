@@ -28,33 +28,29 @@ goog.provide('Blockly.FieldNumber');
 
 goog.require('Blockly.FieldTextInput');
 goog.require('Blockly.Touch');
-goog.require('goog.math');
-goog.require('goog.userAgent');
+goog.require('Blockly.utils.userAgent');
+
 
 /**
  * Class for an editable number field.
- * In scratch-blocks, the min/max/precision properties are only used
- * to construct a restrictor on typable characters, and to inform the pop-up
- * numpad on touch devices.
- * These properties are included here (i.e. instead of just accepting a
- * decimalAllowed, negativeAllowed) to maintain API compatibility with Blockly
- * and Blockly for Android.
- * @param {(string|number)=} opt_value The initial content of the field. The value
- *     should cast to a number, and if it does not, '0' will be used.
+ * @param {string|number=} opt_value The initial value of the field. Should cast
+ *    to a number. Defaults to 0.
  * @param {(string|number)=} opt_min Minimum value.
  * @param {(string|number)=} opt_max Maximum value.
  * @param {(string|number)=} opt_precision Precision for value.
- * @param {Function=} opt_validator An optional function that is called
- *     to validate any constraints on what the user entered.  Takes the new
- *     text as an argument and returns the accepted text or null to abort
- *     the change.
+ * @param {Function=} opt_validator A function that is called to validate
+ *    changes to the field's value. Takes in a number & returns a validated
+ *    number, or null to abort the change.
  * @extends {Blockly.FieldTextInput}
  * @constructor
  */
 Blockly.FieldNumber = function(opt_value, opt_min, opt_max, opt_precision,
     opt_validator) {
   var numRestrictor = this.getNumRestrictor(opt_min, opt_max, opt_precision);
-  opt_value = (opt_value && !isNaN(opt_value)) ? String(opt_value) : '0';
+  opt_value = this.doClassValidation_(opt_value);
+  if (opt_value === null) {
+    opt_value = 0;
+  }
   Blockly.FieldNumber.superClass_.constructor.call(
       this, opt_value, opt_validator, numRestrictor);
   this.addArgType('number');
@@ -65,7 +61,7 @@ goog.inherits(Blockly.FieldNumber, Blockly.FieldTextInput);
  * Construct a FieldNumber from a JSON arg object.
  * @param {!Object} options A JSON object with options (value, min, max, and
  *                          precision).
- * @returns {!Blockly.FieldNumber} The new field instance.
+ * @return {!Blockly.FieldNumber} The new field instance.
  * @package
  * @nocollapse
  */
@@ -73,6 +69,14 @@ Blockly.FieldNumber.fromJson = function(options) {
   return new Blockly.FieldNumber(options['value'],
       options['min'], options['max'], options['precision']);
 };
+
+/**
+ *  * Serializable fields are saved by the XML renderer, non-serializable fields
+ * are not. Editable fields should also be serializable.
+ * @type {boolean}
+ * @const
+ */
+Blockly.FieldNumber.prototype.SERIALIZABLE = true;
 
 /**
  * Fixed width of the num-pad drop-down, in px.
@@ -151,6 +155,11 @@ Blockly.FieldNumber.prototype.setConstraints_ = function(opt_min, opt_max,
       (Math.floor(opt_precision) != opt_precision);
   this.negativeAllowed_ = (typeof opt_min == 'undefined') || isNaN(opt_min) ||
       opt_min < 0;
+
+  let min = parseFloat(opt_min);
+  this.min_ = isNaN(min) ? -Infinity : min;
+  let max = parseFloat(opt_max);
+  this.max_ = isNaN(max) ? Infinity : max;
 };
 
 /**
@@ -164,7 +173,7 @@ Blockly.FieldNumber.prototype.showEditor_ = function(e, opt_showNumPad) {
   Blockly.FieldNumber.activeField_ = this;
   // Do not focus on mobile devices so we can show the num-pad
   var showNumPad = (typeof opt_showNumPad !== "undefined") ? opt_showNumPad :
-      (goog.userAgent.MOBILE || goog.userAgent.ANDROID || goog.userAgent.IPAD);
+      (Blockly.utils.userAgent.MOBILE || Blockly.utils.userAgent.ANDROID || Blockly.utils.userAgent.IPAD);
   Blockly.FieldNumber.superClass_.showEditor_.call(this, e, false, showNumPad);
 
   // Show a numeric keypad in the drop-down on touch
@@ -341,26 +350,41 @@ Blockly.FieldNumber.prototype.onHide_ = function() {
 };
 
 /**
- * Ensure that only a number in the correct range may be entered.
- * @param {string} text The user's text.
- * @return {?string} A string representing a valid number, or null if invalid.
+ * Ensure that the input value is a valid number (must fulfill the
+ * constraints placed on the field).
+ * @param {string|number=} newValue The input value.
+ * @return {?number} A valid number, or null if invalid.
+ * @protected
+ * @override
  */
-Blockly.FieldNumber.prototype.classValidator = function(text) {
-  if (text === null) {
+Blockly.FieldNumber.prototype.doClassValidation_ = function(newValue) {
+  if (newValue === null || newValue === undefined) {
     return null;
   }
-  text = String(text);
+  // Clean up text.
+  newValue = String(newValue);
   // TODO: Handle cases like 'ten', '1.203,14', etc.
   // 'O' is sometimes mistaken for '0' by inexperienced users.
-  text = text.replace(/O/ig, '0');
+  newValue = newValue.replace(/O/ig, '0');
   // Strip out thousands separators.
-  text = text.replace(/,/g, '');
-  var n = parseFloat(text || 0);
+  newValue = newValue.replace(/,/g, '');
+
+  // Clean up number.
+  var n = parseFloat(newValue || 0);
   if (isNaN(n)) {
     // Invalid number.
     return null;
   }
-  return String(n);
+  // Get the value in range.
+  n = Math.min(Math.max(n, this.min_), this.max_);
+  // Round to nearest multiple of precision.
+  if (this.precision_ && isFinite(n)) {
+    n = Math.round(n / this.precision_) * this.precision_;
+  }
+  // Clean up floating point errors.
+  n = (this.fractionalDigits_ == -1) ? n :
+      Number(n.toFixed(this.fractionalDigits_));
+  return n;
 };
 
 Blockly.Field.register('field_number', Blockly.FieldNumber);

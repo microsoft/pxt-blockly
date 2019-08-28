@@ -72,12 +72,12 @@ Blockly.FieldVerticalSeparator.prototype.init = function() {
   }
   // Build the DOM.
   /** @type {SVGElement} */
-  this.fieldGroup_ = Blockly.utils.createSvgElement('g', {}, null);
+  this.fieldGroup_ = Blockly.utils.dom.createSvgElement('g', {}, null);
   if (!this.visible_) {
     this.fieldGroup_.style.display = 'none';
   }
   /** @type {SVGElement} */
-  this.lineElement_ = Blockly.utils.createSvgElement('line', {
+  this.lineElement_ = Blockly.utils.dom.createSvgElement('line', {
     'stroke': this.sourceBlock_.getColourSecondary(),
     'stroke-linecap': 'round',
     'x1': 0,

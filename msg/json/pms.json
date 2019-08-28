@@ -9,6 +9,7 @@
 	"DUPLICATE_BLOCK": "Dupliché",
 	"ADD_COMMENT": "Gionté un coment",
 	"REMOVE_COMMENT": "Scancelé un coment",
+	"DUPLICATE_COMMENT": "Dupliché ël coment",
 	"EXTERNAL_INPUTS": "Imission esterne",
 	"INLINE_INPUTS": "Imission an linia",
 	"DELETE_BLOCK": "Scancelé ël blòch",
@@ -181,6 +182,9 @@
 	"MATH_RANDOM_FLOAT_HELPURL": "https://en.wikipedia.org/wiki/Random_number_generation",
 	"MATH_RANDOM_FLOAT_TITLE_RANDOM": "frassion aleatòria",
 	"MATH_RANDOM_FLOAT_TOOLTIP": "A smon na frassion aleatòria antra 0,0 (comprèis) e 1,0 (esclus).",
+	"MATH_ATAN2_HELPURL": "https://en.wikipedia.org/wiki/Atan2",
+	"MATH_ATAN2_TITLE": "atan2 ëd X:%1 Y:%2",
+	"MATH_ATAN2_TOOLTIP": "A rëspond con l'arch-tangent dël pont (X, Y) an gre da -180 a 180.",
 	"TEXT_TEXT_HELPURL": "https://en.wikipedia.org/wiki/String_(computer_science)",
 	"TEXT_TEXT_TOOLTIP": "Na litra, na paròla o na linia ëd test.",
 	"TEXT_JOIN_TITLE_CREATEWITH": "creé ël test con",
@@ -337,5 +341,7 @@
 	"PROCEDURES_CREATE_DO": "Creé '%1'",
 	"PROCEDURES_IFRETURN_TOOLTIP": "Se un valor a l'é ver, antlora smon-e un second valor.",
 	"PROCEDURES_IFRETURN_HELPURL": "http://c2.com/cgi/wiki?GuardClause",
-	"PROCEDURES_IFRETURN_WARNING": "Atension: Ës blòch a podria esse dovrà mach an na definission ëd fonsion."
+	"PROCEDURES_IFRETURN_WARNING": "Atension: Ës blòch a podria esse dovrà mach an na definission ëd fonsion.",
+	"WORKSPACE_COMMENT_DEFAULT_TEXT": "Dì cheicòs...",
+	"COLLAPSED_WARNINGS_WARNING": "Ij blòch sarà a conten-o dj'avertense."
 }

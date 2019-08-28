@@ -27,23 +27,25 @@
 goog.provide('Blockly.FieldImage');
 
 goog.require('Blockly.Field');
-goog.require('goog.dom');
+goog.require('Blockly.utils.dom');
+
 goog.require('goog.math.Size');
 
 
 /**
  * Class for an image on a block.
- * @param {string} src The URL of the image.
- * @param {number} width Width of the image.
- * @param {number} height Height of the image.
- * @param {boolean} flip_rtl Whether to flip the icon in RTL
+ * @param {string} src The URL of the image. Defaults to an empty string.
+ * @param {!(string|number)} width Width of the image.
+ * @param {!(string|number)} height Height of the image.
  * @param {string=} opt_alt Optional alt text for when block is collapsed.
  * @param {Function=} opt_onClick Optional function to be called when the image
  *     is clicked.  If opt_onClick is defined, opt_alt must also be defined.
+ * @param {boolean=} opt_flipRtl Whether to flip the icon in RTL.
  * @extends {Blockly.Field}
  * @constructor
  */
-Blockly.FieldImage = function(src, width, height, flip_rtl, opt_alt, opt_onClick) {
+Blockly.FieldImage = function(src, width, height,
+    opt_alt, opt_onClick, opt_flipRtl) {
   this.sourceBlock_ = null;
 
   // Ensure height and width are numbers.  Strings are bad at math.
@@ -51,8 +53,8 @@ Blockly.FieldImage = function(src, width, height, flip_rtl, opt_alt, opt_onClick
   this.width_ = Number(width);
   this.size_ = new goog.math.Size(this.width_, this.height_);
   this.text_ = opt_alt || '';
-  this.flipRTL_ = flip_rtl;
-  this.setValue(src);
+  this.flipRtl_ = opt_flipRtl;
+  this.setValue(src || '');
 
   if (typeof opt_onClick == 'function') {
     this.clickHandler_ = opt_onClick;
@@ -64,9 +66,9 @@ goog.inherits(Blockly.FieldImage, Blockly.Field);
 /**
  * Construct a FieldImage from a JSON arg object,
  * dereferencing any string table references.
- * @param {!Object} options A JSON object with options (src, width, height, and
- *                          alt).
- * @returns {!Blockly.FieldImage} The new field instance.
+ * @param {!Object} options A JSON object with options (src, width, height,
+ *    alt, and flipRtl).
+ * @return {!Blockly.FieldImage} The new field instance.
  * @package
  * @nocollapse
  */
@@ -74,19 +76,32 @@ Blockly.FieldImage.fromJson = function(options) {
   var src = Blockly.utils.replaceMessageReferences(options['src']);
   var width = Number(Blockly.utils.replaceMessageReferences(options['width']));
   var height =
-    Number(Blockly.utils.replaceMessageReferences(options['height']));
+      Number(Blockly.utils.replaceMessageReferences(options['height']));
   var alt = Blockly.utils.replaceMessageReferences(options['alt']);
-  var flip_rtl = !!options['flip_rtl'];
-  return new Blockly.FieldImage(src, width, height, alt, flip_rtl);
+  var flipRtl = !!options['flipRtl'];
+  return new Blockly.FieldImage(src, width, height, alt, null, flipRtl);
 };
 
 /**
- * Editable fields are saved by the XML renderer, non-editable fields are not.
+ * Editable fields usually show some sort of UI indicating they are
+ * editable. This field should not.
+ * @type {boolean}
+ * @const
  */
 Blockly.FieldImage.prototype.EDITABLE = false;
 
 /**
+ * Used to tell if the field needs to be rendered the next time the block is
+ * rendered. Image fields are statically sized, and only need to be
+ * rendered at initialization.
+ * @type {boolean}
+ * @private
+ */
+Blockly.FieldImage.prototype.isDirty_ = false;
+
+/**
  * Install this image on a block.
+ * TODO shakao override initView instead of init
  */
 Blockly.FieldImage.prototype.init = function() {
   if (this.fieldGroup_) {
@@ -95,12 +110,12 @@ Blockly.FieldImage.prototype.init = function() {
   }
   // Build the DOM.
   /** @type {SVGElement} */
-  this.fieldGroup_ = Blockly.utils.createSvgElement('g', {}, null);
+  this.fieldGroup_ = Blockly.utils.dom.createSvgElement('g', {}, null);
   if (!this.visible_) {
     this.fieldGroup_.style.display = 'none';
   }
   /** @type {SVGElement} */
-  this.imageElement_ = Blockly.utils.createSvgElement(
+  this.imageElement_ = Blockly.utils.dom.createSvgElement(
       'image',
       {
         'height': this.height_ + 'px',
@@ -121,7 +136,7 @@ Blockly.FieldImage.prototype.init = function() {
  * Dispose of all DOM objects belonging to this text.
  */
 Blockly.FieldImage.prototype.dispose = function() {
-  goog.dom.removeNode(this.fieldGroup_);
+  Blockly.utils.dom.removeNode(this.fieldGroup_);
   this.fieldGroup_ = null;
   this.imageElement_ = null;
 };
@@ -180,8 +195,8 @@ Blockly.FieldImage.prototype.setValue = function(src) {
  * Get whether to flip this image in RTL
  * @return {boolean} True if we should flip in RTL.
  */
-Blockly.FieldImage.prototype.getFlipRTL = function() {
-  return this.flipRTL_;
+Blockly.FieldImage.prototype.getFlipRtl = function() {
+  return this.flipRtl_;
 };
 
 /**

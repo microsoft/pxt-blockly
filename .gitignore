@@ -1,4 +1,6 @@
-# OSX
+blockly_node_javascript_en.js
+node_modules
+npm-debug.log
 .DS_Store
 
 # NPM
@@ -32,6 +34,7 @@ tests/compile/*compiler*.jar
 tests/compile/main_compressed.js
 tests/compile/*compiler*.jar
 local_build/*compiler*.jar
-local_build/local_blockly_compressed.js
+local_build/local_*_compressed.js
+dist/
 tmp
 package-lock.json

@@ -29,7 +29,7 @@ goog.provide('Blockly.FieldTextDropdown');
 goog.require('Blockly.DropDownDiv');
 goog.require('Blockly.FieldDropdown');
 goog.require('Blockly.FieldTextInput');
-goog.require('goog.userAgent');
+goog.require('Blockly.utils.userAgent');
 
 
 /**
@@ -86,7 +86,7 @@ Blockly.FieldTextDropdown.prototype.init = function() {
     this.arrowX_ = 0;
     /** @type {Number} */
     this.arrowY_ = 11;
-    this.arrow_ = Blockly.utils.createSvgElement('image', {
+    this.arrow_ = Blockly.utils.dom.createSvgElement('image', {
       'height': this.arrowSize_ + 'px',
       'width': this.arrowSize_ + 'px'
     });
@@ -125,8 +125,8 @@ Blockly.FieldTextDropdown.prototype.dispose = function() {
  * @param {!Event} e A mouse down or touch start event.
  */
 Blockly.FieldTextDropdown.prototype.showEditor_ = function(e) {
-  var readOnly = (goog.userAgent.MOBILE || goog.userAgent.ANDROID ||
-    goog.userAgent.IPAD);
+  var readOnly = (Blockly.utils.userAgent.MOBILE || Blockly.utils.userAgent.ANDROID ||
+    Blockly.utils.userAgent.IPAD);
   Blockly.FieldTextDropdown.superClass_.showEditor_.call(this, e, false, readOnly,
       true, function() {
         if (!this.dropDownOpen_) this.showDropdown_();

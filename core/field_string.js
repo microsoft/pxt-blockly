@@ -21,7 +21,7 @@ goog.require('goog.math');
 goog.require('goog.dom');
 goog.require('goog.events');
 goog.require('goog.style');
-goog.require('goog.userAgent');
+goog.require('Blockly.utils.userAgent');
 
 /**
  * Class for an editable text field.
@@ -81,12 +81,12 @@ Blockly.FieldString.prototype.init = function() {
   this.quoteRightX_ = 0;
   this.quoteY_ = 22;
   if (this.quoteLeft_) this.quoteLeft_.parentNode.removeChild(this.quoteLeft_);
-  this.quoteLeft_ = Blockly.utils.createSvgElement('text', {
+  this.quoteLeft_ = Blockly.utils.dom.createSvgElement('text', {
     'font-size': this.quoteSize_ + 'px',
     'class': 'field-text-quote'
   });
   if (this.quoteRight_) this.quoteRight_.parentNode.removeChild(this.quoteRight_);
-  this.quoteRight_ = Blockly.utils.createSvgElement('text', {
+  this.quoteRight_ = Blockly.utils.dom.createSvgElement('text', {
     'font-size': this.quoteSize_ + 'px',
     'class': 'field-text-quote'
   });

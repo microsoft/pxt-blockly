@@ -12,6 +12,7 @@
 	"DUPLICATE_BLOCK": "Eiladuriñ",
 	"ADD_COMMENT": "Ouzhpennañ un evezhiadenn",
 	"REMOVE_COMMENT": "Lemel an evezhiadenn kuit",
+	"DUPLICATE_COMMENT": "Eiladiñ an eilenn",
 	"EXTERNAL_INPUTS": "Monedoù diavaez",
 	"INLINE_INPUTS": "Monedoù enlinenn",
 	"DELETE_BLOCK": "Dilemel ar bloc'h",
@@ -184,6 +185,9 @@
 	"MATH_RANDOM_FLOAT_HELPURL": "https://en.wikipedia.org/wiki/Random_number_generation",
 	"MATH_RANDOM_FLOAT_TITLE_RANDOM": "Rann dargouezhek",
 	"MATH_RANDOM_FLOAT_TOOLTIP": "Distreiñ ur rann dargouezhek etre 0.0 (enkaelat) hag 1.0 (ezkaelat).",
+	"MATH_ATAN2_HELPURL": "https://fr.wikipedia.org/wiki/Atan2",
+	"MATH_ATAN2_TITLE": "atan2 eus X:%1 Y:%2",
+	"MATH_ATAN2_TOOLTIP": "Adkas a ra ark tangent ar poent (X, Y) e derezioù etre -180 ha 180",
 	"TEXT_TEXT_HELPURL": "https://en.wikipedia.org/wiki/String_(computer_science)",
 	"TEXT_TEXT_TOOLTIP": "Ul lizherenn, ur ger pe ul linennad testenn.",
 	"TEXT_JOIN_TITLE_CREATEWITH": "krouiñ un destenn gant",
@@ -339,5 +343,7 @@
 	"PROCEDURES_HIGHLIGHT_DEF": "Dreislinennañ termenadur an arc'hwel",
 	"PROCEDURES_CREATE_DO": "Krouiñ '%1'",
 	"PROCEDURES_IFRETURN_TOOLTIP": "Ma'z eo gwir un dalvoudenn, distreiñ un eil talvoudenn neuze.",
-	"PROCEDURES_IFRETURN_WARNING": "Diwallit : Gallout a rafe ar bloc'h bezañ implijet e termenadur un arc'hwel hepken."
+	"PROCEDURES_IFRETURN_WARNING": "Diwallit : Gallout a rafe ar bloc'h bezañ implijet e termenadur un arc'hwel hepken.",
+	"WORKSPACE_COMMENT_DEFAULT_TEXT": "Lavaret un dra bennak...",
+	"COLLAPSED_WARNINGS_WARNING": "Kemennoù-diwall zo er bloc'hadoù pleget."
 }
