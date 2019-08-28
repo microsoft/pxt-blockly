@@ -30,6 +30,8 @@ gulp.replace = require('gulp-replace');
 gulp.rename = require('gulp-rename');
 gulp.insert = require('gulp-insert');
 gulp.umd = require('gulp-umd');
+gulp.bump = require('gulp-bump');
+gulp.git = require('gulp-git');
 
 var path = require('path');
 var fs = require('fs');
@@ -198,7 +200,28 @@ function pxtPublishTsTask() {
 	}
 }
 
+// Task for building pxt-blockyl, and copying files over to pxt
 gulp.task('publish', gulp.series(['build', pxtPublishTask]));
+
+// Task for bumping patch version and tagging commit. Travis will upload to npm.
+gulp.task('bump', function (done) {
+  var v = semver.inc(JSON.parse(fs.readFileSync('./package.json', 'utf8')).version, 'patch');
+  gulp.src('./package.json')
+    .pipe(gulp.bump({ "version": v }))
+    .pipe(gulp.dest('./'));
+
+  gulp.src('.')
+    .pipe(gulp.git.add())
+    .pipe(gulp.git.commit(v))
+    .on('end', function () {
+      gulp.git.tag('v' + v, v, function (error) {
+        if (error) {
+          return done(error);
+        }
+        gulp.git.push('origin', '', { args: '--tags' }, done);
+      })
+    });
+});
 
 // The default task concatenates files for Node.js, using English language
 // blocks and the JavaScript generator.
