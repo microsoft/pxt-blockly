@@ -367,9 +367,13 @@ Blockly.FieldTextInput.prototype.showInlineEditor_ = function(
       this, this.sourceBlock_.RTL, this.widgetDispose_.bind(this));
   this.htmlInput_ = this.widgetCreate_(readOnly, withArrow, arrowCallback);
 
+  // pxtblockly: execute the arrow callback when the editor is opened as well
+  if (arrowCallback) {
+    arrowCallback.call(this);
+  }
+
   if (!quietInput) {
-    this.htmlInput_.focus();
-    this.htmlInput_.select();
+    this.focus();
     // iOS only
     this.htmlInput_.setSelectionRange(0, 99999);
   }
@@ -628,6 +632,14 @@ Blockly.FieldTextInput.prototype.onHtmlInputChange_ = function(e) {
   Blockly.Events.setGroup(false);
   this.resizeEditor_();
 };
+
+/**
+ * pxt-blockly: Focus and select the input.
+ */
+Blockly.FieldTextInput.prototype.focus = function() {
+  this.htmlInput_.focus();
+  this.htmlInput_.select();
+}
 
 /**
  * Resize the editor to fit the text.

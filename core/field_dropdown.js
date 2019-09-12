@@ -82,6 +82,14 @@ Blockly.FieldDropdown.fromJson = function(options) {
 };
 
 /**
+ * Editable fields usually show some sort of UI for the user to change them.
+ * This field should be serialized, but only edited programmatically.
+ * @type {boolean}
+ * @public
+ */
+Blockly.FieldDropdown.prototype.EDITABLE = false;
+
+/**
  * Serializable fields are saved by the XML renderer, non-serializable fields
  * are not. Editable fields should also be serializable.
  * @type {boolean}
