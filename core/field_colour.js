@@ -47,9 +47,10 @@ goog.require('goog.math.Size');
  */
 Blockly.FieldColour = function(opt_value, opt_validator) {
   opt_value = this.doClassValidation_(opt_value);
-  if (opt_value === null) {
+  // pxt-blockly allow empty color constructor
+  /*if (opt_value === null) {
     opt_value = Blockly.FieldColour.COLOURS[0];
-  }
+  }*/
   Blockly.FieldColour.superClass_.constructor.call(
       this, opt_value, opt_validator);
   this.addArgType('colour');
@@ -163,7 +164,7 @@ Blockly.FieldColour.prototype.initView = function() {
 
   // pxt-blockly: Scratch rendering
   if (this.sourceBlock_) {
-    this.sourceBlock_.setColour(this.value_, this.value_, this.value_);
+    this.setValue(this.getValue());
   }
 };
 
