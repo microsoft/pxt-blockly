@@ -228,19 +228,17 @@ Blockly.Events.CommentCreate = function(comment) {
    */
   this.xy = comment.getXY();
 
-  var hw = comment.getHeightWidth();
-
   /**
    * The width of this comment when it is full size.
    * @type {number}
    */
-  this.width = hw.width;
+  this.width = comment.getWidth();
 
   /**
    * The height of this comment when it is full size.
    * @type {number}
    */
-  this.height = hw.height;
+  this.height = comment.getHeight();
 
   /**
    * Whether or not this comment is minimized.
@@ -322,9 +320,8 @@ Blockly.Events.CommentDelete = function(comment) {
   this.xy = comment.getXY();
   this.minimized = comment.isMinimized() || false;
   this.text = comment.getContent();
-  var hw = comment.getHeightWidth();
-  this.height = hw.height;
-  this.width = hw.width;
+  this.height = comment.getHeight();
+  this.width = comment.getWidth();
 
   this.xml = comment.toXmlWithXY();
 };
