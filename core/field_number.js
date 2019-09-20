@@ -376,7 +376,7 @@ Blockly.FieldNumber.prototype.doClassValidation_ = function(newValue) {
     return null;
   }
   // Get the value in range.
-  n = Math.min(Math.max(n, this.min_), this.max_);
+  // n = Math.min(Math.max(n, this.min_), this.max_);
   // Round to nearest multiple of precision.
   if (this.precision_ && isFinite(n)) {
     n = Math.round(n / this.precision_) * this.precision_;

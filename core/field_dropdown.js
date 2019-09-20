@@ -501,7 +501,7 @@ Blockly.FieldDropdown.prototype.doClassValidation_ = function(newValue) {
         ' Block type: ' + this.sourceBlock_.type + ', Field name: ' + this.name +
         ', Value: ' + newValue);
     }
-    return null;
+    return newValue;
   }
   return newValue;
 };
