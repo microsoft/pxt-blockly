@@ -941,6 +941,7 @@ Blockly.BlockSvg.prototype.generateContextMenu = function() {
  */
 Blockly.BlockSvg.prototype.showContextMenu_ = function(e) {
   // pxt-blockly: display parent context menu for shadow block
+  var block = this;
   if (this.parentBlock_ && (this.isShadow_
     && !Blockly.pxtBlocklyUtils.isShadowArgumentReporter(block))) {
     this.parentBlock_.showContextMenu_(e);

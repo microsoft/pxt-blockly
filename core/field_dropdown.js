@@ -501,6 +501,7 @@ Blockly.FieldDropdown.prototype.doClassValidation_ = function(newValue) {
         ' Block type: ' + this.sourceBlock_.type + ', Field name: ' + this.name +
         ', Value: ' + newValue);
     }
+    // pxt-blockly: allow unavailable options in dropdown
     return newValue;
   }
   return newValue;

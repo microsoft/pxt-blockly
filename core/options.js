@@ -56,8 +56,11 @@ Blockly.Options = function(options) {
   } else {
     var languageTree =
         Blockly.Options.parseToolboxTree(options['toolbox'] || null);
-    var hasCategories = Boolean(languageTree &&
-        languageTree.getElementsByTagName('category').length);
+    // pxt-blockly: hasCategories if present in options
+    var hasCategories = options['hasCategories'] != undefined
+        ? options['hasCategories']
+        : Boolean(languageTree &&
+            languageTree.getElementsByTagName('category').length);
     var hasTrashcan = options['trashcan'];
     if (hasTrashcan === undefined) {
       hasTrashcan = hasCategories;
