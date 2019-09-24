@@ -460,9 +460,7 @@ Blockly.Variables.generateVariableFieldXmlString = function(variableModel) {
   // The variable name may be user input, so it may contain characters that need
   // to be escaped to create valid XML.
   var typeString = variableModel.type;
-  if (typeString == '') {
-    typeString = '\'\'';
-  }
+  // pxt-blockly: use empty string instead of "''" as default type
   // TODO shakao remove goog.string (pxt htmlEscape function)
   var text = '<field name="VAR" id="' + variableModel.getId() +
       '" variabletype="' + goog.string.htmlEscape(typeString) +

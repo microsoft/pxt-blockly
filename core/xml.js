@@ -777,7 +777,6 @@ Blockly.Xml.domToBlockHeadless_ = function(xmlBlock, workspace) {
  */
 Blockly.Xml.domToField_ = function(block, fieldName, xml) {
   var field = block.getField(fieldName);
-  // TODO shakao verify if variableGetter check necessary
   if (!field) {
     console.warn('Ignoring non-existent field ' + fieldName + ' in block ' +
         block.type);
