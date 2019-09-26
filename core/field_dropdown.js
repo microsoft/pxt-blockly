@@ -55,13 +55,14 @@ goog.require('goog.ui.MenuItem');
  * @constructor
  */
 Blockly.FieldDropdown = function(menuGenerator, opt_validator) {
-  if (typeof menuGenerator != 'function') {
-    Blockly.FieldDropdown.validateOptions_(menuGenerator);
-  }
   this.menuGenerator_ = menuGenerator;
-
   this.trimOptions_();
-  var firstTuple = this.getOptions()[0];
+
+  // pxt-blockly: validate result of getOptions, as menuGenerator is sometimes
+  // null (as in case of old pxt functions)
+  let options = this.getOptions();
+  Blockly.FieldDropdown.validateOptions_(options);
+  var firstTuple = options[0];
 
   // Call parent's constructor.
   Blockly.FieldDropdown.superClass_.constructor.call(this, firstTuple[1],
