@@ -102,7 +102,7 @@ Blockly.FieldSlider.fromJson = function(options) {
 };
 
 Blockly.FieldSlider.prototype.setOptions = function(min, max, step, precision) {
-  this.min_ = parseFloat(min)  || -Infinity;
+  this.min_ = parseFloat(min) || -Infinity;
   this.max_ = parseFloat(max) || Infinity;
   this.step_ = parseFloat(step) || undefined;
   this.precision_ = parseFloat(precision) || undefined;
