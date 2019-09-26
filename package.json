@@ -22,7 +22,7 @@
     "prepare": "node_modules/.bin/gulp build && webpack",
     "lint": "eslint .",
     "pretest": "tests/scripts/test_setup.sh",
-    "test": "node tests/jsunit/test_runner.js",
+    "test": "node tests/jsunit/run_jsunit_tests_in_browser.js",
     "watch": "node_modules/.bin/gulp watch",
     "publish": "node_modules/.bin/gulp publish"
   },
@@ -33,6 +33,11 @@
     "media/**",
     "msg/**"
   ],
+  "browser": {
+    "./node.js": "./browser.js",
+    "./core.js": "./core-browser.js",
+    "./blockly-node.js": "./blockly.js"
+  },
   "devDependencies": {
     "chai": "^4.2.0",
     "copy-webpack-plugin": "4.5.1",

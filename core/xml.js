@@ -753,14 +753,14 @@ Blockly.Xml.domToBlockHeadless_ = function(xmlBlock, workspace) {
   }
   if (xmlBlock.nodeName.toLowerCase() == 'shadow') {
     // Ensure all children are also shadows.
-    var children = block.getChildren(false);
-    for (var i = 0, child; child = children[i]; i++) {
-      if (!child.isShadow()) {
-        throw TypeError('Shadow block not allowed non-shadow child.');
-      }
-    }
+    // pxt-blockly: allow non-shadow children and variables in shadow blocks
+    // var children = block.getChildren(false);
+    // for (var i = 0, child; child = children[i]; i++) {
+    //   if (!child.isShadow()) {
+    //     throw TypeError('Shadow block not allowed non-shadow child.');
+    //   }
+    // }
     // Ensure this block doesn't have any variable inputs.
-    // TODO shakao verify this still needs to be disabled /pxt-blockly/pull/104/files
     // goog.asserts.assert(block.getVarModels().length == 0,
     //     'Shadow blocks cannot have variable references.');
     block.setShadow(true);
@@ -777,7 +777,6 @@ Blockly.Xml.domToBlockHeadless_ = function(xmlBlock, workspace) {
  */
 Blockly.Xml.domToField_ = function(block, fieldName, xml) {
   var field = block.getField(fieldName);
-  // TODO shakao verify if variableGetter check necessary
   if (!field) {
     console.warn('Ignoring non-existent field ' + fieldName + ' in block ' +
         block.type);

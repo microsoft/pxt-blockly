@@ -459,7 +459,7 @@ Blockly.Field.prototype.dispose = function() {
  * Add or remove the UI indicating if this field is editable or not.
  */
 Blockly.Field.prototype.updateEditable = function() {
-  var group = this.getClickTarget_();
+  var group = this.fieldGroup_;
   if (!this.EDITABLE || !group) {
     return;
   }
@@ -1106,21 +1106,10 @@ Blockly.Field.prototype.setTooltip = function(newTip) {
 };
 
 /**
- * The element to bind the click handler to. If not set explicitly, defaults
- * to the SVG root of the field. When this element is
- * clicked on an editable field, the editor will open.
- * @return {!Element} Element to bind click handler to.
- * @private
- */
-Blockly.Field.prototype.getClickTarget_ = function() {
-  return this.clickTarget_ || this.getSvgRoot();
-};
-
-/**
  * Select the element to bind the click handler to. When this element is
  * clicked on an editable field, the editor will open.
  *
- * <p>If the block has multiple fields, this is just the group containing the
+ * If the block has multiple fields, this is just the group containing the
  * field. If the block has only one field, we handle clicks over the whole
  * block.
  *

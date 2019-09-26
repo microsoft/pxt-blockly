@@ -307,9 +307,9 @@ Blockly.Functions.createFunctionCallbackFactory_ = function(workspace) {
       var block = Blockly.Xml.domToBlock(blockDom.firstChild, workspace);
 
       if (highestBlock) {
-        var highestBlockTopLeft = highestBlock.getBoundingRectangle().topLeft;
-        var highestBlockY = highestBlockTopLeft.y;
-        var highestBlockX = highestBlockTopLeft.x;
+        var rect = highestBlock.getBoundingRectangle();
+        var highestBlockY = rect.top;
+        var highestBlockX = rect.left;
         var height = block.getHeightWidth().height;
         var gap = 20 / workspace.scale;
         var moveY = highestBlockY - height - gap;

@@ -205,30 +205,6 @@ Blockly.FieldVariable.prototype.getVariable = function() {
   return this.variable_;
 };
 
-Blockly.FieldVariableGetter.prototype.setValue = function(id) {
-  var workspace = this.sourceBlock_.workspace;
-  var variable = Blockly.Variables.getVariable(workspace, id);
-
-  if (!variable) {
-    throw new Error('Variable id doesn\'t point to a real variable!  ID was ' +
-        id);
-  }
-  // Type checks!
-  var type = variable.type;
-  if (!this.typeIsAllowed_(type)) {
-    throw new Error('Variable type doesn\'t match this field!  Type was ' +
-        type);
-  }
-  if (this.sourceBlock_ && Blockly.Events.isEnabled()) {
-    var oldValue = this.variable_ ? this.variable_.getId() : null;
-    Blockly.Events.fire(new Blockly.Events.BlockChange(
-        this.sourceBlock_, 'field', this.name, oldValue, id));
-  }
-  this.variable_ = variable;
-  this.value_ = id;
-  this.setText(variable.name);
-};
-
 /**
  * Gets the validation function for this field, or null if not set.
  * Returns null if the variable is not set, because validators should not

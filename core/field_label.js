@@ -76,6 +76,15 @@ Blockly.FieldLabel.fromJson = function(options) {
 Blockly.FieldLabel.prototype.EDITABLE = false;
 
 /**
+ * pxt-blockly: labels do not bind events, to allow blocks with one
+ * field to bind the event to the entire block.
+ * @protected
+ */
+Blockly.FieldLabel.prototype.bindEvents_ = function() {
+  return;
+};
+
+/**
  * Create block UI for this label.
  * @package
  */
