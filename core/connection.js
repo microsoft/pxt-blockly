@@ -491,16 +491,6 @@ Blockly.Connection.prototype.isConnectionAllowed = function(candidate) {
       break;
     }
     case Blockly.NEXT_STATEMENT: {
-      // Scratch-specific behaviour:
-      // If this is a c-block, we can't connect this block's
-      // previous connection unless we're connecting to the end of the last
-      // block on a stack or there's already a block connected inside the c.
-      if (firstStatementConnection &&
-          this == this.sourceBlock_.previousConnection &&
-          candidate.isConnected() &&
-          !firstStatementConnection.targetConnection) {
-        return false;
-      }
       // Don't let a block with no next connection bump other blocks out of the
       // stack.  But covering up a shadow block or stack of shadow blocks is
       // fine.  Similarly, replacing a terminal statement with another terminal

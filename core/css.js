@@ -455,7 +455,9 @@ Blockly.Css.CONTENT = [
     'fill-opacity: .8;',
     'stroke-opacity: .8;',
   '}',
-  '.blocklyDisabled .blocklyEditableText .blocklyBlockBackground {',
+  '.blocklyDisabled .blocklyEditableText .blocklyBlockBackground,',
+  '.blocklyDisabled .blocklyNonEditableText .blocklyBlockBackground,',
+  '.blocklyDisabled g[data-argument-type="dropdown"] .blocklyBlockBackground {',
     'fill-opacity: 0.1 !important;',
   '}',
 
@@ -1067,8 +1069,6 @@ Blockly.Css.CONTENT = [
     'outline: none;',
     'padding: 4px 0;',
     'position: absolute;',
-    'overflow-y: auto;',
-    'overflow-x: hidden;',
     'z-index: 20000;',  /* Arbitrary, but some apps depend on it... */
     'box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);',
   '}',

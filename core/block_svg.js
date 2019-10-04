@@ -861,20 +861,22 @@ Blockly.BlockSvg.prototype.generateContextMenu = function() {
     if (this.isMovable()) {
       if (!this.collapsed_) {
         // Option to make block inline.
-        for (var i = 1; i < this.inputList.length; i++) {
-          if (this.inputList[i - 1].type != Blockly.NEXT_STATEMENT &&
-              this.inputList[i].type != Blockly.NEXT_STATEMENT) {
-            // Only display this option if there are two value or dummy inputs
-            // next to each other.
-            var inlineOption = {enabled: true};
-            var isInline = this.getInputsInline();
-            inlineOption.text = isInline ?
-                Blockly.Msg['EXTERNAL_INPUTS'] : Blockly.Msg['INLINE_INPUTS'];
-            inlineOption.callback = function() {
-              block.setInputsInline(!isInline);
-            };
-            menuOptions.push(inlineOption);
-            break;
+        if (this.workspace.options.inline) {
+          for (var i = 1; i < this.inputList.length; i++) {
+            if (this.inputList[i - 1].type != Blockly.NEXT_STATEMENT &&
+                this.inputList[i].type != Blockly.NEXT_STATEMENT) {
+              // Only display this option if there are two value or dummy inputs
+              // next to each other.
+              var inlineOption = {enabled: true};
+              var isInline = this.getInputsInline();
+              inlineOption.text = isInline ?
+                  Blockly.Msg['EXTERNAL_INPUTS'] : Blockly.Msg['INLINE_INPUTS'];
+              inlineOption.callback = function() {
+                block.setInputsInline(!isInline);
+              };
+              menuOptions.push(inlineOption);
+              break;
+            }
           }
         }
         // Option to collapse block
