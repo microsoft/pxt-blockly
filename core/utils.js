@@ -273,7 +273,8 @@ Blockly.utils.checkMessageReferences = function(message) {
   for (var i = 0; i < m.length; i++) {
     var msgKey = m[i].toUpperCase();
     if (msgTable[msgKey.slice(6, -1)] == undefined) {
-      console.log('WARNING: No message string for ' + m[i] + ' in ' + message);
+      // pxt-blockly: ignore, we use custom localization
+      // console.log('WARNING: No message string for ' + m[i] + ' in ' + message);
       validSoFar = false;  // Continue to report other errors.
     }
   }
