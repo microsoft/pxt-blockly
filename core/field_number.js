@@ -167,7 +167,7 @@ Blockly.FieldNumber.prototype.setConstraints_ = function(min, max, precision) {
   min = parseFloat(min);
   this.min_ = isNaN(min) ? -Infinity : min;
   this.negativeAllowed_ = (typeof this.min_ == 'undefined') || isNaN(this.min_) ||
-  this.min_ < 0;
+      this.min_ < 0;
 
   max = parseFloat(max);
   this.max_ = isNaN(max) ? Infinity : max;
