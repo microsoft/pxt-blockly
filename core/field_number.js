@@ -142,24 +142,37 @@ Blockly.FieldNumber.prototype.getNumRestrictor = function(opt_min, opt_max,
   return new RegExp(pattern);
 };
 
-/**
- * Set the constraints for this field.
- * @param {number=} opt_min Minimum number allowed.
- * @param {number=} opt_max Maximum number allowed.
- * @param {number=} opt_precision Step allowed between numbers
- */
-Blockly.FieldNumber.prototype.setConstraints_ = function(opt_min, opt_max,
-    opt_precision) {
-  this.decimalAllowed_ = (typeof opt_precision == 'undefined') ||
-      isNaN(opt_precision) || (opt_precision == 0) ||
-      (Math.floor(opt_precision) != opt_precision);
-  this.negativeAllowed_ = (typeof opt_min == 'undefined') || isNaN(opt_min) ||
-      opt_min < 0;
 
-  let min = parseFloat(opt_min);
+/**
+ * Set the maximum, minimum and precision constraints on this field.
+ * Any of these properties may be undefiend or NaN to be disabled.
+ * Setting precision (usually a power of 10) enforces a minimum step between
+ * values. That is, the user's value will rounded to the closest multiple of
+ * precision. The least significant digit place is inferred from the precision.
+ * Integers values can be enforces by choosing an integer precision.
+ * @param {number|string|undefined} min Minimum value.
+ * @param {number|string|undefined} max Maximum value.
+ * @param {number|string|undefined} precision Precision for value.
+ */
+Blockly.FieldNumber.prototype.setConstraints_ = function(min, max, precision) {
+  this.precision_ = isNaN(precision) ? 0 : precision;
+  var precisionString = this.precision_.toString();
+  var decimalIndex = precisionString.indexOf('.');
+  this.fractionalDigits_ = (decimalIndex == -1) ? -1 :
+      precisionString.length - (decimalIndex + 1);
+  this.decimalAllowed_ = (typeof this.precision_ == 'undefined') ||
+      isNaN(this.precision_) || (this.precision_ == 0) ||
+      (Math.floor(this.precision_) != this.precision_);
+
+  min = parseFloat(min);
   this.min_ = isNaN(min) ? -Infinity : min;
-  let max = parseFloat(opt_max);
+  this.negativeAllowed_ = (typeof this.min_ == 'undefined') || isNaN(this.min_) ||
+      this.min_ < 0;
+
+  max = parseFloat(max);
   this.max_ = isNaN(max) ? Infinity : max;
+
+  this.setValue(this.getValue());
 };
 
 /**

@@ -7,6 +7,7 @@ declare module Blockly {
         hasCategories?: boolean;
         trashcan?: boolean;
         collapse?: boolean;
+        inline?: boolean;
         comments?: boolean;
         disable?: boolean;
         scrollbars?: boolean;
@@ -29,6 +30,11 @@ declare module Blockly {
             minScale?: number;
             scaleSpeed?: number;
             startScale?: number;
+        };
+        move?: {
+            scrollbars?: boolean;
+            wheel?: boolean;
+            drag?: boolean;
         };
         enableRealTime?: boolean;
         rtl?: boolean;
