@@ -48,7 +48,8 @@ goog.require('Blockly.utils.xml');
 Blockly.Xml.workspaceToDom = function(workspace, opt_noId) {
   var xml = Blockly.utils.xml.createElement('xml');
   var variablesElement = Blockly.Xml.variablesToDom(
-      Blockly.Variables.allUsedVarModels(workspace));
+    // pxt-blockly: always output all variables
+      workspace.getAllVariables(workspace));
   if (variablesElement.hasChildNodes()) {
     xml.appendChild(variablesElement);
   }

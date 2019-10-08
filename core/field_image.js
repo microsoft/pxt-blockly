@@ -59,6 +59,7 @@ Blockly.FieldImage = function(src, width, height,
   if (typeof opt_onClick == 'function') {
     this.clickHandler_ = opt_onClick;
     this.EDITABLE = true;
+    this.SERIALIZABLE = true;
   }
 };
 goog.inherits(Blockly.FieldImage, Blockly.Field);
@@ -89,6 +90,14 @@ Blockly.FieldImage.fromJson = function(options) {
  * @const
  */
 Blockly.FieldImage.prototype.EDITABLE = false;
+
+/**
+ *  * Serializable fields are saved by the XML renderer, non-serializable fields
+ * are not. Editable fields should also be serializable.
+ * @type {boolean}
+ * @const
+ */
+Blockly.FieldImage.prototype.SERIALIZABLE = false;
 
 /**
  * Used to tell if the field needs to be rendered the next time the block is

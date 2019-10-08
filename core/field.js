@@ -819,9 +819,10 @@ Blockly.Field.prototype.getSize = function() {
   if (this.isDirty_) {
     this.render_();
     this.isDirty_ = false;
-  } else if (this.visible_ && this.size_.width == 0) {
+  } else if (this.visible_ && this.size_.width == 0 && !this.sourceBlock_.isInsertionMarker_) {
     // If the field is not visible the width will be 0 as well, one of the
     // problems with the old system.
+    // pxt-blockly: field size will also be zero for insertion marker fields
     console.warn('Deprecated use of setting size_.width to 0 to rerender a' +
       ' field. Set field.isDirty_ to true instead.');
     this.render_();
