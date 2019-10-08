@@ -44,8 +44,8 @@ Blockly.FieldSlider = function(opt_value, opt_min, opt_max, opt_precision,
     opt_step, opt_labelText, opt_validator) {
   Blockly.FieldSlider.superClass_.constructor.call(this, opt_value, opt_min,
       opt_max, opt_precision, opt_validator);
-  this.min_ = parseFloat(opt_min) || -Infinity;
-  this.max_ = parseFloat(opt_max) || Infinity;
+  this.min_ = parseFloat(opt_min); if (isNaN(this.min_)) this.min_ = -Infinity;
+  this.max_ = parseFloat(opt_max); if (isNaN(this.max)) this.max_ = Infinity;
   this.step_ = parseFloat(opt_step);
   this.labelText_ = opt_labelText;
   this.precision_ = parseFloat(opt_precision);
