@@ -48,6 +48,9 @@ goog.require('Blockly.utils.userAgent');
 Blockly.FieldNumberDropdown = function(value, menuGenerator, opt_min, opt_max,
     opt_precision, opt_validator) {
   this.setConstraints_ = Blockly.FieldNumber.prototype.setConstraints_;
+  this.setMinInternal_ = Blockly.FieldNumber.prototype.setMinInternal_;
+  this.setMaxInternal_ = Blockly.FieldNumber.prototype.setMaxInternal_;
+  this.setPrecisionInternal_ = Blockly.FieldNumber.prototype.setPrecisionInternal_;
 
   var numRestrictor = Blockly.FieldNumber.prototype.getNumRestrictor.call(
       this, opt_min, opt_max, opt_precision
