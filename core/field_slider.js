@@ -44,11 +44,10 @@ Blockly.FieldSlider = function(opt_value, opt_min, opt_max, opt_precision,
     opt_step, opt_labelText, opt_validator) {
   Blockly.FieldSlider.superClass_.constructor.call(this, opt_value, opt_min,
       opt_max, opt_precision, opt_validator);
-  this.min_ = parseFloat(opt_min) || -Infinity;
-  this.max_ = parseFloat(opt_max) || Infinity;
+  this.setConstraints_(opt_min, opt_max, opt_precision);
+
   this.step_ = parseFloat(opt_step);
   this.labelText_ = opt_labelText;
-  this.precision_ = parseFloat(opt_precision);
 };
 goog.inherits(Blockly.FieldSlider, Blockly.FieldNumber);
 
@@ -102,10 +101,9 @@ Blockly.FieldSlider.fromJson = function(options) {
 };
 
 Blockly.FieldSlider.prototype.setOptions = function(min, max, step, precision) {
-  this.min_ = parseFloat(min) || -Infinity;
-  this.max_ = parseFloat(max) || Infinity;
+  this.setConstraints_(min, max, precision);
+
   this.step_ = parseFloat(step) || undefined;
-  this.precision_ = parseFloat(precision) || undefined;
 
   var numRestrictor = this.getNumRestrictor(this.min_, this.max_, this.precision_);
   this.setRestrictor(numRestrictor);
