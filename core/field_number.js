@@ -156,13 +156,15 @@ Blockly.FieldNumber.prototype.getNumRestrictor = function(opt_min, opt_max,
  * @param {?(number|string|undefined)} precision Precision for value.
  */
 Blockly.FieldNumber.prototype.setConstraints_ = function(min, max, precision) {
+  this.decimalAllowed_ = (typeof precision == 'undefined') ||
+    precision === null || isNaN(precision) || (precision == 0) ||
+    (Math.floor(precision) != precision);
+  this.negativeAllowed_ = (typeof min == 'undefined') || min === null ||
+    isNaN(min) || min < 0;
+
   this.setMinInternal_(min);
   this.setMaxInternal_(max);
   this.setPrecisionInternal_(precision);
-
-  this.decimalAllowed_ = (typeof this.precision_ == 'undefined') ||
-      isNaN(this.precision_) || (this.precision_ == 0) ||
-      (Math.floor(this.precision_) != this.precision_);
 
   this.setValue(this.getValue());
 };

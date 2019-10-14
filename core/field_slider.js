@@ -42,8 +42,8 @@ goog.require('goog.ui.Slider');
  */
 Blockly.FieldSlider = function(opt_value, opt_min, opt_max, opt_precision,
     opt_step, opt_labelText, opt_validator) {
-  Blockly.FieldSlider.superClass_.constructor.call(this, opt_value, opt_min,
-      opt_max, opt_precision, opt_validator);
+  Blockly.FieldSlider.superClass_.constructor.call(this, opt_value, null,
+    null, null, opt_validator);
   this.setConstraints_(opt_min, opt_max, opt_precision);
 
   this.step_ = parseFloat(opt_step);
