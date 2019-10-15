@@ -390,7 +390,7 @@ Blockly.FieldTextInput.prototype.widgetCreate_ = function(
     readOnly, withArrow, arrowCallback) {
   var div = Blockly.WidgetDiv.DIV;
   // Apply text-input-specific fixed CSS
-  div.className += ' fieldTextInput';
+  Blockly.utils.dom.addClass(div, 'fieldTextInput');
   var htmlInput = document.createElement('input');
   htmlInput.className = 'blocklyHtmlInput';
   htmlInput.setAttribute('spellcheck', this.spellcheck_);
@@ -480,21 +480,10 @@ Blockly.FieldTextInput.prototype.widgetDispose_ = function() {
   // Animation of disposal
   this.htmlInput_.style.fontSize = Blockly.BlockSvg.FIELD_TEXTINPUT_FONTSIZE_INITIAL + 'pt';
 
-
-  var style = Blockly.WidgetDiv.DIV.style;
-  style.boxShadow = '';
-  // Resize to actual size of final source block.
-  if (this.sourceBlock_) {
-    if (this.sourceBlock_.isShadow()) {
-      var size = this.sourceBlock_.getHeightWidth();
-      style.width = (size.width + 1) + 'px';
-      style.height = (size.height + 1) + 'px';
-    } else {
-      style.width = (this.size_.width + 1) + 'px';
-      style.height = (Blockly.BlockSvg.FIELD_HEIGHT_MAX_EDIT + 1) + 'px';
-    }
-  }
-  style.marginLeft = 0;
+  // Clean up widget div styling
+  var div = Blockly.WidgetDiv.DIV;
+  Blockly.utils.dom.removeClass(div, 'fieldTextInput');
+  div.style = {};
 }
 
 /**
