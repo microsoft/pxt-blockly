@@ -162,7 +162,7 @@ Blockly.Xml.blockToDom = function(block, opt_noId) {
   Blockly.Xml.allFieldsToDom_(block, element);
 
   if (block.isBreakpointSet()) {
-    var breakpointElement = goog.dom.createDom('breakpoint', null, "");
+    var breakpointElement = Blockly.utils.xml.createElement('breakpoint', null, "");
     element.appendChild(breakpointElement);
   }
 
@@ -338,6 +338,9 @@ Blockly.Xml.domToPrettyText = function(dom) {
  * @throws if the text doesn't parse.
  */
 Blockly.Xml.textToDom = function(text) {
+  // pxt-blockly: strip old namespaces
+  text = text.replace(/xmlns=\"(.*?)\"/,
+    'xmlns="' +  Blockly.utils.xml.NAME_SPACE + '"');
   var doc = Blockly.utils.xml.textToDomDocument(text);
   if (!doc || !doc.documentElement ||
       doc.getElementsByTagName('parsererror').length) {

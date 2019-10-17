@@ -669,7 +669,7 @@ Blockly.Constants.Math.MATH_NUMBER_MINMAX_MIXIN = {
    * @this Blockly.Block
    */
   mutationToDom: function() {
-    var container = document.createElement('mutation');
+    var container = Blockly.utils.xml.createElement('mutation');
     if (this.inputList[0].fieldRow[0].min_ != undefined) container.setAttribute('min', this.inputList[0].fieldRow[0].min_);
     if (this.inputList[0].fieldRow[0].max_ != undefined) container.setAttribute('max', this.inputList[0].fieldRow[0].max_);
     if (this.inputList[0].fieldRow[0].labelText_ != undefined) container.setAttribute('label', this.inputList[0].fieldRow[0].labelText_);

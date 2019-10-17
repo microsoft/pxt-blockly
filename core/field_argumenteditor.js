@@ -77,8 +77,8 @@ Blockly.FieldArgumentEditor.prototype.showEditor_ = function() {
 
   var div = Blockly.WidgetDiv.DIV;
   div.className += ' argumentEditorInput';
-  var removeButton =
-      goog.dom.createDom(goog.dom.TagName.IMG, 'argumentEditorRemoveIcon');
+  var removeButton = document.createElement('img');
+  removeButton.setAttribute('class', 'argumentEditorRemoveIcon');
   removeButton.setAttribute('src', Blockly.FieldArgumentEditor.REMOVE_ARG_URI);
   this.removeButtonMouseWrapper_ = Blockly.bindEvent_(removeButton,
       'mousedown', this, this.removeCallback_);

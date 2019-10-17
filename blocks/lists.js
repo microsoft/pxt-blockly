@@ -264,10 +264,10 @@ Blockly.Blocks['lists_create_with'] = {
         var newInput = this.getInput('ADD' + (this.itemCount_ - 1));
         var shadowInputDom = firstInput.connection.getShadowDom();
         if (shadowInputDom) {
-          var shadowDom = document.createElement('shadow');
+          var shadowDom = Blockly.utils.xml.createElement('shadow');
           var shadowInputType = shadowInputDom.getAttribute('type');
           shadowDom.setAttribute('type', shadowInputType);
-          var shadowDomField = document.createElement('field');
+          var shadowDomField = Blockly.utils.xml.createElement('field');
           shadowDomField.setAttribute('name', 'NUM');
           shadowDom.appendChild(shadowDomField);
           if (shadowDom) {

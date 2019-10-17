@@ -84,11 +84,11 @@ Blockly.PXTBlockly.FunctionUtils.getArgumentDefaultName = function(typeName) {
  */
 Blockly.PXTBlockly.FunctionUtils.mutationToDom = function() {
   this.ensureIds_();
-  var container = document.createElement('mutation');
+  var container = Blockly.utils.xml.createElement('mutation');
   container.setAttribute('name', this.name_);
   container.setAttribute('functionid', this.functionId_);
   this.arguments_.forEach(function(arg) {
-    var argNode = document.createElement('arg');
+    var argNode = Blockly.utils.xml.createElement('arg');
     argNode.setAttribute('name', arg.name);
     argNode.setAttribute('id', arg.id);
     argNode.setAttribute('type', arg.type);
@@ -461,14 +461,14 @@ Blockly.PXTBlockly.FunctionUtils.getShadowBlockInfoFromType_ = function(argument
  * @this Blockly.Block
  */
 Blockly.PXTBlockly.FunctionUtils.buildShadowDom_ = function(argumentType) {
-  var shadowDom = goog.dom.createDom('shadow');
+  var shadowDom = Blockly.utils.xml.createElement('shadow');
   var shadowInfo = Blockly.PXTBlockly.FunctionUtils.getShadowBlockInfoFromType_(
       argumentType, this.workspace);
   var shadowType = shadowInfo[0];
   var fieldName = shadowInfo[1];
   var fieldValue = shadowInfo[2];
   shadowDom.setAttribute('type', shadowType);
-  var fieldDom = goog.dom.createDom('field', null, fieldValue);
+  var fieldDom = Blockly.utils.xml.createElement('field', null, fieldValue);
   fieldDom.setAttribute('name', fieldName);
   shadowDom.appendChild(fieldDom);
   return shadowDom;
@@ -865,8 +865,8 @@ Blockly.PXTBlockly.FunctionUtils.onCallerChange = function(event) {
       // There is no function definition for this function, create an empty one
       // that matches the signature of the caller.
       Blockly.Events.setGroup(event.group);
-      var xml = goog.dom.createDom('xml');
-      var block = goog.dom.createDom('block');
+      var xml = Blockly.utils.xml.createElement('xml');
+      var block = Blockly.utils.xml.createElement('block');
       block.setAttribute('type', Blockly.FUNCTION_DEFINITION_BLOCK_TYPE);
       var xy = this.getRelativeToSurfaceXY();
       var x = xy.x + Blockly.SNAP_RADIUS * (this.RTL ? -1 : 1);
@@ -1051,7 +1051,7 @@ Blockly.PXTBlockly.FunctionUtils.getTypeName = function() {
  * @this Blockly.Block
  */
 Blockly.PXTBlockly.FunctionUtils.argumentMutationToDom = function() {
-  var container = document.createElement('mutation');
+  var container = Blockly.utils.xml.createElement('mutation');
   container.setAttribute('typename', this.typeName_);
   return container;
 };
