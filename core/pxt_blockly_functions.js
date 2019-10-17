@@ -81,14 +81,14 @@ Blockly.Functions.flyoutCategory = function(workspace) {
       //     <arg name="num" type="number" id="..."></arg>
       //   </mutation>
       // </block>
-      var block = goog.dom.createDom('block');
+      var block = Blockly.utils.xml.createElement('block');
       block.setAttribute('type', templateName);
       block.setAttribute('gap', 16);
-      var mutation = goog.dom.createDom('mutation');
+      var mutation = Blockly.utils.xml.createElement('mutation');
       mutation.setAttribute('name', name);
       block.appendChild(mutation);
       for (var j = 0; j < args.length; j++) {
-        var arg = goog.dom.createDom('arg');
+        var arg = Blockly.utils.xml.createElement('arg');
         arg.setAttribute('name', args[j].name);
         arg.setAttribute('type', args[j].type);
         arg.setAttribute('id', args[j].id);
@@ -110,7 +110,7 @@ Blockly.Functions.flyoutCategory = function(workspace) {
  * @private
  */
 Blockly.Functions.addCreateButton_ = function(workspace, xmlList) {
-  var button = goog.dom.createDom('button');
+  var button = Blockly.utils.xml.createElement('button');
   var msg = Blockly.Msg.FUNCTION_CREATE_NEW;
   var callbackKey = 'CREATE_FUNCTION';
   var callback = function() {

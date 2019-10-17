@@ -778,7 +778,7 @@ Blockly.Constants.Text.TEXT_JOIN_MUTATOR_MIXIN = {
         var newInput = this.getInput('ADD' + (this.itemCount_ - 1));
         var shadowInputDom = firstInput.connection.getShadowDom();
         if (shadowInputDom) {
-          var shadowDom = document.createElement('shadow');
+          var shadowDom = Blockly.utils.xml.createElement('shadow');
           var shadowInputType = shadowInputDom.getAttribute('type');
           shadowDom.setAttribute('type', shadowInputType);
           if (shadowDom) {

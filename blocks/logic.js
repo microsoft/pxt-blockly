@@ -75,7 +75,7 @@ Blockly.Blocks['controls_if'] = {
     if (!this.elseifCount_ && !this.elseCount_) {
       return null;
     }
-    var container = document.createElement('mutation');
+    var container = Blockly.utils.xml.createElement('mutation');
     if (this.elseifCount_) {
       container.setAttribute('elseif', this.elseifCount_);
     }

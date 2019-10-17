@@ -290,7 +290,7 @@ Blockly.Events.CommentCreate.prototype.run = function(forward) {
         block.setCommentText('', this.commentId, this.xy.x, this.xy.y, this.minimized);
       }
     } else {
-      var xml = goog.dom.createDom('xml');
+      var xml = Blockly.utils.xml.createElement('xml');
       xml.appendChild(this.xml);
       Blockly.Xml.domToWorkspace(xml, workspace);
     }
@@ -372,7 +372,7 @@ Blockly.Events.CommentDelete.prototype.run = function(forward) {
       block.setCommentText(this.text, this.commentId, this.xy.x, this.xy.y, this.minimized);
       block.comment.setSize(this.width, this.height);
     } else {
-      var xml = goog.dom.createDom('xml');
+      var xml = Blockly.utils.xml.createElement('xml');
       xml.appendChild(this.xml);
       Blockly.Xml.domToWorkspace(xml, workspace);
     }
