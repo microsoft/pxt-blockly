@@ -468,7 +468,7 @@ Blockly.PXTBlockly.FunctionUtils.buildShadowDom_ = function(argumentType) {
   var fieldName = shadowInfo[1];
   var fieldValue = shadowInfo[2];
   shadowDom.setAttribute('type', shadowType);
-  var fieldDom = Blockly.utils.xml.createElement('field', null, fieldValue);
+  var fieldDom = goog.dom.createDom('field', null, fieldValue);
   fieldDom.setAttribute('name', fieldName);
   shadowDom.appendChild(fieldDom);
   return shadowDom;
