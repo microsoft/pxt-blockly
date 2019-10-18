@@ -110,14 +110,14 @@ Blockly.Functions.flyoutCategory = function(workspace) {
  * @private
  */
 Blockly.Functions.addCreateButton_ = function(workspace, xmlList) {
-  var button = Blockly.utils.xml.createElement('button');
+  var button = document.createElement('button');
   var msg = Blockly.Msg.FUNCTION_CREATE_NEW;
   var callbackKey = 'CREATE_FUNCTION';
   var callback = function() {
     Blockly.Functions.createFunctionCallback_(workspace);
   };
   button.setAttribute('text', msg);
-  button.setAttribute('callbackkey', callbackKey);
+  button.setAttribute('callbackKey', callbackKey);
   workspace.registerButtonCallback(callbackKey, callback);
   xmlList.push(button);
 };
