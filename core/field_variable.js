@@ -417,7 +417,7 @@ Blockly.FieldVariable.prototype.onItemSelected = function(menu, menuItem) {
       var that = this;
       var selectedValueType = this.workspace_.getVariableById(this.getValue()).type;
       Blockly.Variables.createVariableButtonHandler(this.workspace_, function(text) {
-        var variable = this.workspace_.getVariable(text, selectedValueType);
+        var variable = that.workspace_.getVariable(text, selectedValueType);
         that.setValue(variable.getId());
       }, selectedValueType);
       return;
