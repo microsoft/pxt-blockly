@@ -187,11 +187,11 @@ gulp.task('typings', function (cb) {
 function pxtPublishTask() {
 	if (fs.existsSync('../pxt')) {
 		pxtPublishTsTask();
-		gulp.src('./blocks_compressed.js').pipe(gulp.dest('../pxt/node_modules/pxt-blockly/'));
-		gulp.src('./blockly_compressed.js').pipe(gulp.dest('../pxt/node_modules/pxt-blockly/'));
-		gulp.src('./msg/js/en.js').pipe(gulp.dest('../pxt/node_modules/pxt-blockly/msg/js/'));
-		gulp.src('./msg/json/en.json').pipe(gulp.dest('../pxt/node_modules/pxt-blockly/msg/json/'));
-		return gulp.src('./media/**/*').pipe(gulp.dest('../pxt/node_modules/pxt-blockly/media/'));
+		gulp.src('./blocks_compressed.js').pipe(gulp.dest('../pxt/node_modules/pxt-blockly/'), {overwrite: true});
+		gulp.src('./blockly_compressed.js').pipe(gulp.dest('../pxt/node_modules/pxt-blockly/'), {overwrite: true});
+		gulp.src('./msg/js/en.js').pipe(gulp.dest('../pxt/node_modules/pxt-blockly/msg/js/'), {overwrite: true});
+		gulp.src('./msg/json/en.json').pipe(gulp.dest('../pxt/node_modules/pxt-blockly/msg/json/'), {overwrite: true});
+		return gulp.src('./media/**/*').pipe(gulp.dest('../pxt/node_modules/pxt-blockly/media/'), {overwrite: true});
 	}
 }
 
@@ -201,7 +201,7 @@ function pxtPublishTsTask() {
 	}
 }
 
-// Task for building pxt-blockyl, and copying files over to pxt
+// Task for building pxt-blockly, and copying files over to pxt
 gulp.task('publish', gulp.series(['build', pxtPublishTask]));
 
 // Task for bumping patch version and tagging commit. Travis will upload to npm.
