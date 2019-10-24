@@ -58,8 +58,6 @@ Blockly.FieldImage = function(src, width, height,
 
   if (typeof opt_onClick == 'function') {
     this.clickHandler_ = opt_onClick;
-    this.EDITABLE = true;
-    this.SERIALIZABLE = true;
   }
 };
 goog.inherits(Blockly.FieldImage, Blockly.Field);
