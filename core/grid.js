@@ -159,7 +159,7 @@ Blockly.Grid.prototype.update = function(scale) {
   end *= scale;
 
   if (this.imageOptions_) {
-    this.gridPattern_.setAttribute('patternTransform', `scale(${scale})`);
+    this.gridPattern_.setAttribute('patternTransform', 'scale(' + scale + ')');
   } else {
     this.setLineAttributes_(this.line1_, scale, start, end, half, half);
     this.setLineAttributes_(this.line2_, scale, half, half, start, end);
@@ -243,10 +243,10 @@ Blockly.Grid.createDom = function(rnd, gridOptions, defs) {
     */
     var gridImageOptions = gridOptions['image'];
     // delete non-style properties
-    var gridStyle = gridImageOptions;
-    gridStyle['path'] = null;
-    gridStyle['width'] = null;
-    gridStyle['height'] = null;
+    var gridStyle = JSON.parse(JSON.stringify(gridImageOptions));
+    delete gridStyle['path'];
+    delete gridStyle['width'];
+    delete gridStyle['height'];
     var gridImage = Blockly.utils.dom.createSvgElement('image', gridStyle,
       gridPattern);
     gridImage.setAttributeNS('http://www.w3.org/1999/xlink',

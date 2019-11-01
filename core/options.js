@@ -311,7 +311,7 @@ Blockly.Options.parseGridOptions_ = function(options) {
 /**
  * Parse the user-specified image options if custom image is enabled.
  * @param {!Object} options Dictionary of options.
- * @return {!Object} A dictionary of normalized options.
+ * @return {Object} A dictionary of normalized options.
  * @private
  */
 Blockly.Options.parseGridImageOptions_ = function(options) {
