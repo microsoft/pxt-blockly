@@ -82,6 +82,11 @@ Blockly.Grid = function(pattern, options) {
    * @private
    */
   this.snapToGrid_ = options['snap'];
+
+  /**
+   * Image options
+   */
+  this.imageOptions_ = options['image'];
 };
 
 /**
@@ -138,8 +143,12 @@ Blockly.Grid.prototype.update = function(scale) {
   // MSIE freaks if it sees a 0x0 pattern, so set empty patterns to 100x100.
   var safeSpacing = (this.spacing_ * scale) || 100;
 
-  this.gridPattern_.setAttribute('width', safeSpacing);
-  this.gridPattern_.setAttribute('height', safeSpacing);
+  this.gridPattern_.setAttribute('width',
+    (this.imageOptions_ && this.imageOptions_.width) ?
+    this.imageOptions_.width : safeSpacing);
+  this.gridPattern_.setAttribute('height',
+    (this.imageOptions_ && this.imageOptions_.height) ?
+    this.imageOptions_.height : safeSpacing);
 
   var half = Math.floor(this.spacing_ / 2) + 0.5;
   var start = half - this.length_ / 2;
@@ -149,8 +158,12 @@ Blockly.Grid.prototype.update = function(scale) {
   start *= scale;
   end *= scale;
 
-  this.setLineAttributes_(this.line1_, scale, start, end, half, half);
-  this.setLineAttributes_(this.line2_, scale, half, half, start, end);
+  if (this.imageOptions_) {
+    this.gridPattern_.setAttribute('patternTransform', `scale(${scale})`);
+  } else {
+    this.setLineAttributes_(this.line1_, scale, start, end, half, half);
+    this.setLineAttributes_(this.line2_, scale, half, half, start, end);
+  }
 };
 
 /**
@@ -221,6 +234,20 @@ Blockly.Grid.createDom = function(rnd, gridOptions, defs) {
           {'stroke': gridOptions['colour']}, gridPattern);
     }
     // x1, y1, x1, x2 properties will be set later in update.
+  } else if (gridOptions['image'] && gridOptions['image']['path']) {
+    /*
+      <pattern id="blocklyGridPattern837493" patternUnits="userSpaceOnUse"
+              width="IMAGE_WIDTH" height="IMAGE_HEIGHT">
+        <image xlink:href="IMAGE_URL" style="IMAGE_STYLE" />
+      </pattern>
+    */
+    var gridImageOptions = gridOptions['image'];
+    var { path, width, height, ...rest } = gridImageOptions;
+    var gridImage = Blockly.utils.dom.createSvgElement('image', rest,
+      gridPattern);
+    gridImage.setAttributeNS('http://www.w3.org/1999/xlink',
+      'xlink:href', gridImageOptions['path']);
+    this.imageOptions_ = gridImageOptions;
   } else {
     // Edge 16 doesn't handle empty patterns
     Blockly.utils.dom.createSvgElement('line', {}, gridPattern);
