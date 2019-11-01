@@ -242,8 +242,12 @@ Blockly.Grid.createDom = function(rnd, gridOptions, defs) {
       </pattern>
     */
     var gridImageOptions = gridOptions['image'];
-    var { path, width, height, ...rest } = gridImageOptions;
-    var gridImage = Blockly.utils.dom.createSvgElement('image', rest,
+    // delete non-style properties
+    var gridStyle = gridImageOptions;
+    gridStyle['path'] = null;
+    gridStyle['width'] = null;
+    gridStyle['height'] = null;
+    var gridImage = Blockly.utils.dom.createSvgElement('image', gridStyle,
       gridPattern);
     gridImage.setAttributeNS('http://www.w3.org/1999/xlink',
       'xlink:href', gridImageOptions['path']);
