@@ -302,7 +302,25 @@ Blockly.Options.parseGridOptions_ = function(options) {
   gridOptions.colour = grid['colour'] || '#888';
   gridOptions.length = parseFloat(grid['length']) || 1;
   gridOptions.snap = gridOptions.spacing > 0 && !!grid['snap'];
+
+  // pxt-blockly: specify custom image bg for workspace
+  gridOptions.image = Blockly.Options.parseGridImageOptions_(grid);
   return gridOptions;
+};
+
+/**
+ * Parse the user-specified image options if custom image is enabled.
+ * @param {!Object} options Dictionary of options.
+ * @return {Object} A dictionary of normalized options.
+ * @private
+ */
+Blockly.Options.parseGridImageOptions_ = function(options) {
+  var imageOptions = options['image'];
+  if (!imageOptions || !imageOptions.path) return null;
+
+  imageOptions.width = imageOptions.width || 100;
+  imageOptions.height = imageOptions.height || 100;
+  return imageOptions;
 };
 
 /**
