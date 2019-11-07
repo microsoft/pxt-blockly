@@ -185,7 +185,7 @@ Blockly.FieldTextDropdown.prototype.onItemSelected = function(menu, menuItem) {
   if (value !== null) {
     // pxtblockly: FieldTextInput's widgetDispose sets the value of the field on dispose,
     // set the htmlInput value instead
-    var htmlInput = Blockly.FieldTextInput.htmlInput_;
+    var htmlInput = this.htmlInput_;
     if (htmlInput) htmlInput.value = value;
     this.setValue(value);
   }

@@ -93,12 +93,11 @@ Blockly.FieldTextInput.ANIMATION_TIME = 0.25;
 Blockly.FieldTextInput.TEXT_MEASURE_PADDING_MAGIC = 45;
 
 /**
- * The HTML input element for the user to type, or null if no FieldTextInput
- * editor is currently open.
+ * The HTML input element for the user to type, or null
  * @type {HTMLInputElement}
  * @private
  */
-Blockly.FieldTextInput.htmlInput_ = null;
+Blockly.FieldTextInput.prototype.htmlInput_ = null;
 
 /**
  * Serializable fields are saved by the XML renderer, non-serializable fields
@@ -649,10 +648,10 @@ Blockly.FieldTextInput.prototype.resizeEditor_ = function() {
   if (Blockly.BlockSvg.FIELD_TEXTINPUT_EXPAND_PAST_TRUNCATION) {
     // Resize the box based on the measured width of the text, pre-truncation
     var textWidth = Blockly.pxtBlocklyUtils.measureText(
-        Blockly.FieldTextInput.htmlInput_.style.fontSize,
-        Blockly.FieldTextInput.htmlInput_.style.fontFamily,
-        Blockly.FieldTextInput.htmlInput_.style.fontWeight,
-        Blockly.FieldTextInput.htmlInput_.value
+        this.htmlInput_.style.fontSize,
+        this.htmlInput_.style.fontFamily,
+        this.htmlInput_.style.fontWeight,
+        this.htmlInput_.value
     );
     // Size drawn in the canvas needs padding and scaling
     textWidth += Blockly.FieldTextInput.TEXT_MEASURE_PADDING_MAGIC;
@@ -682,7 +681,7 @@ Blockly.FieldTextInput.prototype.resizeEditor_ = function() {
   // Add 0.5px to account for slight difference between SVG and CSS border
   var borderRadius = this.getBorderRadius() + 0.5;
   div.style.borderRadius = borderRadius + 'px';
-  //Blockly.FieldTextInput.htmlInput_.style.borderRadius = borderRadius + 'px';
+  //this.htmlInput_.style.borderRadius = borderRadius + 'px';
   // Pull stroke colour from the existing shadow block
   var strokeColour = this.sourceBlock_.getColourTertiary();
   div.style.borderColor = strokeColour;
@@ -726,7 +725,7 @@ Blockly.FieldTextInput.prototype.getBorderRadius = function() {
 };
 
 Blockly.FieldTextInput.prototype.maybeSaveEdit_ = function() {
-  var htmlInput = Blockly.FieldTextInput.htmlInput_;
+  var htmlInput = this.htmlInput_;
   // Save the edit (if it validates).
   var text = htmlInput.value;
   if (this.sourceBlock_) {
