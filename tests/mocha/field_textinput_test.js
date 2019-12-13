@@ -175,7 +175,7 @@ suite ('Text Input Fields', function() {
     });
     teardown(function() {
       this.textInputField.setValidator(null);
-      Blockly.FieldTextInput.htmlInput_ = null;
+      this.htmlInput_ = null;
     });
     suite('Null Validator', function() {
       setup(function() {
