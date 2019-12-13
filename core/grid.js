@@ -245,8 +245,6 @@ Blockly.Grid.createDom = function(rnd, gridOptions, defs) {
     // delete non-style properties
     var gridStyle = JSON.parse(JSON.stringify(gridImageOptions));
     delete gridStyle['path'];
-    delete gridStyle['width'];
-    delete gridStyle['height'];
     var gridImage = Blockly.utils.dom.createSvgElement('image', gridStyle,
       gridPattern);
     gridImage.setAttributeNS('http://www.w3.org/1999/xlink',
