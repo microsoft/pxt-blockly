@@ -718,6 +718,7 @@ declare module Blockly.utils.colour {
      * .parse('red') -> '#ff0000'
      * .parse('#f00') -> '#ff0000'
      * .parse('#ff0000') -> '#ff0000'
+     * .parse('0xff0000') -> '#ff0000'
      * .parse('rgb(255, 0, 0)') -> '#ff0000'
      * @param {string} str Colour in some CSS format.
      * @return {string|null} A string containing a hex representation of the colour,
@@ -9020,6 +9021,25 @@ declare module Blockly {
             addButtons_(contentDiv: Element): void;
     
             /**
+             * Call for when a num-pad number or punctuation button is touched.
+             * Determine what the user is inputting and update the text field appropriately.
+             */
+            numPadButtonTouch(e: any /* jsdoc error */): void;
+    
+            /**
+             * Call for when the num-pad erase button is touched.
+             * Determine what the user is asking to erase, and erase it.
+             */
+            numPadEraseButtonTouch(e: any /* jsdoc error */): void;
+    
+            /**
+             * Update the displayed value and resize/scroll the text field as needed.
+             * @param {string} newValue The new text to display.
+             * @private.
+             */
+            updateDisplay_(newValue: string): void;
+    
+            /**
              * Callback for when the drop-down is hidden.
              */
             onHide_(): void;
@@ -9069,25 +9089,6 @@ declare module Blockly.FieldNumber {
      * @private
      */
     var activeField_: FieldNumber;
-
-    /**
-     * Call for when a num-pad number or punctuation button is touched.
-     * Determine what the user is inputting and update the text field appropriately.
-     */
-    function numPadButtonTouch(e: any /* jsdoc error */): void;
-
-    /**
-     * Call for when the num-pad erase button is touched.
-     * Determine what the user is asking to erase, and erase it.
-     */
-    function numPadEraseButtonTouch(e: any /* jsdoc error */): void;
-
-    /**
-     * Update the displayed value and resize/scroll the text field as needed.
-     * @param {string} newValue The new text to display.
-     * @private.
-     */
-    function updateDisplay_(newValue: string): void;
 }
 
 
@@ -9424,6 +9425,13 @@ declare module Blockly {
             constructor(opt_value?: string, opt_validator?: Function, opt_restrictor?: RegExp);
     
             /**
+             * The HTML input element for the user to type, or null
+             * @type {HTMLInputElement}
+             * @private
+             */
+            htmlInput_: HTMLInputElement;
+    
+            /**
              * Serializable fields are saved by the XML renderer, non-serializable fields
              * are not. Editable fields should also be serializable.
              * @type {boolean}
@@ -9642,14 +9650,6 @@ declare module Blockly.FieldTextInput {
      * Padding to use for text measurement for the field during editing, in px.
      */
     var TEXT_MEASURE_PADDING_MAGIC: any /*missing*/;
-
-    /**
-     * The HTML input element for the user to type, or null if no FieldTextInput
-     * editor is currently open.
-     * @type {HTMLInputElement}
-     * @private
-     */
-    var htmlInput_: HTMLInputElement;
 
     /**
      * Point size of text.  Should match blocklyText's font-size in CSS.
@@ -11789,6 +11789,11 @@ declare module Blockly {
             snapToGrid_: boolean;
     
             /**
+             * Image options
+             */
+            imageOptions_: any /*missing*/;
+    
+            /**
              * The scale of the grid, used to set stroke width on grid lines.
              * This should always be the same as the workspace scale.
              * @type {number}
@@ -12816,6 +12821,14 @@ declare module Blockly.Options {
      * @private
      */
     function parseGridOptions_(options: Object): Object;
+
+    /**
+     * Parse the user-specified image options if custom image is enabled.
+     * @param {!Object} options Dictionary of options.
+     * @return {Object} A dictionary of normalized options.
+     * @private
+     */
+    function parseGridImageOptions_(options: Object): Object;
 
     /**
      * Parse the provided toolbox tree into a consistent DOM format.
@@ -18650,7 +18663,7 @@ declare module Blockly {
              * Register a callback function associated with a given key, for clicks on
              * buttons and labels in the flyout.
              * For instance, a button specified by the XML
-             * <button text="create variable" callbackkey="CREATE_VARIABLE"></button>
+             * <button text="create variable" callbackKey="CREATE_VARIABLE"></button>
              * should be matched by a call to
              * registerButtonCallback("CREATE_VARIABLE", yourCallbackFunction).
              * @param {string} key The name to use to look up this function.
