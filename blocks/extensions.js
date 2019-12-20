@@ -40,6 +40,16 @@ Blockly.PXTBlockly.Extensions.FUNCTION_CONTEXTMENU_EDIT = {
    */
   customContextMenu: function(menuOptions) {
     menuOptions.push(Blockly.Functions.makeEditOption(this));
+
+    // Find and remove the duplicate option for definitions
+    if (this.type == Blockly.FUNCTION_DEFINITION_BLOCK_TYPE) {
+      for (var i = 0, option; option = menuOptions[i]; i++) {
+        if (option.text == Blockly.Msg.DUPLICATE_BLOCK) {
+          menuOptions.splice(i, 1);
+          break;
+        }
+      }
+    }
   }
 };
 
