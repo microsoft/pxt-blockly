@@ -197,4 +197,4 @@ Blockly.FieldLabelHover.dispose = function() {
   this.variableMap_ = null;
 };
 
-Blockly.Field.register('field_label_hover', Blockly.FieldLabelHover);
+Blockly.fieldRegistry.register('field_label_hover', Blockly.FieldLabelHover);

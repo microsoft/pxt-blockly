@@ -34,7 +34,6 @@
 
 goog.provide('Blockly.FieldArgumentEditor');
 
-goog.require('Blockly.BlockSvg.render');
 goog.require('Blockly.Colours');
 goog.require('Blockly.FieldTextInput');
 goog.require('Blockly.Msg');
@@ -126,5 +125,5 @@ Blockly.FieldArgumentEditor.fromJson = function(options) {
   return field;
 };
 
-Blockly.Field.register(
+Blockly.fieldRegistry.register(
     'field_argument_editor', Blockly.FieldArgumentEditor);

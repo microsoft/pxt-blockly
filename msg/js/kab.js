@@ -2,10 +2,6 @@
 
 'use strict';
 
-goog.provide('Blockly.Msg.kab');
-
-goog.require('Blockly.Msg');
-
 Blockly.Msg["ADD_COMMENT"] = "Rnu awennit";
 Blockly.Msg["CANNOT_DELETE_VARIABLE_PROCEDURE"] = "Ur izmir ara ad yekkes amutti '%1' acku yedda di tbadut n twuri '%2'";
 Blockly.Msg["CHANGE_VALUE_TITLE"] = "Beddel azal:";
@@ -27,7 +23,7 @@ Blockly.Msg["COLOUR_RANDOM_TOOLTIP"] = "Fren ini s wudem agacuran.";
 Blockly.Msg["COLOUR_RGB_BLUE"] = "anili";
 Blockly.Msg["COLOUR_RGB_GREEN"] = "azegzaw";
 Blockly.Msg["COLOUR_RGB_HELPURL"] = "https://www.december.com/html/spec/colorpercompact.html";  // untranslated
-Blockly.Msg["COLOUR_RGB_RED"] = "azeggwaɣ";
+Blockly.Msg["COLOUR_RGB_RED"] = "azeggaɣ";
 Blockly.Msg["COLOUR_RGB_TITLE"] = "ini s";
 Blockly.Msg["COLOUR_RGB_TOOLTIP"] = "Rnu ini s tnecta yettunefk s tesmekta n uzeggaɣ, azegzaw, akked unili. Yessefk akk azalen ad ilin gar 0 akked 100.";
 Blockly.Msg["CONTROLS_FLOW_STATEMENTS_HELPURL"] = "https://github.com/google/blockly/wiki/Loops#loop-termination-blocks";  // untranslated
@@ -74,18 +70,6 @@ Blockly.Msg["ENABLE_BLOCK"] = "Sens iḥedran";
 Blockly.Msg["EXPAND_ALL"] = "Snefli iḥedran";
 Blockly.Msg["EXPAND_BLOCK"] = "Snefli iḥder";
 Blockly.Msg["EXTERNAL_INPUTS"] = "Inekcam izɣarayen";
-Blockly.Msg["FUNCTIONS_CALL_TITLE"] = "call";  // untranslated
-Blockly.Msg["FUNCTIONS_DEFAULT_BOOLEAN_ARG_NAME"] = "bool";  // untranslated
-Blockly.Msg["FUNCTIONS_DEFAULT_CUSTOM_ARG_NAME"] = "arg";  // untranslated
-Blockly.Msg["FUNCTIONS_DEFAULT_FUNCTION_NAME"] = "do_something";  // untranslated
-Blockly.Msg["FUNCTIONS_DEFAULT_NUMBER_ARG_NAME"] = "num";  // untranslated
-Blockly.Msg["FUNCTIONS_DEFAULT_STRING_ARG_NAME"] = "text";  // untranslated
-Blockly.Msg["FUNCTIONS_EDIT_OPTION"] = "Edit";  // untranslated
-Blockly.Msg["FUNCTION_CALL_TOOLTIP"] = "Call a function that was previously defined.";  // untranslated
-Blockly.Msg["FUNCTION_CREATE_NEW"] = "Create a Function";  // untranslated
-Blockly.Msg["FUNCTION_WARNING_ARG_NAME_IS_FUNCTION_NAME"] = "Argument names must not be the same as the function name.";  // untranslated
-Blockly.Msg["FUNCTION_WARNING_DUPLICATE_ARG"] = "Functions cannot use the same argument name more than once.";  // untranslated
-Blockly.Msg["FUNCTION_WARNING_EMPTY_NAME"] = "Function and argument names cannot be empty.";  // untranslated
 Blockly.Msg["HELP"] = "Tallelt";
 Blockly.Msg["INLINE_INPUTS"] = "Inekcam srid";
 Blockly.Msg["IOS_CANCEL"] = "Sefsex";
@@ -302,9 +286,7 @@ Blockly.Msg["NEW_COLOUR_VARIABLE"] = "Rnu amutti ini...";
 Blockly.Msg["NEW_NUMBER_VARIABLE"] = "Rnu amutti amḍan...";
 Blockly.Msg["NEW_STRING_VARIABLE"] = "Rnu amutti azrir n yisekkilen...";
 Blockly.Msg["NEW_VARIABLE"] = "Rnu amutti...";
-Blockly.Msg["NEW_VARIABLE_DROPDOWN"] = "New variable...";  // untranslated
 Blockly.Msg["NEW_VARIABLE_TITLE"] = "Isem amaynut n wazal:";
-Blockly.Msg["NEW_VARIABLE_TYPE_DROPDOWN"] = "New %1 variable...";  // untranslated
 Blockly.Msg["NEW_VARIABLE_TYPE_TITLE"] = "Anaw amaynut n umutti:";
 Blockly.Msg["ORDINAL_NUMBER_SUFFIX"] = "";  // untranslated
 Blockly.Msg["PROCEDURES_ALLOW_STATEMENTS"] = "Sireg asmizzwer";
@@ -407,6 +389,7 @@ Blockly.Msg["TEXT_TRIM_OPERATOR_RIGHT"] = "tukksa n isekkilen seg uyeffus";
 Blockly.Msg["TEXT_TRIM_TOOLTIP"] = "Ad d-yerr anɣel n uḍris s isekkilen ilmawen yettwakksen seg ixf neɣ i sin.";
 Blockly.Msg["TODAY"] = "Ass-a";
 Blockly.Msg["UNDO"] = "Err-d";
+Blockly.Msg["UNNAMED_KEY"] = "warisem";
 Blockly.Msg["VARIABLES_DEFAULT_NAME"] = "aferdis";
 Blockly.Msg["VARIABLES_GET_CREATE_SET"] = "Rnu 'sbadu %1'";
 Blockly.Msg["VARIABLES_GET_HELPURL"] = "https://github.com/google/blockly/wiki/Variables#get";  // untranslated
@@ -417,6 +400,7 @@ Blockly.Msg["VARIABLES_SET_HELPURL"] = "https://github.com/google/blockly/wiki/V
 Blockly.Msg["VARIABLES_SET_TOOLTIP"] = "Ad yesbadu amutti-agi akken ad yegdu azal n unekcam.";
 Blockly.Msg["VARIABLE_ALREADY_EXISTS"] = "Amutti s yisem '%1' yella yakan.";
 Blockly.Msg["VARIABLE_ALREADY_EXISTS_FOR_ANOTHER_TYPE"] = "Amutti s yisem '%1' yella yakan i wanaw-nniḍen: '%2'.";
+Blockly.Msg["WORKSPACE_ARIA_LABEL"] = "Blockly Workspace";  // untranslated
 Blockly.Msg["WORKSPACE_COMMENT_DEFAULT_TEXT"] = "Ini kra...";
 Blockly.Msg["CONTROLS_FOREACH_INPUT_DO"] = Blockly.Msg["CONTROLS_REPEAT_INPUT_DO"];
 Blockly.Msg["CONTROLS_FOR_INPUT_DO"] = Blockly.Msg["CONTROLS_REPEAT_INPUT_DO"];
@@ -445,7 +429,6 @@ Blockly.Msg["LISTS_HUE"] = "260";
 Blockly.Msg["LOGIC_HUE"] = "210";
 Blockly.Msg["VARIABLES_HUE"] = "330";
 Blockly.Msg["TEXTS_HUE"] = "160";
-Blockly.Msg["REPORTERS_HUE"] = "290";
 Blockly.Msg["PROCEDURES_HUE"] = "290";
 Blockly.Msg["COLOUR_HUE"] = "20";
 Blockly.Msg["VARIABLES_DYNAMIC_HUE"] = "310";

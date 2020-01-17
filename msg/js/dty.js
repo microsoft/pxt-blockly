@@ -2,10 +2,6 @@
 
 'use strict';
 
-goog.provide('Blockly.Msg.dty');
-
-goog.require('Blockly.Msg');
-
 Blockly.Msg["ADD_COMMENT"] = "टिप्पणी थप्दे";
 Blockly.Msg["CANNOT_DELETE_VARIABLE_PROCEDURE"] = "Can't delete the variable '%1' because it's part of the definition of the function '%2'";  // untranslated
 Blockly.Msg["CHANGE_VALUE_TITLE"] = "मान बदल";
@@ -74,18 +70,6 @@ Blockly.Msg["ENABLE_BLOCK"] = "ब्लकलाई सक्रिय पा�
 Blockly.Msg["EXPAND_ALL"] = "ब्लकनलाई फैलाओ";
 Blockly.Msg["EXPAND_BLOCK"] = "ब्लकनलाई फैलाओ";
 Blockly.Msg["EXTERNAL_INPUTS"] = "भाइरका इन्पुटहरू";
-Blockly.Msg["FUNCTIONS_CALL_TITLE"] = "call";  // untranslated
-Blockly.Msg["FUNCTIONS_DEFAULT_BOOLEAN_ARG_NAME"] = "bool";  // untranslated
-Blockly.Msg["FUNCTIONS_DEFAULT_CUSTOM_ARG_NAME"] = "arg";  // untranslated
-Blockly.Msg["FUNCTIONS_DEFAULT_FUNCTION_NAME"] = "do_something";  // untranslated
-Blockly.Msg["FUNCTIONS_DEFAULT_NUMBER_ARG_NAME"] = "num";  // untranslated
-Blockly.Msg["FUNCTIONS_DEFAULT_STRING_ARG_NAME"] = "text";  // untranslated
-Blockly.Msg["FUNCTIONS_EDIT_OPTION"] = "Edit";  // untranslated
-Blockly.Msg["FUNCTION_CALL_TOOLTIP"] = "Call a function that was previously defined.";  // untranslated
-Blockly.Msg["FUNCTION_CREATE_NEW"] = "Create a Function";  // untranslated
-Blockly.Msg["FUNCTION_WARNING_ARG_NAME_IS_FUNCTION_NAME"] = "Argument names must not be the same as the function name.";  // untranslated
-Blockly.Msg["FUNCTION_WARNING_DUPLICATE_ARG"] = "Functions cannot use the same argument name more than once.";  // untranslated
-Blockly.Msg["FUNCTION_WARNING_EMPTY_NAME"] = "Function and argument names cannot be empty.";  // untranslated
 Blockly.Msg["HELP"] = "सहायता";
 Blockly.Msg["INLINE_INPUTS"] = "इनलाइन इन्पुटहरू";
 Blockly.Msg["IOS_CANCEL"] = "खारेजी";
@@ -302,9 +286,7 @@ Blockly.Msg["NEW_COLOUR_VARIABLE"] = "Create colour variable...";  // untranslat
 Blockly.Msg["NEW_NUMBER_VARIABLE"] = "Create number variable...";  // untranslated
 Blockly.Msg["NEW_STRING_VARIABLE"] = "Create string variable...";  // untranslated
 Blockly.Msg["NEW_VARIABLE"] = "भेरिएवल बना:";
-Blockly.Msg["NEW_VARIABLE_DROPDOWN"] = "New variable...";  // untranslated
 Blockly.Msg["NEW_VARIABLE_TITLE"] = "नयाँ भेरिबलको नाम:";
-Blockly.Msg["NEW_VARIABLE_TYPE_DROPDOWN"] = "New %1 variable...";  // untranslated
 Blockly.Msg["NEW_VARIABLE_TYPE_TITLE"] = "New variable type:";  // untranslated
 Blockly.Msg["ORDINAL_NUMBER_SUFFIX"] = "";  // untranslated
 Blockly.Msg["PROCEDURES_ALLOW_STATEMENTS"] = "allow statements";  // untranslated
@@ -407,6 +389,7 @@ Blockly.Msg["TEXT_TRIM_OPERATOR_RIGHT"] = "trim spaces from right side of";  // 
 Blockly.Msg["TEXT_TRIM_TOOLTIP"] = "Return a copy of the text with spaces removed from one or both ends.";  // untranslated
 Blockly.Msg["TODAY"] = "आज";
 Blockly.Msg["UNDO"] = "रद्द गर्न्या";
+Blockly.Msg["UNNAMED_KEY"] = "unnamed";  // untranslated
 Blockly.Msg["VARIABLES_DEFAULT_NAME"] = "वस्तु";
 Blockly.Msg["VARIABLES_GET_CREATE_SET"] = "Create 'set %1'";  // untranslated
 Blockly.Msg["VARIABLES_GET_HELPURL"] = "https://github.com/google/blockly/wiki/Variables#get";  // untranslated
@@ -417,6 +400,7 @@ Blockly.Msg["VARIABLES_SET_HELPURL"] = "https://github.com/google/blockly/wiki/V
 Blockly.Msg["VARIABLES_SET_TOOLTIP"] = "Sets this variable to be equal to the input.";  // untranslated
 Blockly.Msg["VARIABLE_ALREADY_EXISTS"] = "'%1' नाउँ अरियाऽ भेरिएबल पैली बठेइ छ।";
 Blockly.Msg["VARIABLE_ALREADY_EXISTS_FOR_ANOTHER_TYPE"] = "A variable named '%1' already exists for another type: '%2'.";  // untranslated
+Blockly.Msg["WORKSPACE_ARIA_LABEL"] = "Blockly Workspace";  // untranslated
 Blockly.Msg["WORKSPACE_COMMENT_DEFAULT_TEXT"] = "केयि भँण...";
 Blockly.Msg["CONTROLS_FOREACH_INPUT_DO"] = Blockly.Msg["CONTROLS_REPEAT_INPUT_DO"];
 Blockly.Msg["CONTROLS_FOR_INPUT_DO"] = Blockly.Msg["CONTROLS_REPEAT_INPUT_DO"];
@@ -445,7 +429,6 @@ Blockly.Msg["LISTS_HUE"] = "260";
 Blockly.Msg["LOGIC_HUE"] = "210";
 Blockly.Msg["VARIABLES_HUE"] = "330";
 Blockly.Msg["TEXTS_HUE"] = "160";
-Blockly.Msg["REPORTERS_HUE"] = "290";
 Blockly.Msg["PROCEDURES_HUE"] = "290";
 Blockly.Msg["COLOUR_HUE"] = "20";
 Blockly.Msg["VARIABLES_DYNAMIC_HUE"] = "310";

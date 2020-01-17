@@ -1,9 +1,6 @@
 /**
  * @license
- * Visual Blocks Editor
- *
- * Copyright 2019 Google Inc.
- * https://developers.google.com/blockly/
+ * Copyright 2019 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +15,7 @@
  * limitations under the License.
  */
 
-suite ('Text Input Fields', function() {
+suite('Text Input Fields', function() {
   function assertValue(textInputField, expectedValue, opt_expectedText) {
     var actualValue = textInputField.getValue();
     var actualText = textInputField.getText();
@@ -32,10 +29,6 @@ suite ('Text Input Fields', function() {
   suite('Constructor', function() {
     test('Empty', function() {
       var textInputField = new Blockly.FieldTextInput();
-      assertValueDefault(textInputField);
-    });
-    test('Null', function() {
-      var textInputField = new Blockly.FieldTextInput(null);
       assertValueDefault(textInputField);
     });
     test('Undefined', function() {
@@ -66,10 +59,6 @@ suite ('Text Input Fields', function() {
   suite('fromJson', function() {
     test('Empty', function() {
       var textInputField = new Blockly.FieldTextInput.fromJson({});
-      assertValueDefault(textInputField);
-    });
-    test('Null', function() {
-      var textInputField = new Blockly.FieldTextInput.fromJson({ text: null});
       assertValueDefault(textInputField);
     });
     test('Undefined', function() {
@@ -172,10 +161,14 @@ suite ('Text Input Fields', function() {
       this.textInputField.htmlInput_ = Object.create(null);
       this.textInputField.htmlInput_.oldValue_ = 'value';
       this.textInputField.htmlInput_.untypedDefaultValue_ = 'value';
+      this.stub = sinon.stub(this.textInputField, 'resizeEditor_');
     });
     teardown(function() {
       this.textInputField.setValidator(null);
-      this.htmlInput_ = null;
+      Blockly.FieldTextInput.htmlInput_ = null;
+      if (this.stub) {
+        this.stub.restore();
+      }
     });
     suite('Null Validator', function() {
       setup(function() {
@@ -227,6 +220,73 @@ suite ('Text Input Fields', function() {
       test('When Not Editing', function() {
         this.textInputField.setValue('newValue');
         assertValue(this.textInputField, 'newValue');
+      });
+    });
+  });
+  suite('Customization', function() {
+    suite('Spellcheck', function() {
+      setup(function() {
+        this.prepField = function(field) {
+          var workspace = {
+            scale: 1,
+            getRenderer: function() { return {}; },
+            getTheme: function() { return {}; },
+            markFocused: function() {}
+          };
+          field.sourceBlock_ = {
+            workspace: workspace
+          };
+          field.constants_ = {
+            FIELD_TEXT_FONTSIZE: 11,
+            FIELD_TEXT_FONTWEIGHT: 'normal',
+            FIELD_TEXT_FONTFAMILY: 'sans-serif'
+          };
+          field.clickTarget_ = document.createElement('div');
+          Blockly.mainWorkspace = workspace;
+          Blockly.WidgetDiv.DIV = document.createElement('div');
+          this.stub = sinon.stub(field, 'resizeEditor_');
+        };
+
+        this.assertSpellcheck = function(field, value) {
+          this.prepField(field);
+          field.showEditor_();
+          chai.assert.equal(field.htmlInput_.getAttribute('spellcheck'),
+              value.toString());
+        };
+      });
+      teardown(function() {
+        if (this.stub) {
+          this.stub.restore();
+        }
+      });
+      test('Default', function() {
+        var field = new Blockly.FieldTextInput('test');
+        this.assertSpellcheck(field, true);
+      });
+      test('JS Constructor', function() {
+        var field = new Blockly.FieldTextInput('test', null, {
+          spellcheck: false
+        });
+        this.assertSpellcheck(field, false);
+      });
+      test('JSON Definition', function() {
+        var field = Blockly.FieldTextInput.fromJson({
+          text: 'test',
+          spellcheck: false
+        });
+        this.assertSpellcheck(field, false);
+      });
+      test('setSpellcheck Editor Hidden', function() {
+        var field = new Blockly.FieldTextInput('test');
+        field.setSpellcheck(false);
+        this.assertSpellcheck(field, false);
+      });
+      test('setSpellcheck Editor Shown', function() {
+        var field = new Blockly.FieldTextInput('test');
+        this.prepField(field);
+        field.showEditor_();
+        field.setSpellcheck(false);
+        chai.assert.equal(field.htmlInput_.getAttribute('spellcheck'), 'false');
       });
     });
   });

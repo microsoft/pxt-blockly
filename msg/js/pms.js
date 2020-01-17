@@ -2,10 +2,6 @@
 
 'use strict';
 
-goog.provide('Blockly.Msg.pms');
-
-goog.require('Blockly.Msg');
-
 Blockly.Msg["ADD_COMMENT"] = "Gionté un coment";
 Blockly.Msg["CANNOT_DELETE_VARIABLE_PROCEDURE"] = "As peul nen eliminesse la variàbil '%1' përchè a l'é part ëd la definission dla fonsion '%2'";
 Blockly.Msg["CHANGE_VALUE_TITLE"] = "Modifiché ël valor:";
@@ -74,18 +70,6 @@ Blockly.Msg["ENABLE_BLOCK"] = "Ativé ël blòch";
 Blockly.Msg["EXPAND_ALL"] = "Dësvlupé ij blòch";
 Blockly.Msg["EXPAND_BLOCK"] = "Dësvlupé ël blòch";
 Blockly.Msg["EXTERNAL_INPUTS"] = "Imission esterne";
-Blockly.Msg["FUNCTIONS_CALL_TITLE"] = "call";  // untranslated
-Blockly.Msg["FUNCTIONS_DEFAULT_BOOLEAN_ARG_NAME"] = "bool";  // untranslated
-Blockly.Msg["FUNCTIONS_DEFAULT_CUSTOM_ARG_NAME"] = "arg";  // untranslated
-Blockly.Msg["FUNCTIONS_DEFAULT_FUNCTION_NAME"] = "do_something";  // untranslated
-Blockly.Msg["FUNCTIONS_DEFAULT_NUMBER_ARG_NAME"] = "num";  // untranslated
-Blockly.Msg["FUNCTIONS_DEFAULT_STRING_ARG_NAME"] = "text";  // untranslated
-Blockly.Msg["FUNCTIONS_EDIT_OPTION"] = "Edit";  // untranslated
-Blockly.Msg["FUNCTION_CALL_TOOLTIP"] = "Call a function that was previously defined.";  // untranslated
-Blockly.Msg["FUNCTION_CREATE_NEW"] = "Create a Function";  // untranslated
-Blockly.Msg["FUNCTION_WARNING_ARG_NAME_IS_FUNCTION_NAME"] = "Argument names must not be the same as the function name.";  // untranslated
-Blockly.Msg["FUNCTION_WARNING_DUPLICATE_ARG"] = "Functions cannot use the same argument name more than once.";  // untranslated
-Blockly.Msg["FUNCTION_WARNING_EMPTY_NAME"] = "Function and argument names cannot be empty.";  // untranslated
 Blockly.Msg["HELP"] = "Agiut";
 Blockly.Msg["INLINE_INPUTS"] = "Imission an linia";
 Blockly.Msg["IOS_CANCEL"] = "Anulé";
@@ -302,9 +286,7 @@ Blockly.Msg["NEW_COLOUR_VARIABLE"] = "Create colour variable...";  // untranslat
 Blockly.Msg["NEW_NUMBER_VARIABLE"] = "Create number variable...";  // untranslated
 Blockly.Msg["NEW_STRING_VARIABLE"] = "Create string variable...";  // untranslated
 Blockly.Msg["NEW_VARIABLE"] = "Creé na variàbil...";
-Blockly.Msg["NEW_VARIABLE_DROPDOWN"] = "New variable...";  // untranslated
 Blockly.Msg["NEW_VARIABLE_TITLE"] = "Nòm ëd la neuva variàbil:";
-Blockly.Msg["NEW_VARIABLE_TYPE_DROPDOWN"] = "New %1 variable...";  // untranslated
 Blockly.Msg["NEW_VARIABLE_TYPE_TITLE"] = "New variable type:";  // untranslated
 Blockly.Msg["ORDINAL_NUMBER_SUFFIX"] = "";  // untranslated
 Blockly.Msg["PROCEDURES_ALLOW_STATEMENTS"] = "përmëtte le diciairassion";
@@ -407,6 +389,7 @@ Blockly.Msg["TEXT_TRIM_OPERATOR_RIGHT"] = "gavé jë spassi da la banda drita ë
 Blockly.Msg["TEXT_TRIM_TOOLTIP"] = "A smon na còpia dël test con jë spassi gavà da n'estremità o da tute doe.";
 Blockly.Msg["TODAY"] = "Ancheuj";
 Blockly.Msg["UNDO"] = "Anulé";
+Blockly.Msg["UNNAMED_KEY"] = "anònim";
 Blockly.Msg["VARIABLES_DEFAULT_NAME"] = "element";
 Blockly.Msg["VARIABLES_GET_CREATE_SET"] = "Creé 'fissé %1'";
 Blockly.Msg["VARIABLES_GET_HELPURL"] = "https://github.com/google/blockly/wiki/Variables#get";  // untranslated
@@ -417,6 +400,7 @@ Blockly.Msg["VARIABLES_SET_HELPURL"] = "https://github.com/google/blockly/wiki/V
 Blockly.Msg["VARIABLES_SET_TOOLTIP"] = "Fissé costa variàbil ugual al valor d'imission.";
 Blockly.Msg["VARIABLE_ALREADY_EXISTS"] = "Na variàbil con ël nòm '%1' a esist già.";
 Blockly.Msg["VARIABLE_ALREADY_EXISTS_FOR_ANOTHER_TYPE"] = "Na variàbil ciamà '%1' a esist già për n'àutra variàbil ëd sòrt '%2'.";
+Blockly.Msg["WORKSPACE_ARIA_LABEL"] = "Spassi ëd travaj ëd Blockly";
 Blockly.Msg["WORKSPACE_COMMENT_DEFAULT_TEXT"] = "Dì cheicòs...";
 Blockly.Msg["CONTROLS_FOREACH_INPUT_DO"] = Blockly.Msg["CONTROLS_REPEAT_INPUT_DO"];
 Blockly.Msg["CONTROLS_FOR_INPUT_DO"] = Blockly.Msg["CONTROLS_REPEAT_INPUT_DO"];
@@ -445,7 +429,6 @@ Blockly.Msg["LISTS_HUE"] = "260";
 Blockly.Msg["LOGIC_HUE"] = "210";
 Blockly.Msg["VARIABLES_HUE"] = "330";
 Blockly.Msg["TEXTS_HUE"] = "160";
-Blockly.Msg["REPORTERS_HUE"] = "290";
 Blockly.Msg["PROCEDURES_HUE"] = "290";
 Blockly.Msg["COLOUR_HUE"] = "20";
 Blockly.Msg["VARIABLES_DYNAMIC_HUE"] = "310";

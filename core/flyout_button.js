@@ -1,9 +1,6 @@
 /**
  * @license
- * Visual Blocks Editor
- *
- * Copyright 2016 Google Inc.
- * https://developers.google.com/blockly/
+ * Copyright 2016 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +23,7 @@
 
 goog.provide('Blockly.FlyoutButton');
 
+goog.require('Blockly.Css');
 goog.require('Blockly.utils');
 goog.require('Blockly.utils.Coordinate');
 goog.require('Blockly.utils.dom');
@@ -50,7 +48,7 @@ Blockly.FlyoutButton = function(workspace, targetWorkspace, xml, isLabel) {
   this.workspace_ = workspace;
 
   /**
-   * @type {!Blockly.Workspace}
+   * @type {!Blockly.WorkspaceSvg}
    * @private
    */
   this.targetWorkspace_ = targetWorkspace;
@@ -87,7 +85,9 @@ Blockly.FlyoutButton = function(workspace, targetWorkspace, xml, isLabel) {
    * @type {string}
    * @private
    */
-  this.callbackKey_ = xml.getAttribute('callbackKey');
+  this.callbackKey_ = xml.getAttribute('callbackKey') ||
+  /* Check the lower case version too to satisfy IE */
+                      xml.getAttribute('callbackkey');
 
   /**
    * If specified, a CSS class to add to this button.
@@ -112,6 +112,13 @@ Blockly.FlyoutButton = function(workspace, targetWorkspace, xml, isLabel) {
    */
   this.line_ = xml.getAttribute('web-line') || null;
   this.lineWidth_ = xml.getAttribute('web-line-width') || null;
+
+  /**
+   * Mouse up event data.
+   * @type {?Blockly.EventData}
+   * @private
+   */
+  this.onMouseUpWrapper_ = null;
 };
 
 /**
@@ -136,18 +143,11 @@ Blockly.FlyoutButton.prototype.height = 40; // Can't be computed like the width
  * @type {Array.<!Array>}
  * @private
  */
-Blockly.FlyoutButton.prototype.onMouseUpWrapper_ = null;
-
-/**
- * Opaque data that can be passed to Blockly.unbindEvent_.
- * @type {Array.<!Array>}
- * @private
- */
 Blockly.FlyoutButton.HELP_IMAGE_URI = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjYiIGhlaWdodD0iMjYiIHZpZXdCb3g9IjAgMCAyNiAyNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTMiIGN5PSIxMyIgcj0iMTMiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik0xNy45NTIgOS4xODQwMkMxNy45NTIgMTAuMjU2IDE3LjgxNiAxMS4wNzIgMTcuNTQ0IDExLjYzMkMxNy4yODggMTIuMTkyIDE2Ljc1MiAxMi43OTIgMTUuOTM2IDEzLjQzMkMxNS4xMiAxNC4wNzIgMTQuNTc2IDE0LjU4NCAxNC4zMDQgMTQuOTY4QzE0LjA0OCAxNS4zMzYgMTMuOTIgMTUuNzM2IDEzLjkyIDE2LjE2OFYxNi45NkgxMS44MDhDMTEuNDI0IDE2LjQ2NCAxMS4yMzIgMTUuODQgMTEuMjMyIDE1LjA4OEMxMS4yMzIgMTQuNjg4IDExLjM4NCAxNC4yODggMTEuNjg4IDEzLjg4OEMxMS45OTIgMTMuNDg4IDEyLjUzNiAxMi45NjggMTMuMzIgMTIuMzI4QzE0LjEwNCAxMS42NzIgMTQuNjI0IDExLjE2OCAxNC44OCAxMC44MTZDMTUuMTM2IDEwLjQ0OCAxNS4yNjQgOS45NjgwMiAxNS4yNjQgOS4zNzYwMkMxNS4yNjQgOC4yMDgwMiAxNC40MTYgNy42MjQwMiAxMi43MiA3LjYyNDAyQzExLjc2IDcuNjI0MDIgMTAuNzUyIDcuNzM2MDIgOS42OTYgNy45NjAwMkw5LjE0NCA4LjA4MDAyTDkgNi4wODgwMkMxMC40ODggNS41NjAwMiAxMS44NCA1LjI5NjAyIDEzLjA1NiA1LjI5NjAyQzE0LjczNiA1LjI5NjAyIDE1Ljk2OCA1LjYwODAyIDE2Ljc1MiA2LjIzMjAyQzE3LjU1MiA2Ljg0MDAyIDE3Ljk1MiA3LjgyNDAyIDE3Ljk1MiA5LjE4NDAyWk0xMS40IDIyVjE4LjY0SDE0LjE4NFYyMkgxMS40WiIgZmlsbD0iIzU5NUU3NCIvPgo8L3N2Zz4K';
 
 /**
  * Create the button elements.
- * @return {!Element} The button's SVG group.
+ * @return {!SVGElement} The button's SVG group.
  */
 Blockly.FlyoutButton.prototype.createDom = function() {
   var cssClass = this.isLabel_ ? 'blocklyFlyoutLabel' : 'blocklyFlyoutButton';
@@ -184,9 +184,19 @@ Blockly.FlyoutButton.prototype.createDom = function() {
         'text-anchor': 'middle'
       },
       this.svgGroup_);
-  svgText.textContent = Blockly.utils.replaceMessageReferences(this.text_);
+  var text = Blockly.utils.replaceMessageReferences(this.text_);
+  if (this.workspace_.RTL) {
+    // Force text to be RTL by adding an RLM.
+    text += '\u200F';
+  }
+  svgText.textContent = text;
+  if (this.isLabel_) {
+    this.svgText_ = svgText;
+    this.workspace_.getThemeManager().subscribe(this.svgText_,
+        'flyoutForegroundColour', 'fill');
+  }
 
-  this.width = Blockly.Field.getCachedWidth(svgText);
+  this.width = Blockly.utils.dom.getTextWidth(svgText);
 
   // pxtblockly: support for icons in toolbox labels
   if (this.icon_ || this.iconClass_) {
@@ -203,7 +213,7 @@ Blockly.FlyoutButton.prototype.createDom = function() {
     svgIcon.setAttribute('x', this.targetWorkspace_.RTL ? this.width + Blockly.FlyoutButton.MARGIN : 0);
     svgIcon.setAttribute('y', this.height / 2);
 
-    this.width += Blockly.Field.getCachedWidth(svgIcon) + Blockly.FlyoutButton.MARGIN;
+    this.width += Blockly.utils.dom.getTextWidth(svgIcon) + Blockly.FlyoutButton.MARGIN;
   }
 
   if (this.helpButtonIcon_) {
@@ -334,10 +344,10 @@ Blockly.FlyoutButton.prototype.dispose = function() {
   }
   if (this.svgGroup_) {
     Blockly.utils.dom.removeNode(this.svgGroup_);
-    this.svgGroup_ = null;
   }
-  this.workspace_ = null;
-  this.targetWorkspace_ = null;
+  if (this.svgText_) {
+    this.workspace_.getThemeManager().unsubscribe(this.svgText_);
+  }
 };
 
 /**
@@ -360,3 +370,46 @@ Blockly.FlyoutButton.prototype.onMouseUp_ = function(e) {
     this.targetWorkspace_.getButtonCallback(this.callbackKey_)(this);
   }
 };
+
+/**
+ * CSS for buttons and labels.  See css.js for use.
+ */
+Blockly.Css.register([
+  /* eslint-disable indent */
+  '.blocklyFlyoutButton {',
+    'fill: #F4F4F4;',
+  '}',
+
+  '.blocklyFlyoutButtonBackground {',
+      'stroke: #fff;',
+  '}',
+
+  '.blocklyFlyoutButton .blocklyText {',
+    'fill: $colour_text;',
+  '}',
+
+  '.blocklyFlyoutButtonShadow {',
+    'fill: none;',
+  '}',
+
+  '.blocklyFlyoutButton:hover {',
+    'fill: #EAEAEA;',
+    'cursor: pointer;',
+  '}',
+
+  '.blocklyFlyoutLabel {',
+    'cursor: default;',
+  '}',
+
+  '.blocklyFlyoutLabelBackground {',
+    'opacity: 0;',
+  '}',
+
+  '.blocklyFlyoutLabelText {',
+    'font-family: "Helvetica Neue", "Segoe UI", Helvetica, sans-serif;',
+    'font-size: 14pt;',
+    'fill: $colour_text;',
+    'font-weight: bold;',
+  '}'
+  /* eslint-enable indent */
+]);

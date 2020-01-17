@@ -2,10 +2,6 @@
 
 'use strict';
 
-goog.provide('Blockly.Msg.ru');
-
-goog.require('Blockly.Msg');
-
 Blockly.Msg["ADD_COMMENT"] = "Добавить комментарий";
 Blockly.Msg["CANNOT_DELETE_VARIABLE_PROCEDURE"] = "Невозможно удалить переменную '%1', поскольку она является частью определения функции '%2'";
 Blockly.Msg["CHANGE_VALUE_TITLE"] = "Измените значение:";
@@ -74,18 +70,6 @@ Blockly.Msg["ENABLE_BLOCK"] = "Включить блок";
 Blockly.Msg["EXPAND_ALL"] = "Развернуть блоки";
 Blockly.Msg["EXPAND_BLOCK"] = "Развернуть блок";
 Blockly.Msg["EXTERNAL_INPUTS"] = "Вставки снаружи";
-Blockly.Msg["FUNCTIONS_CALL_TITLE"] = "call";  // untranslated
-Blockly.Msg["FUNCTIONS_DEFAULT_BOOLEAN_ARG_NAME"] = "bool";  // untranslated
-Blockly.Msg["FUNCTIONS_DEFAULT_CUSTOM_ARG_NAME"] = "arg";  // untranslated
-Blockly.Msg["FUNCTIONS_DEFAULT_FUNCTION_NAME"] = "do_something";  // untranslated
-Blockly.Msg["FUNCTIONS_DEFAULT_NUMBER_ARG_NAME"] = "num";  // untranslated
-Blockly.Msg["FUNCTIONS_DEFAULT_STRING_ARG_NAME"] = "text";  // untranslated
-Blockly.Msg["FUNCTIONS_EDIT_OPTION"] = "Edit";  // untranslated
-Blockly.Msg["FUNCTION_CALL_TOOLTIP"] = "Call a function that was previously defined.";  // untranslated
-Blockly.Msg["FUNCTION_CREATE_NEW"] = "Create a Function";  // untranslated
-Blockly.Msg["FUNCTION_WARNING_ARG_NAME_IS_FUNCTION_NAME"] = "Argument names must not be the same as the function name.";  // untranslated
-Blockly.Msg["FUNCTION_WARNING_DUPLICATE_ARG"] = "Functions cannot use the same argument name more than once.";  // untranslated
-Blockly.Msg["FUNCTION_WARNING_EMPTY_NAME"] = "Function and argument names cannot be empty.";  // untranslated
 Blockly.Msg["HELP"] = "Справка";
 Blockly.Msg["INLINE_INPUTS"] = "Вставки внутри";
 Blockly.Msg["IOS_CANCEL"] = "Отмена";
@@ -302,9 +286,7 @@ Blockly.Msg["NEW_COLOUR_VARIABLE"] = "Create colour variable...";  // untranslat
 Blockly.Msg["NEW_NUMBER_VARIABLE"] = "Create number variable...";  // untranslated
 Blockly.Msg["NEW_STRING_VARIABLE"] = "Create string variable...";  // untranslated
 Blockly.Msg["NEW_VARIABLE"] = "Создать переменную…";
-Blockly.Msg["NEW_VARIABLE_DROPDOWN"] = "New variable...";  // untranslated
 Blockly.Msg["NEW_VARIABLE_TITLE"] = "Имя новой переменной:";
-Blockly.Msg["NEW_VARIABLE_TYPE_DROPDOWN"] = "New %1 variable...";  // untranslated
 Blockly.Msg["NEW_VARIABLE_TYPE_TITLE"] = "New variable type:";  // untranslated
 Blockly.Msg["ORDINAL_NUMBER_SUFFIX"] = "";  // untranslated
 Blockly.Msg["PROCEDURES_ALLOW_STATEMENTS"] = "разрешить операторы";
@@ -407,6 +389,7 @@ Blockly.Msg["TEXT_TRIM_OPERATOR_RIGHT"] = "обрезать пробелы сп�
 Blockly.Msg["TEXT_TRIM_TOOLTIP"] = "Возвращает копию текста с пробелами, удалеными с одного или обоих концов.";
 Blockly.Msg["TODAY"] = "Сегодня";
 Blockly.Msg["UNDO"] = "Отменить";
+Blockly.Msg["UNNAMED_KEY"] = "без названия";
 Blockly.Msg["VARIABLES_DEFAULT_NAME"] = "элемент";
 Blockly.Msg["VARIABLES_GET_CREATE_SET"] = "Создать блок \"присвоить\" для %1";
 Blockly.Msg["VARIABLES_GET_HELPURL"] = "https://github.com/google/blockly/wiki/Variables#get";  // untranslated
@@ -417,6 +400,7 @@ Blockly.Msg["VARIABLES_SET_HELPURL"] = "https://github.com/google/blockly/wiki/V
 Blockly.Msg["VARIABLES_SET_TOOLTIP"] = "Присваивает переменной значение вставки.";
 Blockly.Msg["VARIABLE_ALREADY_EXISTS"] = "Переменная с именем '%1' уже существует.";
 Blockly.Msg["VARIABLE_ALREADY_EXISTS_FOR_ANOTHER_TYPE"] = "Название переменной '%1' уже используется другой переменной типа '%2'.";
+Blockly.Msg["WORKSPACE_ARIA_LABEL"] = "Рабочая область Blockly";
 Blockly.Msg["WORKSPACE_COMMENT_DEFAULT_TEXT"] = "Напишите здесь что-нибудь...";
 Blockly.Msg["CONTROLS_FOREACH_INPUT_DO"] = Blockly.Msg["CONTROLS_REPEAT_INPUT_DO"];
 Blockly.Msg["CONTROLS_FOR_INPUT_DO"] = Blockly.Msg["CONTROLS_REPEAT_INPUT_DO"];
@@ -445,7 +429,6 @@ Blockly.Msg["LISTS_HUE"] = "260";
 Blockly.Msg["LOGIC_HUE"] = "210";
 Blockly.Msg["VARIABLES_HUE"] = "330";
 Blockly.Msg["TEXTS_HUE"] = "160";
-Blockly.Msg["REPORTERS_HUE"] = "290";
 Blockly.Msg["PROCEDURES_HUE"] = "290";
 Blockly.Msg["COLOUR_HUE"] = "20";
 Blockly.Msg["VARIABLES_DYNAMIC_HUE"] = "310";

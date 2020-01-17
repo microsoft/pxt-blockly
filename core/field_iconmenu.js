@@ -299,4 +299,4 @@ Blockly.FieldIconMenu.prototype.onHide_ = function() {
   this.arrowIcon_.setAttribute('transform', 'translate(' + this.arrowX_ + ',' + this.arrowY_ + ')');
 };
 
-Blockly.Field.register('field_iconmenu', Blockly.FieldIconMenu);
+Blockly.fieldRegistry.register('field_iconmenu', Blockly.FieldIconMenu);

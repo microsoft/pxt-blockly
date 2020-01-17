@@ -1,9 +1,6 @@
 /**
  * @license
- * Visual Blocks Language
- *
- * Copyright 2015 Google Inc.
- * https://developers.google.com/blockly/
+ * Copyright 2015 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +20,7 @@
  * @author daarond@gmail.com (Daaron Dwyer)
  */
 
-/*
+/**
  * Lists in PHP are known to break when non-variables are passed into blocks
  * that require a list. PHP, unlike other languages, passes arrays as reference
  * value instead of value so we are unable to support it to the extent we can
@@ -272,7 +269,7 @@ Blockly.PHP['lists_setIndex'] = function(block) {
       return '';
     }
     var listVar = Blockly.PHP.variableDB_.getDistinctName(
-        'tmp_list', Blockly.Variables.NAME_TYPE);
+        'tmp_list', Blockly.VARIABLE_CATEGORY_NAME);
     var code = listVar + ' = &' + list + ';\n';
     list = listVar;
     return code;
@@ -343,7 +340,7 @@ Blockly.PHP['lists_setIndex'] = function(block) {
               Blockly.PHP.ORDER_REFERENCE) || 'array()';
       var code = cacheList();
       var xVar = Blockly.PHP.variableDB_.getDistinctName(
-          'tmp_x', Blockly.Variables.NAME_TYPE);
+          'tmp_x', Blockly.VARIABLE_CATEGORY_NAME);
       code += xVar + ' = rand(0, count(' + list + ')-1);\n';
       if (mode == 'SET') {
         code += list + '[' + xVar + '] = ' + value + ';\n';
@@ -430,7 +427,7 @@ Blockly.PHP['lists_getSublist'] = function(block) {
          '    $at1 = count($list) - 1 - $at1;',
          '  } else if ($where1 == \'FIRST\') {',
          '    $at1 = 0;',
-         '  } else if ($where1 != \'FROM_START\'){',
+         '  } else if ($where1 != \'FROM_START\') {',
          '    throw new Exception(\'Unhandled option (lists_get_sublist).\');',
          '  }',
          '  $length = 0;',

@@ -1,9 +1,8 @@
 *_compressed*.js
 *_uncompressed*.js
-blockly_node_javascript_en.js
 gulpfile.js
 /msg/*
-/core/css.js
+/core/utils/global.js
 /tests/blocks/*
 /tests/compile/*
 /tests/jsunit/*
@@ -11,14 +10,15 @@ gulpfile.js
 /tests/blocks/*
 /tests/generators/*
 /tests/mocha/run_mocha_tests_in_browser.js
+/tests/screenshot/*
 /tests/test_runner.js
 /tests/workspace_svg/*
 /generators/*
 /demos/*
-/accessible/*
 /appengine/*
 /shim/*
 /dist/*
 /gh-pages/*
 /webpack.config.js
 /externs/*
+/closure/*

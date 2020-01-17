@@ -191,4 +191,4 @@ Blockly.FieldTextDropdown.prototype.onItemSelected = function(menu, menuItem) {
   }
 };
 
-Blockly.Field.register('field_textdropdown', Blockly.FieldTextDropdown);
+Blockly.fieldRegistry.register('field_textdropdown', Blockly.FieldTextDropdown);

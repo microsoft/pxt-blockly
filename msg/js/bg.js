@@ -2,15 +2,11 @@
 
 'use strict';
 
-goog.provide('Blockly.Msg.bg');
-
-goog.require('Blockly.Msg');
-
 Blockly.Msg["ADD_COMMENT"] = "Добави коментар";
 Blockly.Msg["CANNOT_DELETE_VARIABLE_PROCEDURE"] = "Променливата '%1' не може да бъде изтрита, защото е част от определението на функцията '%2'";
 Blockly.Msg["CHANGE_VALUE_TITLE"] = "Промени стойността:";
 Blockly.Msg["CLEAN_UP"] = "Премахни блокове";
-Blockly.Msg["COLLAPSED_WARNINGS_WARNING"] = "Collapsed blocks contain warnings.";  // untranslated
+Blockly.Msg["COLLAPSED_WARNINGS_WARNING"] = "Свитите блокове съдържат предупреждения.";
 Blockly.Msg["COLLAPSE_ALL"] = "Скрий блокове";
 Blockly.Msg["COLLAPSE_BLOCK"] = "Скрий блок";
 Blockly.Msg["COLOUR_BLEND_COLOUR1"] = "цвят 1";
@@ -74,18 +70,6 @@ Blockly.Msg["ENABLE_BLOCK"] = "Активирай блок";
 Blockly.Msg["EXPAND_ALL"] = "Покажи блокове";
 Blockly.Msg["EXPAND_BLOCK"] = "Покажи блок";
 Blockly.Msg["EXTERNAL_INPUTS"] = "Външни входове";
-Blockly.Msg["FUNCTIONS_CALL_TITLE"] = "call";  // untranslated
-Blockly.Msg["FUNCTIONS_DEFAULT_BOOLEAN_ARG_NAME"] = "bool";  // untranslated
-Blockly.Msg["FUNCTIONS_DEFAULT_CUSTOM_ARG_NAME"] = "arg";  // untranslated
-Blockly.Msg["FUNCTIONS_DEFAULT_FUNCTION_NAME"] = "do_something";  // untranslated
-Blockly.Msg["FUNCTIONS_DEFAULT_NUMBER_ARG_NAME"] = "num";  // untranslated
-Blockly.Msg["FUNCTIONS_DEFAULT_STRING_ARG_NAME"] = "text";  // untranslated
-Blockly.Msg["FUNCTIONS_EDIT_OPTION"] = "Edit";  // untranslated
-Blockly.Msg["FUNCTION_CALL_TOOLTIP"] = "Call a function that was previously defined.";  // untranslated
-Blockly.Msg["FUNCTION_CREATE_NEW"] = "Create a Function";  // untranslated
-Blockly.Msg["FUNCTION_WARNING_ARG_NAME_IS_FUNCTION_NAME"] = "Argument names must not be the same as the function name.";  // untranslated
-Blockly.Msg["FUNCTION_WARNING_DUPLICATE_ARG"] = "Functions cannot use the same argument name more than once.";  // untranslated
-Blockly.Msg["FUNCTION_WARNING_EMPTY_NAME"] = "Function and argument names cannot be empty.";  // untranslated
 Blockly.Msg["HELP"] = "Помощ";
 Blockly.Msg["INLINE_INPUTS"] = "Вътрешни входове";
 Blockly.Msg["IOS_CANCEL"] = "Отказ";
@@ -219,9 +203,9 @@ Blockly.Msg["MATH_ARITHMETIC_TOOLTIP_DIVIDE"] = "Върни частното н�
 Blockly.Msg["MATH_ARITHMETIC_TOOLTIP_MINUS"] = "Върни разликата на двете числа.";
 Blockly.Msg["MATH_ARITHMETIC_TOOLTIP_MULTIPLY"] = "Върни произведението на двете числа.";
 Blockly.Msg["MATH_ARITHMETIC_TOOLTIP_POWER"] = "Върни първото число, повдигнато на степен на второто число.";
-Blockly.Msg["MATH_ATAN2_HELPURL"] = "https://en.wikipedia.org/wiki/Atan2";  // untranslated
-Blockly.Msg["MATH_ATAN2_TITLE"] = "atan2 of X:%1 Y:%2";  // untranslated
-Blockly.Msg["MATH_ATAN2_TOOLTIP"] = "Return the arctangent of point (X, Y) in degrees from -180 to 180.";  // untranslated
+Blockly.Msg["MATH_ATAN2_HELPURL"] = "https://en.wikipedia.org/wiki/Atan2";
+Blockly.Msg["MATH_ATAN2_TITLE"] = "atan2 от X:%1 Y:%2";
+Blockly.Msg["MATH_ATAN2_TOOLTIP"] = "Връща аркустангенс на точка (X, Y) в градуси от -180 до 180.";
 Blockly.Msg["MATH_CHANGE_HELPURL"] = "https://bg.wikipedia.org/wiki/Събиране";
 Blockly.Msg["MATH_CHANGE_TITLE"] = "промени %1 на %2";
 Blockly.Msg["MATH_CHANGE_TOOLTIP"] = "Добави число към променлива „%1“.";
@@ -302,9 +286,7 @@ Blockly.Msg["NEW_COLOUR_VARIABLE"] = "Създаване на цветова п�
 Blockly.Msg["NEW_NUMBER_VARIABLE"] = "Създаване на числова променлива...";
 Blockly.Msg["NEW_STRING_VARIABLE"] = "Създаване на низова променлива...";
 Blockly.Msg["NEW_VARIABLE"] = "Създаване на променлива...";
-Blockly.Msg["NEW_VARIABLE_DROPDOWN"] = "New variable...";  // untranslated
 Blockly.Msg["NEW_VARIABLE_TITLE"] = "Ново име на променливата:";
-Blockly.Msg["NEW_VARIABLE_TYPE_DROPDOWN"] = "New %1 variable...";  // untranslated
 Blockly.Msg["NEW_VARIABLE_TYPE_TITLE"] = "Тип на новата променлива:";
 Blockly.Msg["ORDINAL_NUMBER_SUFFIX"] = "";  // untranslated
 Blockly.Msg["PROCEDURES_ALLOW_STATEMENTS"] = "позволи операциите";
@@ -407,6 +389,7 @@ Blockly.Msg["TEXT_TRIM_OPERATOR_RIGHT"] = "премахни интервалит
 Blockly.Msg["TEXT_TRIM_TOOLTIP"] = "Връща копие на текста с премахнати интервали от единия или двата края.";
 Blockly.Msg["TODAY"] = "Днес";
 Blockly.Msg["UNDO"] = "Отмяна";
+Blockly.Msg["UNNAMED_KEY"] = "без име";
 Blockly.Msg["VARIABLES_DEFAULT_NAME"] = "елемент";
 Blockly.Msg["VARIABLES_GET_CREATE_SET"] = "Създай „промени стойността на %1“";
 Blockly.Msg["VARIABLES_GET_HELPURL"] = "https://github.com/google/blockly/wiki/Variables#get";  // untranslated
@@ -417,6 +400,7 @@ Blockly.Msg["VARIABLES_SET_HELPURL"] = "https://github.com/google/blockly/wiki/V
 Blockly.Msg["VARIABLES_SET_TOOLTIP"] = "Установява променливата със стойността на входа.";
 Blockly.Msg["VARIABLE_ALREADY_EXISTS"] = "Променлива с име '%1' вече съществува.";
 Blockly.Msg["VARIABLE_ALREADY_EXISTS_FOR_ANOTHER_TYPE"] = "Променлива с име '%1' вече съществува за друг тип: '%2'.";
+Blockly.Msg["WORKSPACE_ARIA_LABEL"] = "Работна област на Blockly";
 Blockly.Msg["WORKSPACE_COMMENT_DEFAULT_TEXT"] = "Коментирайте нещо...";
 Blockly.Msg["CONTROLS_FOREACH_INPUT_DO"] = Blockly.Msg["CONTROLS_REPEAT_INPUT_DO"];
 Blockly.Msg["CONTROLS_FOR_INPUT_DO"] = Blockly.Msg["CONTROLS_REPEAT_INPUT_DO"];
@@ -445,7 +429,6 @@ Blockly.Msg["LISTS_HUE"] = "260";
 Blockly.Msg["LOGIC_HUE"] = "210";
 Blockly.Msg["VARIABLES_HUE"] = "330";
 Blockly.Msg["TEXTS_HUE"] = "160";
-Blockly.Msg["REPORTERS_HUE"] = "290";
 Blockly.Msg["PROCEDURES_HUE"] = "290";
 Blockly.Msg["COLOUR_HUE"] = "20";
 Blockly.Msg["VARIABLES_DYNAMIC_HUE"] = "310";

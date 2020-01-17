@@ -2,10 +2,6 @@
 
 'use strict';
 
-goog.provide('Blockly.Msg.ko');
-
-goog.require('Blockly.Msg');
-
 Blockly.Msg["ADD_COMMENT"] = "주석 추가";
 Blockly.Msg["CANNOT_DELETE_VARIABLE_PROCEDURE"] = "'%2' 함수 정의의 일부이기 때문에 '%1' 변수를 삭제할 수 없습니다";
 Blockly.Msg["CHANGE_VALUE_TITLE"] = "값 바꾸기:";
@@ -74,18 +70,6 @@ Blockly.Msg["ENABLE_BLOCK"] = "블록 활성화";
 Blockly.Msg["EXPAND_ALL"] = "블록 확장";
 Blockly.Msg["EXPAND_BLOCK"] = "블록 확장";
 Blockly.Msg["EXTERNAL_INPUTS"] = "외부 입력";
-Blockly.Msg["FUNCTIONS_CALL_TITLE"] = "call";  // untranslated
-Blockly.Msg["FUNCTIONS_DEFAULT_BOOLEAN_ARG_NAME"] = "bool";  // untranslated
-Blockly.Msg["FUNCTIONS_DEFAULT_CUSTOM_ARG_NAME"] = "arg";  // untranslated
-Blockly.Msg["FUNCTIONS_DEFAULT_FUNCTION_NAME"] = "do_something";  // untranslated
-Blockly.Msg["FUNCTIONS_DEFAULT_NUMBER_ARG_NAME"] = "num";  // untranslated
-Blockly.Msg["FUNCTIONS_DEFAULT_STRING_ARG_NAME"] = "text";  // untranslated
-Blockly.Msg["FUNCTIONS_EDIT_OPTION"] = "Edit";  // untranslated
-Blockly.Msg["FUNCTION_CALL_TOOLTIP"] = "Call a function that was previously defined.";  // untranslated
-Blockly.Msg["FUNCTION_CREATE_NEW"] = "Create a Function";  // untranslated
-Blockly.Msg["FUNCTION_WARNING_ARG_NAME_IS_FUNCTION_NAME"] = "Argument names must not be the same as the function name.";  // untranslated
-Blockly.Msg["FUNCTION_WARNING_DUPLICATE_ARG"] = "Functions cannot use the same argument name more than once.";  // untranslated
-Blockly.Msg["FUNCTION_WARNING_EMPTY_NAME"] = "Function and argument names cannot be empty.";  // untranslated
 Blockly.Msg["HELP"] = "도움말";
 Blockly.Msg["INLINE_INPUTS"] = "내부 입력";
 Blockly.Msg["IOS_CANCEL"] = "취소";
@@ -302,9 +286,7 @@ Blockly.Msg["NEW_COLOUR_VARIABLE"] = "Create colour variable...";  // untranslat
 Blockly.Msg["NEW_NUMBER_VARIABLE"] = "Create number variable...";  // untranslated
 Blockly.Msg["NEW_STRING_VARIABLE"] = "Create string variable...";  // untranslated
 Blockly.Msg["NEW_VARIABLE"] = "변수 만들기...";
-Blockly.Msg["NEW_VARIABLE_DROPDOWN"] = "New variable...";  // untranslated
 Blockly.Msg["NEW_VARIABLE_TITLE"] = "새 변수 이름:";
-Blockly.Msg["NEW_VARIABLE_TYPE_DROPDOWN"] = "New %1 variable...";  // untranslated
 Blockly.Msg["NEW_VARIABLE_TYPE_TITLE"] = "New variable type:";  // untranslated
 Blockly.Msg["ORDINAL_NUMBER_SUFFIX"] = "";
 Blockly.Msg["PROCEDURES_ALLOW_STATEMENTS"] = "서술 허가";
@@ -396,8 +378,8 @@ Blockly.Msg["TEXT_REPLACE_HELPURL"] = "https://github.com/google/blockly/wiki/Te
 Blockly.Msg["TEXT_REPLACE_MESSAGE0"] = "%3에서 %2을(를) %1(으)로 바꾸기";
 Blockly.Msg["TEXT_REPLACE_TOOLTIP"] = "Replace all occurances of some text within some other text.";  // untranslated
 Blockly.Msg["TEXT_REVERSE_HELPURL"] = "https://github.com/google/blockly/wiki/Text#reversing-text";
-Blockly.Msg["TEXT_REVERSE_MESSAGE0"] = "reverse %1";  // untranslated
-Blockly.Msg["TEXT_REVERSE_TOOLTIP"] = "Reverses the order of the characters in the text.";  // untranslated
+Blockly.Msg["TEXT_REVERSE_MESSAGE0"] = "%1 뒤집기";
+Blockly.Msg["TEXT_REVERSE_TOOLTIP"] = "텍스트 안의 문자의 순서를 반전시킵니다.";
 Blockly.Msg["TEXT_TEXT_HELPURL"] = "https://ko.wikipedia.org/wiki/문자열";
 Blockly.Msg["TEXT_TEXT_TOOLTIP"] = "문자, 단어, 문장.";
 Blockly.Msg["TEXT_TRIM_HELPURL"] = "https://github.com/google/blockly/wiki/Text#trimming-removing-spaces";
@@ -407,6 +389,7 @@ Blockly.Msg["TEXT_TRIM_OPERATOR_RIGHT"] = "오른쪽의 공백 문자 제거";
 Blockly.Msg["TEXT_TRIM_TOOLTIP"] = "문장의 왼쪽/오른쪽/양쪽에서 스페이스 문자를 제거해 돌려줍니다.";
 Blockly.Msg["TODAY"] = "오늘";
 Blockly.Msg["UNDO"] = "실행 취소";
+Blockly.Msg["UNNAMED_KEY"] = "이름이 없는";
 Blockly.Msg["VARIABLES_DEFAULT_NAME"] = "항목";
 Blockly.Msg["VARIABLES_GET_CREATE_SET"] = "'집합 %1' 생성";
 Blockly.Msg["VARIABLES_GET_HELPURL"] = "https://ko.wikipedia.org/wiki/%EB%B3%80%EC%88%98_(%EC%BB%B4%ED%93%A8%ED%84%B0_%EA%B3%BC%ED%95%99)";
@@ -417,6 +400,7 @@ Blockly.Msg["VARIABLES_SET_HELPURL"] = "https://ko.wikipedia.org/wiki/%EB%B3%80%
 Blockly.Msg["VARIABLES_SET_TOOLTIP"] = "변수의 값을 입력한 값으로 변경해 줍니다.";
 Blockly.Msg["VARIABLE_ALREADY_EXISTS"] = "'%1' 변수는 이미 존재합니다.";
 Blockly.Msg["VARIABLE_ALREADY_EXISTS_FOR_ANOTHER_TYPE"] = "'%1' 변수는 '%2' 유형의 다른 변수에 대해 이미 존재합니다.";
+Blockly.Msg["WORKSPACE_ARIA_LABEL"] = "Blockly Workspace";  // untranslated
 Blockly.Msg["WORKSPACE_COMMENT_DEFAULT_TEXT"] = "말해 보세요...";
 Blockly.Msg["CONTROLS_FOREACH_INPUT_DO"] = Blockly.Msg["CONTROLS_REPEAT_INPUT_DO"];
 Blockly.Msg["CONTROLS_FOR_INPUT_DO"] = Blockly.Msg["CONTROLS_REPEAT_INPUT_DO"];
@@ -445,7 +429,6 @@ Blockly.Msg["LISTS_HUE"] = "260";
 Blockly.Msg["LOGIC_HUE"] = "210";
 Blockly.Msg["VARIABLES_HUE"] = "330";
 Blockly.Msg["TEXTS_HUE"] = "160";
-Blockly.Msg["REPORTERS_HUE"] = "290";
 Blockly.Msg["PROCEDURES_HUE"] = "290";
 Blockly.Msg["COLOUR_HUE"] = "20";
 Blockly.Msg["VARIABLES_DYNAMIC_HUE"] = "310";

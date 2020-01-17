@@ -1,9 +1,6 @@
 /**
  * @license
- * Visual Blocks Editor
- *
- * Copyright 2017 Google Inc.
- * https://developers.google.com/blockly/
+ * Copyright 2017 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +26,6 @@ goog.provide('Blockly.WorkspaceCommentSvg.render');
 goog.require('Blockly.utils');
 goog.require('Blockly.utils.Coordinate');
 goog.require('Blockly.utils.dom');
-goog.require('Blockly.WorkspaceCommentSvg');
 
 /**
  * Radius of the border around the comment.
@@ -243,7 +239,8 @@ Blockly.WorkspaceCommentSvg.prototype.createEditor_ = function() {
   var textarea = document.createElementNS(Blockly.utils.dom.HTML_NS, 'textarea');
   textarea.className = 'blocklyCommentTextarea';
   textarea.setAttribute('dir', this.RTL ? 'RTL' : 'LTR');
-  textarea.setAttribute('maxlength', Blockly.WorkspaceComment.COMMENT_TEXT_LIMIT);
+  textarea.setAttribute('maxlength', Blockly.WorkspaceComment.COMMENT_TEXT_LIMIT); // pxt-blockly set max length
+  textarea.readOnly = !this.isEditable();
   body.appendChild(textarea);
   this.textarea_ = textarea;
   this.textarea_.style.margin = (Blockly.WorkspaceCommentSvg.TEXTAREA_OFFSET) + 'px';
@@ -625,12 +622,12 @@ Blockly.WorkspaceCommentSvg.prototype.unbindDragEvents_ = function() {
   }
 };
 
-/*
+/**
  * Handle a mouse-up event while dragging a comment's border or resize handle.
  * @param {!Event} e Mouse up event.
  * @private
  */
-Blockly.WorkspaceCommentSvg.prototype.resizeMouseUp_ = function(/*e*/) {
+Blockly.WorkspaceCommentSvg.prototype.resizeMouseUp_ = function(/* e */) {
   Blockly.Touch.clearTouchIdentifier();
   this.unbindDragEvents_();
 

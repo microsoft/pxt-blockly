@@ -1,9 +1,6 @@
 /**
  * @license
- * PXT Blockly
- *
- * Copyright (c) Microsoft Corporation. All rights reserved.
- * https://github.com/Microsoft/pxt-blockly
+ * Copyright 2019 Google LLC
  *
  * See LICENSE file for details.
  */

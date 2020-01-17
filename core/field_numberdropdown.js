@@ -84,4 +84,4 @@ Blockly.FieldNumberDropdown.fromJson = function(options) {
  */
 Blockly.FieldNumberDropdown.prototype.classValidator = Blockly.FieldNumber.prototype.classValidator;
 
-Blockly.Field.register('field_numberdropdown', Blockly.FieldNumberDropdown);
+Blockly.fieldRegistry.register('field_numberdropdown', Blockly.FieldNumberDropdown);

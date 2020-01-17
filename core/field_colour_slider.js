@@ -316,4 +316,4 @@ Blockly.FieldColourSlider.prototype.dispose = function() {
   Blockly.FieldColourSlider.superClass_.dispose.call(this);
 };
 
-Blockly.Field.register('field_colour_slider', Blockly.FieldColourSlider);
+Blockly.fieldRegistry.register('field_colour_slider', Blockly.FieldColourSlider);

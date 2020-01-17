@@ -156,5 +156,5 @@ Blockly.FieldVerticalSeparator.prototype.updateWidth = function() {
  // NOP
 };
 
-Blockly.Field.register(
+Blockly.fieldRegistry.register(
     'field_vertical_separator', Blockly.FieldVerticalSeparator);

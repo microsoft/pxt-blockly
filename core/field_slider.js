@@ -296,4 +296,4 @@ Blockly.FieldSlider.prototype.dispose = function() {
   Blockly.FieldSlider.superClass_.dispose.call(this);
 };
 
-Blockly.Field.register('field_slider', Blockly.FieldSlider);
+Blockly.fieldRegistry.register('field_slider', Blockly.FieldSlider);

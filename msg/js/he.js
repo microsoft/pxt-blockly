@@ -2,10 +2,6 @@
 
 'use strict';
 
-goog.provide('Blockly.Msg.he');
-
-goog.require('Blockly.Msg');
-
 Blockly.Msg["ADD_COMMENT"] = "הוסף תגובה";
 Blockly.Msg["CANNOT_DELETE_VARIABLE_PROCEDURE"] = "אי אפשר למחוק את המשתנה \"%1\", מכיוון שהגדרת הפונקציה \"%2\" משתמשת בו.";
 Blockly.Msg["CHANGE_VALUE_TITLE"] = "שנה ערך:";
@@ -65,7 +61,7 @@ Blockly.Msg["CONTROLS_WHILEUNTIL_TOOLTIP_WHILE"] = "כל עוד הערך הוא 
 Blockly.Msg["DELETE_ALL_BLOCKS"] = "האם למחוק את כל %1 קטעי הקוד?";
 Blockly.Msg["DELETE_BLOCK"] = "מחק קטע קוד";
 Blockly.Msg["DELETE_VARIABLE"] = "מחק את משתנה ה'%1'";
-Blockly.Msg["DELETE_VARIABLE_CONFIRMATION"] = "Delete %1 uses of the '%2' variable?";  // untranslated
+Blockly.Msg["DELETE_VARIABLE_CONFIRMATION"] = "למחוק %1 שימושים במשתנה ‚%2’?";
 Blockly.Msg["DELETE_X_BLOCKS"] = "מחק %1 קטעי קוד";
 Blockly.Msg["DISABLE_BLOCK"] = "נטרל קטע קוד";
 Blockly.Msg["DUPLICATE_BLOCK"] = "שכפל";
@@ -74,18 +70,6 @@ Blockly.Msg["ENABLE_BLOCK"] = "הפעל קטע קוד";
 Blockly.Msg["EXPAND_ALL"] = "הרחב קטעי קוד";
 Blockly.Msg["EXPAND_BLOCK"] = "הרחב קטע קוד";
 Blockly.Msg["EXTERNAL_INPUTS"] = "קלטים חיצוניים";
-Blockly.Msg["FUNCTIONS_CALL_TITLE"] = "call";  // untranslated
-Blockly.Msg["FUNCTIONS_DEFAULT_BOOLEAN_ARG_NAME"] = "bool";  // untranslated
-Blockly.Msg["FUNCTIONS_DEFAULT_CUSTOM_ARG_NAME"] = "arg";  // untranslated
-Blockly.Msg["FUNCTIONS_DEFAULT_FUNCTION_NAME"] = "do_something";  // untranslated
-Blockly.Msg["FUNCTIONS_DEFAULT_NUMBER_ARG_NAME"] = "num";  // untranslated
-Blockly.Msg["FUNCTIONS_DEFAULT_STRING_ARG_NAME"] = "text";  // untranslated
-Blockly.Msg["FUNCTIONS_EDIT_OPTION"] = "Edit";  // untranslated
-Blockly.Msg["FUNCTION_CALL_TOOLTIP"] = "Call a function that was previously defined.";  // untranslated
-Blockly.Msg["FUNCTION_CREATE_NEW"] = "Create a Function";  // untranslated
-Blockly.Msg["FUNCTION_WARNING_ARG_NAME_IS_FUNCTION_NAME"] = "Argument names must not be the same as the function name.";  // untranslated
-Blockly.Msg["FUNCTION_WARNING_DUPLICATE_ARG"] = "Functions cannot use the same argument name more than once.";  // untranslated
-Blockly.Msg["FUNCTION_WARNING_EMPTY_NAME"] = "Function and argument names cannot be empty.";  // untranslated
 Blockly.Msg["HELP"] = "עזרה";
 Blockly.Msg["INLINE_INPUTS"] = "קלטים פנימיים";
 Blockly.Msg["IOS_CANCEL"] = "ביטול";
@@ -226,7 +210,7 @@ Blockly.Msg["MATH_CHANGE_HELPURL"] = "https://en.wikipedia.org/wiki/Programming_
 Blockly.Msg["MATH_CHANGE_TITLE"] = "שינוי %1 על־ידי %2";
 Blockly.Msg["MATH_CHANGE_TOOLTIP"] = "הוסף מספר למשתנה '%1'.";
 Blockly.Msg["MATH_CONSTANT_HELPURL"] = "https://he.wikipedia.org/wiki/קבוע_מתמטי";
-Blockly.Msg["MATH_CONSTANT_TOOLTIP"] = "Return one of the common constants: π (3.141…), e (2.718…), φ (1.618…), sqrt(2) (1.414…), sqrt(½) (0.707…), or ∞ (infinity).";  // untranslated
+Blockly.Msg["MATH_CONSTANT_TOOLTIP"] = "החזרת אחד מהקבועים המקובלים: π (3.141…),‏ e (2.718…),‏ φ (1.618…),‏ sqrt(2) (1.414…),‏ sqrt(½) (0.707…)‏ או ∞ (אינסוף).";
 Blockly.Msg["MATH_CONSTRAIN_HELPURL"] = "https://en.wikipedia.org/wiki/Clamping_(graphics)";  // untranslated
 Blockly.Msg["MATH_CONSTRAIN_TITLE"] = "הגבל %1 בין %2 ל %3";
 Blockly.Msg["MATH_CONSTRAIN_TOOLTIP"] = "Constrain a number to be between the specified limits (inclusive).";  // untranslated
@@ -302,9 +286,7 @@ Blockly.Msg["NEW_COLOUR_VARIABLE"] = "יצירת משתנה צבע...";
 Blockly.Msg["NEW_NUMBER_VARIABLE"] = "צור משתנה מחרוזת";
 Blockly.Msg["NEW_STRING_VARIABLE"] = "צור משתנה מחרוזת";
 Blockly.Msg["NEW_VARIABLE"] = "צור משתנה...";
-Blockly.Msg["NEW_VARIABLE_DROPDOWN"] = "New variable...";  // untranslated
 Blockly.Msg["NEW_VARIABLE_TITLE"] = "שם המשתנה החדש:";
-Blockly.Msg["NEW_VARIABLE_TYPE_DROPDOWN"] = "New %1 variable...";  // untranslated
 Blockly.Msg["NEW_VARIABLE_TYPE_TITLE"] = "סוג המשתנה החדש:";
 Blockly.Msg["ORDINAL_NUMBER_SUFFIX"] = "";  // untranslated
 Blockly.Msg["PROCEDURES_ALLOW_STATEMENTS"] = "לאפשר פעולות";
@@ -407,6 +389,7 @@ Blockly.Msg["TEXT_TRIM_OPERATOR_RIGHT"] = "למחוק רווחים משמאל";
 Blockly.Msg["TEXT_TRIM_TOOLTIP"] = "להחזיר עותק של הטקסט לאחר מחיקת רווחים מאחד או משני הקצוות.";
 Blockly.Msg["TODAY"] = "היום";
 Blockly.Msg["UNDO"] = "ביטול";
+Blockly.Msg["UNNAMED_KEY"] = "unnamed";  // untranslated
 Blockly.Msg["VARIABLES_DEFAULT_NAME"] = "פריט";
 Blockly.Msg["VARIABLES_GET_CREATE_SET"] = "ליצור 'הגדר %1'";
 Blockly.Msg["VARIABLES_GET_HELPURL"] = "https://github.com/google/blockly/wiki/Variables#get";  // untranslated
@@ -417,6 +400,7 @@ Blockly.Msg["VARIABLES_SET_HELPURL"] = "https://github.com/google/blockly/wiki/V
 Blockly.Msg["VARIABLES_SET_TOOLTIP"] = "מגדיר משתנה זה להיות שווה לקלט.";
 Blockly.Msg["VARIABLE_ALREADY_EXISTS"] = "קיים כבר משתנה בשם \"%1\".";
 Blockly.Msg["VARIABLE_ALREADY_EXISTS_FOR_ANOTHER_TYPE"] = "קיים כבר משתנה בשם \"%1\" מסוג אחר: \"%2\"";
+Blockly.Msg["WORKSPACE_ARIA_LABEL"] = "סביבת העבודה חסומה";
 Blockly.Msg["WORKSPACE_COMMENT_DEFAULT_TEXT"] = "נא להזין הערה...";
 Blockly.Msg["CONTROLS_FOREACH_INPUT_DO"] = Blockly.Msg["CONTROLS_REPEAT_INPUT_DO"];
 Blockly.Msg["CONTROLS_FOR_INPUT_DO"] = Blockly.Msg["CONTROLS_REPEAT_INPUT_DO"];
@@ -445,7 +429,6 @@ Blockly.Msg["LISTS_HUE"] = "260";
 Blockly.Msg["LOGIC_HUE"] = "210";
 Blockly.Msg["VARIABLES_HUE"] = "330";
 Blockly.Msg["TEXTS_HUE"] = "160";
-Blockly.Msg["REPORTERS_HUE"] = "290";
 Blockly.Msg["PROCEDURES_HUE"] = "290";
 Blockly.Msg["COLOUR_HUE"] = "20";
 Blockly.Msg["VARIABLES_DYNAMIC_HUE"] = "310";

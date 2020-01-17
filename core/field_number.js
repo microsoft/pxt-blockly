@@ -1,9 +1,6 @@
 /**
  * @license
- * Visual Blocks Editor
- *
- * Copyright 2016 Massachusetts Institute of Technology
- * All rights reserved.
+ * Copyright 2016 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +23,11 @@
 
 goog.provide('Blockly.FieldNumber');
 
+goog.require('Blockly.fieldRegistry');
 goog.require('Blockly.FieldTextInput');
 goog.require('Blockly.Touch');
+goog.require('Blockly.utils.aria');
+goog.require('Blockly.utils.object');
 goog.require('Blockly.utils.userAgent');
 
 
@@ -35,27 +35,61 @@ goog.require('Blockly.utils.userAgent');
  * Class for an editable number field.
  * @param {string|number=} opt_value The initial value of the field. Should cast
  *    to a number. Defaults to 0.
- * @param {(string|number)=} opt_min Minimum value.
- * @param {(string|number)=} opt_max Maximum value.
- * @param {(string|number)=} opt_precision Precision for value.
- * @param {Function=} opt_validator A function that is called to validate
+ * @param {?(string|number)=} opt_min Minimum value.
+ * @param {?(string|number)=} opt_max Maximum value.
+ * @param {?(string|number)=} opt_precision Precision for value.
+ * @param {?Function=} opt_validator A function that is called to validate
  *    changes to the field's value. Takes in a number & returns a validated
  *    number, or null to abort the change.
+ * @param {Object=} opt_config A map of options used to configure the field.
+ *    See the [field creation documentation]{@link https://developers.google.com/blockly/guides/create-custom-blocks/fields/built-in-fields/number#creation}
+ *    for a list of properties this parameter supports.
  * @extends {Blockly.FieldTextInput}
  * @constructor
  */
 Blockly.FieldNumber = function(opt_value, opt_min, opt_max, opt_precision,
-    opt_validator) {
-  var numRestrictor = this.getNumRestrictor(opt_min, opt_max, opt_precision);
-  opt_value = this.doClassValidation_(opt_value);
-  if (opt_value === null) {
-    opt_value = 0;
-  }
+    opt_validator, opt_config) {
+
+    var numRestrictor = this.getNumRestrictor(opt_min, opt_max, opt_precision);
+  /**
+   * The minimum value this number field can contain.
+   * @type {number}
+   * @protected
+   */
+  this.min_ = -Infinity;
+
+  /**
+   * The maximum value this number field can contain.
+   * @type {number}
+   * @protected
+   */
+  this.max_ = Infinity;
+
+  /**
+   * The multiple to which this fields value is rounded.
+   * @type {number}
+   * @protected
+   */
+  this.precision_ = 0;
+
+  /**
+   * The number of decimal places to allow, or null to allow any number of
+   * decimal digits.
+   * @type {?number}
+   * @private
+   */
+  this.decimalPlaces_ = null;
+
   Blockly.FieldNumber.superClass_.constructor.call(
-      this, opt_value, opt_validator, numRestrictor);
+      this, opt_value || 0, opt_validator, numRestrictor, opt_config);
+
+  if (!opt_config) {  // Only do one kind of configuration or the other.
+    this.setConstraints(opt_min, opt_max, opt_precision);
+  }
+
   this.addArgType('number');
 };
-goog.inherits(Blockly.FieldNumber, Blockly.FieldTextInput);
+Blockly.utils.object.inherits(Blockly.FieldNumber, Blockly.FieldTextInput);
 
 /**
  * Construct a FieldNumber from a JSON arg object.
@@ -67,14 +101,13 @@ goog.inherits(Blockly.FieldNumber, Blockly.FieldTextInput);
  */
 Blockly.FieldNumber.fromJson = function(options) {
   return new Blockly.FieldNumber(options['value'],
-      options['min'], options['max'], options['precision']);
+      undefined, undefined, undefined, undefined, options);
 };
 
 /**
  *  * Serializable fields are saved by the XML renderer, non-serializable fields
  * are not. Editable fields should also be serializable.
  * @type {boolean}
- * @const
  */
 Blockly.FieldNumber.prototype.SERIALIZABLE = true;
 
@@ -139,7 +172,17 @@ Blockly.FieldNumber.prototype.getNumRestrictor = function(opt_min, opt_max,
   return new RegExp(pattern);
 };
 
-
+/**
+ * Configure the field based on the given map of options.
+ * @param {!Object} config A map of options to configure the field based on.
+ * @private
+ */
+Blockly.FieldNumber.prototype.configure_ = function(config) {
+  Blockly.FieldNumber.superClass_.configure_.call(this, config);
+  this.setMinInternal_(config['min']);
+  this.setMaxInternal_(config['max']);
+  this.setPrecisionInternal_(config['precision']);
+};
 
 /**
  * Set the maximum, minimum and precision constraints on this field.
@@ -476,25 +519,27 @@ Blockly.FieldNumber.prototype.onHide_ = function() {
 /**
  * Ensure that the input value is a valid number (must fulfill the
  * constraints placed on the field).
- * @param {string|number=} newValue The input value.
+ * @param {*=} opt_newValue The input value.
  * @return {?number} A valid number, or null if invalid.
  * @protected
  * @override
  */
-Blockly.FieldNumber.prototype.doClassValidation_ = function(newValue) {
-  if (newValue === null || newValue === undefined) {
+Blockly.FieldNumber.prototype.doClassValidation_ = function(opt_newValue) {
+  if (opt_newValue === null) {
     return null;
   }
   // Clean up text.
-  newValue = String(newValue);
+  var newValue = String(opt_newValue);
   // TODO: Handle cases like 'ten', '1.203,14', etc.
   // 'O' is sometimes mistaken for '0' by inexperienced users.
   newValue = newValue.replace(/O/ig, '0');
   // Strip out thousands separators.
   newValue = newValue.replace(/,/g, '');
+  // Ignore case of 'Infinity'.
+  newValue = newValue.replace(/infinity/i, 'Infinity');
 
   // Clean up number.
-  var n = parseFloat(newValue || 0);
+  var n = Number(newValue || 0);
   if (isNaN(n)) {
     // Invalid number.
     return null;
@@ -513,4 +558,25 @@ Blockly.FieldNumber.prototype.doClassValidation_ = function(newValue) {
   return n;
 };
 
-Blockly.Field.register('field_number', Blockly.FieldNumber);
+/**
+ * Create the number input editor widget.
+ * @return {!HTMLElement} The newly created number input editor.
+ * @protected
+ * @override
+ */
+Blockly.FieldNumber.prototype.widgetCreate_ = function() {
+  var htmlInput = Blockly.FieldNumber.superClass_.widgetCreate_.call(this);
+
+  // Set the accessibility state
+  if (this.min_ > -Infinity) {
+    Blockly.utils.aria.setState(htmlInput,
+        Blockly.utils.aria.State.VALUEMIN, this.min_);
+  }
+  if (this.max_ < Infinity) {
+    Blockly.utils.aria.setState(htmlInput,
+        Blockly.utils.aria.State.VALUEMAX, this.max_);
+  }
+  return htmlInput;
+};
+
+Blockly.fieldRegistry.register('field_number', Blockly.FieldNumber);

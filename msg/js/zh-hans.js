@@ -2,10 +2,6 @@
 
 'use strict';
 
-goog.provide('Blockly.Msg.zh.hans');
-
-goog.require('Blockly.Msg');
-
 Blockly.Msg["ADD_COMMENT"] = "添加注释";
 Blockly.Msg["CANNOT_DELETE_VARIABLE_PROCEDURE"] = "不能删除变量“%1”，因为它是函数“%2”定义的一部分";
 Blockly.Msg["CHANGE_VALUE_TITLE"] = "更改值：";
@@ -74,18 +70,6 @@ Blockly.Msg["ENABLE_BLOCK"] = "启用块";
 Blockly.Msg["EXPAND_ALL"] = "展开块";
 Blockly.Msg["EXPAND_BLOCK"] = "展开块";
 Blockly.Msg["EXTERNAL_INPUTS"] = "外部输入";
-Blockly.Msg["FUNCTIONS_CALL_TITLE"] = "call";  // untranslated
-Blockly.Msg["FUNCTIONS_DEFAULT_BOOLEAN_ARG_NAME"] = "bool";  // untranslated
-Blockly.Msg["FUNCTIONS_DEFAULT_CUSTOM_ARG_NAME"] = "arg";  // untranslated
-Blockly.Msg["FUNCTIONS_DEFAULT_FUNCTION_NAME"] = "do_something";  // untranslated
-Blockly.Msg["FUNCTIONS_DEFAULT_NUMBER_ARG_NAME"] = "num";  // untranslated
-Blockly.Msg["FUNCTIONS_DEFAULT_STRING_ARG_NAME"] = "text";  // untranslated
-Blockly.Msg["FUNCTIONS_EDIT_OPTION"] = "Edit";  // untranslated
-Blockly.Msg["FUNCTION_CALL_TOOLTIP"] = "Call a function that was previously defined.";  // untranslated
-Blockly.Msg["FUNCTION_CREATE_NEW"] = "Create a Function";  // untranslated
-Blockly.Msg["FUNCTION_WARNING_ARG_NAME_IS_FUNCTION_NAME"] = "Argument names must not be the same as the function name.";  // untranslated
-Blockly.Msg["FUNCTION_WARNING_DUPLICATE_ARG"] = "Functions cannot use the same argument name more than once.";  // untranslated
-Blockly.Msg["FUNCTION_WARNING_EMPTY_NAME"] = "Function and argument names cannot be empty.";  // untranslated
 Blockly.Msg["HELP"] = "帮助";
 Blockly.Msg["INLINE_INPUTS"] = "单行输入";
 Blockly.Msg["IOS_CANCEL"] = "取消";
@@ -302,9 +286,7 @@ Blockly.Msg["NEW_COLOUR_VARIABLE"] = "创建颜色变量...";
 Blockly.Msg["NEW_NUMBER_VARIABLE"] = "创建数字变量...";
 Blockly.Msg["NEW_STRING_VARIABLE"] = "创建字符串变量...";
 Blockly.Msg["NEW_VARIABLE"] = "创建变量...";
-Blockly.Msg["NEW_VARIABLE_DROPDOWN"] = "New variable...";  // untranslated
 Blockly.Msg["NEW_VARIABLE_TITLE"] = "新变量的名称：";
-Blockly.Msg["NEW_VARIABLE_TYPE_DROPDOWN"] = "New %1 variable...";  // untranslated
 Blockly.Msg["NEW_VARIABLE_TYPE_TITLE"] = "新变量的类型：";
 Blockly.Msg["ORDINAL_NUMBER_SUFFIX"] = "-";
 Blockly.Msg["PROCEDURES_ALLOW_STATEMENTS"] = "允许声明";
@@ -407,6 +389,7 @@ Blockly.Msg["TEXT_TRIM_OPERATOR_RIGHT"] = "消除其右侧的空白";
 Blockly.Msg["TEXT_TRIM_TOOLTIP"] = "从某一端或同时从两端删除多余的空白，并返回这段文字的一个副本。";
 Blockly.Msg["TODAY"] = "今天";
 Blockly.Msg["UNDO"] = "撤销";
+Blockly.Msg["UNNAMED_KEY"] = "匿名";
 Blockly.Msg["VARIABLES_DEFAULT_NAME"] = "项目";
 Blockly.Msg["VARIABLES_GET_CREATE_SET"] = "创建“设定%1”";
 Blockly.Msg["VARIABLES_GET_HELPURL"] = "https://github.com/google/blockly/wiki/Variables#get";  // untranslated
@@ -417,6 +400,7 @@ Blockly.Msg["VARIABLES_SET_HELPURL"] = "https://github.com/google/blockly/wiki/V
 Blockly.Msg["VARIABLES_SET_TOOLTIP"] = "设置此变量，以使它和输入值相等。";
 Blockly.Msg["VARIABLE_ALREADY_EXISTS"] = "名字叫“%1”的变量已经存在了。";
 Blockly.Msg["VARIABLE_ALREADY_EXISTS_FOR_ANOTHER_TYPE"] = "名字叫“%1”的变量已经有了另一个类型：“%2”。";
+Blockly.Msg["WORKSPACE_ARIA_LABEL"] = "Blockly工作区";
 Blockly.Msg["WORKSPACE_COMMENT_DEFAULT_TEXT"] = "说点什么...";
 Blockly.Msg["CONTROLS_FOREACH_INPUT_DO"] = Blockly.Msg["CONTROLS_REPEAT_INPUT_DO"];
 Blockly.Msg["CONTROLS_FOR_INPUT_DO"] = Blockly.Msg["CONTROLS_REPEAT_INPUT_DO"];
@@ -445,7 +429,6 @@ Blockly.Msg["LISTS_HUE"] = "260";
 Blockly.Msg["LOGIC_HUE"] = "210";
 Blockly.Msg["VARIABLES_HUE"] = "330";
 Blockly.Msg["TEXTS_HUE"] = "160";
-Blockly.Msg["REPORTERS_HUE"] = "290";
 Blockly.Msg["PROCEDURES_HUE"] = "290";
 Blockly.Msg["COLOUR_HUE"] = "20";
 Blockly.Msg["VARIABLES_DYNAMIC_HUE"] = "310";

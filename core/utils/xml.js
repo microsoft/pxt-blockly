@@ -1,9 +1,6 @@
 /**
  * @license
- * Visual Blocks Editor
- *
- * Copyright 2018 Google Inc.
- * https://developers.google.com/blockly/
+ * Copyright 2018 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,30 +35,38 @@ goog.provide('Blockly.utils.xml');
 Blockly.utils.xml.NAME_SPACE = 'https://developers.google.com/blockly/xml';
 
 /**
+ * Get the document object.  This method is overridden in the Node.js build of
+ * Blockly. See gulpfile.js, package-blockly-node task.
+ * @return {!Document} The document object.
+ * @public
+ */
+Blockly.utils.xml.document = function() {
+  return document;
+};
+
+/**
  * Create DOM element for XML.
  * @param {string} tagName Name of DOM element.
  * @return {!Element} New DOM element.
  * @public
  */
 Blockly.utils.xml.createElement = function(tagName) {
-  // TODO (#2082): Support node.js.
-  return document.createElementNS(Blockly.utils.xml.NAME_SPACE, tagName);
+  return Blockly.utils.xml.document().createElementNS(
+      Blockly.utils.xml.NAME_SPACE, tagName);
 };
 
 /**
  * Create text element for XML.
  * @param {string} text Text content.
- * @return {!Node} New DOM node.
+ * @return {!Text} New DOM text node.
  * @public
  */
 Blockly.utils.xml.createTextNode = function(text) {
-  // TODO (#2082): Support node.js.
-  return document.createTextNode(text);
+  return Blockly.utils.xml.document().createTextNode(text);
 };
 
 /**
- * Converts an XML string into a DOM tree. This method will be overridden in
- * the Node.js build of Blockly. See gulpfile.js, blockly_javascript_en task.
+ * Converts an XML string into a DOM tree.
  * @param {string} text XML string.
  * @return {Document} The DOM document.
  * @throws if XML doesn't parse.
@@ -75,12 +80,11 @@ Blockly.utils.xml.textToDomDocument = function(text) {
 /**
  * Converts a DOM structure into plain text.
  * Currently the text format is fairly ugly: all one line with no whitespace.
- * @param {!Element} dom A tree of XML elements.
+ * @param {!Node} dom A tree of XML nodes.
  * @return {string} Text representation.
  * @public
  */
 Blockly.utils.xml.domToText = function(dom) {
-  // TODO (#2082): Support node.js.
   var oSerializer = new XMLSerializer();
   return oSerializer.serializeToString(dom);
 };

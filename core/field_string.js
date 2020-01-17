@@ -163,4 +163,4 @@ Blockly.FieldString.prototype.positionArrow = function(x) {
   return addedWidth;
 };
 
-Blockly.Field.register('field_string', Blockly.FieldString);
+Blockly.fieldRegistry.register('field_string', Blockly.FieldString);

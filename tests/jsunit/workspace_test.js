@@ -1,9 +1,6 @@
 /**
  * @license
- * Blockly Tests
- *
- * Copyright 2012 Google Inc.
- * https://developers.google.com/blockly/
+ * Copyright 2012 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +16,6 @@
  */
 'use strict';
 
-goog.require('goog.testing');
-goog.require('goog.testing.MockControl');
 
 var workspace;
 var mockControl_;
@@ -28,12 +23,13 @@ var mockControl_;
 function workspaceTest_setUp() {
   defineGetVarBlock();
   workspace = new Blockly.Workspace();
-  mockControl_ = new goog.testing.MockControl();
 }
 
 function workspaceTest_tearDown() {
   undefineGetVarBlock();
-  mockControl_.$tearDown();
+  if (mockControl_) {
+    mockControl_.restore();
+  }
   workspace.dispose();
 }
 
@@ -42,11 +38,11 @@ function test_emptyWorkspace() {
   try {
     assertEquals('Empty workspace (1).', 0, workspace.getTopBlocks(true).length);
     assertEquals('Empty workspace (2).', 0, workspace.getTopBlocks(false).length);
-    assertEquals('Empty workspace (3).', 0, workspace.getAllBlocks().length);
+    assertEquals('Empty workspace (3).', 0, workspace.getAllBlocks(false).length);
     workspace.clear();
     assertEquals('Empty workspace (4).', 0, workspace.getTopBlocks(true).length);
     assertEquals('Empty workspace (5).', 0, workspace.getTopBlocks(false).length);
-    assertEquals('Empty workspace (6).', 0, workspace.getAllBlocks().length);
+    assertEquals('Empty workspace (6).', 0, workspace.getAllBlocks(false).length);
   } finally {
     workspaceTest_tearDown();
   }
@@ -58,19 +54,19 @@ function test_flatWorkspace() {
     var blockA = workspace.newBlock('');
     assertEquals('One block workspace (1).', 1, workspace.getTopBlocks(true).length);
     assertEquals('One block workspace (2).', 1, workspace.getTopBlocks(false).length);
-    assertEquals('One block workspace (3).', 1, workspace.getAllBlocks().length);
+    assertEquals('One block workspace (3).', 1, workspace.getAllBlocks(false).length);
     var blockB = workspace.newBlock('');
     assertEquals('Two block workspace (1).', 2, workspace.getTopBlocks(true).length);
     assertEquals('Two block workspace (2).', 2, workspace.getTopBlocks(false).length);
-    assertEquals('Two block workspace (3).', 2, workspace.getAllBlocks().length);
+    assertEquals('Two block workspace (3).', 2, workspace.getAllBlocks(false).length);
     blockA.dispose();
     assertEquals('One block workspace (4).', 1, workspace.getTopBlocks(true).length);
     assertEquals('One block workspace (5).', 1, workspace.getTopBlocks(false).length);
-    assertEquals('One block workspace (6).', 1, workspace.getAllBlocks().length);
+    assertEquals('One block workspace (6).', 1, workspace.getAllBlocks(false).length);
     workspace.clear();
     assertEquals('Cleared workspace (1).', 0, workspace.getTopBlocks(true).length);
     assertEquals('Cleared workspace (2).', 0, workspace.getTopBlocks(false).length);
-    assertEquals('Cleared workspace (3).', 0, workspace.getAllBlocks().length);
+    assertEquals('Cleared workspace (3).', 0, workspace.getAllBlocks(false).length);
   } finally {
     workspaceTest_tearDown();
   }
@@ -187,7 +183,7 @@ function test_clear_Trivial() {
   workspaceTest_setUp();
   workspace.createVariable('name1', 'type1', 'id1');
   workspace.createVariable('name2', 'type2', 'id2');
-  setUpMockMethod(mockControl_, Blockly.Events, 'setGroup', [true, false],
+  mockControl_ = setUpMockMethod(Blockly.Events, 'setGroup', [true, false],
     null);
 
   try {
@@ -203,7 +199,7 @@ function test_clear_Trivial() {
 
 function test_clear_NoVariables() {
   workspaceTest_setUp();
-  setUpMockMethod(mockControl_, Blockly.Events, 'setGroup', [true, false],
+  mockControl_ = setUpMockMethod(Blockly.Events, 'setGroup', [true, false],
     null);
 
   try {

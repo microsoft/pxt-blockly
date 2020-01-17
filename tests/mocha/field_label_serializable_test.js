@@ -1,9 +1,6 @@
 /**
  * @license
- * Visual Blocks Editor
- *
- * Copyright 2019 Google Inc.
- * https://developers.google.com/blockly/
+ * Copyright 2019 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +15,7 @@
  * limitations under the License.
  */
 
-suite ('Label Serializable Fields', function() {
+suite('Label Serializable Fields', function() {
   function assertValue(labelField, expectedValue) {
     var actualValue = labelField.getValue();
     var actualText = labelField.getText();
@@ -27,6 +24,24 @@ suite ('Label Serializable Fields', function() {
   }
   function assertValueDefault(labelField) {
     assertValue(labelField, '');
+  }
+  function assertHasClass(labelField, cssClass) {
+    labelField.fieldGroup_ = Blockly.utils.dom.createSvgElement('g', {}, null);
+    labelField.constants_ = {
+      FIELD_TEXT_BASELINE_Y: 13
+    };
+    labelField.initView();
+    chai.assert.isTrue(Blockly.utils.dom.hasClass(
+        labelField.textElement_, cssClass));
+  }
+  function assertDoesNotHaveClass(labelField, cssClass) {
+    labelField.fieldGroup_ = Blockly.utils.dom.createSvgElement('g', {}, null);
+    labelField.constants_ = {
+      FIELD_TEXT_BASELINE_Y: 13
+    };
+    labelField.initView();
+    chai.assert.isFalse(Blockly.utils.dom.hasClass(
+        labelField.textElement_, cssClass));
   }
   suite('Constructor', function() {
     test('Empty', function() {
@@ -164,6 +179,71 @@ suite ('Label Serializable Fields', function() {
       test('Boolean False', function() {
         this.labelField.setValue(false);
         assertValue(this.labelField, 'false');
+      });
+    });
+  });
+  suite('Customizations', function() {
+    test('JS Constructor', function() {
+      var field = new Blockly.FieldLabelSerializable('text', 'testClass');
+      assertHasClass(field, 'testClass');
+    });
+    test('JSON Definition', function() {
+      var field = Blockly.FieldLabelSerializable.fromJson({
+        class: 'testClass'
+      });
+      assertHasClass(field, 'testClass');
+    });
+    test('JS Configuration - Simple', function() {
+      var field = new Blockly.FieldLabelSerializable('text', null, {
+        class: 'testClass'
+      });
+      assertHasClass(field, 'testClass');
+    });
+    test('JS Configuration - Ignore', function() {
+      var field = new Blockly.FieldLabelSerializable('text', 'paramClass', {
+        class: 'configClass'
+      });
+      assertDoesNotHaveClass(field, 'paramClass');
+      assertHasClass(field, 'configClass');
+    });
+    test('JS Configuration - Ignore - \'\'', function() {
+      var field = new Blockly.FieldLabelSerializable('text', '', {
+        class: 'configClass'
+      });
+      assertHasClass(field, 'configClass');
+    });
+    test('JS Configuration - Ignore - Config \'\'', function() {
+      var field = new Blockly.FieldLabelSerializable('text', 'paramClass', {
+        class: ''
+      });
+      assertDoesNotHaveClass(field, 'paramClass');
+    });
+    suite('setClass', function() {
+      test('setClass', function() {
+        var field = new Blockly.FieldLabelSerializable();
+        field.fieldGroup_ = Blockly.utils.dom.createSvgElement('g', {}, null);
+        field.constants_ = {
+          FIELD_TEXT_BASELINE_Y: 13
+        };
+        field.initView();
+        field.setClass('testClass');
+        // Don't call assertHasClass b/c we don't want to re-initialize.
+        chai.assert.isTrue(Blockly.utils.dom.hasClass(
+            field.textElement_, 'testClass'));
+      });
+      test('setClass Before Initialization', function() {
+        var field = new Blockly.FieldLabelSerializable();
+        field.setClass('testClass');
+        assertHasClass(field, 'testClass');
+      });
+      test('Remove Class', function() {
+        var field = new Blockly.FieldLabelSerializable('text', null, {
+          class: 'testClass'
+        });
+        assertHasClass(field, 'testClass');
+        field.setClass(null);
+        chai.assert.isFalse(Blockly.utils.dom.hasClass(
+            field.textElement_, 'testClass'));
       });
     });
   });

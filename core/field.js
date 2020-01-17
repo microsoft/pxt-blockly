@@ -1,9 +1,6 @@
 /**
  * @license
- * Visual Blocks Editor
- *
- * Copyright 2012 Google Inc.
- * https://developers.google.com/blockly/
+ * Copyright 2012 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,96 +28,119 @@ goog.provide('Blockly.Field');
 goog.require('Blockly.Events');
 goog.require('Blockly.Events.BlockChange');
 goog.require('Blockly.Gesture');
+goog.require('Blockly.utils');
 goog.require('Blockly.utils.dom');
+goog.require('Blockly.utils.Size');
+goog.require('Blockly.utils.style');
 goog.require('Blockly.utils.userAgent');
 
-goog.require('goog.math.Size');
-goog.require('goog.style');
-goog.require('goog.dom');
+goog.requireType('Blockly.blockRendering.ConstantProvider');
 
 
 /**
  * Abstract class for an editable field.
  * @param {*} value The initial value of the field.
- * @param {Function=} opt_validator  A function that is called to validate
+ * @param {?Function=} opt_validator  A function that is called to validate
  *    changes to the field's value. Takes in a value & returns a validated
  *    value, or null to abort the change.
+ * @param {Object=} opt_config A map of options used to configure the field. See
+ *    the individual field's documentation for a list of properties this
+ *    parameter supports.
  * @constructor
  */
-Blockly.Field = function(value, opt_validator) {
-  // pxt-blockly: Scratch rendering
-  this.size_ = new goog.math.Size(
-    Blockly.BlockSvg.FIELD_WIDTH,
-    Blockly.BlockSvg.FIELD_HEIGHT);
-  this.setValue(value);
-  this.setValidator(opt_validator);
+Blockly.Field = function(value, opt_validator, opt_config) {
+  /**
+   * A generic value possessed by the field.
+   * Should generally be non-null, only null when the field is created.
+   * @type {*}
+   * @protected
+   */
+  this.value_ = null;
 
   /**
-   * Maximum characters of text to display before adding an ellipsis.
-   * Same for strings and numbers.
-   * @type {number}
+   * Validation function called when user edits an editable field.
+   * @type {Function}
+   * @protected
    */
-  this.maxDisplayLength = Blockly.BlockSvg.MAX_DISPLAY_LENGTH;
+  this.validator_ = null;
+
+  /**
+   * Used to cache the field's tooltip value if setTooltip is called when the
+   * field is not yet initialized. Is *not* guaranteed to be accurate.
+   * @type {string|Function|!SVGElement}
+   * @private
+   */
+  this.tooltip_ = null;
+
+  /**
+   * The size of the area rendered by the field.
+   * @type {!Blockly.utils.Size}
+   * @protected
+   */
+  this.size_ = new Blockly.utils.Size(0, 0);
+
+  /**
+   * Holds the cursors svg element when the cursor is attached to the field.
+   * This is null if there is no cursor on the field.
+   * @type {SVGElement}
+   * @private
+   */
+  this.cursorSvg_ = null;
+
+  /**
+   * Holds the markers svg element when the marker is attached to the field.
+   * This is null if there is no marker on the field.
+   * @type {SVGElement}
+   * @private
+   */
+  this.markerSvg_ = null;
+
+  /**
+   * The rendered field's SVG group element.
+   * @type {SVGGElement}
+   * @protected
+   */
+  this.fieldGroup_ = null;
+
+  /**
+   * The rendered field's SVG border element.
+   * @type {SVGRectElement}
+   * @protected
+   */
+  this.borderRect_ = null;
+
+  /**
+   * The rendered field's SVG text element.
+   * @type {SVGTextElement}
+   * @protected
+   */
+  this.textElement_ = null;
+
+  /**
+   * The rendered field's text content element.
+   * @type {Text}
+   * @protected
+   */
+  this.textContent_ = null;
+
+  /**
+   * Mouse down event listener data.
+   * @type {?Blockly.EventData}
+   * @private
+   */
+  this.mouseDownWrapper_ = null;
+
+  /**
+   * Constants associated with the source block's renderer.
+   * @type {Blockly.blockRendering.ConstantProvider}
+   * @protected
+   */
+  this.constants_ = null;
+
+  opt_config && this.configure_(opt_config);
+  this.setValue(value);
+  opt_validator && this.setValidator(opt_validator);
 };
-
-/**
- * The set of all registered fields, keyed by field type as used in the JSON
- * definition of a block.
- * @type {!Object<string, !{fromJson: Function}>}
- * @private
- */
-Blockly.Field.TYPE_MAP_ = {};
-
-/**
- * Registers a field type. May also override an existing field type.
- * Blockly.Field.fromJson uses this registry to find the appropriate field.
- * @param {string} type The field type name as used in the JSON definition.
- * @param {!{fromJson: Function}} fieldClass The field class containing a
- *     fromJson function that can construct an instance of the field.
- * @throws {Error} if the type name is empty, or the fieldClass is not an
- *     object containing a fromJson function.
- */
-Blockly.Field.register = function(type, fieldClass) {
-  if ((typeof type != 'string') || (type.trim() == '')) {
-    throw Error('Invalid field type "' + type + '"');
-  }
-  if (!fieldClass || (typeof fieldClass.fromJson != 'function')) {
-    throw Error('Field "' + fieldClass + '" must have a fromJson function');
-  }
-  Blockly.Field.TYPE_MAP_[type] = fieldClass;
-};
-
-/**
- * Construct a Field from a JSON arg object.
- * Finds the appropriate registered field by the type name as registered using
- * Blockly.Field.register.
- * @param {!Object} options A JSON object with a type and options specific
- *     to the field type.
- * @return {Blockly.Field} The new field instance or null if a field wasn't
- *     found with the given type name
- * @package
- */
-Blockly.Field.fromJson = function(options) {
-  var fieldClass = Blockly.Field.TYPE_MAP_[options['type']];
-  if (fieldClass) {
-    return fieldClass.fromJson(options);
-  }
-  return null;
-};
-
-/**
- * Temporary cache of text widths.
- * @type {Object}
- * @private
- */
-Blockly.Field.cacheWidths_ = null;
-
-/**
- * Number of current references to cache.
- * @type {number}
- * @private
- */
-Blockly.Field.cacheReference_ = 0;
 
 /**
  * Name of field.  Unique within each block.
@@ -146,34 +166,8 @@ Blockly.Field.prototype.disposed = false;
 /**
  * Maximum characters of text to display before adding an ellipsis.
  * @type {number}
- * @protected
  */
-Blockly.Field.prototype.maxDisplayLength = 50;
-
-/**
- * A generic value possessed by the field.
- * Should generally be non-null, only null when the field is created.
- * @type {*}
- * @protected
- */
-Blockly.Field.prototype.value_ = null;
-
-/**
- * Text representation of the field's value. Maintained for backwards
- * compatibility reasons.
- * @type {string}
- * @protected
- * @deprecated Use or override getText instead.
- */
-Blockly.Field.prototype.text_ = '';
-
-/**
- * Used to cache the field's tooltip value if setTooltip is called when the
- * field is not yet initialized. Is *not* guaranteed to be accurate.
- * @type {?string}
- * @private
- */
-Blockly.Field.prototype.tooltip_ = null;
+Blockly.Field.prototype.maxDisplayLength = Infinity;
 
 /**
  * Block this field is attached to.  Starts as null, then set in init.
@@ -185,7 +179,7 @@ Blockly.Field.prototype.sourceBlock_ = null;
 /**
  * Does this block need to be re-rendered?
  * @type {boolean}
- * @private
+ * @protected
  */
 Blockly.Field.prototype.isDirty_ = true;
 
@@ -204,53 +198,31 @@ Blockly.Field.prototype.visible_ = true;
 Blockly.Field.prototype.argType_ = null;
 
 /**
- * Validation function called when user edits an editable field.
- * @type {Function}
+ * The element the click handler is bound to.
  * @protected
  */
-Blockly.Field.prototype.validator_ = null;
-
-/**
- * Box drawn around a field.
- * @type {SVGElement}
- * @private
- */
-Blockly.Field.prototype.arrow_ = null;
-
-/**
- * Box drawn around a field.
- * @type {SVGRectElement}
- * @private
- */
-Blockly.Field.prototype.box_ = null;
-
-/**
- * Arrow width.
- * @type {number}
- * @private
- */
-Blockly.Field.prototype.arrowWidth_ = 0;
-
-/**
- * Field size
- * @type {goog.math.Size}
- * @private
- */
-Blockly.Field.prototype.size_ = null;
-
-/**
- * Field group
- * @type {SVGElement}
- * @private
- */
-Blockly.Field.prototype.fieldGroup_ = null;
-
-/**
- * The element the click handler is bound to.
- * @type {!Element}
- * @private
- */
 Blockly.Field.prototype.clickTarget_ = null;
+
+/**
+ * A developer hook to override the returned text of this field.
+ * Override if the text representation of the value of this field
+ * is not just a string cast of its value.
+ * Return null to resort to a string cast.
+ * @return {?string} Current text. Return null to resort to a string cast.
+ * @protected
+ */
+Blockly.Field.prototype.getText_;
+
+/**
+ * An optional method that can be defined to show an editor when the field is
+ *     clicked. Blockly will automatically set the field as clickable if this
+ *     method is defined.
+ * @param {Event=} opt_e Optional mouse event that triggered the field to open,
+ *     or undefined if triggered programatically.
+ * @return {void}
+ * @protected
+ */
+Blockly.Field.prototype.showEditor_;
 
 /**
  * Non-breaking space.
@@ -268,8 +240,6 @@ Blockly.Field.IE_TEXT_OFFSET = '0.3em';
  * Editable fields usually show some sort of UI indicating they are editable.
  * They will also be saved by the XML renderer.
  * @type {boolean}
- * @const
- * @default
  */
 Blockly.Field.prototype.EDITABLE = true;
 
@@ -279,10 +249,27 @@ Blockly.Field.prototype.EDITABLE = true;
  * case by default so that SERIALIZABLE is backwards compatible.
  * TODO shakao verify serializable defaulting to false ok
  * @type {boolean}
- * @const
- * @default
  */
 Blockly.Field.prototype.SERIALIZABLE = false;
+
+/**
+ * Process the configuration map passed to the field.
+ * @param {!Object} config A map of options used to configure the field. See
+ *    the individual field's documentation for a list of properties this
+ *    parameter supports.
+ * @protected
+ */
+Blockly.Field.prototype.configure_ = function(config) {
+  var tooltip = config['tooltip'];
+  if (typeof tooltip == 'string') {
+    tooltip = Blockly.utils.replaceMessageReferences(
+        config['tooltip']);
+  }
+  tooltip && this.setTooltip(tooltip);
+
+  // TODO (#2884): Possibly add CSS class config option.
+  // TODO (#2885): Possibly add cursor config option.
+};
 
 /**
  * Attach this field to a block.
@@ -293,6 +280,9 @@ Blockly.Field.prototype.setSourceBlock = function(block) {
     throw Error('Field already bound to a block.');
   }
   this.sourceBlock_ = block;
+  if (block.workspace.rendered) {
+    this.constants_ = block.workspace.getRenderer().getConstants();
+  }
 };
 
 /**
@@ -313,12 +303,13 @@ Blockly.Field.prototype.init = function() {
     // Field has already been initialized once.
     return;
   }
-  this.fieldGroup_ = Blockly.utils.dom.createSvgElement('g', {}, null);
+  this.fieldGroup_ = /** @type {!SVGGElement} **/
+      (Blockly.utils.dom.createSvgElement('g', {}, null));
   if (!this.isVisible()) {
     this.fieldGroup_.style.display = 'none';
   }
-
-  this.sourceBlock_.getSvgRoot().appendChild(this.fieldGroup_);
+  var sourceBlockSvg = /** @type {!Blockly.BlockSvg} **/ (this.sourceBlock_);
+  sourceBlockSvg.getSvgRoot().appendChild(this.fieldGroup_);
   this.initView();
   this.setDataAttribute_();
   this.updateEditable();
@@ -338,22 +329,35 @@ Blockly.Field.prototype.initView = function() {
 };
 
 /**
+ * Initializes the model of the field after it has been installed on a block.
+ * No-op by default.
+ * @package
+ */
+Blockly.Field.prototype.initModel = function() {
+};
+
+/**
  * Create a field border rect element. Not to be overridden by subclasses.
  * Instead modify the result of the function inside initView, or create a
  * separate function to call.
  * @protected
  */
 Blockly.Field.prototype.createBorderRect_ = function() {
-  // pxt-blockly: resize to match Scratch rendering
-  this.borderRect_ = Blockly.utils.dom.createSvgElement('rect',
-      {
-        'rx': 4,
-        'ry': 4,
-        'x': -Blockly.BlockSvg.SEP_SPACE_X / 4,
-        'y': 0,
-        'height': 24,
-        'width': this.size_.width + Blockly.BlockSvg.SEP_SPACE_X
-      }, this.fieldGroup_);
+  this.size_.height =
+      Math.max(this.size_.height, this.constants_.FIELD_BORDER_RECT_HEIGHT);
+  this.size_.width =
+      Math.max(this.size_.width, this.constants_.FIELD_BORDER_RECT_X_PADDING * 2);
+  this.borderRect_ = /** @type {!SVGRectElement} **/
+      (Blockly.utils.dom.createSvgElement('rect',
+          {
+            'rx': this.constants_.FIELD_BORDER_RECT_RADIUS,
+            'ry': this.constants_.FIELD_BORDER_RECT_RADIUS,
+            'x': 0,
+            'y': 0,
+            'height': this.size_.height,
+            'width': this.size_.width,
+            'class': 'blocklyFieldRect'
+          }, this.fieldGroup_));
 };
 
 /**
@@ -363,18 +367,26 @@ Blockly.Field.prototype.createBorderRect_ = function() {
  * @protected
  */
 Blockly.Field.prototype.createTextElement_ = function() {
-  // pxt-blockly: Adjust X to be flipped for RTL. Position is relative to
-  // horizontal start of source block.
-  var fieldX = (this.sourceBlock_.RTL) ? -this.size_.width / 2 : this.size_.width / 2;
-  /** @type {!Element} */
-  this.textElement_ = Blockly.utils.dom.createSvgElement('text',
-      {
-        'class': this.className_,
-        'x': fieldX,
-        'y': this.size_.height / 2 + Blockly.BlockSvg.FIELD_TOP_PADDING,
-        'dy': Blockly.utils.userAgent.EDGE_OR_IE ? Blockly.Field.IE_TEXT_OFFSET : '0',
-        'text-anchor': 'middle'
-      }, this.fieldGroup_);
+  var xOffset = this.borderRect_ ?
+    this.constants_.FIELD_BORDER_RECT_X_PADDING : 0;
+  var baselineCenter = this.constants_.FIELD_TEXT_BASELINE_CENTER;
+  var baselineY = this.constants_.FIELD_TEXT_BASELINE_Y;
+  this.size_.height = Math.max(this.size_.height, baselineCenter ?
+      this.constants_.FIELD_TEXT_HEIGHT : baselineY);
+  if (this.size_.height > this.constants_.FIELD_TEXT_HEIGHT) {
+    baselineY += (this.size_.height - baselineY) / 2;
+  }
+  this.textElement_ = /** @type {!SVGTextElement} **/
+      (Blockly.utils.dom.createSvgElement('text',
+          {
+            'class': 'blocklyText',
+            'y': baselineCenter ? this.size_.height / 2 : baselineY,
+            'dy': this.constants_.FIELD_TEXT_Y_OFFSET,
+            'x': xOffset
+          }, this.fieldGroup_));
+  if (baselineCenter) {
+    this.textElement_.setAttribute('dominant-baseline', 'central');
+  }
   this.textContent_ = document.createTextNode('');
   this.textElement_.appendChild(this.textContent_);
 };
@@ -405,14 +417,6 @@ Blockly.Field.prototype.bindEvents_ = function() {
   this.mouseDownWrapper_ =
       Blockly.bindEventWithChecks_(
           this.getClickTarget_(), 'mousedown', this, this.onMouseDown_);
-};
-
-/**
- * Initializes the model of the field after it has been installed on a block.
- * No-op by default.
- * @package
- */
-Blockly.Field.prototype.initModel = function() {
 };
 
 /**
@@ -571,10 +575,10 @@ Blockly.Field.prototype.getArgTypes = function() {
  *
  * If the function does not return anything (or returns undefined) the new
  * value is accepted as valid. This is to allow for fields using the
- * validated founction as a field-level change event notification.
+ * validated function as a field-level change event notification.
  *
- * @param {Function=} handler The validator
- *     function or null to clear a previous validator.
+ * @param {Function} handler The validator function
+ *     or null to clear a previous validator.
  */
 Blockly.Field.prototype.setValidator = function(handler) {
   this.validator_ = handler;
@@ -630,83 +634,58 @@ Blockly.Field.prototype.callValidator = function(text) {
 /**
  * Gets the group element for this editable field.
  * Used for measuring the size and for positioning.
- * @return {!Element} The group element.
+ * @return {!SVGGElement} The group element.
  */
 Blockly.Field.prototype.getSvgRoot = function() {
-  return /** @type {!Element} */ (this.fieldGroup_);
+  return /** @type {!SVGGElement} */ (this.fieldGroup_);
 };
 
 /**
  * Updates the field to match the colour/style of the block. Should only be
- * called by BlockSvg.updateColour().
+ * called by BlockSvg.applyColour().
  * @package
  */
-Blockly.Field.prototype.updateColour = function() {
+Blockly.Field.prototype.applyColour = function() {
   // Non-abstract sub-classes may wish to implement this. See FieldDropdown.
 };
 
 /**
- * Used by getSize() to move/resize any dom elements, and get the new size.
+ * Used by getSize() to move/resize any DOM elements, and get the new size.
  *
  * All rendering that has an effect on the size/shape of the block should be
  * done here, and should be triggered by getSize().
  * @protected
  */
 Blockly.Field.prototype.render_ = function() {
-  if (this.visible_ && this.textElement_) {
-    // Replace the text.
-    this.textElement_.textContent = this.getDisplayText_();
+  if (this.textContent_) {
+    this.textContent_.nodeValue = this.getDisplayText_();
     this.updateSize_();
-
-    // Update text centering, based on newly calculated width.
-    var leftMargin = this.leftMargin_ || 0;
-    var centerTextX = (this.size_.width + leftMargin - this.arrowWidth_) / 2;
-    if (this.sourceBlock_.RTL) {
-      centerTextX += this.arrowWidth_;
-      centerTextX -= leftMargin;
-    }
-
-    // In a text-editing shadow block's field,
-    // if half the text length is not at least center of
-    // visible field (FIELD_WIDTH), center it there instead,
-    // unless there is a drop-down arrow.
-    if (this.sourceBlock_.isShadow() && !this.positionArrow) {
-      var minOffset = Blockly.BlockSvg.FIELD_WIDTH / 2;
-      if (this.sourceBlock_.RTL) {
-        // X position starts at the left edge of the block, in both RTL and LTR.
-        // First offset by the width of the block to move to the right edge,
-        // and then subtract to move to the same position as LTR.
-        var minCenter = this.size_.width - minOffset;
-        centerTextX = Math.min(minCenter, centerTextX);
-      } else {
-        // (width / 2) should exceed Blockly.BlockSvg.FIELD_WIDTH / 2
-        // if the text is longer.
-        centerTextX = Math.max(minOffset, centerTextX);
-      }
-    }
-
-    // Apply new text element x position.
-    this.textElement_.setAttribute('x', centerTextX);
   }
+};
 
-  // Update any drawn box to the correct width and height.
-  if (this.box_) {
-    this.box_.setAttribute('width', this.size_.width);
-    this.box_.setAttribute('height', this.size_.height);
+/**
+ * Show an editor when the field is clicked only if the field is clickable.
+ * @param {Event=} opt_e Optional mouse event that triggered the field to open,
+ *     or undefined if triggered programatically.
+ * @package
+ */
+Blockly.Field.prototype.showEditor = function(opt_e) {
+  if (this.isClickable()) {
+    this.showEditor_(opt_e);
   }
 };
 
 /**
  * Updates the width of the field. Redirects to updateSize_().
  * @deprecated May 2019  Use Blockly.Field.updateSize_() to force an update
- * to the size of the field, or Blockly.Field.getCachedWidth() to check the
- * size of the field..
+ * to the size of the field, or Blockly.utils.dom.getTextWidth() to
+ * check the size of the field.
  */
 Blockly.Field.prototype.updateWidth = function() {
   console.warn('Deprecated call to updateWidth, call' +
     ' Blockly.Field.updateSize_ to force an update to the size of the' +
-    ' field, or Blockly.Field.getCachedWidth() to check the size of the' +
-    ' field.');
+    ' field, or Blockly.utils.dom.getTextWidth() to check the size' +
+    ' of the field.');
   this.updateSize_();
 };
 
@@ -715,105 +694,28 @@ Blockly.Field.prototype.updateWidth = function() {
  * @protected
  */
 Blockly.Field.prototype.updateSize_ = function() {
-  var width = Blockly.Field.getCachedWidth(this.textElement_);
-
-  // Add padding to left and right of text.
-  if (this.EDITABLE) {
-    width += Blockly.BlockSvg.EDITABLE_FIELD_PADDING;
+  var textWidth = Blockly.utils.dom.getFastTextWidth(
+      /** @type {!SVGTextElement} */ (this.textElement_),
+      this.constants_.FIELD_TEXT_FONTSIZE,
+      this.constants_.FIELD_TEXT_FONTWEIGHT,
+      this.constants_.FIELD_TEXT_FONTFAMILY);
+  var totalWidth = textWidth;
+  if (this.borderRect_) {
+    totalWidth += this.constants_.FIELD_BORDER_RECT_X_PADDING * 2;
+    this.borderRect_.setAttribute('width', totalWidth);
   }
-
-  // Adjust width for left margin
-  this.leftMargin_ = 0;
-  if (this.positionLeft) {
-    this.leftMargin_ = this.positionLeft(width);
-    width += this.leftMargin_;
-  }
-
-  // Adjust width for drop-down arrows.
-  this.arrowWidth_ = 0;
-  if (this.positionArrow) {
-    this.arrowWidth_ = this.positionArrow(width);
-    width += this.arrowWidth_;
-  }
-
-  // Add padding to any drawn box.
-  if (this.box_) {
-    width += 2 * Blockly.BlockSvg.BOX_FIELD_PADDING;
-  }
-
-  // Set width of the field.
-  this.size_.width = width;
-};
-
-/**
- * Gets the width of a text element, caching it in the process.
- * @param {!Element} textElement An SVG 'text' element.
- * @return {number} Width of element.
- */
-Blockly.Field.getCachedWidth = function(textElement) {
-  var key = textElement.textContent + '\n' + textElement.className.baseVal;
-  var width;
-
-  // Return the cached width if it exists.
-  if (Blockly.Field.cacheWidths_) {
-    width = Blockly.Field.cacheWidths_[key];
-    if (width) {
-      return width;
-    }
-  }
-
-  // Attempt to compute fetch the width of the SVG text element.
-  try {
-    if (Blockly.utils.userAgent.IE || Blockly.utils.userAgent.EDGE) {
-      width = textElement.getBBox().width;
-    } else {
-      width = textElement.getComputedTextLength();
-    }
-  } catch (e) {
-    // In other cases where we fail to get the computed text. Instead, use an
-    // approximation and do not cache the result. At some later point in time
-    // when the block is inserted into the visible DOM, this method will be
-    // called again and, at that point in time, will not throw an exception.
-    return textElement.textContent.length * 8;
-  }
-  // Cache the computed width and return.
-  if (Blockly.Field.cacheWidths_) {
-    Blockly.Field.cacheWidths_[key] = width;
-  }
-  return width;
-};
-
-/**
- * Start caching field widths.  Every call to this function MUST also call
- * stopCache.  Caches must not survive between execution threads.
- */
-Blockly.Field.startCache = function() {
-  Blockly.Field.cacheReference_++;
-  if (!Blockly.Field.cacheWidths_) {
-    Blockly.Field.cacheWidths_ = {};
-  }
-};
-
-/**
- * Stop caching field widths.  Unless caching was already on when the
- * corresponding call to startCache was made.
- */
-Blockly.Field.stopCache = function() {
-  Blockly.Field.cacheReference_--;
-  if (!Blockly.Field.cacheReference_) {
-    Blockly.Field.cacheWidths_ = null;
-  }
+  this.size_.width = totalWidth;
 };
 
 /**
  * Returns the height and width of the field.
  *
  * This should *in general* be the only place render_ gets called from.
- * @return {!goog.math.Size} Height and width.
+ * @return {!Blockly.utils.Size} Height and width.
  */
 Blockly.Field.prototype.getSize = function() {
   if (!this.isVisible()) {
-    return new goog.math.Size(0, 0);
+    return new Blockly.utils.Size(0, 0);
   }
 
   if (this.isDirty_) {
@@ -833,15 +735,40 @@ Blockly.Field.prototype.getSize = function() {
 /**
  * Returns the bounding box of the rendered field, accounting for workspace
  * scaling.
- * @return {!goog.math.Box} An object with top, bottom, left, and right in pixels
+ * @return {!Object} An object with top, bottom, left, and right in pixels
  *     relative to the top left corner of the page (window coordinates).
- * @protected
+ * @package
  */
-Blockly.Field.prototype.getScaledBBox_ = function() {
-  var size = this.getSize();
-  var scaledHeight = size.height * this.sourceBlock_.workspace.scale;
-  var scaledWidth = size.width * this.sourceBlock_.workspace.scale;
-  var xy = this.getAbsoluteXY_();
+Blockly.Field.prototype.getScaledBBox = function() {
+  if (!this.borderRect_) {
+    // Browsers are inconsistent in what they return for a bounding box.
+    // - Webkit / Blink: fill-box / object bounding box
+    // - Gecko / Triden / EdgeHTML: stroke-box
+    var bBox = this.sourceBlock_.getHeightWidth();
+    var scale = this.sourceBlock_.workspace.scale;
+    var xy = this.getAbsoluteXY_();
+    var scaledWidth = bBox.width * scale;
+    var scaledHeight = bBox.height * scale;
+
+    if (Blockly.utils.userAgent.GECKO) {
+      xy.x += 1.5 * scale;
+      xy.y += 1.5 * scale;
+      scaledWidth += 1 * scale;
+      scaledHeight += 1 * scale;
+    } else {
+      if (!Blockly.utils.userAgent.EDGE && !Blockly.utils.userAgent.IE) {
+        xy.x -= 0.5 * scale;
+        xy.y -= 0.5 * scale;
+      }
+      scaledWidth += 1 * scale;
+      scaledHeight += 1 * scale;
+    }
+  } else {
+    var bBox = this.borderRect_.getBoundingClientRect();
+    var xy = Blockly.utils.style.getPageOffset(this.borderRect_);
+    var scaledWidth = bBox.width;
+    var scaledHeight = bBox.height;
+  }
   return {
     top: xy.y,
     bottom: xy.y + scaledHeight,
@@ -851,13 +778,13 @@ Blockly.Field.prototype.getScaledBBox_ = function() {
 };
 
 /**
- * Get the text from this field as displayed on screen.  May differ from getText
- * due to ellipsis, and other formatting.
- * @return {string} Currently displayed text.
+ * Get the text from this field to display on the block. May differ from
+ * ``getText`` due to ellipsis, and other formatting.
+ * @return {string} Text to display.
  * @protected
  */
 Blockly.Field.prototype.getDisplayText_ = function() {
-  var text = this.text_;
+  var text = this.getText();
   if (!text) {
     // Prevent the field from disappearing if empty.
     return Blockly.Field.NBSP;
@@ -868,7 +795,7 @@ Blockly.Field.prototype.getDisplayText_ = function() {
   }
   // Replace whitespace with non-breaking spaces so the text doesn't collapse.
   text = text.replace(/\s/g, Blockly.Field.NBSP);
-  if (this.sourceBlock_.RTL) {
+  if (this.sourceBlock_ && this.sourceBlock_.RTL) {
     // The SVG is LTR, force text to be RTL.
     text += '\u200F';
   }
@@ -880,25 +807,33 @@ Blockly.Field.prototype.getDisplayText_ = function() {
  * @return {string} Current text.
  */
 Blockly.Field.prototype.getText = function() {
-  return this.text_;
+  if (this.getText_) {
+    var text = this.getText_.call(this);
+    if (text !== null) {
+      return String(text);
+    }
+  }
+  return String(this.getValue());
 };
 
 /**
  * Set the text in this field.  Trigger a rerender of the source block.
- * @param {*} newText New text.
+ * @param {*} _newText New text.
+ * @deprecated 2019 setText should not be used directly. Use setValue instead.
  */
-Blockly.Field.prototype.setText = function(newText) {
-  if (newText === null) {
-    // No change if null.
-    return;
-  }
-  newText = String(newText);
-  if (newText === this.text_) {
-    // No change.
-    return;
-  }
-  this.text_ = newText;
-  this.forceRerender();
+Blockly.Field.prototype.setText = function(_newText) {
+  throw Error('setText method is deprecated');
+};
+
+/**
+ * Force a rerender of the block that this field is installed on, which will
+ * rerender this field and adjust for any sizing changes.
+ * Other fields on the same block will not rerender, because their sizes have
+ * already been recorded.
+ * @package
+ */
+Blockly.Field.prototype.markDirty = function() {
+  this.isDirty_ = true;
 };
 
 /**
@@ -912,12 +847,13 @@ Blockly.Field.prototype.forceRerender = function() {
   this.isDirty_ = true;
   if (this.sourceBlock_ && this.sourceBlock_.rendered) {
     this.sourceBlock_.render();
-    this.sourceBlock_.bumpNeighbours_();
+    this.sourceBlock_.bumpNeighbours();
   }
 };
 
 /**
  * Update the text node of this field to display the current text.
+ * TODO shakao remove this function
  * @private
  */
 Blockly.Field.prototype.updateTextNode_ = function() {
@@ -935,8 +871,8 @@ Blockly.Field.prototype.updateTextNode_ = function() {
     this.textElement_.setAttribute('class', this.className_);
   }
   // Empty the text element.
-  // TODO shakao need to remove closure
-  goog.dom.removeChildren(/** @type {!Element} */ (this.textElement_));
+  this.textElement_.innerHTML = "";
+  
   // Replace whitespace with non-breaking spaces so the text doesn't collapse.
   text = text.replace(/\s/g, Blockly.Field.NBSP);
   if (this.sourceBlock_.RTL && text) {
@@ -995,7 +931,7 @@ Blockly.Field.prototype.setValue = function(newValue) {
 
   if (this.sourceBlock_ && Blockly.Events.isEnabled()) {
     Blockly.Events.fire(new Blockly.Events.BlockChange(
-        this.sourceBlock_, 'field', this.name, oldValue, newValue));
+        this.sourceBlock_, 'field', this.name || null, oldValue, newValue));
   }
   this.doValueUpdate_(newValue);
   if (this.isDirty_) {
@@ -1037,14 +973,18 @@ Blockly.Field.prototype.getValue = function() {
 /**
  * Used to validate a value. Returns input by default. Can be overridden by
  * subclasses, see FieldDropdown.
- * @param {*} newValue The value to be validated.
+ * @param {*=} opt_newValue The value to be validated.
  * @return {*} The validated value, same as input by default.
  * @protected
+ * @suppress {deprecated} Suppress deprecated this.classValidator call.
  */
-Blockly.Field.prototype.doClassValidation_ = function(newValue) {
+Blockly.Field.prototype.doClassValidation_ = function(opt_newValue) {
+  if (opt_newValue === null || opt_newValue === undefined) {
+    return null;
+  }
   // For backwards compatibility.
-  newValue = this.classValidator(newValue);
-  return newValue;
+  opt_newValue = this.classValidator(/** @type {string} */ (opt_newValue));
+  return opt_newValue;
 };
 
 /**
@@ -1056,8 +996,6 @@ Blockly.Field.prototype.doClassValidation_ = function(newValue) {
 Blockly.Field.prototype.doValueUpdate_ = function(newValue) {
   this.value_ = newValue;
   this.isDirty_ = true;
-  // For backwards compatibility.
-  this.text_ = String(newValue);
 };
 
 /**
@@ -1088,7 +1026,7 @@ Blockly.Field.prototype.onMouseDown_ = function(e) {
 
 /**
  * Change the tooltip text for this field.
- * @param {string|Function|!Element} newTip Text for tooltip or a parent
+ * @param {string|Function|!SVGElement} newTip Text for tooltip or a parent
  *    element to link to for its tooltip.
  */
 Blockly.Field.prototype.setTooltip = function(newTip) {
@@ -1115,7 +1053,7 @@ Blockly.Field.prototype.setTooltip = function(newTip) {
  * block.
  *
  * @return {!Element} Element to bind click handler to.
- * @private
+ * @protected
  */
 Blockly.Field.prototype.getClickTarget_ = function() {
   if (this.clickTarget_) return this.clickTarget_;
@@ -1153,19 +1091,11 @@ Blockly.Field.prototype.getTotalFields_ = function() {
  * Return the absolute coordinates of the top-left corner of this field.
  * The origin (0,0) is the top-left corner of the page body.
  * @return {!Blockly.utils.Coordinate} Object with .x and .y properties.
- * @private
+ * @protected
  */
 Blockly.Field.prototype.getAbsoluteXY_ = function() {
-  return goog.style.getPageOffset(this.getClickTarget_());
-};
-
-/**
- * Show an editor when the field is clicked.
- * @param {!Event=} e A mouse down or touch start event.
- * @private
- */
-Blockly.Field.prototype.showEditor_ = function(e) {
-  console.warn('Field should override showEditor_', e);
+  return Blockly.utils.style.getPageOffset(
+      /** @type {!SVGRectElement} */ (this.getClickTarget_()));
 };
 
 /**
@@ -1177,4 +1107,87 @@ Blockly.Field.prototype.showEditor_ = function(e) {
  */
 Blockly.Field.prototype.referencesVariables = function() {
   return false;
+};
+
+/**
+ * Search through the list of inputs and their fields in order to find the
+ * parent input of a field.
+ * @return {Blockly.Input} The input that the field belongs to.
+ * @package
+ */
+Blockly.Field.prototype.getParentInput = function() {
+  var parentInput = null;
+  var block = this.sourceBlock_;
+  var inputs = block.inputList;
+
+  for (var idx = 0; idx < block.inputList.length; idx++) {
+    var input = inputs[idx];
+    var fieldRows = input.fieldRow;
+    for (var j = 0; j < fieldRows.length; j++) {
+      if (fieldRows[j] === this) {
+        parentInput = input;
+        break;
+      }
+    }
+  }
+  return parentInput;
+};
+
+/**
+ * Returns whether or not we should flip the field in RTL.
+ * @return {boolean} True if we should flip in RTL.
+ */
+Blockly.Field.prototype.getFlipRtl = function() {
+  return false;
+};
+
+/**
+ * Returns whether or not the field is tab navigable.
+ * @return {boolean} True if the field is tab navigable.
+ */
+Blockly.Field.prototype.isTabNavigable = function() {
+  return false;
+};
+
+/**
+ * Handles the given action.
+ * This is only triggered when keyboard accessibility mode is enabled.
+ * @param {!Blockly.Action} _action The action to be handled.
+ * @return {boolean} True if the field handled the action, false otherwise.
+ * @package
+ */
+Blockly.Field.prototype.onBlocklyAction = function(_action) {
+  return false;
+};
+
+/**
+ * Add the cursor svg to this fields svg group.
+ * @param {SVGElement} cursorSvg The svg root of the cursor to be added to the
+ *     field group.
+ * @package
+ */
+Blockly.Field.prototype.setCursorSvg = function(cursorSvg) {
+  if (!cursorSvg) {
+    this.cursorSvg_ = null;
+    return;
+  }
+
+  this.fieldGroup_.appendChild(cursorSvg);
+  this.cursorSvg_ = cursorSvg;
+};
+
+/**
+ * Add the marker svg to this fields svg group.
+ * @param {SVGElement} markerSvg The svg root of the marker to be added to the
+ *     field group.
+ * @package
+ */
+Blockly.Field.prototype.setMarkerSvg = function(markerSvg) {
+  if (!markerSvg) {
+    this.markerSvg_ = null;
+    return;
+  }
+
+  this.fieldGroup_.appendChild(markerSvg);
+  this.markerSvg_ = markerSvg;
 };

@@ -1,9 +1,6 @@
 /**
  * @license
- * Visual Blocks Editor
- *
- * Copyright 2019 Google Inc.
- * https://developers.google.com/blockly/
+ * Copyright 2019 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +29,7 @@
  */
 goog.provide('Blockly.utils.userAgent');
 
-goog.require('Blockly.utils.base');
+goog.require('Blockly.utils.global');
 
 (function(raw) {
   Blockly.utils.userAgent.raw = raw;
@@ -54,6 +51,8 @@ goog.require('Blockly.utils.base');
   // Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.44
   //     (KHTML, like Gecko) JavaFX/8.0 Safari/537.44
   Blockly.utils.userAgent.JAVA_FX = has('JavaFX');
+  Blockly.utils.userAgent.CHROME = (has('Chrome') || has('CriOS')) &&
+        !Blockly.utils.userAgent.EDGE;
 
   // Engines.  Logic from:
   // https://github.com/google/closure-library/blob/master/closure/goog/labs/useragent/engine.js

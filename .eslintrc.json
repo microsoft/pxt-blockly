@@ -54,18 +54,27 @@
         "_comment": "Blockly uses single quotes except for JSON blobs, which must use double quotes.",
         "quotes": ["off"],
         "semi": ["error", "always"],
-        "_comment": "Blockly doesn't have space before function paren",
+        "_comment": "Blockly doesn't have space before function paren when defining functions",
         "space-before-function-paren": ["error", "never"],
+        "_comment": "Blocklydoesn't have space before function paren when calling functions",
+        "func-call-spacing": ["error", "never"],
         "space-infix-ops": ["error"],
         "_comment": "Blockly uses 'use strict' in files",
         "strict": ["off"],
-        "_comment": "Blockly often uses cond-assignment in loops",
-        "no-cond-assign": ["off"],
         "_comment": "Closure style allows redeclarations",
         "no-redeclare": ["off"],
         "valid-jsdoc": ["error", {"requireReturn": false}],
         "no-console": ["off"],
-        "no-constant-condition": ["off"]
+        "no-constant-condition": ["off"],
+        "no-multi-spaces": ["error", { "ignoreEOLComments": true }],
+        "operator-linebreak": ["error", "after"],
+        "spaced-comment": ["error", "always", {
+            "block": {
+                "balanced": true
+            },
+            "exceptions": ["*"]
+        }],
+        "es5/no-es6-methods": ["warn"]
     },
     "env": {
         "browser": true
@@ -74,5 +83,8 @@
         "Blockly": true,
         "goog": true
     },
-    "extends": "eslint:recommended"
+    "extends": [
+        "eslint:recommended",
+        "plugin:es5/no-es2015"
+    ]
 }

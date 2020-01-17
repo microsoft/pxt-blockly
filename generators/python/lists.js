@@ -1,9 +1,6 @@
 /**
  * @license
- * Visual Blocks Language
- *
- * Copyright 2012 Google Inc.
- * https://developers.google.com/blockly/
+ * Copyright 2012 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -202,7 +199,7 @@ Blockly.Python['lists_setIndex'] = function(block) {
       return '';
     }
     var listVar = Blockly.Python.variableDB_.getDistinctName(
-        'tmp_list', Blockly.Variables.NAME_TYPE);
+        'tmp_list', Blockly.VARIABLE_CATEGORY_NAME);
     var code = listVar + ' = ' + list + '\n';
     list = listVar;
     return code;
@@ -243,7 +240,7 @@ Blockly.Python['lists_setIndex'] = function(block) {
         Blockly.Python.definitions_['import_random'] = 'import random';
         var code = cacheList();
         var xVar = Blockly.Python.variableDB_.getDistinctName(
-            'tmp_x', Blockly.Variables.NAME_TYPE);
+            'tmp_x', Blockly.VARIABLE_CATEGORY_NAME);
         code += xVar + ' = int(random.random() * len(' + list + '))\n';
         if (mode == 'SET') {
           code += list + '[' + xVar + '] = ' + value + '\n';

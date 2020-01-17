@@ -2,10 +2,6 @@
 
 'use strict';
 
-goog.provide('Blockly.Msg.th');
-
-goog.require('Blockly.Msg');
-
 Blockly.Msg["ADD_COMMENT"] = "ใส่คำอธิบาย";
 Blockly.Msg["CANNOT_DELETE_VARIABLE_PROCEDURE"] = "Can't delete the variable '%1' because it's part of the definition of the function '%2'";  // untranslated
 Blockly.Msg["CHANGE_VALUE_TITLE"] = "เปลี่ยนค่า:";
@@ -74,18 +70,6 @@ Blockly.Msg["ENABLE_BLOCK"] = "เปิดใช้งานบล็อก";
 Blockly.Msg["EXPAND_ALL"] = "ขยายบล็อก";
 Blockly.Msg["EXPAND_BLOCK"] = "ขยายบล็อก";
 Blockly.Msg["EXTERNAL_INPUTS"] = "อินพุตภายนอก";
-Blockly.Msg["FUNCTIONS_CALL_TITLE"] = "call";  // untranslated
-Blockly.Msg["FUNCTIONS_DEFAULT_BOOLEAN_ARG_NAME"] = "bool";  // untranslated
-Blockly.Msg["FUNCTIONS_DEFAULT_CUSTOM_ARG_NAME"] = "arg";  // untranslated
-Blockly.Msg["FUNCTIONS_DEFAULT_FUNCTION_NAME"] = "do_something";  // untranslated
-Blockly.Msg["FUNCTIONS_DEFAULT_NUMBER_ARG_NAME"] = "num";  // untranslated
-Blockly.Msg["FUNCTIONS_DEFAULT_STRING_ARG_NAME"] = "text";  // untranslated
-Blockly.Msg["FUNCTIONS_EDIT_OPTION"] = "Edit";  // untranslated
-Blockly.Msg["FUNCTION_CALL_TOOLTIP"] = "Call a function that was previously defined.";  // untranslated
-Blockly.Msg["FUNCTION_CREATE_NEW"] = "Create a Function";  // untranslated
-Blockly.Msg["FUNCTION_WARNING_ARG_NAME_IS_FUNCTION_NAME"] = "Argument names must not be the same as the function name.";  // untranslated
-Blockly.Msg["FUNCTION_WARNING_DUPLICATE_ARG"] = "Functions cannot use the same argument name more than once.";  // untranslated
-Blockly.Msg["FUNCTION_WARNING_EMPTY_NAME"] = "Function and argument names cannot be empty.";  // untranslated
 Blockly.Msg["HELP"] = "ช่วยเหลือ";
 Blockly.Msg["INLINE_INPUTS"] = "อินพุตในบรรทัด";
 Blockly.Msg["IOS_CANCEL"] = "Cancel";  // untranslated
@@ -302,9 +286,7 @@ Blockly.Msg["NEW_COLOUR_VARIABLE"] = "Create colour variable...";  // untranslat
 Blockly.Msg["NEW_NUMBER_VARIABLE"] = "Create number variable...";  // untranslated
 Blockly.Msg["NEW_STRING_VARIABLE"] = "Create string variable...";  // untranslated
 Blockly.Msg["NEW_VARIABLE"] = "สร้างตัวแปร...";
-Blockly.Msg["NEW_VARIABLE_DROPDOWN"] = "New variable...";  // untranslated
 Blockly.Msg["NEW_VARIABLE_TITLE"] = "ชื่อตัวแปรใหม่:";
-Blockly.Msg["NEW_VARIABLE_TYPE_DROPDOWN"] = "New %1 variable...";  // untranslated
 Blockly.Msg["NEW_VARIABLE_TYPE_TITLE"] = "New variable type:";  // untranslated
 Blockly.Msg["ORDINAL_NUMBER_SUFFIX"] = "";  // untranslated
 Blockly.Msg["PROCEDURES_ALLOW_STATEMENTS"] = "ข้อความที่ใช้ได้";
@@ -407,6 +389,7 @@ Blockly.Msg["TEXT_TRIM_OPERATOR_RIGHT"] = "ลบช่องว่างข้�
 Blockly.Msg["TEXT_TRIM_TOOLTIP"] = "คืนค่าสำเนาของข้อความที่ลบเอาช่องว่างหน้าและหลังข้อความออกแล้ว";
 Blockly.Msg["TODAY"] = "วันนี้";
 Blockly.Msg["UNDO"] = "ย้อนกลับ";
+Blockly.Msg["UNNAMED_KEY"] = "ไม่มีชื่อ";
 Blockly.Msg["VARIABLES_DEFAULT_NAME"] = "รายการ";
 Blockly.Msg["VARIABLES_GET_CREATE_SET"] = "สร้าง \"กำหนด %1\"";
 Blockly.Msg["VARIABLES_GET_HELPURL"] = "https://github.com/google/blockly/wiki/Variables#get";  // untranslated
@@ -415,8 +398,9 @@ Blockly.Msg["VARIABLES_SET"] = "กำหนด %1 จนถึง %2";
 Blockly.Msg["VARIABLES_SET_CREATE_GET"] = "สร้าง \"get %1\"";
 Blockly.Msg["VARIABLES_SET_HELPURL"] = "https://github.com/google/blockly/wiki/Variables#set";  // untranslated
 Blockly.Msg["VARIABLES_SET_TOOLTIP"] = "กำหนดให้ตัวแปรนี้เท่ากับการป้อนข้อมูล";
-Blockly.Msg["VARIABLE_ALREADY_EXISTS"] = "A variable or function named '%1' already exists.";  // untranslated
+Blockly.Msg["VARIABLE_ALREADY_EXISTS"] = "A variable named '%1' already exists.";  // untranslated
 Blockly.Msg["VARIABLE_ALREADY_EXISTS_FOR_ANOTHER_TYPE"] = "A variable named '%1' already exists for another type: '%2'.";  // untranslated
+Blockly.Msg["WORKSPACE_ARIA_LABEL"] = "พื้นที่ทำงาน Blockly";
 Blockly.Msg["WORKSPACE_COMMENT_DEFAULT_TEXT"] = "เขียนอะไรสักอย่าง";
 Blockly.Msg["CONTROLS_FOREACH_INPUT_DO"] = Blockly.Msg["CONTROLS_REPEAT_INPUT_DO"];
 Blockly.Msg["CONTROLS_FOR_INPUT_DO"] = Blockly.Msg["CONTROLS_REPEAT_INPUT_DO"];
@@ -445,7 +429,6 @@ Blockly.Msg["LISTS_HUE"] = "260";
 Blockly.Msg["LOGIC_HUE"] = "210";
 Blockly.Msg["VARIABLES_HUE"] = "330";
 Blockly.Msg["TEXTS_HUE"] = "160";
-Blockly.Msg["REPORTERS_HUE"] = "290";
 Blockly.Msg["PROCEDURES_HUE"] = "290";
 Blockly.Msg["COLOUR_HUE"] = "20";
 Blockly.Msg["VARIABLES_DYNAMIC_HUE"] = "310";
