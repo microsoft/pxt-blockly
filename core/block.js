@@ -82,7 +82,7 @@ Blockly.Block = function(workspace, prototypeName, opt_id) {
   /** @type {!Array.<!Blockly.Input>} */
   this.inputList = [];
   /** @type {boolean|undefined} */
-  this.inputsInline = true;
+  this.inputsInline = undefined;
   /** @type {boolean|undefined} */
   this.startHat = false;
   /**
@@ -979,29 +979,6 @@ Blockly.Block.prototype.setColour = function(colour) {
   this.hue_ = parsed.hue;
   this.colour_ = parsed.hex;
 };
-/**
- * Change the colour of a block.
- * @param {number|string} colour HSV hue value (0 to 360), #RRGGBB string,
- *     or a message reference string pointing to one of those two values.
- * @param {number|string=} colourSecondary HSV hue value, or #RRGGBB string.
- * @param {number|string=} colourTertiary HSV hue value, or #RRGGBB string.
- */
-Blockly.Block.prototype.setColour = function(colour, colourSecondary, colourTertiary) {
-  this.colour_ = this.makeColour_(colour);
-  if (colourSecondary !== undefined) {
-    this.colourSecondary_ = this.makeColour_(colourSecondary);
-  } else {
-    this.colourSecondary_ = Blockly.utils.colour.darken(this.colour_, 0.15);
-  }
-  if (colourTertiary !== undefined) {
-    this.colourTertiary_ = this.makeColour_(colourTertiary);
-  } else {
-    this.colourTertiary_ = Blockly.utils.colour.darken(this.colour_, 0.25);
-  }
-  if (this.rendered) {
-    this.updateColour();
-  }
-}
 
 /**
  * Set the style and colour values of a block.
@@ -1963,7 +1940,7 @@ Blockly.Block.prototype.setOutputShape = function(outputShape) {
  * @return {?number} Value representing output shape (see constants.js).
  */
 Blockly.Block.prototype.getOutputShape = function() {
-  return this.outputShape_ || Blockly.OUTPUT_SHAPE_SQUARE;
+  return this.outputShape_ || Blockly.OUTPUT_SHAPE_ROUND;
 };
 
 /**
