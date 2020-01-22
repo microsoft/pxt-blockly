@@ -200,8 +200,9 @@ Blockly.FieldImage.prototype.initView = function() {
   this.imageElement_.setAttributeNS(Blockly.utils.dom.XLINK_NS,
       'xlink:href', /** @type {string} */ (this.value_));
 
-  this.clickTarget_ = this.imageElement_;
-  this.maybeAddClickHandler_();
+  if (this.clickHandler_) {
+    this.imageElement_.style.cursor = 'pointer';
+  }
 };
 
 /**
@@ -218,40 +219,13 @@ Blockly.FieldImage.prototype.doClassValidation_ = function(opt_newValue) {
 };
 
 /**
- * pxt-blockly: Bind events for a mouse down on the image, but only if a click handler has
- * been defined.
- * @private
+ * Update the value of this image field, and update the displayed image.
+ * @param {*} newValue The value to be saved. The default validator guarantees
+ * that this is a string.
+ * @protected
  */
-Blockly.FieldImage.prototype.maybeAddClickHandler_ = function() {
-  if (this.clickHandler_) {
-    this.mouseDownWrapper_ =
-        Blockly.bindEventWithChecks_(
-            this.fieldGroup_, 'mousedown', this, this.onMouseDown_);
-    //pxtblockly: if a click handler is attached to the image, change the cursor to a pointer
-    if (this.imageElement_) this.imageElement_.style.cursor = 'pointer';
-  }
-};
-
-/**
- * Get the source URL of this image.
- * @return {string} Current text.
- * @override
- */
-Blockly.FieldImage.prototype.getValue = function() {
-  return this.src_;
-};
-
-/**
- * Set the source URL of this image.
- * @param {?string} src New source.
- * @override
- */
-Blockly.FieldImage.prototype.setValue = function(src) {
-  if (src === null) {
-    // No change if null.
-    return;
-  }
-  this.src_ = src;
+Blockly.FieldImage.prototype.doValueUpdate_ = function(newValue) {
+  this.value_ = newValue;
   if (this.imageElement_) {
     this.imageElement_.setAttributeNS(Blockly.utils.dom.XLINK_NS,
         'xlink:href', String(this.value_));
