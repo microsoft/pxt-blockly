@@ -430,13 +430,15 @@ Blockly.FieldVariable.dropdownCreate = function() {
     // Set the UUID as the internal representation of the variable.
     options[i] = [variableModelList[i].name, variableModelList[i].getId()];
   }
-  // pxtblockly: add a new variable dropdown option
-  var selectedValueType = this.variable_.type;
-  options.push([selectedValueType ?
-    Blockly.Msg['NEW_VARIABLE_TYPE_DROPDOWN'].replace('%1', selectedValueType) :
-    Blockly.Msg['NEW_VARIABLE_DROPDOWN'], Blockly.CREATE_VARIABLE_ID]);
-  // pxtblockly: add a separator
-  options.push([undefined, 'SEPARATOR']);
+  if (Blockly.Msg['NEW_VARIABLE_TYPE_DROPDOWN']) {
+    // pxtblockly: add a new variable dropdown option
+    var selectedValueType = this.variable_.type;
+    options.push([selectedValueType ?
+      Blockly.Msg['NEW_VARIABLE_TYPE_DROPDOWN'].replace('%1', selectedValueType) :
+      Blockly.Msg['NEW_VARIABLE_DROPDOWN'], Blockly.CREATE_VARIABLE_ID]);
+    // pxtblockly: add a separator
+    options.push([undefined, 'SEPARATOR']);
+  }
   options.push([Blockly.Msg['RENAME_VARIABLE'], Blockly.RENAME_VARIABLE_ID]);
   if (Blockly.Msg['DELETE_VARIABLE']) {
     options.push(

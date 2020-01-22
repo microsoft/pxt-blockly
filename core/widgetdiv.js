@@ -141,7 +141,9 @@ Blockly.WidgetDiv.hide = function() {
     Blockly.utils.dom.removeClass(div, Blockly.WidgetDiv.themeClassName_);
     Blockly.WidgetDiv.themeClassName_ = null;
   }
-  Blockly.getMainWorkspace().markFocused();
+  if (Blockly.getMainWorkspace()) {
+    Blockly.getMainWorkspace().markFocused();
+  }
 };
 
 /**

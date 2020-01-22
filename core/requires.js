@@ -93,9 +93,9 @@ goog.require("Blockly.FieldArgumentEditor");
 // Blockly Renderers.
 // At least one renderer is mandatory.  Geras is the default one.
 // Others may be chosen using Blockly.inject's "renderer" configuration.
-// goog.require('Blockly.geras.Renderer');
+goog.require('Blockly.geras.Renderer');
 // goog.require('Blockly.thrasos.Renderer');
-// goog.require('Blockly.zelos.Renderer');
+goog.require('Blockly.zelos.Renderer');
 goog.require('Blockly.pxt.Renderer');
 // The debug renderer, which shows simplified versions of the blocks for
 // developer use.
