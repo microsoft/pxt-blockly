@@ -68,6 +68,9 @@ Blockly.Msg.VARIABLES_DYNAMIC_HUE = '310';
 /** @type {string} */
 /// {{Notranslate}} Hue value for all procedure blocks.
 Blockly.Msg.PROCEDURES_HUE = '290';
+/** @type {string} */
+/// {{Notranslate}} Hue value for local reporter blocks.
+Blockly.Msg.REPORTERS_HUE = '290'; // pxt-blockly
 
 /** @type {string} */
 /// default name - A simple, general default name for a variable, preferably short.
@@ -164,6 +167,12 @@ Blockly.Msg.NEW_NUMBER_VARIABLE = 'Create number variable...';
 /** @type {string} */
 /// button text - Text on the button used to launch the variable creation dialogue.
 Blockly.Msg.NEW_COLOUR_VARIABLE = 'Create colour variable...';
+/** @type {string} */
+/// dropdown choice - When the user clicks on a variable block, this is one of the dropdown menu choices.  It is used to create a new variable with no type.
+Blockly.Msg.NEW_VARIABLE_DROPDOWN = 'New variable...'; // pxt-blockly
+/** @type {string} */
+/// dropdown choice - When the user clicks on a variable block, this is one of the dropdown menu choices.  It is used to create a new variable of the same type.
+Blockly.Msg.NEW_VARIABLE_TYPE_DROPDOWN = 'New %1 variable...'; // pxt-blockly
 /** @type {string} */
 /// prompt - Prompts the user to enter the type for a variable.
 Blockly.Msg.NEW_VARIABLE_TYPE_TITLE = 'New variable type:';
