@@ -1634,6 +1634,43 @@ Blockly.Msg.PROCEDURES_IFRETURN_HELPURL = 'http://c2.com/cgi/wiki?GuardClause';
 Blockly.Msg.PROCEDURES_IFRETURN_WARNING = 'Warning: This block may be used only within a function definition.';
 
 /** @type {string} */
+/// pxt-blockly: Context menu option to edit functions
+Blockly.Msg.FUNCTIONS_EDIT_OPTION = 'Edit';
+/** @type {string} */
+/// pxt-blockly: Label on function_call blocks that appears before the name of the function to call
+Blockly.Msg.FUNCTIONS_CALL_TITLE = 'call'
+/** @type {string} */
+/// pxt-blockly: Label on the "Create Function" button in the flyout.
+Blockly.Msg.FUNCTION_CREATE_NEW = 'Create a Function'
+/** @type {string} */
+/// pxt-blockly: Tooltip for function calls.
+Blockly.Msg.FUNCTION_CALL_TOOLTIP = 'Call a function that was previously defined.'
+/** @type {string} */
+/// pxt-blockly: Warning for duplicate argument names on a function definition.
+Blockly.Msg.FUNCTION_WARNING_DUPLICATE_ARG = 'Functions cannot use the same argument name more than once.'
+/** @type {string} */
+/// pxt-blockly: Warning for duplicate argument names on a function definition.
+Blockly.Msg.FUNCTION_WARNING_EMPTY_NAME = 'Function and argument names cannot be empty.'
+/** @type {string} */
+/// pxt-blockly: Warning for argument names being the same as the function name.
+Blockly.Msg.FUNCTION_
+/** @type {string} */
+/// pxt-blockly: Default function name
+Blockly.Msg.FUNCTIONS_DEFAULT_FUNCTION_NAME = 'do_something'
+/** @type {string} */
+/// pxt-blockly: Default name for a boolean arg on a function declaration
+Blockly.Msg.FUNCTIONS_DEFAULT_BOOLEAN_ARG_NAME = 'bool'
+/** @type {string} */
+/// pxt-blockly: Default name for a string arg on a function declaration
+Blockly.Msg.FUNCTIONS_DEFAULT_STRING_ARG_NAME = 'text'
+/** @type {string} */
+/// pxt-blockly: Default name for a number arg on a function declaration
+Blockly.Msg.FUNCTIONS_DEFAULT_NUMBER_ARG_NAME = 'num'
+/** @type {string} */
+/// pxt-blockly: Default name for a non-literal arg on a function declaration
+Blockly.Msg.FUNCTIONS_DEFAULT_CUSTOM_ARG_NAME = 'arg'
+
+/** @type {string} */
 /// comment text - This text appears in a new workspace comment, to hint that
 /// the user can type here.
 Blockly.Msg.WORKSPACE_COMMENT_DEFAULT_TEXT = 'Say something...';
