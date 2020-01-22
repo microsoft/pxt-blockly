@@ -88,6 +88,10 @@ Blockly.Options = function(options) {
     if (hasSounds === undefined) {
       hasSounds = true;
     }
+    var hasInline = options['inline'];
+    if (hasInline === undefined) {
+      hasInline = false;
+    }
   }
   var rtl = !!options['rtl'];
   var horizontalLayout = options['horizontalLayout'];
@@ -151,6 +155,7 @@ Blockly.Options = function(options) {
   this.readOnly = readOnly;
   this.maxBlocks = options['maxBlocks'] || Infinity;
   this.maxInstances = options['maxInstances'];
+  this.inline = hasInline; // pxt-blockly
   // pxt-blockly: consumers can specify whether to use old or new functions implementation
   this.newFunctions = options['newFunctions'] == true;
   this.pathToMedia = pathToMedia;
