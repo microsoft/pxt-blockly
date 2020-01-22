@@ -164,7 +164,7 @@ Blockly.Procedures.isNameUsed = function(name, workspace, opt_exclude) {
     if (blocks[i].getProcedureDef) {
       var procedureBlock = /** @type {!Blockly.Procedures.ProcedureBlock} */ (
         blocks[i]);
-      procName = procedureBlock.getProcedureDef();
+      procName = procedureBlock.getProcedureDef()[0];
     } else if (blocks[i].getName) {
       // pxt-blockly: also check new function blocks, which use getName() for the function name.
       procName = blocks[i].getName();
