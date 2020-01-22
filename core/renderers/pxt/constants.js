@@ -41,6 +41,17 @@ Blockly.pxt.ConstantProvider = function() {
   Blockly.pxt.ConstantProvider.superClass_.constructor.call(this);
 
   /**
+   * @override
+   */
+  this.FIELD_TEXT_FONTFAMILY =
+      '"Monaco", "Menlo", "Ubuntu Mono", "Consolas", "source-code-pro", monospace';
+
+  /**
+   * @override
+   */
+  this.FIELD_TEXT_FONTWEIGHT = '600';
+
+  /**
    * @type {number}
    */
   this.ICON_SEPARATOR_HEIGHT = 8 * this.GRID_UNIT;
