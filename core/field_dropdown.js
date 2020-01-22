@@ -32,6 +32,7 @@ goog.require('Blockly.Field');
 goog.require('Blockly.fieldRegistry');
 goog.require('Blockly.Menu');
 goog.require('Blockly.MenuItem');
+goog.require('Blockly.MenuSeparator');
 goog.require('Blockly.navigation');
 goog.require('Blockly.utils');
 goog.require('Blockly.utils.aria');
@@ -298,7 +299,6 @@ Blockly.FieldDropdown.prototype.createSVGArrow_ = function() {
  */
 Blockly.FieldDropdown.prototype.showEditor_ = function(opt_e) {
   this.menu_ = this.dropdownCreate_();
-  this.dropDownOpen_ = true;
   if (opt_e && typeof opt_e.clientX === 'number') {
     this.menu_.openingCoords =
         new Blockly.utils.Coordinate(opt_e.clientX, opt_e.clientY);
@@ -314,8 +314,10 @@ Blockly.FieldDropdown.prototype.showEditor_ = function(opt_e) {
     var primaryColour = (this.sourceBlock_.isShadow()) ?
         this.sourceBlock_.getParent().getColour() :
         this.sourceBlock_.getColour();
-    Blockly.DropDownDiv.setColour(primaryColour,
-        this.sourceBlock_.style.colourTertiary);
+    var borderColour = (this.sourceBlock_.isShadow()) ?
+        this.sourceBlock_.getParent().style.colourTertiary :
+        this.sourceBlock_.style.colourTertiary;
+    Blockly.DropDownDiv.setColour(primaryColour, borderColour);
   }
 
   Blockly.DropDownDiv.showPositionedByField(
@@ -353,11 +355,11 @@ Blockly.FieldDropdown.prototype.dropdownCreate_ = function() {
     var value = options[i][1];   // Language-neutral value.
     var separator = value === 'SEPARATOR';
     if (separator) {
-      // pxtblockly: render separator
-      var menuItem = new goog.ui.MenuSeparator();
+      var menuItem = new Blockly.MenuSeparator();
       menuItem.setRightToLeft(this.sourceBlock_.RTL);
       menu.addChild(menuItem, true);
-      menuItem.getElement().style.borderColor = this.sourceBlock_.getColourTertiary();
+      menuItem.getElement().style.borderColor =
+          this.sourceBlock_.style.colourTertiary;
       continue;
     }
     if (typeof content == 'object') {
@@ -379,17 +381,6 @@ Blockly.FieldDropdown.prototype.dropdownCreate_ = function() {
     }
     menuItem.onAction(this.handleMenuActionEvent_, this);
   }
-  // Listen for mouse/keyboard events.
-  goog.events.listen(menu, goog.ui.Component.EventType.ACTION, callback);
-
-  // Record windowSize and scrollOffset before adding menu.
-  menu.render(contentDiv);
-  var menuDom = menu.getElement();
-  Blockly.utils.dom.addClass(menuDom, 'blocklyDropdownMenu');
-  // Record menuSize after adding menu.
-  var menuSize = Blockly.utils.uiMenu.getSize(menu);
-  // Recalculate height for the total content, not only box height.
-  menuSize.height = menuDom.scrollHeight;
 
   Blockly.utils.aria.setState(/** @type {!Element} */ (menu.getElement()),
       Blockly.utils.aria.State.ACTIVEDESCENDANT,
@@ -407,7 +398,6 @@ Blockly.FieldDropdown.prototype.dropdownDispose_ = function() {
     this.menu_.dispose();
   }
   this.menu_ = null;
-  this.dropDownOpen_ = false;
   this.selectedMenuItem_ = null;
   this.applyColour();
 };
@@ -428,11 +418,10 @@ Blockly.FieldDropdown.prototype.handleMenuActionEvent_ = function(menuItem) {
  * @param {!Blockly.MenuItem} menuItem The MenuItem selected within menu.
  * @protected
  */
-Blockly.FieldDropdown.prototype.onItemSelected = function(menu, menuItem) {
-  // pxtblockly: add extra check to make sure we don't double tap on any option
-  if (!this.dropDownOpen_) return;
+Blockly.FieldDropdown.prototype.onItemSelected_ = function(menu, menuItem) {
+  var value = menuItem.getValue();
   if (value !== null) {
-    this.setValue(menuItem.getValue());
+    this.setValue(value);
 
     // pxtblockly: Fire a UI event that an edit was complete
     if (this.sourceBlock_.workspace) {
@@ -721,12 +710,14 @@ Blockly.FieldDropdown.prototype.positionSVGArrow_ = function(x, y) {
   if (!this.svgArrow_) {
     return 0;
   }
-  var padding = this.constants_.FIELD_DROPDOWN_SVG_ARROW_PADDING;
+  var hasBorder = !!this.borderRect_;
+  var xPadding = hasBorder ? this.constants_.FIELD_BORDER_RECT_X_PADDING : 0;
+  var textPadding = this.constants_.FIELD_DROPDOWN_SVG_ARROW_PADDING;
   var svgArrowSize = this.constants_.FIELD_DROPDOWN_SVG_ARROW_SIZE;
-  var arrowX = this.sourceBlock_.RTL ? padding : x + padding;
+  var arrowX = this.sourceBlock_.RTL ? xPadding : x + textPadding;
   this.svgArrow_.setAttribute('transform',
       'translate(' + arrowX + ',' + y + ')');
-  return svgArrowSize + padding;
+  return svgArrowSize + textPadding;
 };
 
 /**
