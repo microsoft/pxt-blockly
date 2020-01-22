@@ -25,7 +25,6 @@
 goog.provide('Blockly.zelos.ConstantProvider');
 
 goog.require('Blockly.blockRendering.ConstantProvider');
-goog.require('Blockly.Colours');
 goog.require('Blockly.utils.dom');
 goog.require('Blockly.utils.object');
 goog.require('Blockly.utils.svgPaths');
@@ -365,17 +364,17 @@ Blockly.zelos.ConstantProvider = function() {
    * @type {string}
    * @package
    */
-  this.highlightGlowFilterId = '';
+  this.selectedGlowFilterId = '';
 
   /**
    * The <filter> element to use for a higlight glow, or null if not set.
    * @type {SVGElement}
    * @private
    */
-  this.highlightGlowFilter_ = null;
+  this.selectedGlowFilter_ = null;
 
   /**
-   * The ID of the highlight glow filter, or the empty string if no filter is
+   * The ID of the replacement glow filter, or the empty string if no filter is
    * set.
    * @type {string}
    * @package
@@ -383,7 +382,7 @@ Blockly.zelos.ConstantProvider = function() {
   this.replacementGlowFilterId = '';
 
   /**
-   * The <filter> element to use for a higlight glow, or null if not set.
+   * The <filter> element to use for a replacement glow, or null if not set.
    * @type {SVGElement}
    * @private
    */
@@ -409,8 +408,8 @@ Blockly.zelos.ConstantProvider.prototype.init = function() {
  */
 Blockly.zelos.ConstantProvider.prototype.dispose = function() {
   Blockly.zelos.ConstantProvider.superClass_.dispose.call(this);
-  if (this.highlightGlowFilter_) {
-    Blockly.utils.dom.removeNode(this.highlightGlowFilter_);
+  if (this.selectedGlowFilter_) {
+    Blockly.utils.dom.removeNode(this.selectedGlowFilter_);
   }
 };
 
@@ -758,9 +757,9 @@ Blockly.zelos.ConstantProvider.prototype.createDom = function(svg) {
   var defs = Blockly.utils.dom.createSvgElement('defs', {}, svg);
   // Using a dilate distorts the block shape.
   // Instead use a gaussian blur, and then set all alpha to 1 with a transfer.
-  var highlightGlowFilter = Blockly.utils.dom.createSvgElement('filter',
+  var selectedGlowFilter = Blockly.utils.dom.createSvgElement('filter',
       {
-        'id': 'blocklyHighlightGlowFilter' + this.randomIdentifier_,
+        'id': 'blocklySelectedGlowFilter' + this.randomIdentifier_,
         'height': '160%',
         'width': '180%',
         y: '-30%',
@@ -770,33 +769,33 @@ Blockly.zelos.ConstantProvider.prototype.createDom = function(svg) {
   Blockly.utils.dom.createSvgElement('feGaussianBlur',
       {
         'in': 'SourceGraphic',
-        'stdDeviation': Blockly.Colours.highlightGlowSize // pxt-blockly
+        'stdDeviation': 0.5  // TODO: configure size in theme.
       },
-      highlightGlowFilter);
+      selectedGlowFilter);
   // Set all gaussian blur pixels to 1 opacity before applying flood
-  var highlightComponentTransfer = Blockly.utils.dom.createSvgElement(
-      'feComponentTransfer', {'result': 'outBlur'}, highlightGlowFilter);
+  var selectedComponentTransfer = Blockly.utils.dom.createSvgElement(
+      'feComponentTransfer', {'result': 'outBlur'}, selectedGlowFilter);
   Blockly.utils.dom.createSvgElement('feFuncA',
       {
         'type': 'table', 'tableValues': '0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1'
       },
-      highlightComponentTransfer);
+      selectedComponentTransfer);
   // Color the highlight
   Blockly.utils.dom.createSvgElement('feFlood',
       {
-        'flood-color': Blockly.Colours.highlightGlow, // pxt-blockly
+        'flood-color': '#fff200', // TODO: configure colour in theme.
         'flood-opacity': 1,
-        'result': 'outColor',
+        'result': 'outColor'
       },
-      highlightGlowFilter);
+      selectedGlowFilter);
   Blockly.utils.dom.createSvgElement('feComposite',
       {
         'in': 'outColor', 'in2': 'outBlur',
         'operator': 'in', 'result': 'outGlow'
       },
-      highlightGlowFilter);
-  this.highlightGlowFilterId = highlightGlowFilter.id;
-  this.highlightGlowFilter_ = highlightGlowFilter;
+      selectedGlowFilter);
+  this.selectedGlowFilterId = selectedGlowFilter.id;
+  this.selectedGlowFilter_ = selectedGlowFilter;
 
   // Using a dilate distorts the block shape.
   // Instead use a gaussian blur, and then set all alpha to 1 with a transfer.
@@ -845,19 +844,6 @@ Blockly.zelos.ConstantProvider.prototype.createDom = function(svg) {
       replacementGlowFilter);
   this.replacementGlowFilterId = replacementGlowFilter.id;
   this.replacementGlowFilter_ = replacementGlowFilter;
-
-  // TODO shakao add other filters from pxt
-
-  // Add dropdown image definitions
-  var arrowSize = this.FIELD_DROPDOWN_SVG_ARROW_SIZE;
-  var dropdownArrowImage = Blockly.utils.dom.createSvgElement('image',
-      {
-        'id': 'blocklyDropdownArrowSvg',
-        'height': arrowSize + 'px',
-        'width': arrowSize + 'px'
-      }, defs);
-  dropdownArrowImage.setAttributeNS('http://www.w3.org/1999/xlink',
-      'xlink:href', this.FIELD_DROPDOWN_SVG_ARROW_DATAURI);
 };
 
 /**
