@@ -143,7 +143,7 @@ if (this.IS_NODE_JS) {
   module.exports = Blockly;
 } else {
   document.write('<script src="' + this.BLOCKLY_DIR +
-      '/closure/goog/base.js"></script>');
+      '/node_modules/google-closure-library/closure/goog/base.js"></script>');
   document.write('<script>this.BLOCKLY_BOOT(this);</script>');
 }
 """)
@@ -179,7 +179,7 @@ class Gen_compressed(threading.Thread):
     # Define the parameters for the POST request.
     params = [
         ("compilation_level", "SIMPLE_OPTIMIZATIONS"),
-        ("use_closure_library", "false"),
+        ("use_closure_library", "true"),
         ("output_format", "json"),
         ("output_info", "compiled_code"),
         ("output_info", "warnings"),
@@ -194,7 +194,7 @@ class Gen_compressed(threading.Thread):
     filenames.sort()  # Deterministic build.
     for filename in filenames:
       # Filter out the Closure files (the compiler will add them).
-      if filename.startswith("closure"):
+      if filename.startswith("closure") or filename.startswith("node_modules"):
         continue
       f = codecs.open(filename, encoding="utf-8")
       code = "".join(f.readlines())
@@ -312,7 +312,7 @@ goog.provide('Blockly.utils.string');
     def file_lookup(name):
       if not name.startswith("Input_"):
         return "???"
-      n = int(name[6:]) - 1
+      n = int(name[6:])
       return filenames[n]
 
     if "serverErrors" in json_data:
@@ -496,7 +496,8 @@ def get_args():
 if __name__ == "__main__":
   args = get_args()
   calcdeps = import_path(os.path.join("closure", "bin", "calcdeps.py"))
-  full_search_paths = calcdeps.ExpandDirectories(["core", "closure"])
+  full_search_paths = calcdeps.ExpandDirectories(["core",
+    os.path.join("node_modules", "google-closure-library", "closure", "goog")])
   full_search_paths = sorted(full_search_paths)  # Deterministic build.
 
   # Uncompressed and compressed are run in parallel threads.
