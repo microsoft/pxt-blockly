@@ -157,7 +157,8 @@ Blockly.FieldVariable.prototype.initModel = function() {
 Blockly.FieldVariable.prototype.shouldAddBorderRect_ = function() {
   return Blockly.FieldVariable.superClass_.shouldAddBorderRect_.call(this) &&
     (!this.constants_.FIELD_DROPDOWN_NO_BORDER_RECT_SHADOW ||
-        this.sourceBlock_.type != 'variables_get');
+        !(this.sourceBlock_.type == 'variables_get' ||
+        this.sourceBlock_.type == 'variables_get_reporter')); // pxt-blockly
 };
 
 /**
@@ -430,7 +431,7 @@ Blockly.FieldVariable.dropdownCreate = function() {
     options[i] = [variableModelList[i].name, variableModelList[i].getId()];
   }
   // pxtblockly: add a new variable dropdown option
-  var selectedValueType = this.workspace_.getVariableById(this.getValue()).type;
+  var selectedValueType = this.variable_.type;
   options.push([selectedValueType ?
     Blockly.Msg['NEW_VARIABLE_TYPE_DROPDOWN'].replace('%1', selectedValueType) :
     Blockly.Msg['NEW_VARIABLE_DROPDOWN'], Blockly.CREATE_VARIABLE_ID]);
@@ -473,9 +474,10 @@ Blockly.FieldVariable.prototype.onItemSelected_ = function(menu, menuItem) {
     } else if (id == Blockly.CREATE_VARIABLE_ID) {
       // Create a variable.
       var that = this;
-      var selectedValueType = this.workspace_.getVariableById(this.getValue()).type;
-      Blockly.Variables.createVariableButtonHandler(this.workspace_, function(text) {
-        var variable = that.workspace_.getVariable(text, selectedValueType);
+      var workspace = this.sourceBlock_.workspace;
+      var selectedValueType = workspace.getVariableById(this.getValue()).type;
+      Blockly.Variables.createVariableButtonHandler(workspace, function(text) {
+        var variable = workspace.getVariable(text, selectedValueType);
         that.setValue(variable.getId());
       }, selectedValueType);
       return;
@@ -483,17 +485,6 @@ Blockly.FieldVariable.prototype.onItemSelected_ = function(menu, menuItem) {
   }
   // Handle unspecial case.
   this.setValue(id);
-};
-
-/**
- * @return {boolean} True if we should show a box (rect) around the dropdown menu. Otherwise false.
- * @private
- */
-Blockly.FieldVariable.prototype.shouldShowRect_ = function() {
-  //pxtblockly: don't show a rect around the variable dropdown when in a shadow block
-  return !this.sourceBlock_.isShadow()
-    && this.sourceBlock_.type != 'variables_get'
-    && this.sourceBlock_.type != 'variables_get_reporter';
 };
 
 /**
