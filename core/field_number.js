@@ -161,7 +161,7 @@ Blockly.FieldNumber.activeField_ = null;
  */
 Blockly.FieldNumber.prototype.getNumRestrictor = function(opt_min, opt_max,
     opt_precision) {
-  this.setConstraints_(opt_min, opt_max, opt_precision);
+  this.setConstraints(opt_min, opt_max, opt_precision);
   var pattern = "[\\d]"; // Always allow digits.
   if (this.decimalAllowed_) {
     pattern += "|[\\.]";
@@ -195,7 +195,7 @@ Blockly.FieldNumber.prototype.configure_ = function(config) {
  * @param {?(number|string|undefined)} max Maximum value.
  * @param {?(number|string|undefined)} precision Precision for value.
  */
-Blockly.FieldNumber.prototype.setConstraints_ = function(min, max, precision) {
+Blockly.FieldNumber.prototype.setConstraints = function(min, max, precision) {
   this.decimalAllowed_ = (typeof precision == 'undefined') ||
     precision === null || isNaN(precision) || (precision == 0) ||
     (Math.floor(precision) != precision);
@@ -371,7 +371,7 @@ Blockly.FieldNumber.prototype.showNumPad_ = function() {
   var numPadBackground = this.sourceBlock_.parentBlock_ ?
     this.sourceBlock_.parentBlock_.getColour() : Blockly.Colours.numPadBackground;
   var numPadBorder = this.sourceBlock_.parentBlock_ ?
-    this.sourceBlock_.getColourTertiary() : Blockly.Colours.numPadBorder;
+    this.sourceBlock_.parentBlock_.style.colourTertiary : Blockly.Colours.numPadBorder;
   Blockly.DropDownDiv.setColour(numPadBackground, numPadBorder);
   contentDiv.style.width = Blockly.FieldNumber.DROPDOWN_WIDTH + 'px';
 
@@ -388,7 +388,8 @@ Blockly.FieldNumber.prototype.addButtons_ = function(contentDiv) {
   var buttonColour = this.sourceBlock_.parentBlock_ ?
     this.sourceBlock_.parentBlock_.getColour() : Blockly.Colours.numPadBackground;
   var buttonBorderColour = this.sourceBlock_.parentBlock_ ?
-    this.sourceBlock_.parentBlock_.getColourTertiary() : this.sourceBlock_.getColourTertiary();
+    this.sourceBlock_.parentBlock_.style.colourTertiary :
+    this.sourceBlock_.style.colourTertiary;
 
   // Add numeric keypad buttons
   var buttons = Blockly.FieldNumber.NUMPAD_BUTTONS;
