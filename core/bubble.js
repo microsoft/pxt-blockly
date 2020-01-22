@@ -284,7 +284,7 @@ Blockly.Bubble.prototype.createDom_ = function(content, hasResize) {
         'ry': Blockly.Bubble.BORDER_WIDTH
       },
       bubbleEmboss);
-  this.bubbleGroup_.appendChild(content);
+  this.bubbleGroup_.appendChild(content); // pxt-blockly
   if (hasResize) {
     this.resizeGroup_ = Blockly.utils.dom.createSvgElement('g',
         {'class': this.workspace_.RTL ?
@@ -320,7 +320,6 @@ Blockly.Bubble.prototype.createDom_ = function(content, hasResize) {
           this.resizeGroup_, 'mousedown', this, this.resizeMouseDown_);
     }
   }
-  this.bubbleGroup_.appendChild(content);
   return this.bubbleGroup_;
 };
 
