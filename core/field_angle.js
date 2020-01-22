@@ -252,8 +252,6 @@ Blockly.FieldAngle.prototype.configure_ = function(config) {
   }
 };
 
-
-
 /**
  * Create the block UI for this field.
  * @package
@@ -377,11 +375,6 @@ Blockly.FieldAngle.prototype.dropdownCreate_ = function() {
       'http://www.w3.org/1999/xlink',
       'xlink:href', Blockly.FieldAngle.ARROW_SVG_DATAURI
   );
-
-  Blockly.DropDownDiv.setColour(this.sourceBlock_.parentBlock_.getColour(),
-      this.sourceBlock_.getColourTertiary());
-  Blockly.DropDownDiv.setCategory(this.sourceBlock_.parentBlock_.getCategory());
-  Blockly.DropDownDiv.showPositionedByBlock(this, this.sourceBlock_);
 
   // The angle picker is different from other fields in that it updates on
   // mousemove even if it's not in the middle of a drag.  In future we may

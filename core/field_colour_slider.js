@@ -27,11 +27,13 @@
 goog.provide('Blockly.FieldColourSlider');
 
 goog.require('Blockly.Field');
+goog.require('Blockly.fieldRegistry');
 goog.require('Blockly.DropDownDiv');
 goog.require('goog.dom');
 goog.require('goog.events');
 goog.require('goog.style');
 goog.require('Blockly.utils.colour');
+goog.require('Blockly.utils.object');
 goog.require('goog.ui.Slider');
 
 /**
@@ -49,7 +51,7 @@ Blockly.FieldColourSlider = function(colour, opt_validator) {
   Blockly.FieldColourSlider.superClass_.constructor.call(this, colour, opt_validator);
   this.addArgType('colour');
 };
-goog.inherits(Blockly.FieldColourSlider, Blockly.Field);
+Blockly.utils.object.inherits(Blockly.FieldColourSlider, Blockly.Field);
 
 /**
  * Construct a FieldColourSlider from a JSON arg object.
@@ -93,7 +95,7 @@ Blockly.FieldColourSlider.prototype.setValue = function(colour) {
   if (this.sourceBlock_) {
     // Set the primary, secondary and tertiary colour to this value.
     // The renderer expects to be able to use the secondary colour as the fill for a shadow.
-    this.sourceBlock_.setColour(colour, colour, this.sourceBlock_.getColourTertiary());
+    this.sourceBlock_.setColour(colour, colour, this.sourceBlock_.style.colourTertiary);
   }
   this.updateSliderHandles_();
   this.updateDom_();

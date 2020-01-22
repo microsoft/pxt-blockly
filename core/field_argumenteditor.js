@@ -35,11 +35,12 @@
 goog.provide('Blockly.FieldArgumentEditor');
 
 goog.require('Blockly.Colours');
+goog.require('Blockly.fieldRegistry');
 goog.require('Blockly.FieldTextInput');
 goog.require('Blockly.Msg');
 goog.require('Blockly.utils');
-goog.require('goog.dom');
-goog.require('goog.dom.TagName');
+goog.require('Blockly.utils.object');
+
 
 /**
  * Class for an editable text field displaying a deletion icon when selected.
@@ -58,7 +59,7 @@ Blockly.FieldArgumentEditor = function(text, opt_validator, opt_restrictor) {
   Blockly.FieldArgumentEditor.superClass_.constructor.call(this, text,
       opt_validator, opt_restrictor);
 };
-goog.inherits(Blockly.FieldArgumentEditor, Blockly.FieldTextInput);
+Blockly.utils.object.inherits(Blockly.FieldArgumentEditor, Blockly.FieldTextInput);
 
 /**
  * Data URI for the delete argument icon.
