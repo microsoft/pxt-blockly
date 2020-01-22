@@ -146,6 +146,20 @@ Blockly.pxt.ConstantProvider.prototype.createDom = function(svg) {
         'stdDeviation': Blockly.Colours.warningGlowSize
       },
       warningGlowFilter);
+  // Set all gaussian blur pixels to 1 opacity before applying flood
+  var warningComponentTransfer = Blockly.utils.dom.createSvgElement('feComponentTransfer', {'result': 'outBlur'}, warningGlowFilter);
+  Blockly.utils.dom.createSvgElement('feFuncA',
+      {
+        'type': 'table', 'tableValues': '0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1'
+      },
+      warningComponentTransfer);
+  // Color the highlight
+  Blockly.utils.dom.createSvgElement('feFlood',
+      {'flood-color': Blockly.Colours.warningGlow,
+        'flood-opacity': Blockly.Colours.warningGlowOpacity, 'result': 'outColor'}, warningGlowFilter);
+  Blockly.utils.dom.createSvgElement('feComposite',
+      {'in': 'outColor', 'in2': 'outBlur',
+        'operator': 'in', 'result': 'outGlow'}, warningGlowFilter);
   this.warningGlowFilterId = warningGlowFilter.id;
   this.warningGlowFilter_ = warningGlowFilter;
 
