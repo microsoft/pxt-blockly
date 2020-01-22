@@ -313,7 +313,7 @@ Blockly.Blocks['lists_create_with'] = {
           block, 'mutation', null, oldMutation, newMutation));
       setTimeout(function() {
         Blockly.Events.setGroup(group);
-        block.bumpNeighbours_();
+        block.bumpNeighbours();
         Blockly.Events.setGroup(false);
       }, Blockly.BUMP_DELAY);
     }

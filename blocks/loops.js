@@ -182,6 +182,7 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
       "type": "input_statement",
       "name": "DO"
     }],
+    "inputsInline": true,
     "previousStatement": null,
     "nextStatement": null,
     "style": "loop_blocks",
