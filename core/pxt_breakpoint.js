@@ -7,6 +7,7 @@ goog.provide('Blockly.Breakpoint');
 goog.require('Blockly.Events.BlockChange');
 goog.require('Blockly.Events.Ui');
 goog.require('Blockly.Icon');
+goog.require('Blockly.utils.object');
 goog.require('Blockly.utils.userAgent');
 
 /**
@@ -21,8 +22,7 @@ Blockly.Breakpoint = function(block) {
   // The set_ property represents if the breakpoint for this block is set.
   this.set_ = block.isBreakpointSet() || false;
 };
-
-goog.inherits(Blockly.Breakpoint, Blockly.Icon);
+Blockly.utils.object.inherits(Blockly.Breakpoint, Blockly.Icon);
 
 /**
  * Does this icon get hidden when the block is collapsed.

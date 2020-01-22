@@ -617,7 +617,7 @@ Blockly.Functions.mutateCallersAndDefinition = function(name, ws, mutation) {
           // For the callers, we need to bump blocks that were connected to any
           // argument that has since been deleted.
           setTimeout(function() {
-            caller.bumpNeighbours_();
+            caller.bumpNeighbours();
           }, Blockly.BUMP_DELAY);
         }
       }
@@ -657,6 +657,7 @@ Blockly.Functions.createFlyout = function (workspace, siblingNode) {
     horizontalLayout: workspace.horizontalLayout,
     toolboxPosition: workspace.options.toolboxPosition,
     zoomOptions: workspace.options.zoomOptions,
+    renderer: workspace.options.renderer,
     // pxt-blockly: pass the newFunctions option
     newFunctions: workspace.options.newFunctions,
   };
