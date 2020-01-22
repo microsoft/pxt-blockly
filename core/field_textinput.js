@@ -92,13 +92,6 @@ Blockly.FieldTextInput = function(opt_value, opt_validator, opt_restrictor,
   this.onKeyInputWrapper_ = null;
 
   /**
-   * Blur input event data.
-   * @type {?Blockly.EventData}
-   * @private
-   */
-  this.onBlurInputWrapper_ = null;
-
-  /**
    * Whether the field should consider the whole parent block to be its click
    * target.
    * @type {?boolean}
@@ -210,50 +203,6 @@ Blockly.FieldTextInput.prototype.initView = function() {
 Blockly.FieldTextInput.prototype.autoCapitalize_ = true;
 
 /**
- * Install this text field on a block.
- */
-Blockly.FieldTextInput.prototype.init = function() {
-  if (this.fieldGroup_) {
-    // Field has already been initialized once.
-    return;
-  }
-
-  // pxtblockly: and has more than one input.
-  var notInShadow = !this.sourceBlock_.isShadow()
-    && (this.sourceBlock_.inputList && this.sourceBlock_.inputList.length > 1);
-
-  if (notInShadow) {
-    this.className_ += ' blocklyEditableLabel';
-  }
-
-  Blockly.FieldTextInput.superClass_.init.call(this);
-  // If not in a shadow block, draw a box
-  if (notInShadow) {
-    this.box_ = Blockly.utils.dom.createSvgElement('rect', {
-      'rx': Blockly.BlockSvg.CORNER_RADIUS,
-      'ry': Blockly.BlockSvg.CORNER_RADIUS,
-      'x': 0,
-      'y': 0,
-      'width': this.size_.width,
-      'height': this.size_.height,
-      'fill': Blockly.Colours.textField,
-      'stroke': this.sourceBlock_.getColourTertiary()
-    });
-    this.fieldGroup_.insertBefore(this.box_, this.textElement_);
-  }
-
-  if (this.sourceBlock_.isEditable() &&
-    this.sourceBlock_.getOutputShape() == Blockly.OUTPUT_SHAPE_ROUND) {
-    this.mouseOverWrapper_ =
-        Blockly.bindEventWithChecks_(
-            this.getClickTarget_(), 'mouseover', this, this.onMouseOver_);
-    this.mouseOutWrapper_ =
-        Blockly.bindEventWithChecks_(
-            this.getClickTarget_(), 'mouseout', this, this.onMouseOut_);
-  }
-};
-
-/**
  * Handle a mouse over event on a input field.
  * @param {!Event} e Mouse over event.
  * @private
@@ -262,8 +211,8 @@ Blockly.FieldTextInput.prototype.onMouseOver_ = function(e) {
   if (this.sourceBlock_.isInFlyout) return;
   var gesture = this.sourceBlock_.workspace.getGesture(e);
   if (gesture && gesture.isDragging()) return;
-  if (this.sourceBlock_.svgPath_) {
-    Blockly.utils.dom.addClass(this.sourceBlock_.svgPath_, 'blocklyFieldHover');
+  if (this.sourceBlock_.pathObject.svgPath) {
+    Blockly.utils.dom.addClass(this.sourceBlock_.pathObject.svgPath, 'blocklyFieldHover');
   }
 };
 
@@ -276,8 +225,8 @@ Blockly.FieldTextInput.prototype.onMouseOut_ = function(e) {
   if (this.sourceBlock_.isInFlyout) return;
   var gesture = this.sourceBlock_.workspace.getGesture(e);
   if (gesture && gesture.isDragging()) return;
-  if (this.sourceBlock_.svgPath_) {
-    Blockly.utils.dom.removeClass(this.sourceBlock_.svgPath_, 'blocklyFieldHover');
+  if (this.sourceBlock_.pathObject.svgPath) {
+    Blockly.utils.dom.removeClass(this.sourceBlock_.pathObject.svgPath, 'blocklyFieldHover');
   }
 };
 
@@ -625,9 +574,6 @@ Blockly.FieldTextInput.prototype.bindInputEvents_ = function(htmlInput) {
   this.onKeyInputWrapper_ =
       Blockly.bindEventWithChecks_(
           htmlInput, 'input', this, this.onHtmlInputChange_);
-  this.onBlurInputWrapper_ =
-      Blockly.bindEventWithChecks_(
-          htmlInput, 'blur', this, this.onHtmlInputBlur_);
 };
 
 /**
@@ -642,10 +588,6 @@ Blockly.FieldTextInput.prototype.unbindInputEvents_ = function() {
   if (this.onKeyInputWrapper_) {
     Blockly.unbindEvent_(this.onKeyInputWrapper_);
     this.onKeyInputWrapper_ = null;
-  }
-  if (this.onBlurInputWrapper_) {
-    Blockly.unbindEvent_(this.onBlurInputWrapper_);
-    this.onBlurInputWrapper_ = null;
   }
 };
 
@@ -748,16 +690,6 @@ Blockly.FieldTextInput.prototype.focus = function() {
 };
 
 /**
- * Handle blur for the editor.
- * @param {!Event} _e Focus event.
- * @protected
- */
-Blockly.FieldTextInput.prototype.onHtmlInputBlur_ = function(_e) {
-  Blockly.WidgetDiv.hide();
-  Blockly.DropDownDiv.hideWithoutAnimation();
-};
-
-/**
  * Set the html input value and the field's internal value. The difference
  * between this and ``setValue`` is that this also updates the html input
  * value whilst editing.
@@ -781,65 +713,11 @@ Blockly.FieldTextInput.prototype.setEditorValue_ = function(newValue) {
  * @protected
  */
 Blockly.FieldTextInput.prototype.resizeEditor_ = function() {
-  var scale = this.sourceBlock_.workspace.scale;
   var div = Blockly.WidgetDiv.DIV;
   var bBox = this.getScaledBBox();
   div.style.width = bBox.right - bBox.left + 'px';
   div.style.height = bBox.bottom - bBox.top + 'px';
 
-  var initialWidth;
-  if (this.sourceBlock_.isShadow() || this.getTotalFields_() == 1) {
-    initialWidth = this.sourceBlock_.getHeightWidth().width * scale;
-  } else {
-    initialWidth = this.size_.width * scale;
-  }
-
-  var width;
-  if (Blockly.BlockSvg.FIELD_TEXTINPUT_EXPAND_PAST_TRUNCATION) {
-    // Resize the box based on the measured width of the text, pre-truncation
-    var textWidth = Blockly.pxtBlocklyUtils.measureText(
-        this.htmlInput_.style.fontSize,
-        this.htmlInput_.style.fontFamily,
-        this.htmlInput_.style.fontWeight,
-        this.htmlInput_.value
-    );
-    // Size drawn in the canvas needs padding and scaling
-    textWidth += Blockly.FieldTextInput.TEXT_MEASURE_PADDING_MAGIC;
-    textWidth *= scale;
-    width = textWidth;
-  } else {
-    // Set width to (truncated) block size.
-    width = initialWidth;
-  }
-  // The width must be at least FIELD_WIDTH and at most FIELD_WIDTH_MAX_EDIT
-  width = Math.max(width, Blockly.BlockSvg.FIELD_WIDTH_MIN_EDIT * scale);
-  width = Math.min(width, Blockly.BlockSvg.FIELD_WIDTH_MAX_EDIT * scale);
-
-  var inputHeight = this.getTotalFields_() == 1 ?
-    this.sourceBlock_.getHeightWidth().height : Blockly.BlockSvg.FIELD_HEIGHT_MAX_EDIT;
-
-  // Add 1px to width and height to account for border (pre-scale)
-  div.style.width = (width / scale + 1) + 'px';
-  div.style.height = (inputHeight + 1) + 'px';
-  div.style.transform = 'scale(' + scale + ')';
-
-  // Use margin-left to animate repositioning of the box (value is unscaled).
-  // This is the difference between the default position and the positioning
-  // after growing the box.
-  div.style.marginLeft = -0.5 * (width - initialWidth) + 'px';
-
-  // Add 0.5px to account for slight difference between SVG and CSS border
-  var borderRadius = this.getBorderRadius() + 0.5;
-  div.style.borderRadius = borderRadius + 'px';
-  //this.htmlInput_.style.borderRadius = borderRadius + 'px';
-  // Pull stroke colour from the existing shadow block
-  var strokeColour = this.sourceBlock_.getColourTertiary();
-  div.style.borderColor = strokeColour;
-
-  var xy = this.getAbsoluteXY_();
-  // Account for border width, post-scale
-  xy.x -= scale / 2;
-  xy.y -= scale / 2;
   // In RTL mode block fields and LTR input fields the left edge moves,
   // whereas the right edge is fixed.  Reposition the editor.
   var x = this.sourceBlock_.RTL ? bBox.right - div.offsetWidth : bBox.left;
