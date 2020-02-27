@@ -301,39 +301,6 @@ Blockly.BlockSvg.prototype.unselect = function() {
 };
 
 /**
- * Glow only this particular block, to highlight it visually as if it's running.
- * @param {boolean} isGlowingBlock Whether the block should glow.
- */
-Blockly.BlockSvg.prototype.setGlowBlock = function(isGlowingBlock) {
-  //pxtblockly: Sanity check that the block is rendered before setting the highlight
-  if (!this.rendered) {
-    return;
-  }
-  this.isGlowingBlock_ = isGlowingBlock;
-  this.updateColour();
-};
-
-/**
- * Glow the stack starting with this block, to highlight it visually as if it's running.
- * @param {boolean} isGlowingStack Whether the stack starting with this block should glow.
- */
-Blockly.BlockSvg.prototype.setGlowStack = function(isGlowingStack) {
-  //pxtblockly: Sanity check that the block is rendered before setting the highlight
-  if (!this.rendered) {
-    return;
-  }
-  this.isGlowingStack_ = isGlowingStack;
-  // Update the applied SVG filter if the property has changed
-  var svg = this.getSvgRoot();
-  if (this.isGlowingStack_ && !svg.hasAttribute('filter')) {
-    var stackGlowFilterId = Blockly.mainWorkspace.options.stackGlowFilterId || 'blocklyStackGlowFilter';
-    svg.setAttribute('filter', 'url(#' + stackGlowFilterId + ')');
-  } else if (!this.isGlowingStack_ && svg.hasAttribute('filter')) {
-    svg.removeAttribute('filter');
-  }
-};
-
-/**
  * Warning highlight only this particular block, to highlight it visually as if it has a warning.
  * @param {boolean} isHighlightingWarning Whether this block should glow as if has a warning.
  * TODO shakao migrate filter definition + setting to /zelos/constants.js
@@ -355,31 +322,6 @@ Blockly.BlockSvg.prototype.setHighlightWarning = function(isHighlightingWarning)
   } else if (!this.isHighlightingWarningBlock_ && this.svgPathWarningHighlight_) {
     this.getSvgRoot().removeChild(this.svgPathWarningHighlight_);
     this.svgPathWarningHighlight_ = null;
-  }
-};
-
-/**
- * Glow only this particular block, to highlight it visually as if it's running.
- * @param {boolean} isHighlightingBlock Whether this block should glow as if running.
- * TODO shakao migrate filter definition + setting to /zelos/constants.js then delete
- */
-Blockly.BlockSvg.prototype.setHighlightBlock = function(isHighlightingBlock) {
-  //pxtblockly: Sanity check that the block is rendered before setting the highlight
-  if (!this.rendered) {
-    return;
-  }
-  this.isHighlightingBlock_ = isHighlightingBlock;
-  // Update the applied SVG filter if the property has changed
-  // var svg = this.svgPath_;
-  if (this.isHighlightingBlock_ && !this.svgPathHighlight_) {
-    var highlightGlowFilterId = Blockly.mainWorkspace.options.highlightGlowFilterId || 'blocklyHighlightGlowFilter';
-    this.svgPathHighlight_ = this.svgPath_.cloneNode(true);
-    this.svgPathHighlight_.setAttribute('fill', 'none');
-    this.svgPathHighlight_.setAttribute('filter', 'url(#' + highlightGlowFilterId + ')');
-    this.getSvgRoot().appendChild(this.svgPathHighlight_);
-  } else if (!this.isHighlightingBlock_ && this.svgPathHighlight_) {
-    this.getSvgRoot().removeChild(this.svgPathHighlight_);
-    this.svgPathHighlight_ = null;
   }
 };
 
@@ -1180,7 +1122,7 @@ Blockly.BlockSvg.prototype.enableBreakpoint = function(enable) {
   if (changedState && this.rendered) {
     this.render();
     // Adding a breakpoint icon will cause the block to change shape.
-    this.bumpNeighbours_();
+    this.bumpNeighbours();
   }
 };
 
@@ -1359,6 +1301,18 @@ Blockly.BlockSvg.prototype.setHighlighted = function(highlighted) {
     return;
   }
   this.pathObject.updateHighlighted(highlighted);
+};
+
+/**
+ * pxt-blockly specific:
+ * Set whether the block is highlighted as a warning or not.
+ * @param {boolean} highlighted True if highlighted.
+ */
+Blockly.BlockSvg.prototype.setHighlightWarning = function(highlighted) {
+  if (!this.rendered) {
+    return;
+  }
+  this.pathObject.updateHighlightedWarning(highlighted);
 };
 
 /**
@@ -1774,7 +1728,7 @@ Blockly.BlockSvg.prototype.bindReporterHoverEvents_ = function() {
       target = target.parentBlock_;
     }
     if (target.parentBlock_ && target.outputConnection) {
-      Blockly.utils.dom.addClass(/** @type {!Element} */ (target.svgPath_), 'blocklyReporterHover');
+      Blockly.utils.dom.addClass(/** @type {!Element} */ (target.pathObject.svgPath), 'blocklyReporterHover');
       e.stopPropagation();
     }
   });
@@ -1783,7 +1737,7 @@ Blockly.BlockSvg.prototype.bindReporterHoverEvents_ = function() {
     var target = that;
     if (target.isInFlyout) return;
 
-    Blockly.utils.dom.removeClass(/** @type {!Element} */ (that.svgPath_), 'blocklyReporterHover');
+    Blockly.utils.dom.removeClass(/** @type {!Element} */ (that.pathObject.svgPath), 'blocklyReporterHover');
   });
 };
 

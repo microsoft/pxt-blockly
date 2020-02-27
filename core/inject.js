@@ -72,7 +72,7 @@ Blockly.inject = function(container, opt_options) {
 
   // Open the Field text cache and leave it open. See this issue for more information
   // https://github.com/LLK/scratch-blocks/issues/1004
-  Blockly.Field.startCache();
+  Blockly.utils.dom.startTextWidthCache();
 
   var svg = Blockly.createDom_(subContainer, options);
 
@@ -147,12 +147,12 @@ Blockly.createDom_ = function(container, options) {
   // https://neil.fraser.name/news/2015/11/01/
   var rnd = String(Math.random()).substring(2);
 
-  options.stackGlowFilterId = stackGlowFilter.id;
-  options.replacementGlowFilterId = replacementGlowFilter.id;
-  options.highlightGlowFilterId = highlightGlowFilter.id;
-  options.warningGlowFilterId = warningGlowFilter.id;
-  options.selectedGlowFilterId = selectedGlowFilter.id;
-  options.disabledPatternId = disabledPattern.id;
+  // options.stackGlowFilterId = stackGlowFilter.id;
+  // options.replacementGlowFilterId = replacementGlowFilter.id;
+  // options.highlightGlowFilterId = highlightGlowFilter.id;
+  // options.warningGlowFilterId = warningGlowFilter.id;
+  // options.selectedGlowFilterId = selectedGlowFilter.id;
+  // options.disabledPatternId = disabledPattern.id;
   options.gridPattern = Blockly.Grid.createDom(rnd, options.gridOptions, defs);
   return svg;
 };

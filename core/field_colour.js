@@ -237,11 +237,6 @@ Blockly.FieldColour.prototype.doValueUpdate_ = function(newValue) {
     this.sourceBlock_.pathObject.svgPath.setAttribute('fill', newValue);
     this.sourceBlock_.pathObject.svgPath.setAttribute('stroke', '#fff');
   }
-
-  // pxt-blockly: Scratch rendering
-  if (this.sourceBlock_) {
-    this.sourceBlock_.setColour(newValue, newValue, newValue);
-  }
 };
 
 /**
@@ -255,14 +250,6 @@ Blockly.FieldColour.prototype.getText = function() {
     colour = '#' + colour[1] + colour[3] + colour[5];
   }
   return colour;
-};
-
-/**
- * Returns the fixed height and width.
- * @return {!goog.math.Size} Height and width.
- */
-Blockly.FieldColour.prototype.getSize = function() {
-  return new goog.math.Size(Blockly.BlockSvg.FIELD_WIDTH, Blockly.BlockSvg.FIELD_HEIGHT);
 };
 
 /**
@@ -651,39 +638,8 @@ Blockly.FieldColour.prototype.dropdownDispose_ = function() {
 Blockly.Css.register([
   /* eslint-disable indent */
   '.blocklyColourTable {',
-    'border-collapse: collapse;',
-    'display: block;',
-    'outline: none;',
-    'padding: 1px;',
-  '}',
-
-  '.blocklyColourTable>tr>td {',
-    'border: .5px solid #888;',
-    'box-sizing: border-box;',
-    'cursor: pointer;',
-    'display: inline-block;',
-    'height: 20px;',
-    'padding: 0;',
-    'width: 20px;',
-  '}',
-
-  '.blocklyColourTable>tr>td.blocklyColourHighlighted {',
-    'border-color: #eee;',
-    'box-shadow: 2px 2px 7px 2px rgba(0,0,0,.3);',
-    'position: relative;',
-  '}',
-
-  '.blocklyColourSelected, .blocklyColourSelected:hover {',
-    'border-color: #eee !important;',
-    'outline: 1px solid #333;',
-    'position: relative;',
-  '}',
-
-  // TODO remove above css
-  '.blocklyColourTable {',
     'outline: none;',
     'border-radius: 11px;',
-    'margin-bottom: 20px;',
     'border-collapse: collapse;',
   '}',
 
@@ -714,7 +670,19 @@ Blockly.Css.register([
     'border: 1px solid #000;',
     'box-sizing: border-box;',
     'color: #fff;',
-  '}'
+  '}',
+
+  '.blocklyColourTable>tr>td.blocklyColourHighlighted {',
+    'border-color: #eee;',
+    'box-shadow: 2px 2px 7px 2px rgba(0,0,0,.3);',
+    'position: relative;',
+  '}',
+
+  '.blocklyColourSelected, .blocklyColourSelected:hover {',
+    'border-color: #eee !important;',
+    'outline: 1px solid #333;',
+    'position: relative;',
+  '}',
   /* eslint-enable indent */
 ]);
 

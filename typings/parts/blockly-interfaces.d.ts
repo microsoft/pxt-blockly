@@ -1,3 +1,4 @@
+
 declare module Blockly {
 
   interface BlocklyOptions {
@@ -35,6 +36,7 @@ declare module Blockly {
       minScale?: number;
       scaleSpeed?: number;
     };
+    renderer?: string;
   }
 
   interface BlocklyThemeOptions {

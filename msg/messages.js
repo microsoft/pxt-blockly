@@ -68,6 +68,9 @@ Blockly.Msg.VARIABLES_DYNAMIC_HUE = '310';
 /** @type {string} */
 /// {{Notranslate}} Hue value for all procedure blocks.
 Blockly.Msg.PROCEDURES_HUE = '290';
+/** @type {string} */
+/// {{Notranslate}} Hue value for local reporter blocks.
+Blockly.Msg.REPORTERS_HUE = '290'; // pxt-blockly
 
 /** @type {string} */
 /// default name - A simple, general default name for a variable, preferably short.
@@ -164,6 +167,12 @@ Blockly.Msg.NEW_NUMBER_VARIABLE = 'Create number variable...';
 /** @type {string} */
 /// button text - Text on the button used to launch the variable creation dialogue.
 Blockly.Msg.NEW_COLOUR_VARIABLE = 'Create colour variable...';
+/** @type {string} */
+/// dropdown choice - When the user clicks on a variable block, this is one of the dropdown menu choices.  It is used to create a new variable with no type.
+Blockly.Msg.NEW_VARIABLE_DROPDOWN = 'New variable...'; // pxt-blockly
+/** @type {string} */
+/// dropdown choice - When the user clicks on a variable block, this is one of the dropdown menu choices.  It is used to create a new variable of the same type.
+Blockly.Msg.NEW_VARIABLE_TYPE_DROPDOWN = 'New %1 variable...'; // pxt-blockly
 /** @type {string} */
 /// prompt - Prompts the user to enter the type for a variable.
 Blockly.Msg.NEW_VARIABLE_TYPE_TITLE = 'New variable type:';
@@ -1623,6 +1632,43 @@ Blockly.Msg.PROCEDURES_IFRETURN_HELPURL = 'http://c2.com/cgi/wiki?GuardClause';
 /** @type {string} */
 /// warning - This appears if the user tries to use this block outside of a function definition.
 Blockly.Msg.PROCEDURES_IFRETURN_WARNING = 'Warning: This block may be used only within a function definition.';
+
+/** @type {string} */
+/// pxt-blockly: Context menu option to edit functions
+Blockly.Msg.FUNCTIONS_EDIT_OPTION = 'Edit';
+/** @type {string} */
+/// pxt-blockly: Label on function_call blocks that appears before the name of the function to call
+Blockly.Msg.FUNCTIONS_CALL_TITLE = 'call'
+/** @type {string} */
+/// pxt-blockly: Label on the "Create Function" button in the flyout.
+Blockly.Msg.FUNCTION_CREATE_NEW = 'Create a Function'
+/** @type {string} */
+/// pxt-blockly: Tooltip for function calls.
+Blockly.Msg.FUNCTION_CALL_TOOLTIP = 'Call a function that was previously defined.'
+/** @type {string} */
+/// pxt-blockly: Warning for duplicate argument names on a function definition.
+Blockly.Msg.FUNCTION_WARNING_DUPLICATE_ARG = 'Functions cannot use the same argument name more than once.'
+/** @type {string} */
+/// pxt-blockly: Warning for duplicate argument names on a function definition.
+Blockly.Msg.FUNCTION_WARNING_EMPTY_NAME = 'Function and argument names cannot be empty.'
+/** @type {string} */
+/// pxt-blockly: Warning for argument names being the same as the function name.
+Blockly.Msg.FUNCTION_
+/** @type {string} */
+/// pxt-blockly: Default function name
+Blockly.Msg.FUNCTIONS_DEFAULT_FUNCTION_NAME = 'do_something'
+/** @type {string} */
+/// pxt-blockly: Default name for a boolean arg on a function declaration
+Blockly.Msg.FUNCTIONS_DEFAULT_BOOLEAN_ARG_NAME = 'bool'
+/** @type {string} */
+/// pxt-blockly: Default name for a string arg on a function declaration
+Blockly.Msg.FUNCTIONS_DEFAULT_STRING_ARG_NAME = 'text'
+/** @type {string} */
+/// pxt-blockly: Default name for a number arg on a function declaration
+Blockly.Msg.FUNCTIONS_DEFAULT_NUMBER_ARG_NAME = 'num'
+/** @type {string} */
+/// pxt-blockly: Default name for a non-literal arg on a function declaration
+Blockly.Msg.FUNCTIONS_DEFAULT_CUSTOM_ARG_NAME = 'arg'
 
 /** @type {string} */
 /// comment text - This text appears in a new workspace comment, to hint that

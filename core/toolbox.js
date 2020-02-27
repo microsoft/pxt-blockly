@@ -749,11 +749,18 @@ Blockly.Css.register([
 
   /* Category tree in Toolbox. */
   '.blocklyToolboxDiv {',
-    'background-color: #ddd;',
+    'background-color: $colour_toolbox;',
+    'color: $colour_toolboxText;',
     'overflow-x: visible;',
     'overflow-y: auto;',
     'position: absolute;',
-    'z-index: 70;', /* so blocks go under toolbox when dragging */
+    'font-family: sans-serif;',
+    'user-select: none;',
+    '-moz-user-select: none;',
+    '-ms-user-select: none;',
+    '-webkit-user-select: none;',
+    'z-index: 40;', /* so blocks go over toolbox when dragging */
+    //'z-index: 70;', /* so blocks go under toolbox when dragging */
     '-webkit-tap-highlight-color: transparent;', /* issue #1345 */
   '}',
 

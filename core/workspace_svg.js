@@ -1270,38 +1270,6 @@ Blockly.WorkspaceSvg.prototype.highlightBlock = function(id, opt_state) {
 };
 
 /**
- * Glow/unglow a block in the workspace.
- * @param {?string} id ID of block to find.
- * @param {boolean} isGlowingBlock Whether to glow the block.
- */
-Blockly.WorkspaceSvg.prototype.glowBlock = function(id, isGlowingBlock) {
-  var block = null;
-  if (id) {
-    block = this.getBlockById(id);
-    if (!block) {
-      throw 'Tried to glow block that does not exist.';
-    }
-  }
-  block.setGlowBlock(isGlowingBlock);
-};
-
-/**
- * Glow/unglow a stack in the workspace.
- * @param {?string} id ID of block which starts the stack.
- * @param {boolean} isGlowingStack Whether to glow the stack.
- */
-Blockly.WorkspaceSvg.prototype.glowStack = function(id, isGlowingStack) {
-  var block = null;
-  if (id) {
-    block = this.getBlockById(id);
-    if (!block) {
-      throw 'Tried to glow stack on block that does not exist.';
-    }
-  }
-  block.setGlowStack(isGlowingStack);
-};
-
-/**
  * Paste the provided block onto the workspace.
  * @param {!Element} xmlBlock XML block element.
  */

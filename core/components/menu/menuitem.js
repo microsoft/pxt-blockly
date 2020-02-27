@@ -49,18 +49,6 @@ Blockly.MenuItem = function(content, opt_value) {
    * @private
    */
   this.enabled_ = true;
-
-  /**
-   * @type {Blockly.MenuItem}
-   * @private
-   */
-  this.previousSibling_;
-
-  /**
-   * @type {Blockly.MenuItem}
-   * @private
-   */
-  this.nextSibling_;
 };
 Blockly.utils.object.inherits(Blockly.MenuItem, Blockly.Component);
 

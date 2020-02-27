@@ -856,7 +856,7 @@ Blockly.Constants.Text.TEXT_JOIN_MUTATOR_MIXIN = {
           block, 'mutation', null, oldMutation, newMutation));
       setTimeout(function() {
         Blockly.Events.setGroup(group);
-        block.bumpNeighbours_();
+        block.bumpNeighbours();
         Blockly.Events.setGroup(false);
       }, Blockly.BUMP_DELAY);
     }

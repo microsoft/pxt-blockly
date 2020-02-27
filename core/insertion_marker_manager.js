@@ -32,11 +32,9 @@ goog.require('Blockly.Events');
  * responsible for finding the closest eligible connection and highlighting or
  * unhiglighting it as needed during a drag.
  * @param {!Blockly.BlockSvg} block The top block in the stack being dragged.
- * @param {!Blockly.utils.Coordinate} handleXY Position where the mouse down
- *          that started the drag occured in workspace units (pxtblockly)
  * @constructor
  */
-Blockly.InsertionMarkerManager = function(block, handleXY) {
+Blockly.InsertionMarkerManager = function(block) {
   Blockly.selected = block;
 
   /**
@@ -76,7 +74,6 @@ Blockly.InsertionMarkerManager = function(block, handleXY) {
   /**
    * The insertion marker that shows up between blocks to show where a block
    * would go if dropped immediately.
-   * This is the scratch-blocks equivalent of connection highlighting.
    * @type {Blockly.BlockSvg}
    * @private
    */
@@ -113,7 +110,6 @@ Blockly.InsertionMarkerManager = function(block, handleXY) {
   /**
    * Connection on the insertion marker block that corresponds to
    * this.localConnection_ on the currently dragged block.
-   * This is part of the scratch-blocks equivalent of connection highlighting.
    * @type {Blockly.RenderedConnection}
    * @private
    */
@@ -143,17 +139,6 @@ Blockly.InsertionMarkerManager = function(block, handleXY) {
    * @private
    */
   this.availableConnections_ = this.initAvailableConnections_();
-
-  // pxtblockly: select target connections based on user's handle on the block
-  if (block.outputConnection) {
-    var coord = new Blockly.utils.Coordinate(block.outputConnection.x_, block.outputConnection.y_);
-    this.handleDXY = Blockly.utils.Coordinate.difference(handleXY, coord);
-    // Fade the dragging block to make targets easier to see.
-    this.workspace_.getBlockDragSurface().setOpacity(0.7);
-  }
-  else {
-    this.handleDXY = new Blockly.utils.Coordinate(0, 0);
-  }
 };
 
 /**
@@ -161,8 +146,6 @@ Blockly.InsertionMarkerManager = function(block, handleXY) {
  * @package
  */
 Blockly.InsertionMarkerManager.prototype.dispose = function() {
-  // pxt-blockly: Unfade the dragging block.
-  this.workspace_.getBlockDragSurface().setOpacity(1);
   this.availableConnections_.length = 0;
 
   Blockly.Events.disable();
@@ -251,30 +234,6 @@ Blockly.InsertionMarkerManager.prototype.update = function(dxy, deleteArea) {
 };
 
 /**
- * TODO shakao: check if replicated in blockly renderer
- * Remove highlighting from the currently highlighted connection, if it exists.
- * @private
- */
-Blockly.InsertionMarkerManager.prototype.removeHighlighting_ = function() {
-  if (this.closestConnection_) {
-    this.closestConnection_.unhighlight();
-  }
-};
-
-/**
- * TODO shakao: check if replicated in blockly renderer
- * Add highlighting to the closest connection, if it exists.
- * @private
- */
-Blockly.InsertionMarkerManager.prototype.addHighlighting_ = function() {
-  if (this.closestConnection_) {
-    this.closestConnection_.highlight();
-  }
-};
-
-/**** Begin initialization functions ****/
-
-/**
  * Create an insertion marker that represents the given block.
  * @param {!Blockly.BlockSvg} sourceBlock The block that the insertion marker
  *     will represent.
@@ -357,7 +316,6 @@ Blockly.InsertionMarkerManager.prototype.shouldUpdatePreviews_ = function(
 
   // Found a connection!
   if (candidateLocal && candidateClosest) {
-    // TODO shakao verify if candidateLocal.type == Blockly.OUTPUT_VALUE check needed
     // We're already showing an insertion marker.
     // Decide whether the new connection has higher priority.
     if (this.localConnection_ && this.closestConnection_) {
@@ -403,14 +361,7 @@ Blockly.InsertionMarkerManager.prototype.getCandidate_ = function(dxy) {
 
   for (var i = 0; i < this.availableConnections_.length; i++) {
     var myConnection = this.availableConnections_[i];
-
-    // pxtblockly: for output connections select the target based on the user's "handle"
-    var offsetxy = dxy;
-    if (this.topBlock_.outputConnection === myConnection) {
-      offsetxy = Blockly.utils.Coordinate.sum(dxy, this.handleDXY);
-    }
-
-    var neighbour = myConnection.closest(radius, offsetxy);
+    var neighbour = myConnection.closest(radius, dxy);
     if (neighbour.connection) {
       candidateClosest = neighbour.connection;
       candidateLocal = myConnection;
@@ -454,8 +405,7 @@ Blockly.InsertionMarkerManager.prototype.shouldReplace_ = function() {
   var closest = this.closestConnection_;
   var local = this.localConnection_;
 
-  // Dragging a block over an existing block in an input should replace the
-  // existing block and bump it out.
+  // Dragging a block over an existing block in an input.
   if (local.type == Blockly.OUTPUT_VALUE) {
     // Insert the dragged block into the stack if possible.
     if (closest &&
@@ -696,7 +646,6 @@ Blockly.InsertionMarkerManager.prototype.disconnectMarker_ = function() {
 
   this.markerConnection_ = null;
   imBlock.getSvgRoot().setAttribute('visibility', 'hidden');
-  this.removeHighlighting_();
 };
 
 /**
@@ -732,8 +681,6 @@ Blockly.InsertionMarkerManager.prototype.connectMarker_ = function() {
   }
 
   this.markerConnection_ = imConn;
-
-  this.addHighlighting_();
 };
 
 /**

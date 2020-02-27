@@ -726,8 +726,11 @@ Blockly.Css.CONTENT = [
     'outline: none;',
     'padding: 4px 0;',
     'position: absolute;',
+    'overflow-y: auto;',
+    'overflow-x: hidden;',
+    'max-height: 100%;',
     'z-index: 20000;',  /* Arbitrary, but some apps depend on it... */
-    'box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);',
+    'box-shadow: 0px 0px 3px 1px rgba(0,0,0,.3);',
   '}',
 
   '.blocklyDropDownDiv .goog-menu {',
@@ -784,18 +787,7 @@ Blockly.Css.CONTENT = [
     'font: normal 13px "Helvetica Neue", Helvetica, sans-serif;',
     'list-style: none;',
     'margin: 0;',
-     /* 28px on the left for icon or checkbox; 7em on the right for shortcut. */
-    'padding: 5px 7em 5px 28px;',
-    'white-space: nowrap;',
-  '}',
-
-  '.blocklyDropDownDiv .goog-menuitem {',
-    'color: #fff;',
-    'font: normal 13px "Helvetica Neue", Helvetica, sans-serif;',
-    'font-weight: bold;',
-    'list-style: none;',
-    'margin: 0;',
-     /* 7em on the right for shortcut. */
+    /* 7em on the right for shortcut. */
     'min-width: 7em;',
     'border: none;',
     'padding: 6px 15px;',
@@ -892,6 +884,13 @@ Blockly.Css.CONTENT = [
   '.blocklyDropDownDiv .goog-menuitem-rtl .goog-menuitem-icon {',
     'float: right;',
     'margin-right: -24px;',
+  '}',
+
+  '.blocklyWidgetDiv .goog-menuseparator, ',
+  '.blocklyDropDownDiv .goog-menuseparator {',
+    'border-top: 1px solid #ccc;',
+    'margin: 4px 0;',
+    'padding: 0;',
   '}',
 
   '.blocklyComputeCanvas {',

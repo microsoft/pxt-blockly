@@ -199,6 +199,7 @@ Blockly.Field.prototype.argType_ = null;
 
 /**
  * The element the click handler is bound to.
+ * @type {Element}
  * @protected
  */
 Blockly.Field.prototype.clickTarget_ = null;
@@ -311,11 +312,10 @@ Blockly.Field.prototype.init = function() {
   var sourceBlockSvg = /** @type {!Blockly.BlockSvg} **/ (this.sourceBlock_);
   sourceBlockSvg.getSvgRoot().appendChild(this.fieldGroup_);
   this.initView();
-  this.setDataAttribute_();
+  this.setDataAttribute_(); // pxt-blockly
   this.updateEditable();
   this.setTooltip(this.tooltip_);
   this.bindEvents_();
-  this.size_.width = 0;
   this.initModel();
 };
 
@@ -324,7 +324,7 @@ Blockly.Field.prototype.init = function() {
  * @package
  */
 Blockly.Field.prototype.initView = function() {
-  // this.createBorderRect_(); // pxt-blockly: disabled
+  this.createBorderRect_();
   this.createTextElement_();
 };
 
@@ -852,45 +852,6 @@ Blockly.Field.prototype.forceRerender = function() {
 };
 
 /**
- * Update the text node of this field to display the current text.
- * TODO shakao remove this function
- * @private
- */
-Blockly.Field.prototype.updateTextNode_ = function() {
-  if (!this.textElement_) {
-    // Not rendered yet.
-    return;
-  }
-  var text = this.text_;
-  if (text.length > this.maxDisplayLength) {
-    // Truncate displayed string and add an ellipsis ('...').
-    text = text.substring(0, this.maxDisplayLength - 2) + '\u2026';
-    // Add special class for sizing font when truncated
-    this.textElement_.setAttribute('class', this.className_ + ' blocklyTextTruncated');
-  } else {
-    this.textElement_.setAttribute('class', this.className_);
-  }
-  // Empty the text element.
-  this.textElement_.innerHTML = "";
-  
-  // Replace whitespace with non-breaking spaces so the text doesn't collapse.
-  text = text.replace(/\s/g, Blockly.Field.NBSP);
-  if (this.sourceBlock_.RTL && text) {
-    // The SVG is LTR, force text to be RTL.
-    text += '\u200F';
-  }
-  if (!text) {
-    // Prevent the field from disappearing if empty.
-    text = Blockly.Field.NBSP;
-  }
-  var textNode = document.createTextNode(text);
-  this.textElement_.appendChild(textNode);
-
-  // Cached width is obsolete.  Clear it.
-  this.size_.width = 0;
-};
-
-/**
  * Used to change the value of the field. Handles validation and events.
  * Subclasses should override doClassValidation_ and doValueUpdate_ rather
  * than this method.
@@ -1057,6 +1018,8 @@ Blockly.Field.prototype.setTooltip = function(newTip) {
  */
 Blockly.Field.prototype.getClickTarget_ = function() {
   if (this.clickTarget_) return this.clickTarget_;
+
+  if (!this.sourceBlock_) return null;
 
   var nFields = 0;
   var nConnections = 0;

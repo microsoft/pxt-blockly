@@ -171,6 +171,8 @@ Blockly.Comment.prototype.createEditor_ = function() {
   // Add the delete and minimize icon
   this.createTopBarIcons_();
 
+  this.resizeTextarea_();
+
   Blockly.bindEventWithChecks_(
       this.deleteIcon_, 'mousedown', this, this.deleteMouseDown_);
   Blockly.bindEventWithChecks_(
@@ -213,7 +215,6 @@ Blockly.Comment.prototype.createTextEditor_ = function() {
   textarea.className = 'blocklyCommentTextarea';
   textarea.setAttribute('dir', this.block_.RTL ? 'RTL' : 'LTR');
   textarea.value = this.model_.text;
-  this.resizeTextarea_();
 
   body.appendChild(textarea);
   this.foreignObject_.appendChild(body);
@@ -354,7 +355,7 @@ Blockly.Comment.prototype.onBubbleResize_ = function() {
  */
 Blockly.Comment.prototype.resizeTextarea_ = function() {
   // pxt-blockly: custom resize
-  var size = this.bubble_.getBubbleSize();
+  var size = this.model_.size;
   var doubleBorderWidth = 2 * Blockly.Bubble.BORDER_WIDTH;
   var topBarHeight = Blockly.WorkspaceCommentSvg.TOP_BAR_HEIGHT
   this.foreignObject_.setAttribute('width', Math.max(size.width - doubleBorderWidth, 0));

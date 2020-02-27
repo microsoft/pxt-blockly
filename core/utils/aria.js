@@ -79,7 +79,10 @@ Blockly.utils.aria.Role = {
   TREE: 'tree',
 
   // ARIA role for a tree item that sometimes may be expanded or collapsed.
-  TREEITEM: 'treeitem'
+  TREEITEM: 'treeitem',
+
+  // ARIA role for a menu separator.
+  SEPARATOR: 'separator' // pxt-blockly
 };
 
 /**
@@ -141,7 +144,10 @@ Blockly.utils.aria.State = {
   VALUEMAX: 'valuemax',
 
   // ARIA property for slider minimum value. Value: number.
-  VALUEMIN: 'valuemin'
+  VALUEMIN: 'valuemin',
+
+  // ARIA state for a disabled item. Value: one of {true, false}.
+  DISABLED: 'disabled' // pxt-blockly
 };
 
 /**

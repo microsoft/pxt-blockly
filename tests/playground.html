@@ -131,7 +131,8 @@ function start() {
             maxScale: 4,
             minScale: 0.25,
             scaleSpeed: 1.1
-          }
+          },
+        renderer: 'pxt'
       });
   addToolboxButtonCallbacks();
   // Restore previously displayed text.
@@ -236,13 +237,13 @@ function addToolboxButtonCallbacks() {
   };
 
   workspace.registerButtonCallback(
-    'addVariables', addVariables);
+      'addVariables', addVariables);
   workspace.registerButtonCallback(
-    'changeImage', changeImage);
+      'changeImage', changeImage);
   workspace.registerButtonCallback(
-    'addAllBlocksToWorkspace', addAllBlocksToWorkspace);
+      'addAllBlocksToWorkspace', addAllBlocksToWorkspace);
   workspace.registerButtonCallback(
-    'setInput', setInput);
+      'setInput', setInput);
   workspace.registerButtonCallback(
       'setRandomStyle', setRandomStyle);
   workspace.registerButtonCallback(
@@ -254,9 +255,16 @@ function addToolboxButtonCallbacks() {
   workspace.registerButtonCallback(
       'randomizeLabelText', randomizeLabelText);
   workspace.registerButtonCallback(
-      'addDynamicOption', Blockly.TestBlocks.addDynamicDropdownOption_);
+      'addDynamicOption', Blockly.TestBlocks.addDynamicDropdownOption);
   workspace.registerButtonCallback(
-      'removeDynamicOption', Blockly.TestBlocks.removeDynamicDropdownOption_);
+      'removeDynamicOption', Blockly.TestBlocks.removeDynamicDropdownOption);
+  workspace.registerButtonCallback(
+      'insertConnectionRows', Blockly.TestBlocks.insertConnectionRows);
+  workspace.registerButtonCallback(
+      'insertConnectionStacks', Blockly.TestBlocks.insertConnectionStacks);
+  workspace.registerButtonCallback(
+      'insertConnectionStatements',
+          Blockly.TestBlocks.insertConnectionStatements);
 }
 
 function changeTheme() {
@@ -379,30 +387,6 @@ function unhighlightBlockWarning() {
   }
 }
 
-function glowBlock() {
-  if (Blockly.selected) {
-    workspace.glowBlock(Blockly.selected.id, true);
-  }
-}
-
-function unglowBlock() {
-  if (Blockly.selected) {
-    workspace.glowBlock(Blockly.selected.id, false);
-  }
-}
-
-function glowStack() {
-  if (Blockly.selected) {
-    workspace.glowStack(Blockly.selected.id, true);
-  }
-}
-
-function unglowStack() {
-  if (Blockly.selected) {
-    workspace.glowStack(Blockly.selected.id, false);
-  }
-}
-
 function airstrike(n) {
   var prototypes = [];
   var toolbox = getToolboxElement();
@@ -519,50 +503,6 @@ line.blocklyFlyoutLine {
   fill: white;
 }
 
-.blocklyTreeRow {
-  height: 45px !important;
-}
-
-.blocklyTreeIconCustom {
-  background: none !important;
-  font-family: 'Font Awesome\ 5 Free';
-  font-weight: 900;
-  font-size: 1.3rem;
-  margin: 0 .25em;
-  width: 30px !important;
-  height: 100% !important;
-  line-height: 45px;
-  min-height: 45px;
-  vertical-align: middle;
-}
-.blocklyTreeIconCustom::before {
-  content: "\f12e";
-}
-.blocklyTreeIconCustom.logic::before {
-  content: "\f074";
-}
-.blocklyTreeIconCustom.loops::before {
-  content: "\f01e";
-}
-.blocklyTreeIconCustom.math::before {
-  content: "\f1ec";
-}
-.blocklyTreeIconCustom.text::before {
-  content: "\f031";
-}
-.blocklyTreeIconCustom.lists::before {
-  content: "\f0ca";
-}
-.blocklyTreeIconCustom.colour::before {
-  content: "\f53f";
-}
-.blocklyTreeIconCustom.variables::before {
-  content: "\f0c9";
-}
-.blocklyTreeIconCustom.functions::before {
-  content: "\f141";
-}
-
 </style>
 </head>
 <body onload="start()">
@@ -638,14 +578,6 @@ line.blocklyFlyoutLine {
     Warning: &nbsp;
     <input type="button" value="Set warning on last clicked block" onclick="highlightBlockWarning()" />
     <input type="button" value="Remove warning from last clicked block" onclick="unhighlightBlockWarning()" />
-  </p>
-
-  <p>
-    Glows: &nbsp;
-    <input type="button" value="Glow last clicked block" onclick="glowBlock()" />
-    <input type="button" value="Unglow last clicked block" onclick="unglowBlock()" />
-    <input type="button" value="Stack glow last clicked block" onclick="glowStack()" />
-    <input type="button" value="Stack unglow last clicked block" onclick="unglowStack()" />
   </p>
 
   <p>
@@ -1446,99 +1378,15 @@ line.blocklyFlyoutLine {
     <category name="Variables" categorystyle="variable_category" custom="VARIABLE_DYNAMIC"></category>
     <category name="Functions" categorystyle="procedure_category" custom="PROCEDURE"></category>
   </xml>
-
   <!-- toolbox-test-blocks has a category menu and an auto-closing flyout.
   The blocks in this toolbox reflect block configurations not used by
   the standard predefined blocks, and so test alternative block rendering
   code paths. -->
   <xml xmlns="https://developers.google.com/blockly/xml" id="toolbox-test-blocks" style="display: none">
-    <category name="Basic">
-      <block type="test_basic_empty"></block>
-      <block type="test_basic_empty_with_mutator"></block>
-      <block type="test_basic_value_to_stack"></block>
-      <block type="test_basic_value_to_statement"></block>
-      <block type="test_basic_limit_instances"></block>
-    </category>
-    <category name="Drag">
-      <label text="Drag each to the workspace"></label>
-      <block type="text_print">
-        <value name="TEXT">
-          <block type="text">
-            <field name="TEXT">Drag me by this child</field>
-          </block>
-        </value>
-      </block>
-      <block type="text_print">
-        <value name="TEXT">
-          <shadow type="text">
-            <field name="TEXT">Drag me by this shadow</field>
-          </shadow>
-        </value>
-      </block>
-      <block type="text_print">
-        <value name="TEXT">
-          <shadow type="text">
-            <field name="TEXT">Shadow value</field>
-          </shadow>
-        </value>
-        <next>
-          <shadow type="text_print">
-            <value name="TEXT">
-              <shadow type="text">
-                <field name="TEXT">Shadow statement</field>
-              </shadow>
-            </value>
-          </shadow>
-        </next>
-      </block>
-      <label text="Multiple Variable Refs"></label>
-      <block type="text_print">
-        <value name="TEXT">
-          <block type="variables_get">
-            <field name="VAR" id="item" variabletype="">item</field>
-          </block>
-        </value>
-        <next>
-          <block type="text_print">
-            <value name="TEXT">
-              <block type="variables_get">
-                <field name="VAR" id="item" variabletype="">item</field>
-              </block>
-            </value>
-          </block>
-        </next>
-      </block>
-      <label text="Procedure Definitions"></label>
-      <block type="procedures_defnoreturn">
-        <field name="NAME">without arguments</field>
-        <statement name="STACK">
-          <block type="text_print">
-            <value name="TEXT">
-              <shadow type="text">
-                <field name="TEXT">No argument reference.</field>
-              </shadow>
-            </value>
-          </block>
-        </statement>
-      </block>
-      <block type="procedures_defnoreturn">
-        <mutation>
-          <arg name="fnArgument"></arg>
-        </mutation>
-        <field name="NAME">with one argument</field>
-        <statement name="STACK">
-          <block type="text_print">
-            <value name="TEXT">
-              <shadow type="text">
-                <field name="TEXT">Expected an argument reference here.</field>
-              </shadow>
-              <block type="variables_get">
-                <field name="VAR">fnArgument</field>
-              </block>
-            </value>
-          </block>
-        </statement>
-      </block>
+    <category name="Align">
+      <block type="test_align_dummy_right"></block>
+      <block type="test_align_all"></block>
+      <block type="test_align_with_external_input"></block>
     </category>
     <category name="Argument Reporters">
       <block type="event_with_draggable_params_all">
@@ -1630,19 +1478,167 @@ line.blocklyFlyoutLine {
         </value>
       </block>
     </category>
-    <category name="Fields">
-      <label text="Numbers"></label>
-      <block type="test_number"></block>
-      <block type="test_integer"></block>
-      <block type="test_number_hundredths"></block>
-      <block type="test_integer_bounded"></block>
-      <label text="Drop-downs"></label>
-      <block type="example_dropdown_long"></block>
-      <block type="example_dropdown_images"></block>
-      <block type="example_dropdown_images_and_text"></block>
-      <label text="Others"></label>
-      <block type="example_angle"></block>
-      <block type="example_date"></block>
+    <category name="Basic">
+      <block type="test_basic_empty"></block>
+      <block type="test_basic_empty_with_mutator"></block>
+      <block type="test_basic_dummy"></block>
+      <block type="test_basic_multiple_dummy"></block>
+      <block type="test_basic_stack"></block>
+      <block type="test_basic_row"></block>
+      <block type="test_basic_value_to_stack"></block>
+      <block type="test_basic_value_to_statement"></block>
+      <block type="test_basic_limit_instances"></block>
+      <block type="test_basic_tooltips"></block>
+      <block type="test_basic_javascript"></block>
+    </category>
+    <category name="Connections" expanded="true">
+      <category name="Row">
+        <label text="blocks have"></label>
+        <sep gap="-1"></sep>
+        <label text="tooltips"></label>
+
+        <button text="insert" callbackkey="insertConnectionRows"></button>
+        <sep gap="7"></sep>
+        <block type="test_connections_row_input"></block>
+        <sep gap="7"></sep>
+        <block type="test_connections_row_blue"></block>
+        <sep gap="7"></sep>
+        <block type="test_connections_row_yellow"></block>
+        <sep gap="7"></sep>
+        <block type="test_connections_row_red"></block>
+        <sep gap="7"></sep>
+        <block type="test_connections_row_output"></block>
+        <block type="test_connections_row_yellow">
+          <value name="NAME">
+            <block type="test_connections_row_yellow" movable="false"></block>
+          </value>
+        </block>
+        <sep gap="7"></sep>
+        <block type="test_connections_multivalue_1valid"></block>
+        <sep gap="7"></sep>
+        <block type="test_connections_multivalue_2valid"></block>
+      </category>
+      <category name="Stack">
+        <label text="blocks have"></label>
+        <sep gap="-1"></sep>
+        <label text="tooltips"></label>
+
+        <button text="insert" callbackkey="insertConnectionStacks"></button>
+        <sep gap="7"></sep>
+        <block type="test_connections_stack_next"></block>
+        <sep gap="7"></sep>
+        <block type="test_connections_stack_blue"></block>
+        <sep gap="7"></sep>
+        <block type="test_connections_stack_yellow"></block>
+        <sep gap="7"></sep>
+        <block type="test_connections_stack_red"></block>
+        <sep gap="7"></sep>
+        <block type="test_connections_stack_prev"></block>
+        <block type="test_connections_stack_yellow">
+          <next>
+            <block type="test_connections_stack_yellow" movable="false"></block>
+          </next>
+        </block>
+      </category>
+      <category name="Statement">
+        <label text="blocks have"></label>
+        <sep gap="-1"></sep>
+        <label text="tooltips"></label>
+
+        <button text="insert" callbackkey="insertConnectionStatements"></button>
+        <sep gap="7"></sep>
+        <block type="test_connections_statement_blue"></block>
+        <sep gap="7"></sep>
+        <block type="test_connections_statement_yellow"></block>
+        <sep gap="7"></sep>
+        <block type="test_connections_statement_red"></block>
+        <block type="test_connections_statement_nonext"></block>
+        <sep gap="7"></sep>
+        <block type="test_connections_multistatement_1valid"></block>
+        <sep gap="7"></sep>
+        <block type="test_connections_multistatement_2valid"></block>
+      </category>
+    </category>
+    <category name="Drag">
+      <label text="Drag each to the workspace"></label>
+      <block type="text_print">
+        <value name="TEXT">
+          <block type="text">
+            <field name="TEXT">Drag me by this child</field>
+          </block>
+        </value>
+      </block>
+      <block type="text_print">
+        <value name="TEXT">
+          <shadow type="text">
+            <field name="TEXT">Drag me by this shadow</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="text_print">
+        <value name="TEXT">
+          <shadow type="text">
+            <field name="TEXT">Shadow value</field>
+          </shadow>
+        </value>
+        <next>
+          <shadow type="text_print">
+            <value name="TEXT">
+              <shadow type="text">
+                <field name="TEXT">Shadow statement</field>
+              </shadow>
+            </value>
+          </shadow>
+        </next>
+      </block>
+      <label text="Multiple Variable Refs"></label>
+      <block type="text_print">
+        <value name="TEXT">
+          <block type="variables_get">
+            <field name="VAR" id="item">item</field>
+          </block>
+        </value>
+        <next>
+          <block type="text_print">
+            <value name="TEXT">
+              <block type="variables_get">
+                <field name="VAR" id="item">item</field>
+              </block>
+            </value>
+          </block>
+        </next>
+      </block>
+      <label text="Procedure Definitions"></label>
+      <block type="procedures_defnoreturn">
+        <field name="NAME">without arguments</field>
+        <statement name="STACK">
+          <block type="text_print">
+            <value name="TEXT">
+              <shadow type="text">
+                <field name="TEXT">No argument reference.</field>
+              </shadow>
+            </value>
+          </block>
+        </statement>
+      </block>
+      <block type="procedures_defnoreturn">
+        <mutation>
+          <arg name="fnArgument"></arg>
+        </mutation>
+        <field name="NAME">with one argument</field>
+        <statement name="STACK">
+          <block type="text_print">
+            <value name="TEXT">
+              <shadow type="text">
+                <field name="TEXT">Expected an argument reference here.</field>
+              </shadow>
+              <block type="variables_get">
+                <field name="VAR">fnArgument</field>
+              </block>
+            </value>
+          </block>
+        </statement>
+      </block>
     </category>
     <category name="Fields" expanded="true">
       <category name="Defaults">
@@ -1656,10 +1652,12 @@ line.blocklyFlyoutLine {
         <sep gap="8"></sep>
         <button text="toggle collapsed" callbackKey="toggleCollapsed"></button>
         <block type="test_fields_angle"></block>
-        <block type="test_fields_date"></block>
         <block type="test_fields_checkbox"></block>
         <block type="test_fields_colour"></block>
+        <block type="test_fields_colour_options"></block>
         <block type="test_fields_text_input"></block>
+        <block type="test_fields_only_text_input"></block>
+        <block type="test_fields_multilinetext"></block>
         <block type="test_fields_variable"></block>
         <button text="randomize label text" callbackKey="randomizeLabelText"></button>
         <sep gap="12"></sep>
@@ -1688,11 +1686,21 @@ line.blocklyFlyoutLine {
           <field name="NOTE">60</field>
         </block>
       </category>
+      <category name="Angles">
+        <block type="test_angles_clockwise"></block>
+        <block type="test_angles_offset"></block>
+        <block type="test_angles_wrap"></block>
+        <block type="test_angles_round_30"></block>
+        <block type="test_angles_round_0"></block>
+        <block type="test_angles_protractor"></block>
+        <block type="test_angles_compass"></block>
+      </category>
       <category name="Drop-downs">
         <label text="Dynamic"></label>
         <block type="test_dropdowns_dynamic"></block>
         <button text="Add option" callbackKey="addDynamicOption"></button>
         <button text="Remove option" callbackKey="removeDynamicOption"></button>
+        <block type="test_dropdowns_dynamic_random"></block>
         <label text="Other"></label>
         <block type="test_dropdowns_long"></block>
         <block type="test_dropdowns_images"></block>
@@ -1705,6 +1713,7 @@ line.blocklyFlyoutLine {
         <block type="test_images_fliprtl"></block>
         <block type="test_images_missing"></block>
         <block type="test_images_many_icons"></block>
+        <block type="test_images_clickhandler"></block>
       </category>
       <category name="Emoji! o((*^ᴗ^*))o">
         <label text="Unicode & Emojis"></label>
@@ -1741,13 +1750,6 @@ line.blocklyFlyoutLine {
         <block type="test_validators_colour_force_red"></block>
         <sep gap="12"></sep>
         <block type="test_validators_colour_red_null"></block>
-        <label text="Dates"></label>
-        <sep gap="12"></sep>
-        <block type="test_validators_date_null"></block>
-        <sep gap="12"></sep>
-        <block type="test_validators_date_force_20s"></block>
-        <sep gap="12"></sep>
-        <block type="test_validators_date_20s_null"></block>
         <label text="Dropdowns"></label>
         <sep gap="12"></sep>
         <block type="test_validators_dropdown_null"></block>
@@ -1778,6 +1780,23 @@ line.blocklyFlyoutLine {
         <block type="test_validators_variable_force_1s"></block>
         <sep gap="12"></sep>
         <block type="test_validators_variable_1s_null"></block>
+      </category>
+      <category name="PXT Fields">
+        <block type="test_basic_row">
+          <value name="INPUT">
+            <shadow type="test_fields_text_dropdown">
+              <field name="FIELDNAME">Hello World</field>
+            </shadow>
+          </value>
+        </block>
+        <block type="test_basic_row">
+          <value name="INPUT">
+            <shadow type="test_fields_number_dropdown">
+              <field name="FIELDNAME">10</field>
+            </shadow>
+          </value>
+        </block>
+        <block type="test_fields_vertical_separator"></block>
       </category>
     </category>
     <category name="Mutators">

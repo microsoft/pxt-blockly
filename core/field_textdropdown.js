@@ -29,6 +29,8 @@ goog.provide('Blockly.FieldTextDropdown');
 goog.require('Blockly.DropDownDiv');
 goog.require('Blockly.FieldDropdown');
 goog.require('Blockly.FieldTextInput');
+goog.require('Blockly.fieldRegistry');
+goog.require('Blockly.utils.object');
 goog.require('Blockly.utils.userAgent');
 
 
@@ -53,7 +55,7 @@ Blockly.FieldTextDropdown = function(text, menuGenerator, opt_validator, opt_res
   Blockly.FieldTextDropdown.superClass_.constructor.call(this, text, opt_validator, opt_restrictor);
   this.addArgType('textdropdown');
 };
-goog.inherits(Blockly.FieldTextDropdown, Blockly.FieldTextInput);
+Blockly.utils.object.inherits(Blockly.FieldTextDropdown, Blockly.FieldTextInput);
 
 /**
  * Construct a FieldTextDropdown from a JSON arg object.
@@ -75,37 +77,23 @@ Blockly.FieldTextDropdown.DROPDOWN_SVG_DATAURI = 'data:image/svg+xml;base64,PHN2
 /**
  * Install this text drop-down field on a block.
  */
-Blockly.FieldTextDropdown.prototype.init = function() {
-  Blockly.FieldTextDropdown.superClass_.init.call(this);
-  // Add dropdown arrow: "option ▾" (LTR) or "▾ אופציה" (RTL)
-  // Positioned on render, after text size is calculated.
-  if (!this.arrow_) {
-    /** @type {Number} */
-    this.arrowSize_ = 12;
-    /** @type {Number} */
-    this.arrowX_ = 0;
-    /** @type {Number} */
-    this.arrowY_ = 11;
-    this.arrow_ = Blockly.utils.dom.createSvgElement('image', {
-      'height': this.arrowSize_ + 'px',
-      'width': this.arrowSize_ + 'px'
-    });
-    this.arrow_.setAttributeNS('http://www.w3.org/1999/xlink',
-        'xlink:href', Blockly.FieldTextDropdown.DROPDOWN_SVG_DATAURI);
-    this.arrow_.style.cursor = 'pointer';
-    this.fieldGroup_.appendChild(this.arrow_);
+Blockly.FieldTextDropdown.prototype.initView = function() {
+  Blockly.FieldTextDropdown.superClass_.initView.call(this);
+  
+  this.createSVGArrow_();
+};
 
-    if (this.sourceBlock_.isEditable()) {
-      this.mouseUpWrapper_ =
-          Blockly.bindEvent_(this.arrow_, 'mousedown', this, function(e) {
-            Blockly.FieldTextDropdown.prototype.showEditor_.call(this, e);
-            e.preventDefault();
-            e.stopPropagation();
-          });
-    }
-  }
-  // Prevent the drop-down handler from changing the field colour on open.
-  this.disableColourChange_ = true;
+/**
+ * Updates the size of the field based on the text.
+ * @protected
+ */
+Blockly.FieldTextDropdown.prototype.updateSize_ = function() {
+  Blockly.FieldTextDropdown.superClass_.updateSize_.call(this);
+  var arrowWidth = this.positionSVGArrow_(this.size_.width,
+    this.size_.height / 2 -
+    this.constants_.FIELD_DROPDOWN_SVG_ARROW_SIZE / 2);
+
+  this.size_.width += arrowWidth;
 };
 
 /**
@@ -150,12 +138,17 @@ Blockly.FieldTextDropdown.prototype.isOptionListDynamic =
 Blockly.FieldTextDropdown.prototype.getOptions = Blockly.FieldDropdown.prototype.getOptions;
 
 /**
- * Position a drop-down arrow at the appropriate location at render-time.
- * See: Blockly.FieldDropDown.prototype.positionArrow.
- * @param {number} x X position the arrow is being rendered at, in px.
- * @return {number} Amount of space the arrow is taking up, in px.
+ * Create an SVG based arrow.
+ * @protected
  */
-Blockly.FieldTextDropdown.prototype.positionArrow = Blockly.FieldDropdown.prototype.positionArrow;
+Blockly.FieldTextDropdown.prototype.createSVGArrow_ = function() {
+  this.svgArrow_ = Blockly.utils.dom.createSvgElement('image', {
+    'height': this.constants_.FIELD_DROPDOWN_SVG_ARROW_SIZE + 'px',
+    'width': this.constants_.FIELD_DROPDOWN_SVG_ARROW_SIZE + 'px'
+  }, this.fieldGroup_);
+  this.svgArrow_.setAttributeNS(Blockly.utils.dom.XLINK_NS, 'xlink:href',
+      Blockly.FieldTextDropdown.DROPDOWN_SVG_DATAURI);
+};
 
 /**
  * Create the dropdown menu.
@@ -164,30 +157,48 @@ Blockly.FieldTextDropdown.prototype.positionArrow = Blockly.FieldDropdown.protot
 Blockly.FieldTextDropdown.prototype.showDropdown_ = Blockly.FieldDropdown.prototype.showEditor_;
 
 /**
- * Callback when the drop-down menu is hidden.
+ * Create the dropdown editor.
+ * @private
  */
-Blockly.FieldTextDropdown.prototype.onHide = function() {
-  Blockly.WidgetDiv.hide();
-  Blockly.FieldDropdown.prototype.onHide.call(this);
-};
+Blockly.FieldTextDropdown.prototype.dropdownCreate_ = 
+    Blockly.FieldDropdown.prototype.dropdownCreate_;
 
 /**
- * Handle the selection of an item in the dropdown menu.
- * @param {!goog.ui.Menu} menu The Menu component clicked.
- * @param {!goog.ui.MenuItem} menuItem The MenuItem selected within menu.
+ * Disposes of events and dom-references belonging to the dropdown editor.
+ * @private
  */
-Blockly.FieldTextDropdown.prototype.onItemSelected = function(menu, menuItem) {
+Blockly.FieldTextDropdown.prototype.dropdownDispose_ =
+    Blockly.FieldDropdown.prototype.dropdownDispose_;
+
+/**
+ * Position a drop-down arrow at the appropriate location at render-time.
+ * @param {number} x X position the arrow is being rendered at, in px.
+ * @param {number} y Y position the arrow is being rendered at, in px.
+ * @return {number} Amount of space the arrow is taking up, in px.
+ * @private
+ */
+Blockly.FieldTextDropdown.prototype.positionSVGArrow_ =
+    Blockly.FieldDropdown.prototype.positionSVGArrow_;
+
+/**
+ * Handle an action in the dropdown menu.
+ * @param {!Blockly.MenuItem} menuItem The MenuItem selected within menu.
+ * @private
+ */
+Blockly.FieldTextDropdown.prototype.handleMenuActionEvent_ =
+    Blockly.FieldDropdown.prototype.handleMenuActionEvent_;
+
+/**
+ * Handle an action in the dropdown menu.
+ * @param {!Blockly.MenuItem} menuItem The MenuItem selected within menu.
+ * @private
+ */
+Blockly.FieldTextDropdown.prototype.onItemSelected_ = function(menu, menuItem) {
   var value = menuItem.getValue();
-  if (this.sourceBlock_) {
-    // Call any validation function, and allow it to override.
-    value = this.callValidator(value);
-  }
   if (value !== null) {
-    // pxtblockly: FieldTextInput's widgetDispose sets the value of the field on dispose,
-    // set the htmlInput value instead
-    var htmlInput = this.htmlInput_;
-    if (htmlInput) htmlInput.value = value;
     this.setValue(value);
+
+    Blockly.WidgetDiv.hideIfOwner(this);
   }
 };
 
