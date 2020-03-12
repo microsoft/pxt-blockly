@@ -627,7 +627,7 @@ Blockly.FieldTextInput.GECKO_KEYCODE_WHITELIST = [
 /**
  * Handle a change to the editor.
  * @param {!Event} e Keyboard event.
- * @private
+ * @protected pxt-blockly
  */
 Blockly.FieldTextInput.prototype.onHtmlInputChange_ = function(e) {
   // Check if the key matches the restrictor.

@@ -165,7 +165,7 @@ Blockly.Block = function(workspace, prototypeName, opt_id) {
    * The block's position in workspace units.  (0, 0) is at the workspace's
    * origin; scale does not change this value.
    * @type {!Blockly.utils.Coordinate}
-   * @private
+   * @package pxt-blockly
    */
   this.xy_ = new Blockly.utils.Coordinate(0, 0);
 
@@ -971,8 +971,8 @@ Blockly.Block.prototype.getHue = function() {
 };
 
 /**
- * Get the secondary colour of a block.
- * @return {string} #RRGGBB string.
+ * Change the colour of a block.
+ * @param {number|string} colour HSV hue value, or #RRGGBB string.
  */
 Blockly.Block.prototype.setColour = function(colour) {
   var parsed = Blockly.utils.parseBlockColour(colour);

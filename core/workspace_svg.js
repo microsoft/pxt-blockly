@@ -1851,7 +1851,7 @@ Blockly.WorkspaceSvg.prototype.showContextMenu = function(e) {
  *     workspace.
  * @return {!Array.<!Blockly.BlockSvg>} A list of deletable blocks on the
  *     workspace.
- * @private
+ * @package pxt-blockly
  */
 Blockly.WorkspaceSvg.buildDeleteList_ = function(topBlocks) {
   var deleteList = [];

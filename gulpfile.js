@@ -247,7 +247,8 @@ goog.provide('Blockly.Warning');`;
     // Remove Blockly Fields to be compatible with Blockly.
     .pipe(gulp.replace(/Blockly\.Field[^=\(]+=\{[^;]*\};/g, ''))
     // Remove Blockly Warning, Comment & Mutator to be compatible with Blockly.
-    .pipe(gulp.replace(/Blockly\.(Comment|Warning|Mutator)=\{[^;]*\};/g, ''))
+    // pxt-blockly Remove Blockly Colours redeclaration
+    .pipe(gulp.replace(/Blockly\.(Comment|Warning|Mutator|Colours)=\{[^;]*\};/g, ''))
     .pipe(prependHeader())
     .pipe(gulp.dest('./'));
 });
@@ -504,6 +505,7 @@ gulp.task('typings', function (cb) {
     "core/components/tree",
     "core/components/menu",
     "core/keyboard_nav",
+    "core/renderers/",
     "core/renderers/common",
     "core/renderers/measurables",
     "core/theme",
@@ -522,6 +524,7 @@ gulp.task('typings', function (cb) {
     files = files.concat(fs.readdirSync(src)
       .filter(fn => fn.endsWith('.js'))
       .map(fn => path.join(src, fn)));
+    fs.mkdirSync(path.join(tmpDir, src));
   });
 
   // Generate typings file for each file.

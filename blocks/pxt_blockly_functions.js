@@ -123,7 +123,9 @@ Blockly.PXTBlockly.FunctionUtils.domToMutation = function(xmlElement) {
   this.name_ = xmlElement.getAttribute('name');
   this.functionId_ = xmlElement.getAttribute('functionid');
   this.ensureIds_();
-  this.updateDisplay_();
+
+  if (this.type !== Blockly.FUNCTION_DEFINITION_BLOCK_TYPE)
+    this.updateDisplay_();
 };
 
 /**
@@ -379,7 +381,7 @@ Blockly.PXTBlockly.FunctionUtils.deleteShadows_ = function(connectionMap) {
  */
 Blockly.PXTBlockly.FunctionUtils.updateLabelEditor_ = function(text) {
   Blockly.Events.disable();
-  this.getField('function_name').setText(text);
+  this.getField('function_name').setValue(text);
   Blockly.Events.enable();
 }
 
@@ -693,7 +695,7 @@ Blockly.PXTBlockly.FunctionUtils.updateDeclarationMutation_ = function() {
         break;
       case Blockly.DUMMY_INPUT:
         // This is the function name text input
-        this.name_ = input.fieldRow[0].getText();
+        this.name_ = input.fieldRow[0].getValue();
         break;
       case Blockly.INPUT_VALUE:
         // Inspect the argument editor to add the argument to our mutation.
@@ -910,6 +912,7 @@ Blockly.Blocks['function_declaration'] = {
     this.setMovable(false);
     this.contextMenu = false;
     this.setStartHat(true);
+    this.setInputsInline(true);
     this.statementConnection_ = null;
   },
   // Shared.
@@ -964,6 +967,7 @@ Blockly.Blocks['function_definition'] = {
     this.setHelpUrl(Blockly.Msg.PROCEDURES_DEFNORETURN_HELPURL);
     this.setStatements_(true);
     this.setStartHat(true);
+    this.setInputsInline(true);
     this.statementConnection_ = null;
   },
   // Shared.
@@ -1008,6 +1012,7 @@ Blockly.Blocks['function_call'] = {
     this.setColour(Blockly.Msg.PROCEDURES_HUE);
     this.setHelpUrl(Blockly.Msg.PROCEDURES_CALLNORETURN_HELPURL);
     this.setTooltip(Blockly.Msg.FUNCTION_CALL_TOOLTIP);
+    this.setInputsInline(true);
   },
   // Shared.
   mutationToDom: Blockly.PXTBlockly.FunctionUtils.mutationToDom,

@@ -55,35 +55,35 @@ Blockly.utils.object.inherits(Blockly.FieldSlider, Blockly.FieldNumber);
 /**
  * Minimum value
  * @type {number}
- * @private
+ * @protected pxt-blockly
  */
 Blockly.FieldSlider.prototype.min_ = null;
 
 /**
  * Maximum value
  * @type {number}
- * @private
+ * @protected pxt-blockly
  */
 Blockly.FieldSlider.prototype.max_ = null;
 
 /**
  * Step value
  * @type {number}
- * @private
+ * @protected pxt-blockly
  */
 Blockly.FieldSlider.prototype.step_ = null;
 
 /**
  * Precision for value
  * @type {number}
- * @private
+ * @protected pxt-blockly
  */
 Blockly.FieldSlider.prototype.precision_ = null;
 
 /**
  * Label text
  * @type {string}
- * @private
+ * @protected pxt-blockly
  */
 Blockly.FieldSlider.prototype.labelText_ = null;
 
@@ -205,8 +205,10 @@ Blockly.FieldSlider.prototype.addSlider_ = function(contentDiv) {
         if (val !== null) {
           thisField.setValue(val);
           var htmlInput = thisField.htmlInput_;
-          htmlInput.value = val;
-          htmlInput.focus();
+          if (htmlInput) { // pxt-blockly
+            htmlInput.value = val;
+            htmlInput.focus();
+          }
         }
       });
 

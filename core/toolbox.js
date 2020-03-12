@@ -48,7 +48,7 @@ goog.require('Blockly.utils.Rect');
 Blockly.Toolbox = function(workspace) {
   /**
    * @type {!Blockly.WorkspaceSvg}
-   * @private
+   * @package pxt-blockly
    */
   this.workspace_ = workspace;
 
@@ -114,7 +114,7 @@ Blockly.Toolbox = function(workspace) {
   /**
    * The toolbox flyout.
    * @type {Blockly.Flyout}
-   * @private
+   * @package pxt-blockly
    */
   this.flyout_ = null;
 };

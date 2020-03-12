@@ -208,7 +208,7 @@ Blockly.Flyout.prototype.dragAngleRange_ = 70;
 /**
  * The svg or g element that contains the flyout dom (excluding scrollbar).
  * @type {SVGElement}
- * @private
+ * @package pxt-blockly
  */
 Blockly.Flyout.prototype.svgGroup_ = null;
 
@@ -222,7 +222,7 @@ Blockly.Flyout.prototype.scrollbar_ = null;
 /**
  * The workspace this flyout puts blocks on
  * @type {Blockly.WorkspaceSvg}
- * @private
+ * @package pxt-blockly
  */
 Blockly.Flyout.prototype.targetWorkspace_ = null;
 

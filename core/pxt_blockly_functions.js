@@ -144,11 +144,12 @@ Blockly.Functions.getCallers = function(name, workspace) {
     // the deleted arg reporters and returns early (because the mutation hasn't changed between the
     // first pass and the 2nd pass). Uncommenting the below if() makes it so the definition is only
     // processed once, so the arg reporters are deleted and never fixed by the 2nd pass.
-    // if (blocks[i].type == Blockly.FUNCTION_CALL_BLOCK_TYPE) {
-    if (blocks[i].getName) {
-      var funcName = blocks[i].getName();
-      if (funcName == name) {
-        callers.push(blocks[i]);
+    if (blocks[i].type == Blockly.FUNCTION_CALL_BLOCK_TYPE) {
+      if (blocks[i].getName) {
+        var funcName = blocks[i].getName();
+        if (funcName == name) {
+          callers.push(blocks[i]);
+        }
       }
     }
   }
@@ -305,6 +306,7 @@ Blockly.Functions.createFunctionCallbackFactory_ = function(workspace) {
       Blockly.Events.setGroup(true);
       var highestBlock = workspace.getTopBlocks(true)[0];
       var block = Blockly.Xml.domToBlock(blockDom.firstChild, workspace);
+      block.updateDisplay_();
 
       if (highestBlock) {
         var rect = highestBlock.getBoundingRectangle();
@@ -359,6 +361,7 @@ Blockly.Functions.editFunctionCallbackFactory_ = function(block) {
   return function(mutation) {
     if (mutation) {
       Blockly.Functions.mutateCallersAndDefinition(block.getName(), block.workspace, mutation);
+      block.updateDisplay_();
     }
   };
 };
@@ -469,9 +472,9 @@ Blockly.Functions.rename = function(name) {
   // Strip leading and trailing whitespace. Beyond this, all names are legal.
   name = name.replace(/^[\s\xa0]+|[\s\xa0]+$/g, '');
   var legalName = Blockly.Functions.findLegalName(name, this.sourceBlock_.workspace, this.sourceBlock_);
-  var oldName = this.text_;
+  var oldName = this.getValue();
 
-  if (!legalName) return oldName;
+  if (!legalName || !oldName) return name;
   if (oldName != name && oldName != legalName) {
     // Temporarily change the function name to the new name so we can generate the new mutation,
     // but reset to the old name afterwards so that mutateCallersAndDefinition() can find the

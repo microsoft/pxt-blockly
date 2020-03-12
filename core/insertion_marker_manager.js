@@ -260,11 +260,13 @@ Blockly.InsertionMarkerManager.prototype.createMarkerBlock_ = function(sourceBlo
     // child blocks here.
     for (var i = 0; i < sourceBlock.inputList.length; i++) {
       var sourceInput = sourceBlock.inputList[i];
-      var resultInput = result.inputList[i];
-      for (var j = 0; j < sourceInput.fieldRow.length; j++) {
-        var sourceField = sourceInput.fieldRow[j];
-        var resultField = resultInput.fieldRow[j];
-        resultField.setValue(sourceField.getValue());
+      if (sourceInput.isVisible()) { // pxt-blockly
+        var resultInput = result.inputList[i];
+        for (var j = 0; j < sourceInput.fieldRow.length; j++) {
+          var sourceField = sourceInput.fieldRow[j];
+          var resultField = resultInput.fieldRow[j];
+          resultField.setValue(sourceField.getValue());
+        }
       }
     }
 

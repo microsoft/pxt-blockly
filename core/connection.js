@@ -76,7 +76,7 @@ Blockly.Connection.prototype.disposed = false;
 /**
  * List of compatible value types.  Null if all types are compatible.
  * @type {Array}
- * @private
+ * @package pxt-blockly
  */
 Blockly.Connection.prototype.check_ = null;
 

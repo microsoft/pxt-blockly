@@ -988,7 +988,7 @@ Blockly.BlockSvg.prototype.setInsertionMarker = function(insertionMarker, opt_mi
   }
   this.isInsertionMarker_ = insertionMarker;
   if (this.isInsertionMarker_) {
-this.setColour(Blockly.Colours.insertionMarker); // TODO shakao needs to be Blockly.INSERTION_MARKER_COLOR ?
+    this.setColour(Blockly.Colours.insertionMarker); // TODO shakao needs to be Blockly.INSERTION_MARKER_COLOR ?
     this.pathObject.updateInsertionMarker(true);
   }
 };
@@ -1351,6 +1351,22 @@ Blockly.BlockSvg.prototype.getColour = function() {
 };
 
 /**
+ * pxt-blockly: Get the secondary colour of a block.
+ * @return {string} #RRGGBB string.
+ */
+Blockly.BlockSvg.prototype.getColourSecondary = function() {
+  return this.style.colourSecondary;
+};
+
+/**
+ * pxt-blockly: Get the tertiary colour of a block.
+ * @return {string} #RRGGBB string.
+ */
+Blockly.BlockSvg.prototype.getColourTertiary = function() {
+  return this.style.colourTertiary;
+};
+
+/**
  * Change the colour of a block.
  * @param {number|string} colour HSV hue value, or #RRGGBB string.
  * @param {number|string=} colourSecondary Secondary HSV hue value, or #RRGGBB
@@ -1358,7 +1374,7 @@ Blockly.BlockSvg.prototype.getColour = function() {
  * @param {number|string=} colourTertiary Tertiary HSV hue value, or #RRGGBB
  *    string.
  */
-Blockly.BlockSvg.prototype.setColour = function(colour) {
+Blockly.BlockSvg.prototype.setColour = function(colour, colourSecondary, colourTertiary) {
   Blockly.BlockSvg.superClass_.setColour.call(this, colour);
   var styleObj = this.workspace.getRenderer().getConstants()
       .getBlockStyleForColour(this.colour_);
@@ -1366,6 +1382,10 @@ Blockly.BlockSvg.prototype.setColour = function(colour) {
   this.pathObject.setStyle(styleObj.style);
   this.style = styleObj.style;
   this.styleName_ = styleObj.name;
+
+  // pxt-blockly
+  if (colourSecondary) this.style.colourSecondary = colourSecondary;
+  if (colourTertiary) this.style.colourTertiary = colourTertiary;
 
   this.applyColour();
 };

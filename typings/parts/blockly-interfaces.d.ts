@@ -37,6 +37,18 @@ declare module Blockly {
       scaleSpeed?: number;
     };
     renderer?: string;
+    // PXT specific:
+    toolboxOptions?: ToolboxOptions;
+    hasCategories?: boolean;
+  }
+
+  // PXT specific:
+  interface ToolboxOptions {
+    colour?: boolean;
+    border?: boolean;
+    inverted?: boolean;
+    invertedMultiplier?: number;
+    disabledOpacity?: number;
   }
 
   interface BlocklyThemeOptions {
@@ -56,6 +68,15 @@ declare module Blockly {
     viewLeft: number;
     viewTop: number;
     viewWidth: number;
+  }
+
+  // pxt-blockly specific
+  namespace ContextMenu {
+    interface Option {
+      enabled?: boolean;
+      text?: string;
+      callback?: () => void;
+    }
   }
 
   /**

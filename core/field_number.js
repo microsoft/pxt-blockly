@@ -493,7 +493,7 @@ Blockly.FieldNumber.prototype.numPadEraseButtonTouch = function(e) {
 /**
  * Update the displayed value and resize/scroll the text field as needed.
  * @param {string} newValue The new text to display.
- * @private.
+ * @protected pxt-blockly
  */
 Blockly.FieldNumber.prototype.updateDisplay_ = function(newValue) {
   // Updates the display. The actual setValue occurs when editing ends.

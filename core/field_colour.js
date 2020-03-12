@@ -60,7 +60,7 @@ Blockly.FieldColour = function(opt_value, opt_validator, opt_config) {
   /**
    * The field's colour picker element.
    * @type {Element}
-   * @private
+   * @protected pxt-blockly
    */
   this.picker_ = null;
 
@@ -145,7 +145,7 @@ Blockly.FieldColour.prototype.isDirty_ = false;
 /**
  * Array of colours used by this field.  If null, use the global list.
  * @type {Array.<string>}
- * @private
+ * @protected pxt-blockly
  */
 Blockly.FieldColour.prototype.colours_ = null;
 
@@ -640,33 +640,27 @@ Blockly.Css.register([
   '.blocklyColourTable {',
     'outline: none;',
     'border-radius: 11px;',
-    'border-collapse: collapse;',
+    'border-collapse: separate;',
+    'border-spacing: 4px;',
   '}',
 
   '.blocklyColourTable > tr > td {',
     'height: 22px;',
     'width: 22px;',
     'margin: 0;',
-    'padding: 2px;',
     'border: 0;',
     'text-align: center;',
     'cursor: pointer;',
-  '}',
-
-  '.blocklyColourTable > tr > td > div {',
-    'position: relative;',
-    'height: 22px;',
-    'width: 22px;',
     'border-radius: 4px;',
     'border: 2px solid rgba(0,0,0,.1);',
   '}',
 
-  '.blocklyColourTable > tr > td:hover > div {',
+  '.blocklyColourTable > tr > td:hover {',
     'border: 1px solid #FFF;',
     'box-sizing: border-box;',
   '}',
 
-  '.blocklyColourTable > tr > td > .blocklyColourSelected {',
+  '.blocklyColourTable > tr > td.blocklyColourSelected {',
     'border: 1px solid #000;',
     'box-sizing: border-box;',
     'color: #fff;',

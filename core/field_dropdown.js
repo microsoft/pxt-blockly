@@ -613,7 +613,7 @@ Blockly.FieldDropdown.prototype.render_ = function() {
  * Renders the selected option, which must be an image.
  * @param {!Blockly.FieldDropdown.ImageProperties} imageJson Selected
  *   option that must be an image.
- * @private
+ * @protected pxt-blockly
  */
 Blockly.FieldDropdown.prototype.renderSelectedImage_ = function(imageJson) {
   this.imageElement_.style.display = '';
