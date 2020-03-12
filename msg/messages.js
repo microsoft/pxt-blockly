@@ -1649,7 +1649,10 @@ Blockly.Msg.FUNCTION_CALL_TOOLTIP = 'Call a function that was previously defined
 /// pxt-blockly: Warning for duplicate argument names on a function definition.
 Blockly.Msg.FUNCTION_WARNING_DUPLICATE_ARG = 'Functions cannot use the same argument name more than once.'
 /** @type {string} */
-/// pxt-blockly: Warning for duplicate argument names on a function definition.
+/// pxt-blockly: Warning for argument name matching the function name
+Blockly.Msg.FUNCTION_WARNING_ARG_NAME_IS_FUNCTION_NAME = 'Argument names must not be the same as the function name.'
+/** @type {string} */
+/// pxt-blockly: Warning for empty argument names on a function definition.
 Blockly.Msg.FUNCTION_WARNING_EMPTY_NAME = 'Function and argument names cannot be empty.'
 /** @type {string} */
 /// pxt-blockly: Warning for argument names being the same as the function name.

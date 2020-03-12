@@ -139,7 +139,7 @@ Blockly.Procedures.findLegalName = function(name, block) {
  * @param {Blockly.Block=} opt_exclude Optional block to exclude from
  *     comparisons (one doesn't want to collide with oneself).
  * @return {boolean} True if the name is legal.
- * @private
+ * @package pxt-blockly
  */
 Blockly.Procedures.isLegalName_ = function(name, workspace, opt_exclude) {
   return !Blockly.Procedures.isNameUsed(name, workspace, opt_exclude);
