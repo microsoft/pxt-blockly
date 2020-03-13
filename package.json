@@ -45,6 +45,7 @@
     "README.md",
     "blockly_compressed.js",
     "blocks_compressed.js",
+    "typings/blockly.d.ts",
     "media/**",
     "msg/**"
   ],

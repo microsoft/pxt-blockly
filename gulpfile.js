@@ -27,6 +27,7 @@ gulp.replace = require('gulp-replace');
 gulp.rename = require('gulp-rename');
 gulp.insert = require('gulp-insert');
 gulp.umd = require('gulp-umd');
+gulp.git = require('gulp-git');
 
 var path = require('path');
 var fs = require('fs');
@@ -1067,24 +1068,37 @@ function pxtPublishTsTask() {
 }
 
 // Task for building pxt-blockly, and copying files over to pxt
-gulp.task('publish', gulp.series(['build', pxtPublishTask]));
+// run `gulp publish --closure library' to build with closure (necessary)
+gulp.task('publish', gulp.series(['build-core', pxtPublishTask]));
 
 // Task for bumping patch version and tagging commit. Travis will upload to npm.
-gulp.task('bump', function (done) {
-  var v = semver.inc(JSON.parse(fs.readFileSync('./package.json', 'utf8')).version, 'patch');
-  gulp.src('./package.json')
-    .pipe(gulp.bump({ "version": v }))
-    .pipe(gulp.dest('./'));
+gulp.task('bump', gulp.series([
+  // Sync to latest
+  function (done) {
+    gulp.git.checkout('develop');
+    gulp.git.pull('origin',' develop');
+    done();
+  },
+  // Build compressed files and typings
+  'build-core',
+  'typings',
+  // Increment version, tag and push
+  function (done) {
+    var v = semver.inc(JSON.parse(fs.readFileSync('./package.json', 'utf8')).version, 'patch');
+    gulp.src('./package.json')
+      .pipe(gulp.bump({ "version": v }))
+      .pipe(gulp.dest('./'));
 
-  gulp.src('.')
-    .pipe(gulp.git.add())
-    .pipe(gulp.git.commit(v))
-    .on('end', function () {
-      gulp.git.tag('v' + v, v, function (error) {
-        if (error) {
-          return done(error);
-        }
-        gulp.git.push('origin', '', { args: '--tags' }, done);
-      })
-    });
-});
+    gulp.src('.')
+      .pipe(gulp.git.add())
+      .pipe(gulp.git.commit(v))
+      .on('end', function () {
+        gulp.git.tag('v' + v, v, function (error) {
+          if (error) {
+            return done(error);
+          }
+          gulp.git.push('origin', '', { args: '--tags' }, done);
+        })
+      });
+  }]
+));
