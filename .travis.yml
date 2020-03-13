@@ -7,7 +7,7 @@ node_js:
 sudo: required
 addons:
   firefox: latest
-  chrome: beta
+  chrome: stable
 cache:
   directories:
   - node_modules
