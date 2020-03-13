@@ -900,6 +900,12 @@ Blockly.Blocks['function_declaration'] = {
    * @this Blockly.Block
    */
   init: function() {
+    this.jsonInit({
+      "style": {
+        "hat": "cap"
+      }
+    });
+
     /* Data known about the function. */
     this.name_ = ""; // The name of the function.
     this.arguments_ = []; // The arguments of this function.
@@ -911,7 +917,6 @@ Blockly.Blocks['function_declaration'] = {
     this.setDeletable(false);
     this.setMovable(false);
     this.contextMenu = false;
-    this.setStartHat(true);
     this.setInputsInline(true);
     this.statementConnection_ = null;
   },
@@ -953,7 +958,10 @@ Blockly.Blocks['function_definition'] = {
    */
   init: function() {
     this.jsonInit({
-      "extensions": ["function_contextmenu_edit"]
+      "extensions": ["function_contextmenu_edit"],
+      "style": {
+        "hat": "cap"
+      }
     });
 
     /* Data known about the function. */
@@ -966,7 +974,6 @@ Blockly.Blocks['function_definition'] = {
     this.setTooltip(Blockly.Msg.PROCEDURES_DEFNORETURN_TOOLTIP);
     this.setHelpUrl(Blockly.Msg.PROCEDURES_DEFNORETURN_HELPURL);
     this.setStatements_(true);
-    this.setStartHat(true);
     this.setInputsInline(true);
     this.statementConnection_ = null;
   },

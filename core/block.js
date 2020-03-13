@@ -1268,8 +1268,8 @@ Blockly.Block.prototype.setStartHat = function(newBoolean) {
 };
 
 /**
- * Get whether value inputs are arranged horizontally or vertically.
- * @return {boolean} True if inputs are horizontal.
+ * Set whether value statements have a start hat or not.
+ * @return {boolean} True if statement has a start hat.
  */
 Blockly.Block.prototype.getStartHat = function() {
   return this.startHat;
