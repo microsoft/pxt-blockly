@@ -33,7 +33,7 @@
     "prepare": "npm run package",
     "preversion": "gulp preversion",
     "release": "gulp release",
-    "test": "sleep 5",
+    "test": "npm run test:setupselenium && npm run test:run",
     "test:prepare": "npm run test:setupselenium && npm run test:startselenium",
     "test:run": "tests/run_all_tests.sh",
     "test:setupselenium": "selenium-standalone install --config=./tests/scripts/selenium-config.js",
@@ -45,6 +45,7 @@
     "README.md",
     "blockly_compressed.js",
     "blocks_compressed.js",
+    "typings/blockly.d.ts",
     "media/**",
     "msg/**"
   ],
