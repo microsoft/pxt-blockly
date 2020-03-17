@@ -694,8 +694,9 @@ Blockly.PXTBlockly.FunctionUtils.updateDeclarationMutation_ = function() {
         // Nothing to save
         break;
       case Blockly.DUMMY_INPUT:
-        // This is the function name text input
-        this.name_ = input.fieldRow[0].getValue();
+        // This is the function name text input. Previously stored in the text
+        // attribute (now deprecated), so we check both text and value
+        this.name_ = input.fieldRow[0].getValue() || input.fieldRow[0].getText();
         break;
       case Blockly.INPUT_VALUE:
         // Inspect the argument editor to add the argument to our mutation.

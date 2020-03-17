@@ -540,7 +540,7 @@ Blockly.FieldDropdown.prototype.doClassValidation_ = function(opt_newValue) {
         ', Value: ' + opt_newValue);
     }
     // pxt-blockly: allow unavailable options in dropdown
-    return newValue;
+    return opt_newValue;
   }
   return /** @type {string} */ (opt_newValue);
 };
