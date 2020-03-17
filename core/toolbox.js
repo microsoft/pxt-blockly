@@ -114,7 +114,7 @@ Blockly.Toolbox = function(workspace) {
   /**
    * The toolbox flyout.
    * @type {Blockly.Flyout}
-   * @package pxt-blockly
+   * @private
    */
   this.flyout_ = null;
 };
@@ -387,6 +387,14 @@ Blockly.Toolbox.prototype.getHeight = function() {
  */
 Blockly.Toolbox.prototype.getFlyout = function() {
   return this.flyout_;
+};
+
+/**
+ * pxt-blockly Set the toolbox flyout.
+ * @param {Blockly.Flyout} flyout The toolbox flyout.
+ */
+Blockly.Toolbox.prototype.setFlyout = function(flyout) {
+  this.flyout_ = flyout;
 };
 
 /**

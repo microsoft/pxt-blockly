@@ -19,3 +19,4 @@
  * @fileoverview Type definitions for Blockly.
  * @author samelh@google.com (Sam El-Husseini)
  */
+// export = Blockly; // pxt-blockly

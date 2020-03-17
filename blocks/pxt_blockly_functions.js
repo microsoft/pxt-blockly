@@ -124,8 +124,12 @@ Blockly.PXTBlockly.FunctionUtils.domToMutation = function(xmlElement) {
   this.functionId_ = xmlElement.getAttribute('functionid');
   this.ensureIds_();
 
-  if (this.type !== Blockly.FUNCTION_DEFINITION_BLOCK_TYPE)
+  if (this.type !== Blockly.FUNCTION_DEFINITION_BLOCK_TYPE) {
     this.updateDisplay_();
+  } else if (!this.getFieldValue('function_name') && this.name_) {
+    // pxt-blockly handle old function case where name was stored in text_
+    this.setFieldValue(this.name_, 'function_name');
+  }
 };
 
 /**
