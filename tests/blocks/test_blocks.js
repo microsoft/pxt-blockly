@@ -1,9 +1,6 @@
 /**
  * @license
- * Blockly Tests
- *
- * Copyright 2017 Google Inc.
- * https://developers.google.com/blockly/
+ * Copyright 2017 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +23,48 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
     "type": "test_basic_empty",
     "message0": "",
     "args0": []
+  },
+  {
+    "type": "test_basic_stack",
+    "message0": "stack block",
+    "previousStatement": null,
+    "nextStatement": null,
+    "colour": "120"
+  },
+  {
+    "type": "test_basic_dummy",
+    "message0": "dummy input %1",
+    "args0": [
+      {
+        "type": "input_dummy"
+      }
+    ],
+    "style": "math_blocks"
+  },
+  {
+    "type": "test_basic_multiple_dummy",
+    "message0": "first dummy %1 second dummy %2",
+    "args0": [
+      {
+        "type": "input_dummy"
+      },
+      {
+        "type": "input_dummy"
+      }
+    ],
+    "style": "math_blocks"
+  },
+  {
+    "type": "test_basic_row",
+    "message0": "row block %1",
+    "args0": [
+      {
+        "type": "input_value",
+        "name": "INPUT"
+      }
+    ],
+    "output": null,
+    "style": "math_blocks"
   },
   {
     "type": "test_basic_value_to_stack",
@@ -61,6 +100,473 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
     "previousStatement": null,
     "nextStatement": null,
     "style": "math_blocks",
+  },
+  {
+    "type": "test_basic_tooltips",
+    "message0": "%1 %2 %3",
+    "args0": [
+      {
+        "type": "field_label",
+        "name": "NAME",
+        "text": "field tooltip",
+        "tooltip": "This is a JSON tooltip for the *field*."
+      },
+      {
+        "type": "input_dummy"
+      },
+      {
+        "type": "field_label",
+        "name": "NAME",
+        "text": "block tooltip"
+      }
+    ],
+    "tooltip": "This is a JSON tooltip for the *block*.",
+    "style": "math_blocks"
+  },
+  {
+    "type": "test_basic_javascript",
+    "message0": "function %1(%2) { %3 %4 return %5 }",
+    "args0": [
+      "foo",
+      "args",
+      {
+        "type": "input_dummy"
+      },
+      {
+        "type": "input_statement",
+        "name": "STACK"
+      },
+      {
+        "type": "input_value",
+        "check": "number",
+        "align": "right",
+        "name": "RETURN"
+      }
+    ],
+    "inputsInline": true,
+    "colour": 200,
+    "tooltip": "Hello world."
+  },
+  {
+    "type": "test_align_dummy_right",
+    "message0": "text right %1 long text right %2",
+    "args0": [
+      {
+        "type": "input_dummy",
+        "align": "RIGHT",
+      },
+      {
+        "type": "input_dummy",
+        "align": "RIGHT",
+      },
+    ],
+    "style": "math_blocks"
+  },
+  {
+    "type": "test_align_all",
+    "message0": "text %1 long text left %2 text centre %3 much longer text right",
+    "args0": [
+      {
+        "type": "input_dummy",
+        "align": "LEFT",
+      },
+      {
+        "type": "input_dummy",
+        "align": "CENTRE",
+      },
+      {
+        "type": "input_dummy",
+        "align": "RIGHT",
+      },
+    ],
+    "style": "math_blocks"
+  },
+  {
+    "type": "test_align_with_external_input",
+    "message0": "text right %1 long text centre %2 text left %3 much longer text %4",
+    "args0": [
+      {
+        "type": "input_dummy",
+        "align": "RIGHT",
+      },
+      {
+        "type": "input_dummy",
+        "align": "CENTRE",
+      },
+      {
+        "type": "input_dummy",
+        "align": "LEFT",
+      },
+      {
+        "type": "input_value",
+        "name": "VALUE"
+      },
+    ],
+    "inputsInline": false,
+    "style": "math_blocks"
+  },
+  {
+    "type": "test_connections_row_input",
+    "message0": "%1",
+    "args0": [
+      {
+        "type": "input_value",
+        "name": "NAME",
+      }
+    ],
+    "colour": '#aaaaaa',
+    "tooltip": "No Checks\n" +
+        "Can connect to any output connection."
+  },
+  {
+    "type": "test_connections_row_blue",
+    "message0": "%1",
+    "args0": [
+      {
+        "type": "input_value",
+        "name": "NAME",
+        "check": "greenRel"
+      }
+    ],
+    "output": "noneOut",
+    "colour": 230,
+    "tooltip": "Output: noneOut\n" +
+        "Input: greenRel\n" +
+        "Input connection can accept yellow blocks but not red blocks."
+  },
+  {
+    "type": "test_connections_row_yellow",
+    "message0": "%1",
+    "args0": [
+      {
+        "type": "input_value",
+        "name": "NAME",
+        "check": [
+          "orangeRel",
+          "yellowRel"
+        ]
+      }
+    ],
+    "output": [
+      "yellowRel",
+      "greenRel"
+    ],
+    "colour": 60,
+    "tooltip": "Output: yellowRel, greenRel\n" +
+        "Input: yellowRel, orangeRel\n" +
+        "Output can connect to yellow blocks and blue blocks, but not red blocks.\n" +
+        "Input can connect to yellow blocks and red blocks, but not blue blocks."
+  },
+  {
+    "type": "test_connections_row_red",
+    "message0": "%1",
+    "args0": [
+      {
+        "type": "input_value",
+        "name": "NAME",
+        "check": "noneIn"
+      }
+    ],
+    "output": "orangeRel",
+    "colour": 0,
+    "tooltip": "Output: orangeRel\n" +
+        "Input: noneIn\n" +
+        "Output can connect to yellow blocks, but not blue blocks."
+  },
+  {
+    "type": "test_connections_row_output",
+    "message0": "",
+    "output": null,
+    "colour": '#aaaaaa',
+    "tooltip": "No Checks\n" +
+        "Can connect to any input connection."
+  },
+  {
+    "type": "test_connections_multivalue_1valid",
+    "message0": "none %1 both %2",
+    "args0": [
+      {
+        "type": "input_value",
+        "name": "NAME1",
+        "align": "RIGHT",
+        "check": "noneIn"
+      },
+      {
+        "type": "input_value",
+        "name": "NAME2",
+        "align": "RIGHT",
+        "check": [
+          "yellowRel",
+          "orangeRel"
+        ]
+      }
+    ],
+    "output": [
+      "yellowRel",
+      "greenRel"
+    ],
+    "colour": 60,
+    "tooltip": "Output: yellowRel, greenRel\n" +
+        "Input Top: noneIn\n" +
+        "Input Bottom: yellowRel, orangeRel\n" +
+        "Output can connect to yellow blocks and blue blocks, but not red blocks.\n" +
+        "Top Input can connect to nothing, except grey blocks.\n" +
+        "Bottom Input can connect to yellow blocks and red blocks, but not blue" +
+        " blocks."
+  },
+  {
+    "type": "test_connections_multivalue_2valid",
+    "message0": "both %1 both %2",
+    "args0": [
+      {
+        "type": "input_value",
+        "name": "NAME1",
+        "align": "RIGHT",
+        "check": [
+          "yellowRel",
+          "orangeRel"
+        ]
+      },
+      {
+        "type": "input_value",
+        "name": "NAME2",
+        "align": "RIGHT",
+        "check": [
+          "yellowRel",
+          "orangeRel"
+        ]
+      }
+    ],
+    "output": [
+      "yellowRel",
+      "greenRel"
+    ],
+    "colour": 60,
+    "tooltip": "Output: yellowRel, greenRel\n" +
+        "Input Top:  yellowRel, orangeRel\n" +
+        "Input Bottom: yellowRel, orangeRel\n" +
+        "Output can connect to yellow blocks and blue blocks, but not red blocks.\n" +
+        "Top Input can connect to yellow blocks and red blocks, but not blue" +
+        " blocks.\n" +
+        "Bottom Input can connect to yellow blocks and red blocks, but not blue" +
+        " blocks."
+  },
+  {
+    "type": "test_connections_stack_next",
+    "message0": "",
+    "nextStatement": null,
+    "colour": '#aaaaaa',
+    "tooltip": "No Checks\n" +
+        "Can connect to any previous connection."
+  },
+  {
+    "type": "test_connections_stack_blue",
+    "message0": "",
+    "previousStatement": "nonePrev",
+    "nextStatement": "greenRel",
+    "colour": 230,
+    "tooltip": "Prev: nonePrev\n" +
+        "Next: greenRel\n" +
+        "Next connection can accept yellow blocks but not red blocks."
+  },
+  {
+    "type": "test_connections_stack_yellow",
+    "message0": "",
+    "previousStatement": [
+      "greenRel",
+      "yellowRel"
+    ],
+    "nextStatement": [
+      "yellowRel",
+      "orangeRel"
+    ],
+    "colour": 60,
+    "tooltip": "Prev: yellowRel, greenRel\n" +
+        "Next: yellowRel, orangeRel\n" +
+        "Prev can connect to yellow blocks and blue blocks, but not red blocks.\n" +
+        "Next can connect to yellow blocks and red blocks, but not blue blocks."
+  },
+  {
+    "type": "test_connections_stack_red",
+    "message0": "",
+    "previousStatement": "orangeRel",
+    "nextStatement": "noneNext",
+    "colour": 0,
+    "tooltip": "Prev: orangeRel\n" +
+        "Next: noneNext\n" +
+        "Prev can connect to yellow blocks, but not blue blocks."
+  },
+  {
+    "type": "test_connections_stack_prev",
+    "message0": "",
+    "previousStatement": null,
+    "colour": '#aaaaaa',
+    "tooltip": "No Checks\n" +
+        "Can connect to any input connection."
+  },
+  {
+    "type": "test_connections_statement_blue",
+    "message0": "%1",
+    "args0": [
+      {
+        "type": "input_statement",
+        "name": "NAME",
+        "check": "greenRel"
+      }
+    ],
+    "previousStatement": "nonePrev",
+    "nextStatement": "greenRel",
+    "colour": 230,
+    "tooltip": "Prev: nonePrev\n" +
+        "Next: greenRel\n" +
+        "Statement: greenRel\n" +
+        "Next connection can accept yellow blocks but not red blocks.\n" +
+        "Statement connection can accept yellow blocks but not red blocks."
+  },
+  {
+    "type": "test_connections_statement_yellow",
+    "message0": "%1",
+    "args0": [
+      {
+        "type": "input_statement",
+        "name": "NAME",
+        "check":  [
+          "yellowRel",
+          "orangeRel"
+        ]
+      }
+    ],
+    "previousStatement": [
+      "greenRel",
+      "yellowRel"
+    ],
+    "nextStatement": [
+      "yellowRel",
+      "orangeRel"
+    ],
+    "colour": 60,
+    "tooltip": "Prev: yellowRel, greenRel\n" +
+        "Next: yellowRel, orangeRel\n" +
+        "Statement: orangeRel\n" +
+        "Prev can connect to yellow blocks and blue blocks, but not red" +
+        " blocks.\n" +
+        "Next can connect to yellow blocks and red blocks, but not blue" +
+        " blocks.\n" +
+        "Statement connection can accept yellow blocks and red blocks but not" +
+        " blue blocks.\n"
+  },
+  {
+    "type": "test_connections_statement_red",
+    "message0": "%1",
+    "args0": [
+      {
+        "type": "input_statement",
+        "name": "NAME",
+        "check": "noneNext"
+      }
+    ],
+    "previousStatement": "orangeRel",
+    "nextStatement": "noneNext",
+    "colour": 0,
+    "tooltip": "Prev: orangeRel\n" +
+        "Next: noneNext\n" +
+        "Statement: noneNext\n" +
+        "Prev connection can accept yellow blocks but not blue blocks.\n" +
+        "Statement connection accepts none."
+  },
+  {
+    "type": "test_connections_statement_nonext",
+    "message0": "%1",
+    "args0": [
+      {
+        "type": "input_statement",
+        "name": "NAME",
+        "check":  [
+          "yellowRel",
+          "orangeRel"
+        ]
+      }
+    ],
+    "previousStatement": [
+      "greenRel",
+      "yellowRel"
+    ],
+    "colour": 60,
+    "tooltip": "Prev: yellowRel, greenRel\n" +
+        "Next: yellowRel, orangeRel\n" +
+        "Statement: orangeRel\n" +
+        "Prev can connect to yellow blocks and blue blocks, but not red" +
+        " blocks.\n" +
+        "Statement connection can accept yellow blocks and red blocks but not" +
+        " blue blocks.\n"
+  },
+  {
+    "type": "test_connections_multistatement_1valid",
+    "message0": "none %1 both %2",
+    "args0": [
+      {
+        "type": "input_statement",
+        "name": "NAME",
+        "check": "noneNext"
+      },
+      {
+        "type": "input_statement",
+        "name": "NAME",
+        "check":  [
+          "yellowRel",
+          "orangeRel"
+        ]
+      }
+    ],
+    "previousStatement": [
+      "greenRel",
+      "yellowRel"
+    ],
+    "colour": 60,
+    "tooltip": "Prev: yellowRel, greenRel\n" +
+        "Next: yellowRel, orangeRel\n" +
+        "Statement: orangeRel\n" +
+        "Prev can connect to yellow blocks and blue blocks, but not red" +
+        " blocks.\n" +
+        "Top Statement cannot connect to anything, except grey blocks.\n" +
+        "Bottom Statement connection can accept yellow blocks and red blocks" +
+        " but not blue blocks.\n"
+  },
+  {
+    "type": "test_connections_multistatement_2valid",
+    "message0": "both %1 both %2",
+    "args0": [
+      {
+        "type": "input_statement",
+        "name": "NAME",
+        "check": [
+          "yellowRel",
+          "orangeRel"
+        ]
+      },
+      {
+        "type": "input_statement",
+        "name": "NAME",
+        "check": [
+          "yellowRel",
+          "orangeRel"
+        ]
+      }
+    ],
+    "previousStatement": [
+      "greenRel",
+      "yellowRel"
+    ],
+    "colour": 60,
+    "tooltip": "Prev: yellowRel, greenRel\n" +
+        "Next: yellowRel, orangeRel\n" +
+        "Statement: orangeRel\n" +
+        "Prev can connect to yellow blocks and blue blocks, but not red" +
+        " blocks.\n" +
+        "Top Statement connection can accept yellow blocks and red blocks but" +
+        " not blue blocks.\n" +
+        "Bottom Statement connection can accept yellow blocks and red blocks" +
+        " but not blue blocks.\n"
   },
   {
     "type": "test_dropdowns_long",
@@ -208,6 +714,34 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
     "helpUrl": ""
   },
   {
+    "type": "test_fields_only_text_input",
+    "message0": "%1",
+    "args0": [
+      {
+        "type": "field_input",
+        "name": "TEXT_INPUT",
+        "text": "default"
+      }
+    ],
+    "style": "textInput",
+    "tooltip": "",
+    "helpUrl": "",
+    "output": "String"
+  },
+  {
+    "type": "test_fields_multilinetext",
+    "message0": "code %1",
+    "args0": [
+      {
+        "type": "field_multilinetext",
+        "name": "CODE",
+        "text": "default1\ndefault2"
+      }
+    ],
+    "style": "math_blocks",
+    "tooltip": "test tooltip"
+  },
+  {
     "type": "test_fields_checkbox",
     "message0": "checkbox %1",
     "args0": [
@@ -234,6 +768,26 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
     "style": "math_blocks",
     "tooltip": "",
     "helpUrl": ""
+  },
+  {
+    "type": "test_fields_colour_options",
+    "message0": "colour options %1",
+    "args0": [
+      {
+        "type": "field_colour",
+        "name": "COLOUR",
+        "colour": "#ff4040",
+        "colourOptions":
+          ['#ff4040', '#ff8080', '#ffc0c0',
+            '#4040ff', '#8080ff', '#c0c0ff'],
+        "colourTitles":
+          ['dark pink', 'pink', 'light pink',
+            'dark blue', 'blue', 'light blue'],
+        "columns": 3
+      }
+    ],
+    "style": "math_blocks",
+    "tooltip": "test tooltip"
   },
   {
     "type": "test_fields_variable",
@@ -368,6 +922,104 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
     "style": "math_blocks",
     "output": "Note",
     "tooltip": "A midi note."
+  },
+  {
+    "type": "test_angles_protractor",
+    "message0": "protractor %1",
+    "args0": [
+      {
+        "type": "field_angle",
+        "name": "FIELDNAME",
+        "angle": 0,
+        "mode": "protractor"
+      }
+    ],
+    "style": "math_blocks",
+    "tooltip": "test tooltip"
+  },
+  {
+    "type": "test_angles_compass",
+    "message0": "compass %1",
+    "args0": [
+      {
+        "type": "field_angle",
+        "name": "FIELDNAME",
+        "angle": 0,
+        "mode": "compass"
+      }
+    ],
+    "style": "math_blocks",
+    "tooltip": "test tooltip"
+  },
+  {
+    "type": "test_angles_clockwise",
+    "message0": "clockwise %1",
+    "args0": [
+      {
+        "type": "field_angle",
+        "name": "FIELDNAME",
+        "angle": 0,
+        "clockwise": true
+      }
+    ],
+    "style": "math_blocks",
+    "tooltip": "test tooltip"
+  },
+  {
+    "type": "test_angles_offset",
+    "message0": "offset 90 %1",
+    "args0": [
+      {
+        "type": "field_angle",
+        "name": "FIELDNAME",
+        "angle": 0,
+        "offset": 90
+      }
+    ],
+    "style": "math_blocks",
+    "tooltip": "test tooltip"
+  },
+  {
+    "type": "test_angles_wrap",
+    "message0": "wrap %1",
+    "args0": [
+      {
+        "type": "field_angle",
+        "name": "FIELDNAME",
+        "angle": 0,
+        "wrap": 180
+      }
+    ],
+    "style": "math_blocks",
+    "tooltip": "test tooltip"
+  },
+  {
+    "type": "test_angles_round_30",
+    "message0": "round 30 %1",
+    "args0": [
+      {
+        "type": "field_angle",
+        "name": "FIELDNAME",
+        "angle": 0,
+        "round": 30
+      }
+    ],
+    "style": "math_blocks",
+    "tooltip": "test tooltip"
+  },
+  {
+    "type": "test_angles_round_0",
+    "message0": "no round %1",
+    "args0": [
+      {
+        "type": "field_angle",
+        "name": "FIELDNAME",
+        "angle": 0,
+        "round": 0
+      }
+    ],
+    "style": "math_blocks",
+    "tooltip": "test tooltip"
   },
   {
     "type": "test_images_datauri",
@@ -685,6 +1337,20 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
   }
 ]);  // END JSON EXTRACT (Do not delete this comment.)
 
+Blockly.Blocks['test_images_clickhandler'] = {
+  init: function() {
+    this.appendDummyInput()
+      .appendField("Image click handler")
+      .appendField(new Blockly.FieldImage(
+        "https://blockly-demo.appspot.com/static/tests/media/a.png", 32, 32,
+        "image with click handlder", this.onClick_), "IMAGE");
+    this.setStyle('text_blocks');
+  },
+  onClick_: function() {
+    alert('Image clicked');
+  }
+};
+
 Blockly.Blocks['test_validators_text_null'] = {
   init: function() {
     this.appendDummyInput()
@@ -903,55 +1569,6 @@ Blockly.Blocks['test_validators_colour_red_null'] = {
   }
 };
 
-Blockly.Blocks['test_validators_date_null'] = {
-  init: function() {
-    this.appendDummyInput()
-      .appendField("always null")
-      .appendField(new Blockly.FieldDate("2020-02-20", this.validate), "INPUT");
-    this.setColour(230);
-    this.setCommentText('All input validates to null (invalid). This means' +
-      ' the field value should not change.');
-  },
-
-  validate: function(newValue) {
-    // We should be able to expect validators to like their initial values.
-    if (newValue != '2020-02-20') {
-      return null;
-    }
-  }
-};
-Blockly.Blocks['test_validators_date_force_20s'] = {
-  init: function() {
-    this.appendDummyInput()
-      .appendField("force day 20s")
-      .appendField(new Blockly.FieldDate("2020-02-20", this.validate), "INPUT");
-    this.setColour(230);
-    this.setCommentText('The input\'s date will change to always be in the' +
-      ' 20s.');
-  },
-
-  validate: function(newValue) {
-    return newValue.substr(0, 8) + '2' + newValue.substr(9, 1);
-  }
-};
-Blockly.Blocks['test_validators_date_20s_null'] = {
-  init: function() {
-    this.appendDummyInput()
-      .appendField("not 20s -> null")
-      .appendField(new Blockly.FieldDate("2020-02-20", this.validate), "INPUT");
-    this.setColour(230);
-    this.setCommentText('If the input is not in the 20s, the input will' +
-      ' validate to null (invalid). Otherwise it will return the input value.');
-  },
-
-  validate: function(newValue) {
-    if (newValue.charAt(8) != '2') {
-      return null;
-    }
-    return newValue;
-  }
-};
-
 Blockly.Blocks['test_validators_dropdown_null'] = {
   init: function() {
     this.appendDummyInput()
@@ -1127,7 +1744,7 @@ Blockly.Blocks['test_dropdowns_dynamic'] = {
 /**
  * An array of options for the dynamic dropdown.
  * @type {!Array<!Array>}
- * @package
+ * @private
  */
 Blockly.TestBlocks.dynamicDropdownOptions_ = [];
 
@@ -1136,7 +1753,7 @@ Blockly.TestBlocks.dynamicDropdownOptions_ = [];
  * the user for an option to add.
  * @package
  */
-Blockly.TestBlocks.addDynamicDropdownOption_ = function() {
+Blockly.TestBlocks.addDynamicDropdownOption = function() {
   Blockly.prompt('Add an option?',
       'option '  + Blockly.TestBlocks.dynamicDropdownOptions_.length,
       function(text) {
@@ -1157,7 +1774,7 @@ Blockly.TestBlocks.addDynamicDropdownOption_ = function() {
  * same name.
  * @package
  */
-Blockly.TestBlocks.removeDynamicDropdownOption_ = function() {
+Blockly.TestBlocks.removeDynamicDropdownOption = function() {
   var defaultText = Blockly.TestBlocks.dynamicDropdownOptions_[0] ?
       Blockly.TestBlocks.dynamicDropdownOptions_[0][0] : '';
   Blockly.prompt('Remove an option?', defaultText, function(text) {
@@ -1173,4 +1790,116 @@ Blockly.TestBlocks.removeDynamicDropdownOption_ = function() {
       }
     }
   })
+};
+
+Blockly.Blocks['test_dropdowns_dynamic_random'] = {
+  init: function() {
+    var dropdown = new Blockly.FieldDropdown(this.dynamicOptions);
+    this.appendDummyInput()
+      .appendField('dynamic random')
+      .appendField(dropdown, 'OPTIONS');
+  },
+
+  dynamicOptions: function() {
+    var random = Math.floor(Math.random() * 10) + 1;
+    var options = [];
+    for (var i = 0; i < random; i++) {
+      options.push([String(i), String(i)]);
+    }
+    return options;
+  }
+};
+
+/**
+ * Handles "insert" button in the connection row test category. This will insert
+ * a group of test blocks connected in a row.
+ * @package
+ */
+Blockly.TestBlocks.insertConnectionRows = function(button) {
+  var workspace = button.getTargetWorkspace();
+  Blockly.Xml.domToWorkspace(Blockly.Xml.textToDom(
+      '<xml xmlns="https://developers.google.com/blockly/xml">\n' +
+      '  <block type="test_connections_row_input">\n' +
+      '    <value name="NAME">\n' +
+      '      <block type="test_connections_row_blue">\n' +
+      '        <value name="NAME">\n' +
+      '          <block type="test_connections_row_yellow">\n' +
+      '            <value name="NAME">\n' +
+      '              <block type="test_connections_row_yellow">\n' +
+      '                <value name="NAME">\n' +
+      '                  <block type="test_connections_row_red">\n' +
+      '                    <value name="NAME">\n' +
+      '                      <block type="test_connections_row_output"/>\n' +
+      '                    </value>\n' +
+      '                  </block>\n' +
+      '                </value>\n' +
+      '              </block>\n' +
+      '            </value>\n' +
+      '          </block>\n' +
+      '        </value>\n' +
+      '      </block>\n' +
+      '    </value>\n' +
+      '  </block>\n' +
+      '</xml>'
+  ), workspace)
+};
+
+/**
+ * Handles "insert" button in the connection stack test category. This will
+ * insert a group of test blocks connected in a stack.
+ * @package
+ */
+Blockly.TestBlocks.insertConnectionStacks = function(button) {
+  var workspace = button.getTargetWorkspace();
+  Blockly.Xml.domToWorkspace(Blockly.Xml.textToDom(
+      '<xml xmlns="https://developers.google.com/blockly/xml">\n' +
+      '  <block type="test_connections_stack_next">\n' +
+      '    <next>\n' +
+      '      <block type="test_connections_stack_blue">\n' +
+      '        <next>\n' +
+      '          <block type="test_connections_stack_yellow">\n' +
+      '            <next>\n' +
+      '              <block type="test_connections_stack_yellow">\n' +
+      '                <next>\n' +
+      '                  <block type="test_connections_stack_red">\n' +
+      '                    <next>\n' +
+      '                      <block type="test_connections_stack_prev"/>\n' +
+      '                    </next>\n' +
+      '                  </block>\n' +
+      '                </next>\n' +
+      '              </block>\n' +
+      '            </next>\n' +
+      '          </block>\n' +
+      '        </next>\n' +
+      '      </block>\n' +
+      '    </next>\n' +
+      '  </block>\n' +
+      '</xml>'
+  ), workspace);
+};
+
+/**
+ * Handles "insert" button in the connection statement test category. This will
+ * insert a group of test blocks connected as statements.
+ * @package
+ */
+Blockly.TestBlocks.insertConnectionStatements = function(button) {
+  var workspace = button.getTargetWorkspace();
+  Blockly.Xml.domToWorkspace(Blockly.Xml.textToDom(
+      '<xml xmlns="https://developers.google.com/blockly/xml">\n' +
+      '  <block type="test_connections_statement_blue">\n' +
+      '    <statement name="NAME">\n' +
+      '      <block type="test_connections_statement_yellow">\n' +
+      '        <statement name="NAME">\n' +
+      '          <block type="test_connections_statement_yellow">\n' +
+      '            <statement name="NAME">\n' +
+      '              <block type="test_connections_statement_red"/>\n' +
+      '            </statement>\n' +
+      '          </block>\n' +
+      '        </statement>\n' +
+      '      </block>\n' +
+      '    </statement>\n' +
+      '  </block>\n' +
+      '</xml>'
+  ), workspace);
 };

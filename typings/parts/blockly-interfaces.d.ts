@@ -1,3 +1,4 @@
+
 declare module Blockly {
 
   interface BlocklyOptions {
@@ -15,7 +16,7 @@ declare module Blockly {
     css?: boolean;
     oneBasedIndex?: boolean;
     media?: string;
-    theme?: Blockly.BlocklyTheme;
+    theme?: Blockly.Theme | BlocklyThemeOptions;
     move?: {
       scrollbars?: boolean;
       drag?: boolean;
@@ -35,11 +36,25 @@ declare module Blockly {
       minScale?: number;
       scaleSpeed?: number;
     };
+    renderer?: string;
+    // PXT specific:
+    toolboxOptions?: ToolboxOptions;
+    hasCategories?: boolean;
   }
 
-  interface BlocklyTheme {
-    defaultBlockStyles?: {[blocks: string]: Blockly.Theme.BlockStyle;};
+  // PXT specific:
+  interface ToolboxOptions {
+    colour?: boolean;
+    border?: boolean;
+    inverted?: boolean;
+    invertedMultiplier?: number;
+    disabledOpacity?: number;
+  }
+
+  interface BlocklyThemeOptions {
+    blockStyles?: {[blocks: string]: Blockly.Theme.BlockStyle;};
     categoryStyles?: {[category: string]: Blockly.Theme.CategoryStyle;};
+    componentStyles?: {[component: string]: any;};
   }
 
   interface Metrics {
@@ -55,4 +70,20 @@ declare module Blockly {
     viewWidth: number;
   }
 
+  // pxt-blockly specific
+  namespace ContextMenu {
+    interface Option {
+      enabled?: boolean;
+      text?: string;
+      callback?: () => void;
+    }
+  }
+
+  /**
+   * Set the Blockly locale.
+   * Note: this method is only available in the npm release of Blockly.
+   * @param {!Object} msg An object of Blockly message strings in the desired
+   *     language.
+   */
+  function setLocale(msg: {[key: string]: string;}): void;
 }

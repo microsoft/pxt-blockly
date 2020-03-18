@@ -1,9 +1,6 @@
 /**
  * @license
- * Visual Blocks Editor
- *
- * Copyright 2011 Google Inc.
- * https://developers.google.com/blockly/
+ * Copyright 2011 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,6 +78,7 @@ Blockly.Tooltip.lastY_ = 0;
 
 /**
  * Current element being pointed at.
+ * @type {Element}
  * @private
  */
 Blockly.Tooltip.element_ = null;
@@ -88,6 +86,7 @@ Blockly.Tooltip.element_ = null;
 /**
  * Once a tooltip has opened for an element, that element is 'poisoned' and
  * cannot respawn a tooltip until the pointer moves over a different element.
+ * @type {Element}
  * @private
  */
 Blockly.Tooltip.poisonedElement_ = null;

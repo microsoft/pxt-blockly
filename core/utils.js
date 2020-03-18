@@ -1,9 +1,6 @@
 /**
  * @license
- * Visual Blocks Editor
- *
- * Copyright 2012 Google Inc.
- * https://developers.google.com/blockly/
+ * Copyright 2012 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,24 +30,13 @@
 goog.provide('Blockly.utils');
 
 goog.require('Blockly.Msg');
-goog.require('Blockly.utils.base');
+goog.require('Blockly.constants');
+goog.require('Blockly.utils.colour');
 goog.require('Blockly.utils.Coordinate');
-goog.require('Blockly.utils.dom');
+goog.require('Blockly.utils.global');
 goog.require('Blockly.utils.string');
+goog.require('Blockly.utils.style');
 goog.require('Blockly.utils.userAgent');
-
-goog.require('goog.style');
-
-
-/**
- * Removes a node from its parent. No-op if not attached to a parent.
- * @param {Node} node The node to remove.
- * @return {Node} The node removed if removed; else, null.
- */
-// Copied from Closure goog.dom.removeNode
-Blockly.utils.dom.removeNode = function(node) {
-  return node && node.parentNode ? node.parentNode.removeChild(node) : null;
-};
 
 /**
  * Don't do anything for this event, just halt propagation.
@@ -96,9 +82,9 @@ Blockly.utils.getRelativeXY = function(element) {
   var transform = element.getAttribute('transform');
   var r = transform && transform.match(Blockly.utils.getRelativeXY.XY_REGEX_);
   if (r) {
-    xy.x += parseFloat(r[1]);
+    xy.x += Number(r[1]);
     if (r[3]) {
-      xy.y += parseFloat(r[3]);
+      xy.y += Number(r[3]);
     }
   }
 
@@ -108,9 +94,9 @@ Blockly.utils.getRelativeXY = function(element) {
     var styleComponents =
         style.match(Blockly.utils.getRelativeXY.XY_STYLE_REGEX_);
     if (styleComponents) {
-      xy.x += parseFloat(styleComponents[1]);
+      xy.x += Number(styleComponents[1]);
       if (styleComponents[3]) {
-        xy.y += parseFloat(styleComponents[3]);
+        xy.y += Number(styleComponents[3]);
       }
     }
   }
@@ -136,7 +122,7 @@ Blockly.utils.getInjectionDivXY_ = function(element) {
     if ((' ' + classes + ' ').indexOf(' injectionDiv ') != -1) {
       break;
     }
-    element = element.parentNode;
+    element = /** @type {!Element} */ (element.parentNode);
   }
   return new Blockly.utils.Coordinate(x, y);
 };
@@ -205,6 +191,7 @@ Blockly.utils.mouseToSvg = function(e, svg, matrix) {
 Blockly.utils.getScrollDeltaPixels = function(e) {
   switch (e.deltaMode) {
     case 0x00:  // Pixel mode.
+    default:
       return {
         x: e.deltaX,
         y: e.deltaY
@@ -252,7 +239,7 @@ Blockly.utils.replaceMessageReferences = function(message) {
   var interpolatedResult = Blockly.utils.tokenizeInterpolation_(message, false);
   // When parseInterpolationTokens == false, interpolatedResult should be at
   // most length 1.
-  return interpolatedResult.length ? interpolatedResult[0] : '';
+  return interpolatedResult.length ? String(interpolatedResult[0]) : '';
 };
 
 /**
@@ -352,7 +339,7 @@ Blockly.utils.tokenizeInterpolation_ = function(message,
         state = 0;  // and parse as string literal.
       } else if (c != '}') {
         buffer.push(c);
-      } else  {
+      } else {
         var rawKey = buffer.join('');
         if (/[A-Z]\w*/i.test(rawKey)) {  // Strict matching
           // Found a valid string key. Attempt case insensitive match.
@@ -527,7 +514,7 @@ Blockly.utils.runAfterPageLoad = function(fn) {
  */
 Blockly.utils.getViewportBBox = function() {
   // Pixels, in window coordinates.
-  var scrollOffset = goog.style.getViewportPageOffset(document);
+  var scrollOffset = Blockly.utils.style.getViewportPageOffset();
   return {
     right: document.documentElement.clientWidth + scrollOffset.x,
     bottom: document.documentElement.clientHeight + scrollOffset.y,
@@ -590,7 +577,7 @@ Blockly.utils.getBlockTypeCounts = function(block, opt_stripFollowing) {
       descendants.splice(index, descendants.length - index);
     }
   }
-  for (var i = 0, checkBlock; checkBlock = descendants[i]; i++) {
+  for (var i = 0, checkBlock; (checkBlock = descendants[i]); i++) {
     if (typeCountsMap[checkBlock.type]) {
       typeCountsMap[checkBlock.type]++;
     } else {
@@ -598,4 +585,78 @@ Blockly.utils.getBlockTypeCounts = function(block, opt_stripFollowing) {
     }
   }
   return typeCountsMap;
+};
+
+/**
+ * Converts screen coordinates to workspace coordinates.
+ * @param {Blockly.WorkspaceSvg} ws The workspace to find the coordinates on.
+ * @param {Blockly.utils.Coordinate} screenCoordinates The screen coordinates to
+ * be converted to workspace coordintaes
+ * @return {Blockly.utils.Coordinate} The workspace coordinates.
+ * @package
+ */
+Blockly.utils.screenToWsCoordinates = function(ws, screenCoordinates) {
+  var screenX = screenCoordinates.x;
+  var screenY = screenCoordinates.y;
+
+  var injectionDiv = ws.getInjectionDiv();
+  // Bounding rect coordinates are in client coordinates, meaning that they
+  // are in pixels relative to the upper left corner of the visible browser
+  // window.  These coordinates change when you scroll the browser window.
+  var boundingRect = injectionDiv.getBoundingClientRect();
+
+  // The client coordinates offset by the injection div's upper left corner.
+  var clientOffsetPixels = new Blockly.utils.Coordinate(
+      screenX - boundingRect.left, screenY - boundingRect.top);
+
+  // The offset in pixels between the main workspace's origin and the upper
+  // left corner of the injection div.
+  var mainOffsetPixels = ws.getOriginOffsetInPixels();
+
+  // The position of the new comment in pixels relative to the origin of the
+  // main workspace.
+  var finalOffsetPixels = Blockly.utils.Coordinate.difference(
+      clientOffsetPixels, mainOffsetPixels);
+
+  // The position in main workspace coordinates.
+  var finalOffsetMainWs = finalOffsetPixels.scale(1 / ws.scale);
+  return finalOffsetMainWs;
+};
+
+/**
+ * Parse a block colour from a number or string, as provided in a block
+ * definition.
+ * @param {number|string} colour HSV hue value (0 to 360), #RRGGBB string,
+ *     or a message reference string pointing to one of those two values.
+ * @return {{hue: ?number, hex: string}} An object containing the colour as
+ *     a #RRGGBB string, and the hue if the input was an HSV hue value.
+ * @throws {Error} If the colour cannot be parsed.
+ */
+Blockly.utils.parseBlockColour = function(colour) {
+  var dereferenced = (typeof colour == 'string') ?
+      Blockly.utils.replaceMessageReferences(colour) : colour;
+
+  var hue = Number(dereferenced);
+  if (!isNaN(hue) && 0 <= hue && hue <= 360) {
+    return {
+      hue: hue,
+      hex: Blockly.utils.colour.hsvToHex(hue, Blockly.HSV_SATURATION,
+          Blockly.HSV_VALUE * 255)
+    };
+  } else {
+    var hex = Blockly.utils.colour.parse(dereferenced);
+    if (hex) {
+      // Only store hue if colour is set as a hue.
+      return {
+        hue: null,
+        hex: hex
+      };
+    } else {
+      var errorMsg = 'Invalid colour: "' + dereferenced + '"';
+      if (colour != dereferenced) {
+        errorMsg += ' (from "' + colour + '")';
+      }
+      throw Error(errorMsg);
+    }
+  }
 };

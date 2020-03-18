@@ -37,6 +37,7 @@ goog.provide('Blockly.Events.EndBlockDrag');
 
 goog.require('Blockly.Events');
 goog.require('Blockly.Events.BlockBase');
+goog.require('Blockly.utils.object');
 
 /**
  * Class for a block end drag event.
@@ -55,7 +56,7 @@ Blockly.Events.EndBlockDrag = function(block) {
   this.blockId = block.id;
   this.allNestedIds = block.getDescendants().map(function(b) { return b.id; });
 };
-goog.inherits(Blockly.Events.EndBlockDrag, Blockly.Events.BlockBase);
+Blockly.utils.object.inherits(Blockly.Events.EndBlockDrag, Blockly.Events.BlockBase);
 
 /**
  * Type of this event.

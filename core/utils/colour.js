@@ -1,9 +1,6 @@
 /**
  * @license
- * Visual Blocks Editor
- *
- * Copyright 2019 Google Inc.
- * https://developers.google.com/blockly/
+ * Copyright 2019 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,8 +29,6 @@
  */
 goog.provide('Blockly.utils.colour');
 
-goog.require('Blockly.utils');
-
 
 /**
  * Parses a colour from a string.
@@ -42,8 +37,8 @@ goog.require('Blockly.utils');
  * .parse('#ff0000') -> '#ff0000'
  * .parse('0xff0000') -> '#ff0000'
  * .parse('rgb(255, 0, 0)') -> '#ff0000'
- * @param {string} str Colour in some CSS format.
- * @return {string|null} A string containing a hex representation of the colour,
+ * @param {string|number} str Colour in some CSS format.
+ * @return {?string} A string containing a hex representation of the colour,
  *   or null if can't be parsed.
  */
 Blockly.utils.colour.parse = function(str) {
@@ -53,7 +48,6 @@ Blockly.utils.colour.parse = function(str) {
     // e.g. 'red'
     return hex;
   }
-  // pxt-blockly: also handle "0x######" hex format
   hex = str.substring(0, 2) == '0x' ? '#' + str.substring(2) : str;
   hex = hex[0] == '#' ? hex : '#' + hex;
   if (/^#[0-9a-f]{6}$/.test(hex)) {
@@ -102,13 +96,16 @@ Blockly.utils.colour.rgbArrayToHex = function(rgb) {
 };
 
 /**
- * Converts a hex representation of a colour to RGB.
- * @param {string} hexColor Colour in '#ff0000' format.
+ * Converts a colour to RGB.
+ * @param {string} colour String representing colour in any
+ *     colour format ('#ff0000', 'red', '0xff000', etc).
  * @return {!Array.<number>} RGB representation of the colour.
  */
-Blockly.utils.colour.hexToRgb = function(hexColor) {
-  var hex = Blockly.utils.colour.parse(hexColor);
-  if (!hex) return [0, 0, 0];
+Blockly.utils.colour.hexToRgb = function(colour) {
+  var hex = Blockly.utils.colour.parse(colour);
+  if (!hex) {
+    return [0, 0, 0];
+  }
 
   var rgb = parseInt(hex.substr(1), 16);
   var r = rgb >> 16;
@@ -194,11 +191,19 @@ Blockly.hueToRgb = function(hue) {
  * @param {string} colour2 Second colour.
  * @param {number} factor The weight to be given to colour1 over colour2.
  *     Values should be in the range [0, 1].
- * @return {string} Combined colour represented in hex.
+ * @return {?string} Combined colour represented in hex.
  */
 Blockly.utils.colour.blend = function(colour1, colour2, factor) {
-  var rgb1 = Blockly.utils.colour.hexToRgb(Blockly.utils.colour.parse(colour1));
-  var rgb2 = Blockly.utils.colour.hexToRgb(Blockly.utils.colour.parse(colour2));
+  var hex1 = Blockly.utils.colour.parse(colour1);
+  if (!hex1) {
+    return null;
+  }
+  var hex2 = Blockly.utils.colour.parse(colour2);
+  if (!hex2) {
+    return null;
+  }
+  var rgb1 = Blockly.utils.colour.hexToRgb(hex1);
+  var rgb2 = Blockly.utils.colour.hexToRgb(hex2);
   var r = Math.round(rgb2[0] + factor * (rgb1[0] - rgb2[0]));
   var g = Math.round(rgb2[1] + factor * (rgb1[1] - rgb2[1]));
   var b = Math.round(rgb2[2] + factor * (rgb1[2] - rgb2[2]));

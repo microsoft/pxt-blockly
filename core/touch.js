@@ -1,9 +1,6 @@
 /**
  * @license
- * Visual Blocks Editor
- *
- * Copyright 2016 Google Inc.
- * https://developers.google.com/blockly/
+ * Copyright 2016 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +28,7 @@
 goog.provide('Blockly.Touch');
 
 goog.require('Blockly.utils');
+goog.require('Blockly.utils.global');
 goog.require('Blockly.utils.string');
 
 
@@ -95,9 +93,9 @@ Blockly.longPid_ = 0;
  * if the touch event terminates early.
  * @param {!Event} e Touch start event.
  * @param {Blockly.Gesture} gesture The gesture that triggered this longStart.
- * @private
+ * @package
  */
-Blockly.longStart_ = function(e, gesture) {
+Blockly.longStart = function(e, gesture) {
   Blockly.longStop_();
   // Punt on multitouch events.
   if (e.changedTouches && e.changedTouches.length != 1) {
@@ -122,8 +120,8 @@ Blockly.longStart_ = function(e, gesture) {
 
 /**
  * Nope, that's not a long-press.  Either touchend or touchcancel was fired,
- * or a drag has begun.  Kill the queued long-press task.
- * @private
+ * or a drag hath begun.  Kill the queued long-press task.
+ * @package
  */
 Blockly.longStop_ = function() {
   if (Blockly.longPid_) {

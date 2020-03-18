@@ -27,6 +27,8 @@
 goog.provide('Blockly.FieldNumberDropdown');
 
 goog.require('Blockly.FieldTextDropdown');
+goog.require('Blockly.fieldRegistry');
+goog.require('Blockly.utils.object');
 goog.require('Blockly.utils.userAgent');
 
 
@@ -47,7 +49,7 @@ goog.require('Blockly.utils.userAgent');
  */
 Blockly.FieldNumberDropdown = function(value, menuGenerator, opt_min, opt_max,
     opt_precision, opt_validator) {
-  this.setConstraints_ = Blockly.FieldNumber.prototype.setConstraints_;
+  this.setConstraints = Blockly.FieldNumber.prototype.setConstraints;
   this.setMinInternal_ = Blockly.FieldNumber.prototype.setMinInternal_;
   this.setMaxInternal_ = Blockly.FieldNumber.prototype.setMaxInternal_;
   this.setPrecisionInternal_ = Blockly.FieldNumber.prototype.setPrecisionInternal_;
@@ -60,8 +62,7 @@ Blockly.FieldNumberDropdown = function(value, menuGenerator, opt_min, opt_max,
   );
   this.addArgType('numberdropdown');
 };
-
-goog.inherits(Blockly.FieldNumberDropdown, Blockly.FieldTextDropdown);
+Blockly.utils.object.inherits(Blockly.FieldNumberDropdown, Blockly.FieldTextDropdown);
 
 /**
  * Construct a FieldNumberDropdown from a JSON arg object.
@@ -84,4 +85,4 @@ Blockly.FieldNumberDropdown.fromJson = function(options) {
  */
 Blockly.FieldNumberDropdown.prototype.classValidator = Blockly.FieldNumber.prototype.classValidator;
 
-Blockly.Field.register('field_numberdropdown', Blockly.FieldNumberDropdown);
+Blockly.fieldRegistry.register('field_numberdropdown', Blockly.FieldNumberDropdown);

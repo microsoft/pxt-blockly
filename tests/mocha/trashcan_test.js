@@ -1,9 +1,6 @@
 /**
  * @license
- * Visual Blocks Editor
- *
- * Copyright 2019 Google Inc.
- * https://developers.google.com/blockly/
+ * Copyright 2019 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +26,10 @@ suite("Trashcan", function() {
     options: {
       maxTrashcanContents: Infinity
     }
+  };
+  var themeManager = new Blockly.ThemeManager(workspace, Blockly.Themes.Classic);
+  workspace.getThemeManager = function() {
+    return themeManager;
   };
   function sendDeleteEvent(xmlString) {
     var xml = Blockly.Xml.textToDom(
@@ -101,7 +102,9 @@ suite("Trashcan", function() {
     test("No Disabled - Disabled True", function() {
       sendDeleteEvent('<block type="dummy_type"/>');
       sendDeleteEvent('<block type="dummy_type" disabled="true"/>');
-      chai.assert.equal(this.trashcan.contents_.length, 2);
+      // Disabled tags get removed because disabled blocks aren't allowed to
+      // be dragged from flyouts. See #2239 and #3243.
+      chai.assert.equal(this.trashcan.contents_.length, 1);
     });
     test("No Editable - Editable False", function() {
       sendDeleteEvent('<block type="dummy_type"/>');
@@ -243,9 +246,8 @@ suite("Trashcan", function() {
           '  <comment h="20" w="20">comment_text</comment>' +
           '</block>'
       );
-      // TODO (#2574): These blocks are treated as different, but appear
-      //  identical when the trashcan is opened.
-      chai.assert.equal(this.trashcan.contents_.length, 2);
+      // h & w tags are removed b/c the blocks appear the same.
+      chai.assert.equal(this.trashcan.contents_.length, 1);
     });
     test("Different Comment Pinned", function() {
       sendDeleteEvent(
@@ -258,9 +260,8 @@ suite("Trashcan", function() {
           '  <comment pinned="true">comment_text</comment>' +
           '</block>'
       );
-      // TODO (#2574): These blocks are treated as different, but appear
-      //  identical when the trashcan is opened.
-      chai.assert.equal(this.trashcan.contents_.length, 2);
+      // pinned tags are removed b/c the blocks appear the same.
+      chai.assert.equal(this.trashcan.contents_.length, 1);
     });
     test("No Mutator - Mutator", function() {
       sendDeleteEvent('<block type="dummy_type"/>');

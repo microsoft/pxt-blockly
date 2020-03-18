@@ -17,6 +17,7 @@
 goog.provide('Blockly.FieldSlider');
 
 goog.require('Blockly.FieldNumber');
+goog.require('Blockly.utils.object');
 goog.require('goog.math');
 goog.require('goog.dom');
 goog.require('goog.events');
@@ -44,45 +45,45 @@ Blockly.FieldSlider = function(opt_value, opt_min, opt_max, opt_precision,
     opt_step, opt_labelText, opt_validator) {
   Blockly.FieldSlider.superClass_.constructor.call(this, opt_value, null,
     null, null, opt_validator);
-  this.setConstraints_(opt_min, opt_max, opt_precision);
+  this.setConstraints(opt_min, opt_max, opt_precision);
 
   this.step_ = parseFloat(opt_step);
   this.labelText_ = opt_labelText;
 };
-goog.inherits(Blockly.FieldSlider, Blockly.FieldNumber);
+Blockly.utils.object.inherits(Blockly.FieldSlider, Blockly.FieldNumber);
 
 /**
  * Minimum value
  * @type {number}
- * @private
+ * @protected pxt-blockly
  */
 Blockly.FieldSlider.prototype.min_ = null;
 
 /**
  * Maximum value
  * @type {number}
- * @private
+ * @protected pxt-blockly
  */
 Blockly.FieldSlider.prototype.max_ = null;
 
 /**
  * Step value
  * @type {number}
- * @private
+ * @protected pxt-blockly
  */
 Blockly.FieldSlider.prototype.step_ = null;
 
 /**
  * Precision for value
  * @type {number}
- * @private
+ * @protected pxt-blockly
  */
 Blockly.FieldSlider.prototype.precision_ = null;
 
 /**
  * Label text
  * @type {string}
- * @private
+ * @protected pxt-blockly
  */
 Blockly.FieldSlider.prototype.labelText_ = null;
 
@@ -101,7 +102,7 @@ Blockly.FieldSlider.fromJson = function(options) {
 };
 
 Blockly.FieldSlider.prototype.setOptions = function(min, max, step, precision) {
-  this.setConstraints_(min, max, precision);
+  this.setConstraints(min, max, precision);
 
   this.step_ = parseFloat(step) || undefined;
 
@@ -204,8 +205,10 @@ Blockly.FieldSlider.prototype.addSlider_ = function(contentDiv) {
         if (val !== null) {
           thisField.setValue(val);
           var htmlInput = thisField.htmlInput_;
-          htmlInput.value = val;
-          htmlInput.focus();
+          if (htmlInput) { // pxt-blockly
+            htmlInput.value = val;
+            htmlInput.focus();
+          }
         }
       });
 
@@ -296,4 +299,4 @@ Blockly.FieldSlider.prototype.dispose = function() {
   Blockly.FieldSlider.superClass_.dispose.call(this);
 };
 
-Blockly.Field.register('field_slider', Blockly.FieldSlider);
+Blockly.fieldRegistry.register('field_slider', Blockly.FieldSlider);

@@ -17,10 +17,7 @@
 goog.provide('Blockly.FieldString');
 
 goog.require('Blockly.FieldTextInput');
-goog.require('goog.math');
-goog.require('goog.dom');
-goog.require('goog.events');
-goog.require('goog.style');
+goog.require('Blockly.utils.object');
 goog.require('Blockly.utils.userAgent');
 
 /**
@@ -42,7 +39,7 @@ Blockly.FieldString = function(text, opt_validator, opt_restrictor) {
   this.setRestrictor(opt_restrictor);
   this.addArgType('text');
 };
-goog.inherits(Blockly.FieldString, Blockly.FieldTextInput);
+Blockly.utils.object.inherits(Blockly.FieldString, Blockly.FieldTextInput);
 
 /**
  * Construct a FieldString from a JSON arg object.
@@ -68,35 +65,33 @@ Blockly.FieldString.fromJson = function(options) {
 Blockly.FieldString.quotePadding = 0;
 
 /**
- * Install this string on a block.
+ * Create the block UI for this field.
+ * @package
  */
-Blockly.FieldString.prototype.init = function() {
-  Blockly.FieldTextInput.superClass_.init.call(this);
-
+Blockly.FieldString.prototype.initView = function() {
   // Add quotes around the string
   // Positioned on render, after text size is calculated.
   this.quoteSize_ = 16;
   this.quoteWidth_ = 8;
   this.quoteLeftX_ = 0;
   this.quoteRightX_ = 0;
-  this.quoteY_ = 22;
+  this.quoteY_ = 10;
   if (this.quoteLeft_) this.quoteLeft_.parentNode.removeChild(this.quoteLeft_);
   this.quoteLeft_ = Blockly.utils.dom.createSvgElement('text', {
     'font-size': this.quoteSize_ + 'px',
     'class': 'field-text-quote'
-  });
+  }, this.fieldGroup_);
+
+
+  Blockly.FieldString.superClass_.initView.call(this);
+
   if (this.quoteRight_) this.quoteRight_.parentNode.removeChild(this.quoteRight_);
   this.quoteRight_ = Blockly.utils.dom.createSvgElement('text', {
     'font-size': this.quoteSize_ + 'px',
     'class': 'field-text-quote'
-  });
+  }, this.fieldGroup_);
   this.quoteLeft_.appendChild(document.createTextNode('"'));
   this.quoteRight_.appendChild(document.createTextNode('"'));
-
-  // Force a reset of the text to add the arrow.
-  var text = this.text_;
-  this.text_ = null;
-  this.setText(text);
 
   this.mouseOverWrapper_ =
       Blockly.bindEvent_(
@@ -106,23 +101,19 @@ Blockly.FieldString.prototype.init = function() {
           this.getClickTarget_(), 'mouseout', this, this.onMouseOut_);
 };
 
-Blockly.FieldString.prototype.setText = function(text) {
-  if (text === null || text === this.text_) {
-    // No change if null.
-    return;
-  }
-  this.text_ = text;
-  if (this.textElement_) {
-    this.textElement_.parentNode.appendChild(this.quoteLeft_);
-  }
-  this.updateTextNode_();
-  if (this.textElement_) {
-    this.textElement_.parentNode.appendChild(this.quoteRight_);
-  }
-  if (this.sourceBlock_ && this.sourceBlock_.rendered) {
-    this.sourceBlock_.render();
-    this.sourceBlock_.bumpNeighbours_();
-  }
+/**
+ * Updates the size of the field based on the text.
+ * @protected
+ */
+Blockly.FieldString.prototype.updateSize_ = function() {
+  Blockly.FieldString.superClass_.updateSize_.call(this);
+
+  var xPadding = 3;
+  var addedWidth = this.positionLeft(this.size_.width + xPadding);
+  this.textElement_.setAttribute('x', addedWidth);
+  addedWidth += this.positionRight(addedWidth + this.size_.width + xPadding);
+
+  this.size_.width += addedWidth;
 };
 
 // Position Left
@@ -144,8 +135,8 @@ Blockly.FieldString.prototype.positionLeft = function(x) {
   return addedWidth;
 };
 
-// // Position Right
-Blockly.FieldString.prototype.positionArrow = function(x) {
+// Position Right
+Blockly.FieldString.prototype.positionRight = function(x) {
   if (!this.quoteRight_) {
     return 0;
   }
@@ -163,4 +154,4 @@ Blockly.FieldString.prototype.positionArrow = function(x) {
   return addedWidth;
 };
 
-Blockly.Field.register('field_string', Blockly.FieldString);
+Blockly.fieldRegistry.register('field_string', Blockly.FieldString);

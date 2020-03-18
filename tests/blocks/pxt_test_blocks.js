@@ -58,6 +58,7 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
         "name": "STACK",
       }
     ],
+    "inputsInline": true,
   },
   {
     "type": "event_with_draggable_params_string",
@@ -73,6 +74,7 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
         "name": "STACK",
       }
     ],
+    "inputsInline": true,
   },
   {
     "type": "event_with_draggable_params_number",
@@ -88,6 +90,7 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
         "name": "STACK",
       }
     ],
+    "inputsInline": true,
   },
   {
     "type": "event_with_draggable_params_boolean",
@@ -103,6 +106,7 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
         "name": "STACK",
       }
     ],
+    "inputsInline": true,
   },
   {
     "type": "event_with_draggable_params_custom",
@@ -117,6 +121,7 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
         "name": "STACK",
       }
     ],
+    "inputsInline": true,
   },
   {
     "type": "event_with_draggable_params_wrong_names",
@@ -137,6 +142,7 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
         "name": "STACK",
       }
     ],
+    "inputsInline": true,
   },
   {
     "type": "event_with_draggable_variable",
@@ -157,5 +163,65 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
         "name": "STACK",
       }
     ],
+    "inputsInline": true,
+  },
+  {
+    "type": "test_fields_text_dropdown",
+    "message0": "%1",
+    "args0": [
+      {
+        "type": "field_textdropdown",
+        "name": "FIELDNAME",
+        "value": "Hello world",
+        "options": [
+          [ "Hello", "Hello" ],
+          [ "World", "World" ]
+        ],
+        "alt":
+          {
+            "type": "field_label",
+            "text": "NO TEXT DROPDOWN FIELD"
+          }
+      }],
+    "output": null,
+    "inputsInline": true,
+  },
+  {
+    "type": "test_fields_number_dropdown",
+    "message0": "%1",
+    "args0": [
+      {
+        "type": "field_numberdropdown",
+        "name": "FIELDNAME",
+        "value": "0",
+        "options": [
+          [ "500 ms", "500" ],
+          [ "1 second", "1000" ]
+        ],
+        "alt":
+          {
+            "type": "field_label",
+            "text": "NO NUMBER DROPDOWN FIELD"
+          }
+      }],
+    "output": null,
+    "inputsInline": true,
+  },
+  {
+    "type": "test_fields_vertical_separator",
+    "message0": "vertical %1 separator",
+    "args0": [
+      {
+        "type": "field_vertical_separator",
+        "name": "FIELDNAME",
+        "alt":
+          {
+            "type": "field_label",
+            "text": "NO VERTICAL SEPARATOR FIELD"
+          }
+      }],
+    "output": null,
+    "inputsInline": true,
+    "style": "math_blocks"
   }
 ]);  // END JSON EXTRACT (Do not delete this comment.)

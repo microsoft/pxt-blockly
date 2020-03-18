@@ -2,11 +2,7 @@
 
 'use strict';
 
-goog.provide('Blockly.Msg.da');
-
-goog.require('Blockly.Msg');
-
-Blockly.Msg["ADD_COMMENT"] = "Tilføj kommentar";
+Blockly.Msg["ADD_COMMENT"] = "Tilføj Kommentar";
 Blockly.Msg["CANNOT_DELETE_VARIABLE_PROCEDURE"] = "Kan ikke slette variablen »%1« da den er en del af definitionen af funktionen »%2«";
 Blockly.Msg["CHANGE_VALUE_TITLE"] = "Skift værdi:";
 Blockly.Msg["CLEAN_UP"] = "Ryd op i blokke";
@@ -69,23 +65,11 @@ Blockly.Msg["DELETE_VARIABLE_CONFIRMATION"] = "Slet %1's brug af variablen »%2�
 Blockly.Msg["DELETE_X_BLOCKS"] = "Slet %1 blokke";
 Blockly.Msg["DISABLE_BLOCK"] = "Deaktivér blok";
 Blockly.Msg["DUPLICATE_BLOCK"] = "Duplikér";
-Blockly.Msg["DUPLICATE_COMMENT"] = "Dupliker kommentar";
+Blockly.Msg["DUPLICATE_COMMENT"] = "Duplikér Kommentar";
 Blockly.Msg["ENABLE_BLOCK"] = "Aktivér blok";
 Blockly.Msg["EXPAND_ALL"] = "Fold blokkene ud";
 Blockly.Msg["EXPAND_BLOCK"] = "Fold blokken ud";
 Blockly.Msg["EXTERNAL_INPUTS"] = "Udvendige inputs";
-Blockly.Msg["FUNCTIONS_CALL_TITLE"] = "call";  // untranslated
-Blockly.Msg["FUNCTIONS_DEFAULT_BOOLEAN_ARG_NAME"] = "bool";  // untranslated
-Blockly.Msg["FUNCTIONS_DEFAULT_CUSTOM_ARG_NAME"] = "arg";  // untranslated
-Blockly.Msg["FUNCTIONS_DEFAULT_FUNCTION_NAME"] = "do_something";  // untranslated
-Blockly.Msg["FUNCTIONS_DEFAULT_NUMBER_ARG_NAME"] = "num";  // untranslated
-Blockly.Msg["FUNCTIONS_DEFAULT_STRING_ARG_NAME"] = "text";  // untranslated
-Blockly.Msg["FUNCTIONS_EDIT_OPTION"] = "Edit";  // untranslated
-Blockly.Msg["FUNCTION_CALL_TOOLTIP"] = "Call a function that was previously defined.";  // untranslated
-Blockly.Msg["FUNCTION_CREATE_NEW"] = "Create a Function";  // untranslated
-Blockly.Msg["FUNCTION_WARNING_ARG_NAME_IS_FUNCTION_NAME"] = "Argument names must not be the same as the function name.";  // untranslated
-Blockly.Msg["FUNCTION_WARNING_DUPLICATE_ARG"] = "Functions cannot use the same argument name more than once.";  // untranslated
-Blockly.Msg["FUNCTION_WARNING_EMPTY_NAME"] = "Function and argument names cannot be empty.";  // untranslated
 Blockly.Msg["HELP"] = "Hjælp";
 Blockly.Msg["INLINE_INPUTS"] = "Indlejrede inputs";
 Blockly.Msg["IOS_CANCEL"] = "Annuller";
@@ -302,9 +286,7 @@ Blockly.Msg["NEW_COLOUR_VARIABLE"] = "Create colour variable...";  // untranslat
 Blockly.Msg["NEW_NUMBER_VARIABLE"] = "Create number variable...";  // untranslated
 Blockly.Msg["NEW_STRING_VARIABLE"] = "Create string variable...";  // untranslated
 Blockly.Msg["NEW_VARIABLE"] = "Opret variabel ...";
-Blockly.Msg["NEW_VARIABLE_DROPDOWN"] = "New variable...";  // untranslated
 Blockly.Msg["NEW_VARIABLE_TITLE"] = "Navn til den nye variabel:";
-Blockly.Msg["NEW_VARIABLE_TYPE_DROPDOWN"] = "New %1 variable...";  // untranslated
 Blockly.Msg["NEW_VARIABLE_TYPE_TITLE"] = "New variable type:";  // untranslated
 Blockly.Msg["ORDINAL_NUMBER_SUFFIX"] = "";  // untranslated
 Blockly.Msg["PROCEDURES_ALLOW_STATEMENTS"] = "tillad erklæringer";
@@ -334,7 +316,7 @@ Blockly.Msg["PROCEDURES_MUTATORARG_TOOLTIP"] = "Tilføj en parameter til funktio
 Blockly.Msg["PROCEDURES_MUTATORCONTAINER_TITLE"] = "parametre";
 Blockly.Msg["PROCEDURES_MUTATORCONTAINER_TOOLTIP"] = "Tilføje, fjerne eller ændre rækkefølgen af parametre til denne funktion.";
 Blockly.Msg["REDO"] = "Omgør";
-Blockly.Msg["REMOVE_COMMENT"] = "Fjern kommentar";
+Blockly.Msg["REMOVE_COMMENT"] = "Fjern Kommentar";
 Blockly.Msg["RENAME_VARIABLE"] = "Omdøb variabel...";
 Blockly.Msg["RENAME_VARIABLE_TITLE"] = "Omdøb alle '%1' variabler til:";
 Blockly.Msg["TEXT_APPEND_HELPURL"] = "https://github.com/google/blockly/wiki/Text#text-modification";  // untranslated
@@ -407,6 +389,7 @@ Blockly.Msg["TEXT_TRIM_OPERATOR_RIGHT"] = "fjern mellemrum fra højre side af";
 Blockly.Msg["TEXT_TRIM_TOOLTIP"] = "Returner en kopi af teksten med mellemrum fjernet fra den ene eller begge sider.";
 Blockly.Msg["TODAY"] = "I dag";
 Blockly.Msg["UNDO"] = "Fortryd";
+Blockly.Msg["UNNAMED_KEY"] = "unavngivet";
 Blockly.Msg["VARIABLES_DEFAULT_NAME"] = "element";
 Blockly.Msg["VARIABLES_GET_CREATE_SET"] = "Opret 'sæt %1'";
 Blockly.Msg["VARIABLES_GET_HELPURL"] = "https://github.com/google/blockly/wiki/Variables#get";  // untranslated
@@ -417,6 +400,7 @@ Blockly.Msg["VARIABLES_SET_HELPURL"] = "https://github.com/google/blockly/wiki/V
 Blockly.Msg["VARIABLES_SET_TOOLTIP"] = "Sætter denne variabel til at være lig med input.";
 Blockly.Msg["VARIABLE_ALREADY_EXISTS"] = "En variabel med navnet »%1« findes allerede.";
 Blockly.Msg["VARIABLE_ALREADY_EXISTS_FOR_ANOTHER_TYPE"] = "En variabel med navnet »%1« findes allerede for en anden variabel af typen »%2«.";
+Blockly.Msg["WORKSPACE_ARIA_LABEL"] = "Blockly Workspace";  // untranslated
 Blockly.Msg["WORKSPACE_COMMENT_DEFAULT_TEXT"] = "Sig noget ...";
 Blockly.Msg["CONTROLS_FOREACH_INPUT_DO"] = Blockly.Msg["CONTROLS_REPEAT_INPUT_DO"];
 Blockly.Msg["CONTROLS_FOR_INPUT_DO"] = Blockly.Msg["CONTROLS_REPEAT_INPUT_DO"];
@@ -445,7 +429,6 @@ Blockly.Msg["LISTS_HUE"] = "260";
 Blockly.Msg["LOGIC_HUE"] = "210";
 Blockly.Msg["VARIABLES_HUE"] = "330";
 Blockly.Msg["TEXTS_HUE"] = "160";
-Blockly.Msg["REPORTERS_HUE"] = "290";
 Blockly.Msg["PROCEDURES_HUE"] = "290";
 Blockly.Msg["COLOUR_HUE"] = "20";
 Blockly.Msg["VARIABLES_DYNAMIC_HUE"] = "310";

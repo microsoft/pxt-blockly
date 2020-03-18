@@ -1,9 +1,6 @@
 /**
  * @license
- * Visual Blocks Editor
- *
- * Copyright 2011 Google Inc.
- * https://developers.google.com/blockly/
+ * Copyright 2011 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,11 +24,14 @@
 goog.provide('Blockly.Flyout');
 
 goog.require('Blockly.Block');
+goog.require('Blockly.blockRendering');
 goog.require('Blockly.Events');
 goog.require('Blockly.Events.BlockCreate');
 goog.require('Blockly.Events.VarCreate');
-goog.require('Blockly.FlyoutButton');
+goog.require('Blockly.FlyoutCursor');
 goog.require('Blockly.Gesture');
+goog.require('Blockly.Marker');
+goog.require('Blockly.Scrollbar');
 goog.require('Blockly.Tooltip');
 goog.require('Blockly.Touch');
 goog.require('Blockly.utils');
@@ -43,7 +43,8 @@ goog.require('Blockly.Xml');
 
 /**
  * Class for a flyout.
- * @param {!Blockly.WorkspaceOptions} workspaceOptions Dictionary of options for the workspace.
+ * @param {!Blockly.Options} workspaceOptions Dictionary of options for the
+ *     workspace.
  * @constructor
  */
 Blockly.Flyout = function(workspaceOptions) {
@@ -51,7 +52,7 @@ Blockly.Flyout = function(workspaceOptions) {
   workspaceOptions.setMetrics = this.setMetrics_.bind(this);
 
   /**
-   * @type {!Blockly.Workspace}
+   * @type {!Blockly.WorkspaceSvg}
    * @protected
    */
   this.workspace_ = new Blockly.WorkspaceSvg(workspaceOptions);
@@ -80,7 +81,7 @@ Blockly.Flyout = function(workspaceOptions) {
   /**
    * List of background mats that lurk behind each block to catch clicks
    * landing in the blocks' lakes and bays.
-   * @type {!Array.<!Element>}
+   * @type {!Array.<!SVGElement>}
    * @private
    */
   this.mats_ = [];
@@ -105,6 +106,14 @@ Blockly.Flyout = function(workspaceOptions) {
    * @private
    */
   this.permanentlyDisabled_ = [];
+
+  /**
+   * Width of output tab.
+   * @type {number}
+   * @protected
+   * @const
+   */
+  this.tabWidth_ = this.workspace_.getRenderer().getConstants().TAB_WIDTH;
 };
 
 /**
@@ -199,7 +208,7 @@ Blockly.Flyout.prototype.dragAngleRange_ = 70;
 /**
  * The svg or g element that contains the flyout dom (excluding scrollbar).
  * @type {SVGElement}
- * @private
+ * @package pxt-blockly
  */
 Blockly.Flyout.prototype.svgGroup_ = null;
 
@@ -213,7 +222,7 @@ Blockly.Flyout.prototype.scrollbar_ = null;
 /**
  * The workspace this flyout puts blocks on
  * @type {Blockly.WorkspaceSvg}
- * @private
+ * @package pxt-blockly
  */
 Blockly.Flyout.prototype.targetWorkspace_ = null;
 
@@ -223,7 +232,7 @@ Blockly.Flyout.prototype.targetWorkspace_ = null;
  * separate svg element.
  * @param {string} tagName The type of tag to put the flyout in. This
  *     should be <svg> or <g>.
- * @return {!Element} The flyout's SVG group.
+ * @return {!SVGElement} The flyout's SVG group.
  */
 Blockly.Flyout.prototype.createDom = function(tagName) {
   /*
@@ -239,13 +248,18 @@ Blockly.Flyout.prototype.createDom = function(tagName) {
   this.svgBackground_ = Blockly.utils.dom.createSvgElement('path',
       {'class': 'blocklyFlyoutBackground'}, this.svgGroup_);
   this.svgGroup_.appendChild(this.workspace_.createDom());
+  this.workspace_.getThemeManager().subscribe(
+      this.svgBackground_, 'flyoutBackgroundColour', 'fill');
+  this.workspace_.getThemeManager().subscribe(
+      this.svgBackground_, 'flyoutOpacity', 'fill-opacity');
+  this.workspace_.getMarkerManager().setCursor(new Blockly.FlyoutCursor());
   return this.svgGroup_;
 };
 
 /**
  * Initializes the flyout.
- * @param {!Blockly.Workspace} targetWorkspace The workspace in which to create
- *     new blocks.
+ * @param {!Blockly.WorkspaceSvg} targetWorkspace The workspace in which to
+ *     create new blocks.
  */
 Blockly.Flyout.prototype.init = function(targetWorkspace) {
   this.targetWorkspace_ = targetWorkspace;
@@ -274,7 +288,7 @@ Blockly.Flyout.prototype.init = function(targetWorkspace) {
       this.targetWorkspace_.getGesture.bind(this.targetWorkspace_);
 
   // Get variables from the main workspace rather than the target workspace.
-  this.workspace_.variableMap_  = this.targetWorkspace_.getVariableMap();
+  this.workspace_.setVariableMap(this.targetWorkspace_.getVariableMap());
 
   this.workspace_.createPotentialVariableMap();
 };
@@ -282,6 +296,7 @@ Blockly.Flyout.prototype.init = function(targetWorkspace) {
 /**
  * Dispose of this flyout.
  * Unlink from all DOM elements to prevent memory leaks.
+ * @suppress {checkTypes}
  */
 Blockly.Flyout.prototype.dispose = function() {
   this.hide();
@@ -296,6 +311,7 @@ Blockly.Flyout.prototype.dispose = function() {
     this.scrollbar_ = null;
   }
   if (this.workspace_) {
+    this.workspace_.getThemeManager().unsubscribe(this.svgBackground_);
     this.workspace_.targetWorkspace = null;
     this.workspace_.dispose();
     this.workspace_ = null;
@@ -380,7 +396,7 @@ Blockly.Flyout.prototype.updateDisplay_ = function() {
     show = this.isVisible();
   }
   this.svgGroup_.style.display = show ? 'block' : 'none';
-  // Update the scrollbar's visiblity too since it should mimic the
+  // Update the scrollbar's visibility too since it should mimic the
   // flyout's visibility.
   this.scrollbar_.setContainerVisible(show);
 };
@@ -435,7 +451,8 @@ Blockly.Flyout.prototype.hide = function() {
  * @private
  */
 Blockly.Flyout.prototype.clearOldEventListeners_ = function () {
-  for (var x = 0, listen; listen = this.listeners_[x]; x++) {
+  // Delete all the event listeners.
+  for (var i = 0, listen; (listen = this.listeners_[i]); i++) {
     Blockly.unbindEvent_(listen);
   }
   this.listeners_.length = 0;
@@ -447,7 +464,7 @@ Blockly.Flyout.prototype.clearOldEventListeners_ = function () {
 
 /**
  * Show and populate the flyout.
- * @param {!Array|string} xmlList List of blocks to show.
+ * @param {!Array|!NodeList|string} xmlList List of blocks to show.
  *     Variables and procedures have a custom set of blocks.
  */
 Blockly.Flyout.prototype.show = function (xmlList) {
@@ -479,7 +496,7 @@ Blockly.Flyout.prototype.show = function (xmlList) {
   var gaps = [];
   this.permanentlyDisabled_.length = 0;
   var default_gap = this.horizontalLayout_ ? this.GAP_X : this.GAP_Y;
-  for (var i = 0, xml; xml = xmlList[i]; i++) {
+  for (var i = 0, xml; (xml = xmlList[i]); i++) {
     if (!xml.tagName) {
       continue;
     }
@@ -513,6 +530,9 @@ Blockly.Flyout.prototype.show = function (xmlList) {
       case 'LABEL':
       case 'BUTTON':
         var isLabel = xml.tagName.toUpperCase() == 'LABEL';
+        if (!Blockly.FlyoutButton) {
+          throw Error('Missing require for Blockly.FlyoutButton');
+        }
         var curButton = new Blockly.FlyoutButton(this.workspace_,
             this.targetWorkspace_, xml, isLabel);
         contents.push({type: 'button', button: curButton});
@@ -527,7 +547,7 @@ Blockly.Flyout.prototype.show = function (xmlList) {
   // When the mouse is over the background, deselect all blocks.
   var deselectAll = function() {
     var topBlocks = this.workspace_.getTopBlocks(false);
-    for (var i = 0, block; block = topBlocks[i]; i++) {
+    for (var i = 0, block; (block = topBlocks[i]); i++) {
       block.removeSelect();
     }
   };
@@ -559,7 +579,7 @@ Blockly.Flyout.prototype.show = function (xmlList) {
 Blockly.Flyout.prototype.clearOldBlocks_ = function() {
   // Delete any blocks from a previous showing.
   var oldBlocks = this.workspace_.getTopBlocks(false);
-  for (var i = 0, block; block = oldBlocks[i]; i++) {
+  for (var i = 0, block; (block = oldBlocks[i]); i++) {
     if (block.workspace == this.workspace_) {
       block.dispose(false, false);
     }
@@ -573,7 +593,7 @@ Blockly.Flyout.prototype.clearOldBlocks_ = function() {
   }
   this.mats_.length = 0;
   // Delete any buttons from a previous showing.
-  for (var i = 0, button; button = this.buttons_[i]; i++) {
+  for (var i = 0, button; (button = this.buttons_[i]); i++) {
     button.dispose();
   }
   this.buttons_.length = 0;
@@ -584,10 +604,10 @@ Blockly.Flyout.prototype.clearOldBlocks_ = function() {
 
 /**
  * Add listeners to a block that has been added to the flyout.
- * @param {!Element} root The root node of the SVG group the block is in.
+ * @param {!SVGElement} root The root node of the SVG group the block is in.
  * @param {!Blockly.Block} block The block to add listeners for.
- * @param {!Element} rect The invisible rectangle under the block that acts as
- *     a mat for that block.
+ * @param {!SVGElement} rect The invisible rectangle under the block that acts
+ *     as a mat for that block.
  * @protected
  */
 Blockly.Flyout.prototype.addBlockListeners_ = function(root, block, rect) {
@@ -755,16 +775,16 @@ Blockly.Flyout.prototype.moveRectToBlock_ = function(rect, block) {
 
   // For hat blocks we want to shift them down by the hat height
   // since the y coordinate is the corner, not the top of the hat.
-  var hatOffset =
-      block.startHat_ ? Blockly.BlockSvg.START_HAT_HEIGHT : 0;
-  if (hatOffset) {
-    block.moveBy(0, hatOffset);
-  }
+  // TODO shakao check if necessary
+  // var hatOffset =
+  //     block.startHat_ ? Blockly.BlockSvg.START_HAT_HEIGHT : 0;
+  // if (hatOffset) {
+  //   block.moveBy(0, hatOffset);
+  // }
 
   var blockXY = block.getRelativeToSurfaceXY();
   rect.setAttribute('y', blockXY.y);
-  rect.setAttribute('x',
-      this.RTL ? blockXY.x - blockHW.width : blockXY.x);
+  rect.setAttribute('x', this.RTL ? blockXY.x - blockHW.width : blockXY.x);
 };
 
 /**
@@ -775,7 +795,7 @@ Blockly.Flyout.prototype.moveRectToBlock_ = function(rect, block) {
  */
 Blockly.Flyout.prototype.filterForCapacity_ = function() {
   var blocks = this.workspace_.getTopBlocks(false);
-  for (var i = 0, block; block = blocks[i]; i++) {
+  for (var i = 0, block; (block = blocks[i]); i++) {
     if (this.permanentlyDisabled_.indexOf(block) == -1) {
       var enable = this.targetWorkspace_
           .isCapacityAvailable(Blockly.utils.getBlockTypeCounts(block));
@@ -811,8 +831,8 @@ Blockly.Flyout.prototype.isScrollable = function() {
 
 /**
  * Copy a block from the flyout to the workspace and position it correctly.
- * @param {!Blockly.Block} oldBlock The flyout block to copy.
- * @return {!Blockly.Block} The new block in the main workspace.
+ * @param {!Blockly.BlockSvg} oldBlock The flyout block to copy.
+ * @return {!Blockly.BlockSvg} The new block in the main workspace.
  * @private
  */
 Blockly.Flyout.prototype.placeNewBlock_ = function(oldBlock) {
@@ -846,7 +866,8 @@ Blockly.Flyout.prototype.placeNewBlock_ = function(oldBlock) {
 
   // Using domToBlock instead of domToWorkspace means that the new block will be
   // placed at position (0, 0) in main workspace units.
-  var block = Blockly.Xml.domToBlock(xml, targetWorkspace);
+  var block = /** @type {!Blockly.BlockSvg} */
+      (Blockly.Xml.domToBlock(xml, targetWorkspace));
   var svgRootNew = block.getSvgRoot();
   if (!svgRootNew) {
     throw Error('block is not rendered.');
@@ -880,4 +901,16 @@ Blockly.Flyout.prototype.placeNewBlock_ = function(oldBlock) {
 
   block.moveBy(finalOffset.x, finalOffset.y);
   return block;
+};
+
+/**
+ * Handles the given action.
+ * This is only triggered when keyboard accessibility mode is enabled.
+ * @param {!Blockly.Action} action The action to be handled.
+ * @return {boolean} True if the flyout handled the action, false otherwise.
+ * @package
+ */
+Blockly.Flyout.prototype.onBlocklyAction = function(action) {
+  var cursor = this.workspace_.getCursor();
+  return cursor.onBlocklyAction(action);
 };

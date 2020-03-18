@@ -30,6 +30,8 @@
 goog.provide('Blockly.FieldIconMenu');
 
 goog.require('Blockly.DropDownDiv');
+goog.require('Blockly.utils.object');
+
 
 /**
  * Class for an icon menu field.
@@ -47,7 +49,7 @@ Blockly.FieldIconMenu = function(icons) {
   Blockly.FieldIconMenu.superClass_.constructor.call(this, defaultValue);
   this.addArgType('iconmenu');
 };
-goog.inherits(Blockly.FieldIconMenu, Blockly.Field);
+Blockly.utils.object.inherits(Blockly.FieldIconMenu, Blockly.Field);
 
 /**
  * Construct a FieldIconMenu from a JSON arg object.
@@ -299,4 +301,4 @@ Blockly.FieldIconMenu.prototype.onHide_ = function() {
   this.arrowIcon_.setAttribute('transform', 'translate(' + this.arrowX_ + ',' + this.arrowY_ + ')');
 };
 
-Blockly.Field.register('field_iconmenu', Blockly.FieldIconMenu);
+Blockly.fieldRegistry.register('field_iconmenu', Blockly.FieldIconMenu);

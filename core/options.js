@@ -3,10 +3,7 @@
  */
 /**
  * @license
- * Visual Blocks Editor
- *
- * Copyright 2016 Google Inc.
- * https://developers.google.com/blockly/
+ * Copyright 2016 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +27,9 @@
 goog.provide('Blockly.Options');
 goog.require('Blockly.Colours');
 
+goog.require('Blockly.Theme');
 goog.require('Blockly.Themes.Classic');
+goog.require('Blockly.user.keyMap');
 goog.require('Blockly.utils.userAgent');
 goog.require('Blockly.Xml');
 
@@ -38,8 +37,8 @@ goog.require('Blockly.Xml');
 /**
  * Parse the user-specified options, using reasonable defaults where behaviour
  * is unspecified.
- * @param {!Object} options Dictionary of options.  Specification:
- *   https://developers.google.com/blockly/guides/get-started/web#configuration
+ * @param {!Blockly.BlocklyOptions} options Dictionary of options.
+ *     Specification: https://developers.google.com/blockly/guides/get-started/web#configuration
  * @constructor
  */
 Blockly.Options = function(options) {
@@ -89,6 +88,10 @@ Blockly.Options = function(options) {
     if (hasSounds === undefined) {
       hasSounds = true;
     }
+    var hasInline = options['inline'];
+    if (hasInline === undefined) {
+      hasInline = false;
+    }
   }
   var rtl = !!options['rtl'];
   var horizontalLayout = options['horizontalLayout'];
@@ -126,7 +129,9 @@ Blockly.Options = function(options) {
   } else {
     var oneBasedIndex = !!options['oneBasedIndex'];
   }
-  var theme = options['theme'] || Blockly.Themes.Classic;
+  var keyMap = options['keyMap'] || Blockly.user.keyMap.createDefaultKeyMap();
+
+  var renderer = options['renderer'] || 'geras';
 
   // Colour overrides provided by the injection
   var colours = options['colours'];
@@ -150,6 +155,7 @@ Blockly.Options = function(options) {
   this.readOnly = readOnly;
   this.maxBlocks = options['maxBlocks'] || Infinity;
   this.maxInstances = options['maxInstances'];
+  this.inline = hasInline; // pxt-blockly
   // pxt-blockly: consumers can specify whether to use old or new functions implementation
   this.newFunctions = options['newFunctions'] == true;
   this.pathToMedia = pathToMedia;
@@ -166,9 +172,9 @@ Blockly.Options = function(options) {
   this.gridOptions = Blockly.Options.parseGridOptions_(options);
   this.zoomOptions = Blockly.Options.parseZoomOptions_(options);
   this.toolboxPosition = toolboxPosition;
-  this.theme = theme;
 
   // PXT specific:
+  // TODO shakao remove options (toolbox owned by pxt)
   var toolboxOptions = options['toolboxOptions'] || {};
   this.toolboxOptions = {};
   if (toolboxOptions["border"] == undefined) {
@@ -191,7 +197,17 @@ Blockly.Options = function(options) {
   this.toolboxOptions.inverted = toolboxOptions["inverted"];
   this.toolboxOptions.invertedMultiplier = toolboxOptions["invertedMultiplier"];
   this.toolboxOptions.disabledOpacity = toolboxOptions["disabledOpacity"];
+  this.theme = Blockly.Options.parseThemeOptions_(options);
+  this.keyMap = keyMap;
+  this.renderer = renderer;
 };
+
+/**
+ * Blockly options.
+ * This interface is further described in `typings/blockly-interfaces.d.ts`.
+ * @interface
+ */
+Blockly.BlocklyOptions = function() {};
 
 /**
  * The parent of the current workspace, or null if there is no parent workspace.
@@ -201,14 +217,17 @@ Blockly.Options.prototype.parentWorkspace = null;
 
 /**
  * If set, sets the translation of the workspace to match the scrollbars.
+ * @param {!Object} xyRatio Contains an x and/or y property which is a float
+ *     between 0 and 1 specifying the degree of scrolling.
+ * @return {void}
  */
-Blockly.Options.prototype.setMetrics = null;
+Blockly.Options.prototype.setMetrics;
 
 /**
  * Return an object with the metrics required to size the workspace.
- * @return {Object} Contains size and position metrics, or null.
+ * @return {!Object} Contains size and position metrics.
  */
-Blockly.Options.prototype.getMetrics = null;
+Blockly.Options.prototype.getMetrics;
 
 /**
  * Parse the user-specified move options, using reasonable defaults where
@@ -267,22 +286,27 @@ Blockly.Options.parseZoomOptions_ = function(options) {
   if (zoom['startScale'] === undefined) {
     zoomOptions.startScale = 1;
   } else {
-    zoomOptions.startScale = parseFloat(zoom['startScale']);
+    zoomOptions.startScale = Number(zoom['startScale']);
   }
   if (zoom['maxScale'] === undefined) {
     zoomOptions.maxScale = 3;
   } else {
-    zoomOptions.maxScale = parseFloat(zoom['maxScale']);
+    zoomOptions.maxScale = Number(zoom['maxScale']);
   }
   if (zoom['minScale'] === undefined) {
     zoomOptions.minScale = 0.3;
   } else {
-    zoomOptions.minScale = parseFloat(zoom['minScale']);
+    zoomOptions.minScale = Number(zoom['minScale']);
   }
   if (zoom['scaleSpeed'] === undefined) {
     zoomOptions.scaleSpeed = 1.2;
   } else {
-    zoomOptions.scaleSpeed = parseFloat(zoom['scaleSpeed']);
+    zoomOptions.scaleSpeed = Number(zoom['scaleSpeed']);
+  }
+  if (zoom['pinch'] === undefined) {
+    zoomOptions.pinch = zoomOptions.wheel || zoomOptions.controls;
+  } else {
+    zoomOptions.pinch = !!zoom['pinch'];
   }
   return zoomOptions;
 };
@@ -298,9 +322,10 @@ Blockly.Options.parseZoomOptions_ = function(options) {
 Blockly.Options.parseGridOptions_ = function(options) {
   var grid = options['grid'] || {};
   var gridOptions = {};
-  gridOptions.spacing = parseFloat(grid['spacing']) || 0;
+  gridOptions.spacing = Number(grid['spacing']) || 0;
   gridOptions.colour = grid['colour'] || '#888';
-  gridOptions.length = parseFloat(grid['length']) || 1;
+  gridOptions.length =
+      (grid['length'] === undefined) ? 1 : Number(grid['length']);
   gridOptions.snap = gridOptions.spacing > 0 && !!grid['snap'];
 
   // pxt-blockly: specify custom image bg for workspace
@@ -321,6 +346,22 @@ Blockly.Options.parseGridImageOptions_ = function(options) {
   imageOptions.width = imageOptions.width || 100;
   imageOptions.height = imageOptions.height || 100;
   return imageOptions;
+};
+
+/**
+ * Parse the user-specified theme options, using the classic theme as a default.
+ *   https://developers.google.com/blockly/guides/configure/web/themes
+ * @param {!Object} options Dictionary of options.
+ * @return {!Blockly.Theme} A Blockly Theme.
+ * @private
+ */
+Blockly.Options.parseThemeOptions_ = function(options) {
+  var theme = options['theme'] || Blockly.Themes.Classic;
+  if (theme instanceof Blockly.Theme) {
+    return /** @type {!Blockly.Theme} */ (theme);
+  }
+  return new Blockly.Theme('builtin',
+      theme['blockStyles'], theme['categoryStyles'], theme['componentStyles']);
 };
 
 /**

@@ -1,9 +1,6 @@
 /**
  * @license
- * Visual Blocks Editor
- *
- * Copyright 2013 Google Inc.
- * https://developers.google.com/blockly/
+ * Copyright 2013 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,16 +29,8 @@
  */
 goog.provide('Blockly.WidgetDiv');
 
-goog.require('Blockly.Css');
+goog.require('Blockly.utils.style');
 
-goog.require('goog.style');
-
-
-/**
- * The HTML container.  Set once by Blockly.WidgetDiv.createDom.
- * @type {Element}
- */
-Blockly.WidgetDiv.DIV = null;
 
 /**
  * The object currently using this container.
@@ -58,13 +47,30 @@ Blockly.WidgetDiv.owner_ = null;
 Blockly.WidgetDiv.dispose_ = null;
 
 /**
+ * A class name representing the current owner's workspace renderer.
+ * @type {?string}
+ * @private
+ */
+Blockly.WidgetDiv.rendererClassName_ = null;
+
+/**
+ * A class name representing the current owner's workspace theme.
+ * @type {?string}
+ * @private
+ */
+Blockly.WidgetDiv.themeClassName_ = null;
+
+/**
  * Create the widget div and inject it onto the page.
  */
 Blockly.WidgetDiv.createDom = function() {
   if (Blockly.WidgetDiv.DIV) {
     return;  // Already created.
   }
-  // Create an HTML container for popup overlays (e.g. editor widgets).
+  /**
+   * The HTML container for popup overlays (e.g. editor widgets).
+   * @type {!Element}
+   */
   Blockly.WidgetDiv.DIV = document.createElement('div');
   Blockly.WidgetDiv.DIV.className = 'blocklyWidgetDiv';
   document.body.appendChild(Blockly.WidgetDiv.DIV);
@@ -81,12 +87,15 @@ Blockly.WidgetDiv.show = function(newOwner, rtl, dispose) {
   Blockly.WidgetDiv.hide();
   Blockly.WidgetDiv.owner_ = newOwner;
   Blockly.WidgetDiv.dispose_ = dispose;
-  // Temporarily move the widget to the top of the screen so that it does not
-  // cause a scrollbar jump in Firefox when displayed.
-  var xy = goog.style.getViewportPageOffset(document);
-  Blockly.WidgetDiv.DIV.style.top = xy.y + 'px';
-  Blockly.WidgetDiv.DIV.style.direction = rtl ? 'rtl' : 'ltr';
-  Blockly.WidgetDiv.DIV.style.display = 'block';
+  var div = Blockly.WidgetDiv.DIV;
+  div.style.direction = rtl ? 'rtl' : 'ltr';
+  div.style.display = 'block';
+  Blockly.WidgetDiv.rendererClassName_ =
+      Blockly.getMainWorkspace().getRenderer().name + '-renderer';
+  Blockly.WidgetDiv.themeClassName_ =
+      Blockly.getMainWorkspace().getTheme().name + '-theme';
+  Blockly.utils.dom.addClass(div, Blockly.WidgetDiv.rendererClassName_);
+  Blockly.utils.dom.addClass(div, Blockly.WidgetDiv.themeClassName_);
 };
 
 /**
@@ -114,14 +123,26 @@ Blockly.WidgetDiv.repositionForWindowResize = function() {
  * Destroy the widget and hide the div.
  */
 Blockly.WidgetDiv.hide = function() {
+  var div = Blockly.WidgetDiv.DIV;
   if (Blockly.WidgetDiv.owner_) {
     Blockly.WidgetDiv.owner_ = null;
-    Blockly.WidgetDiv.DIV.style.display = 'none';
-    Blockly.WidgetDiv.DIV.style.left = '';
-    Blockly.WidgetDiv.DIV.style.top = '';
+    div.style.display = 'none';
+    div.style.left = '';
+    div.style.top = '';
     Blockly.WidgetDiv.dispose_ && Blockly.WidgetDiv.dispose_();
     Blockly.WidgetDiv.dispose_ = null;
-    Blockly.WidgetDiv.DIV.innerHTML = '';
+    div.innerHTML = '';
+  }
+  if (Blockly.WidgetDiv.rendererClassName_) {
+    Blockly.utils.dom.removeClass(div, Blockly.WidgetDiv.rendererClassName_);
+    Blockly.WidgetDiv.rendererClassName_ = null;
+  }
+  if (Blockly.WidgetDiv.themeClassName_) {
+    Blockly.utils.dom.removeClass(div, Blockly.WidgetDiv.themeClassName_);
+    Blockly.WidgetDiv.themeClassName_ = null;
+  }
+  if (Blockly.getMainWorkspace()) {
+    Blockly.getMainWorkspace().markFocused();
   }
 };
 
@@ -167,7 +188,7 @@ Blockly.WidgetDiv.positionInternal_ = function(x, y, height) {
  *     in window coordinates.
  * @param {!Object} anchorBBox The bounding rectangle of the anchor, in window
  *     coordinates.
- * @param {!goog.math.Size} widgetSize The size of the widget that is inside the
+ * @param {!Blockly.utils.Size} widgetSize The size of the widget that is inside the
  *     widget div, in window coordinates.
  * @param {boolean} rtl Whether the workspace is in RTL mode.  This determines
  *     horizontal alignment.
@@ -193,7 +214,7 @@ Blockly.WidgetDiv.positionWithAnchor = function(viewportBBox, anchorBBox,
  *     in window coordinates.
  * @param {!Object} anchorBBox The bounding rectangle of the anchor, in window
  *     coordinates.
- * @param {goog.math.Size} widgetSize The dimensions of the widget inside the
+ * @param {Blockly.utils.Size} widgetSize The dimensions of the widget inside the
  *     widget div.
  * @param {boolean} rtl Whether the Blockly workspace is in RTL mode.
  * @return {number} A valid x-coordinate for the top left corner of the widget
@@ -225,7 +246,7 @@ Blockly.WidgetDiv.calculateX_ = function(viewportBBox, anchorBBox, widgetSize,
  *     in window coordinates.
  * @param {!Object} anchorBBox The bounding rectangle of the anchor, in window
  *     coordinates.
- * @param {goog.math.Size} widgetSize The dimensions of the widget inside the
+ * @param {Blockly.utils.Size} widgetSize The dimensions of the widget inside the
  *     widget div.
  * @return {number} A valid y-coordinate for the top left corner of the widget
  *     div, in window coordinates.

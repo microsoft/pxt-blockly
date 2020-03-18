@@ -1,9 +1,6 @@
 /**
  * @license
- * Visual Blocks Editor
- *
- * Copyright 2017 Google Inc.
- * https://developers.google.com/blockly/
+ * Copyright 2017 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,8 +25,6 @@ goog.provide('Blockly.InsertionMarkerManager');
 
 goog.require('Blockly.blockAnimations');
 goog.require('Blockly.Events');
-goog.require('Blockly.RenderedConnection');
-goog.require('Blockly.utils.Coordinate');
 
 
 /**
@@ -37,17 +32,15 @@ goog.require('Blockly.utils.Coordinate');
  * responsible for finding the closest eligible connection and highlighting or
  * unhiglighting it as needed during a drag.
  * @param {!Blockly.BlockSvg} block The top block in the stack being dragged.
- * @param {!Blockly.utils.Coordinate} handleXY Position where the mouse down
- *          that started the drag occured in workspace units (pxtblockly)
  * @constructor
  */
-Blockly.InsertionMarkerManager = function(block, handleXY) {
+Blockly.InsertionMarkerManager = function(block) {
   Blockly.selected = block;
 
   /**
    * The top block in the stack being dragged.
    * Does not change during a drag.
-   * @type {!Blockly.Block}
+   * @type {!Blockly.BlockSvg}
    * @private
    */
   this.topBlock_ = block;
@@ -81,7 +74,6 @@ Blockly.InsertionMarkerManager = function(block, handleXY) {
   /**
    * The insertion marker that shows up between blocks to show where a block
    * would go if dropped immediately.
-   * This is the scratch-blocks equivalent of connection highlighting.
    * @type {Blockly.BlockSvg}
    * @private
    */
@@ -118,7 +110,6 @@ Blockly.InsertionMarkerManager = function(block, handleXY) {
   /**
    * Connection on the insertion marker block that corresponds to
    * this.localConnection_ on the currently dragged block.
-   * This is part of the scratch-blocks equivalent of connection highlighting.
    * @type {Blockly.RenderedConnection}
    * @private
    */
@@ -148,17 +139,6 @@ Blockly.InsertionMarkerManager = function(block, handleXY) {
    * @private
    */
   this.availableConnections_ = this.initAvailableConnections_();
-
-  // pxtblockly: select target connections based on user's handle on the block
-  if (block.outputConnection) {
-    var coord = new Blockly.utils.Coordinate(block.outputConnection.x_, block.outputConnection.y_);
-    this.handleDXY = Blockly.utils.Coordinate.difference(handleXY, coord);
-    // Fade the dragging block to make targets easier to see.
-    this.workspace_.getBlockDragSurface().setOpacity(0.7);
-  }
-  else {
-    this.handleDXY = new Blockly.utils.Coordinate(0, 0);
-  }
 };
 
 /**
@@ -166,30 +146,19 @@ Blockly.InsertionMarkerManager = function(block, handleXY) {
  * @package
  */
 Blockly.InsertionMarkerManager.prototype.dispose = function() {
-  // pxt-blockly: Unfade the dragging block.
-  this.workspace_.getBlockDragSurface().setOpacity(1);
-
-  this.topBlock_ = null;
-  this.workspace_ = null;
   this.availableConnections_.length = 0;
-  this.closestConnection_ = null;
-  this.localConnection_ = null;
 
   Blockly.Events.disable();
   try {
     if (this.firstMarker_) {
       this.firstMarker_.dispose();
-      this.firstMarker_ = null;
     }
     if (this.lastMarker_) {
       this.lastMarker_.dispose();
-      this.lastMarker_ = null;
     }
   } finally {
     Blockly.Events.enable();
   }
-
-  this.highlightedBlock_ = null;
 };
 
 /**
@@ -265,28 +234,6 @@ Blockly.InsertionMarkerManager.prototype.update = function(dxy, deleteArea) {
 };
 
 /**
- * Remove highlighting from the currently highlighted connection, if it exists.
- * @private
- */
-Blockly.InsertionMarkerManager.prototype.removeHighlighting_ = function() {
-  if (this.closestConnection_) {
-    this.closestConnection_.unhighlight();
-  }
-};
-
-/**
- * Add highlighting to the closest connection, if it exists.
- * @private
- */
-Blockly.InsertionMarkerManager.prototype.addHighlighting_ = function() {
-  if (this.closestConnection_) {
-    this.closestConnection_.highlight();
-  }
-};
-
-/**** Begin initialization functions ****/
-
-/**
  * Create an insertion marker that represents the given block.
  * @param {!Blockly.BlockSvg} sourceBlock The block that the insertion marker
  *     will represent.
@@ -300,22 +247,26 @@ Blockly.InsertionMarkerManager.prototype.createMarkerBlock_ = function(sourceBlo
   Blockly.Events.disable();
   try {
     var result = this.workspace_.newBlock(imType);
-    result.setInsertionMarker(true, sourceBlock.width);
-    result.setCollapsed(sourceBlock.isCollapsed());
+    result.setInsertionMarker(true);
     if (sourceBlock.mutationToDom) {
       var oldMutationDom = sourceBlock.mutationToDom();
       if (oldMutationDom) {
         result.domToMutation(oldMutationDom);
       }
     }
+    result.setCollapsed(sourceBlock.isCollapsed());
     // Copy field values from the other block.  These values may impact the
     // rendered size of the insertion marker.  Note that we do not care about
     // child blocks here.
     for (var i = 0; i < sourceBlock.inputList.length; i++) {
-      var input = sourceBlock.inputList[i];
-      for (var j = 0; j < input.fieldRow.length; j++) {
-        var field = input.fieldRow[j];
-        result.setFieldValue(field.getValue(), field.name);
+      var sourceInput = sourceBlock.inputList[i];
+      if (sourceInput.isVisible()) { // pxt-blockly
+        var resultInput = result.inputList[i];
+        for (var j = 0; j < sourceInput.fieldRow.length; j++) {
+          var sourceField = sourceInput.fieldRow[j];
+          var resultField = resultInput.fieldRow[j];
+          resultField.setValue(sourceField.getValue());
+        }
       }
     }
 
@@ -344,13 +295,10 @@ Blockly.InsertionMarkerManager.prototype.initAvailableConnections_ = function() 
   if (lastOnStack && lastOnStack != this.topBlock_.nextConnection) {
     available.push(lastOnStack);
     this.lastOnStack_ = lastOnStack;
-    this.lastMarker_ = this.createMarkerBlock_(lastOnStack.sourceBlock_);
+    this.lastMarker_ = this.createMarkerBlock_(lastOnStack.getSourceBlock());
   }
   return available;
 };
-
-/**** End initialization functions ****/
-
 
 /**
  * Whether the previews (insertion marker and replacement marker) should be
@@ -370,7 +318,6 @@ Blockly.InsertionMarkerManager.prototype.shouldUpdatePreviews_ = function(
 
   // Found a connection!
   if (candidateLocal && candidateClosest) {
-    // TODO shakao verify if candidateLocal.type == Blockly.OUTPUT_VALUE check needed
     // We're already showing an insertion marker.
     // Decide whether the new connection has higher priority.
     if (this.localConnection_ && this.closestConnection_) {
@@ -379,11 +326,11 @@ Blockly.InsertionMarkerManager.prototype.shouldUpdatePreviews_ = function(
           this.localConnection_ == candidateLocal) {
         return false;
       }
-      var xDiff = this.localConnection_.x_ + dxy.x - this.closestConnection_.x_;
-      var yDiff = this.localConnection_.y_ + dxy.y - this.closestConnection_.y_;
+      var xDiff = this.localConnection_.x + dxy.x - this.closestConnection_.x;
+      var yDiff = this.localConnection_.y + dxy.y - this.closestConnection_.y;
       var curDistance = Math.sqrt(xDiff * xDiff + yDiff * yDiff);
       // Slightly prefer the existing preview over a new preview.
-      return  !(candidateClosest && radius > curDistance -
+      return !(candidateClosest && radius > curDistance -
           Blockly.CURRENT_CONNECTION_PREFERENCE);
     } else if (!this.localConnection_ && !this.closestConnection_) {
     // We weren't showing a preview before, but we should now.
@@ -407,6 +354,7 @@ Blockly.InsertionMarkerManager.prototype.shouldUpdatePreviews_ = function(
  *     in workspace units.
  * @return {!Object} An object containing a local connection, a closest
  *     connection, and a radius.
+ * @private
  */
 Blockly.InsertionMarkerManager.prototype.getCandidate_ = function(dxy) {
   var radius = this.getStartRadius_();
@@ -415,14 +363,7 @@ Blockly.InsertionMarkerManager.prototype.getCandidate_ = function(dxy) {
 
   for (var i = 0; i < this.availableConnections_.length; i++) {
     var myConnection = this.availableConnections_[i];
-
-    // pxtblockly: for output connections select the target based on the user's "handle"
-    var offsetxy = dxy;
-    if (this.topBlock_.outputConnection === myConnection) {
-      offsetxy = Blockly.utils.Coordinate.sum(dxy, this.handleDXY);
-    }
-
-    var neighbour = myConnection.closest(radius, offsetxy);
+    var neighbour = myConnection.closest(radius, dxy);
     if (neighbour.connection) {
       candidateClosest = neighbour.connection;
       candidateLocal = myConnection;
@@ -466,16 +407,21 @@ Blockly.InsertionMarkerManager.prototype.shouldReplace_ = function() {
   var closest = this.closestConnection_;
   var local = this.localConnection_;
 
-  // TODO shakao check if need additional blockly checks
-  // Dragging a block over an existing block in an input should replace the
-  // existing block and bump it out.
+  // Dragging a block over an existing block in an input.
   if (local.type == Blockly.OUTPUT_VALUE) {
+    // Insert the dragged block into the stack if possible.
+    if (closest &&
+        this.workspace_.getRenderer()
+            .shouldInsertDraggedBlock(this.topBlock_, closest)) {
+      return false; // Insert.
+    }
+    // Otherwise replace the existing block and bump it out.
     return true; // Replace.
   }
 
   // Connecting to a statement input of c-block is an insertion, even if that
   // c-block is terminal (e.g. forever).
-  if (local == local.sourceBlock_.getFirstStatementConnection()) {
+  if (local == local.getSourceBlock().getFirstStatementConnection()) {
     return false; // Insert.
   }
 
@@ -514,8 +460,6 @@ Blockly.InsertionMarkerManager.prototype.shouldDelete_ = function(candidate,
   return wouldDelete && !wouldConnect;
 };
 
-/**** Begin preview visibility functions ****/
-
 /**
  * Show an insertion marker or replacement highlighting during a drag, if
  * needed.
@@ -540,8 +484,8 @@ Blockly.InsertionMarkerManager.prototype.maybeShowPreview_ = function(candidate)
 
   // Something went wrong and we're trying to connect to an invalid connection.
   if (closest == this.closestConnection_ ||
-      closest.sourceBlock_.isInsertionMarker()) {
-    console.log("trying to connect to an insertion marker");
+      closest.getSourceBlock().isInsertionMarker()) {
+    console.log('Trying to connect to an insertion marker');
     return;
   }
   // Add an insertion marker or replacement marker.
@@ -560,6 +504,12 @@ Blockly.InsertionMarkerManager.prototype.showPreview_ = function() {
     this.highlightBlock_();
   } else {  // Should insert
     this.connectMarker_();
+  }
+  // Also highlight the actual connection, as a nod to previous behaviour.
+  if (this.closestConnection_ && this.closestConnection_.targetBlock() &&
+      this.workspace_.getRenderer()
+          .shouldHighlightConnection(this.closestConnection_)) {
+    this.closestConnection_.highlight();
   }
 };
 
@@ -602,7 +552,9 @@ Blockly.InsertionMarkerManager.prototype.maybeHidePreview_ = function(candidate)
  * @private
  */
 Blockly.InsertionMarkerManager.prototype.hidePreview_ = function() {
-  if (this.closestConnection_) {
+  if (this.closestConnection_ && this.closestConnection_.targetBlock() &&
+      this.workspace_.getRenderer()
+          .shouldHighlightConnection(this.closestConnection_)) {
     this.closestConnection_.unhighlight();
   }
   if (this.highlightingBlock_) {
@@ -612,15 +564,9 @@ Blockly.InsertionMarkerManager.prototype.hidePreview_ = function() {
   }
 };
 
-/**** End preview visibility functions ****/
-
-/**** Begin block highlighting functions ****/
-// TODO shakao check if still necessary
-
 /**
  * Add highlighting showing which block will be replaced.
- * Scratch-specific code, where "highlighting" applies to a block rather than
- * a connection.
+ * @private
  */
 Blockly.InsertionMarkerManager.prototype.highlightBlock_ = function() {
   var closest = this.closestConnection_;
@@ -629,17 +575,15 @@ Blockly.InsertionMarkerManager.prototype.highlightBlock_ = function() {
     this.highlightedBlock_ = closest.targetBlock();
     closest.targetBlock().highlightForReplacement(true);
   } else if (local.type == Blockly.OUTPUT_VALUE) {
-    this.highlightedBlock_ = closest.sourceBlock_;
-    // TODO: remove?
-    closest.sourceBlock_.highlightShapeForInput(closest, true);
+    this.highlightedBlock_ = closest.getSourceBlock();
+    closest.getSourceBlock().highlightShapeForInput(closest, true);
   }
   this.highlightingBlock_ = true;
 };
 
 /**
  * Get rid of the highlighting marking the block that will be replaced.
- * Scratch-specific code, where "highlighting" applies to a block rather than
- * a connection.
+ * @private
  */
 Blockly.InsertionMarkerManager.prototype.unhighlightBlock_ = function() {
   var closest = this.closestConnection_;
@@ -654,10 +598,6 @@ Blockly.InsertionMarkerManager.prototype.unhighlightBlock_ = function() {
   this.highlightingBlock_ = false;
 };
 
-/**** End block highlighting functions ****/
-
-/**** Begin insertion marker display functions ****/
-
 /**
  * Disconnect the insertion marker block in a manner that returns the stack to
  * original state.
@@ -670,7 +610,7 @@ Blockly.InsertionMarkerManager.prototype.disconnectMarker_ = function() {
   }
 
   var imConn = this.markerConnection_;
-  var imBlock = imConn.sourceBlock_;
+  var imBlock = imConn.getSourceBlock();
   var markerNext = imBlock.nextConnection;
   var markerPrev = imBlock.previousConnection;
   var markerOutput = imBlock.outputConnection;
@@ -688,7 +628,7 @@ Blockly.InsertionMarkerManager.prototype.disconnectMarker_ = function() {
   // Inside of a C-block, first statement connection.
   else if (imConn.type == Blockly.NEXT_STATEMENT && imConn != markerNext) {
     var innerConnection = imConn.targetConnection;
-    innerConnection.sourceBlock_.unplug(false);
+    innerConnection.getSourceBlock().unplug(false);
 
     var previousBlockNextConnection =
         markerPrev ? markerPrev.targetConnection : null;
@@ -708,7 +648,6 @@ Blockly.InsertionMarkerManager.prototype.disconnectMarker_ = function() {
 
   this.markerConnection_ = null;
   imBlock.getSvgRoot().setAttribute('visibility', 'hidden');
-  this.removeHighlighting_();
 };
 
 /**
@@ -721,7 +660,7 @@ Blockly.InsertionMarkerManager.prototype.connectMarker_ = function() {
 
   var isLastInStack = this.lastOnStack_ && local == this.lastOnStack_;
   var imBlock = isLastInStack ? this.lastMarker_ : this.firstMarker_;
-  var imConn = imBlock.getMatchingConnection(local.sourceBlock_, local);
+  var imConn = imBlock.getMatchingConnection(local.getSourceBlock(), local);
 
   if (imConn == this.markerConnection_) {
     throw Error('Made it to connectMarker_ even though the marker isn\'t ' +
@@ -734,17 +673,17 @@ Blockly.InsertionMarkerManager.prototype.connectMarker_ = function() {
   imBlock.rendered = true;
   imBlock.getSvgRoot().setAttribute('visibility', 'visible');
 
-  // Position based on the calculated connection locations.
-  imBlock.positionNewBlock(imBlock, imConn, closest);
+  if (imConn && closest) {
+    // Position so that the existing block doesn't move.
+    imBlock.positionNearConnection(imConn, closest);
+  }
+  if (closest) {
+    // Connect() also renders the insertion marker.
+    imConn.connect(closest);
+  }
 
-  // Connect() also renders the insertion marker.
-  imConn.connect(closest);
   this.markerConnection_ = imConn;
-
-  this.addHighlighting_();
 };
-
-/**** End insertion marker display functions ****/
 
 /**
  * Get a list of the insertion markers that currently exist.  Drags have 0, 1,

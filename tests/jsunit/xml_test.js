@@ -1,9 +1,6 @@
 /**
  * @license
- * Blockly Tests
- *
- * Copyright 2014 Google Inc.
- * https://developers.google.com/blockly/
+ * Copyright 2014 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +15,6 @@
  * limitations under the License.
  */
 'use strict';
-
-goog.require('goog.testing');
-goog.require('goog.testing.MockControl');
 
 var mockControl_;
 var workspace;
@@ -53,7 +47,6 @@ var XML_TEXT = ['<xml xmlns="https://developers.google.com/blockly/xml">',
 
 function xmlTest_setUp() {
   workspace = new Blockly.Workspace();
-  mockControl_ = new goog.testing.MockControl();
 }
 
 function xmlTest_setUpWithMockBlocks() {
@@ -72,7 +65,9 @@ function xmlTest_setUpWithMockBlocks() {
 }
 
 function xmlTest_tearDown() {
-  mockControl_.$tearDown();
+  if (mockControl_) {
+    mockControl_.restore();
+  }
   workspace.dispose();
 }
 
@@ -138,7 +133,7 @@ function test_domToText() {
 function test_domToWorkspace_BackwardCompatibility() {
   // Expect that workspace still loads without serialized variables.
   xmlTest_setUpWithMockBlocks();
-  setUpMockMethod(mockControl_, Blockly.utils, 'genUid', null, ['1', '1']);
+  mockControl_ = setUpMockMethod(Blockly.utils, 'genUid', null, ['1', '1']);
   try {
     var dom = Blockly.Xml.textToDom(
         '<xml xmlns="https://developers.google.com/blockly/xml">' +
@@ -147,7 +142,7 @@ function test_domToWorkspace_BackwardCompatibility() {
         '  </block>' +
         '</xml>');
     Blockly.Xml.domToWorkspace(dom, workspace);
-    assertEquals('Block count', 1, workspace.getAllBlocks().length);
+    assertEquals('Block count', 1, workspace.getAllBlocks(false).length);
     checkVariableValues(workspace, 'name1', '', '1');
   } finally {
     xmlTest_tearDownWithMockBlocks();
@@ -163,14 +158,14 @@ function test_domToWorkspace_VariablesAtTop() {
         '  <variables>' +
         '    <variable type="type1" id="id1">name1</variable>' +
         '    <variable type="type2" id="id2">name2</variable>' +
-        '    <variable type="" id="id3">name3</variable>' +
+        '    <variable id="id3">name3</variable>' +
         '  </variables>' +
         '  <block type="field_variable_test_block">' +
-        '    <field name="VAR" id="id3" variableType="">name3</field>' +
+        '    <field name="VAR" id="id3">name3</field>' +
         '  </block>' +
         '</xml>');
     Blockly.Xml.domToWorkspace(dom, workspace);
-    assertEquals('Block count', 1, workspace.getAllBlocks().length);
+    assertEquals('Block count', 1, workspace.getAllBlocks(false).length);
     checkVariableValues(workspace, 'name1', 'type1', 'id1');
     checkVariableValues(workspace, 'name2', 'type2', 'id2');
     checkVariableValues(workspace, 'name3', '', 'id3');
@@ -210,7 +205,7 @@ function test_domToWorkspace_VariablesAtTop_MissingType() {
         '    <variable id="id1">name1</variable>' +
         '  </variables>' +
         '  <block type="field_variable_test_block">' +
-        '    <field name="VAR" id="id1" variableType="">name3</field>' +
+        '    <field name="VAR" id="id1">name3</field>' +
         '  </block>' +
         '</xml>');
     Blockly.Xml.domToWorkspace(dom, workspace);
@@ -235,7 +230,7 @@ function test_domToWorkspace_VariablesAtTop_MissingType() {
         '    <variable type="type1" id="id1">name1</variable>' +
         '  </variables>' +
         '  <block type="field_variable_test_block">' +
-        '    <field name="VAR" id="id1" variableType="">name1</field>' +
+        '    <field name="VAR" id="id1">name1</field>' +
         '  </block>' +
         '</xml>');
     Blockly.Xml.domToWorkspace(dom, workspace);
@@ -275,9 +270,9 @@ function test_appendDomToWorkspace() {
         '</xml>');
     workspace = new Blockly.Workspace();
     Blockly.Xml.appendDomToWorkspace(dom, workspace);
-    assertEquals('Block count', 1, workspace.getAllBlocks().length);
+    assertEquals('Block count', 1, workspace.getAllBlocks(false).length);
     var newBlockIds = Blockly.Xml.appendDomToWorkspace(dom, workspace);
-    assertEquals('Block count', 2, workspace.getAllBlocks().length);
+    assertEquals('Block count', 2, workspace.getAllBlocks(false).length);
     assertEquals('Number of new block ids',1,newBlockIds.length);
   } finally {
     delete Blockly.Blocks.test_block;
@@ -285,22 +280,9 @@ function test_appendDomToWorkspace() {
   }
 }
 
-function test_blockToDom_fieldToDom_trivial() {
-  xmlTest_setUpWithMockBlocks();
-  // TODO (#1199): make a similar test where the variable is given a non-empty
-  // type.f
-  workspace.createVariable('name1', '', 'id1');
-  var block = new Blockly.Block(workspace, 'field_variable_test_block');
-  block.inputList[0].fieldRow[0].setValue('id1');
-  var resultFieldDom = Blockly.Xml.blockToDom(block).childNodes[0];
-  xmlTest_checkVariableFieldDomValues(resultFieldDom, 'VAR', null, 'id1',
-      'name1');
-  xmlTest_tearDownWithMockBlocks();
-}
-
 function test_blockToDom_fieldToDom_defaultCase() {
   xmlTest_setUpWithMockBlocks();
-  setUpMockMethod(mockControl_, Blockly.utils, 'genUid', null, ['1', '1']);
+  mockControl_ = setUpMockMethod(Blockly.utils, 'genUid', null, ['1', '1']);
   try {
     workspace.createVariable('name1');
 
@@ -340,7 +322,7 @@ function test_blockToDom_fieldToDom_notAFieldVariable() {
 
 function test_variablesToDom_oneVariable() {
   xmlTest_setUp();
-  setUpMockMethod(mockControl_, Blockly.utils, 'genUid', null, ['1']);
+  mockControl_ = setUpMockMethod(Blockly.utils, 'genUid', null, ['1']);
 
   workspace.createVariable('name1');
   var resultDom = Blockly.Xml.variablesToDom(workspace.getAllVariables());

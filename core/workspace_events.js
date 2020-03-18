@@ -1,9 +1,6 @@
 /**
  * @license
- * Visual Blocks Editor
- *
- * Copyright 2019 Google Inc.
- * https://developers.google.com/blockly/
+ * Copyright 2019 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +24,8 @@
 goog.provide('Blockly.Events.FinishedLoading');
 
 goog.require('Blockly.Events');
-goog.require('Blockly.Events.Abstract');
+goog.require('Blockly.Events.Ui');
+goog.require('Blockly.utils.object');
 
 
 /**
@@ -37,6 +35,7 @@ goog.require('Blockly.Events.Abstract');
  * Finished loading events do not record undo or redo.
  * @param {!Blockly.Workspace} workspace The workspace that has finished
  *    loading.
+ * @extends {Blockly.Events.Abstract}
  * @constructor
  */
 Blockly.Events.FinishedLoading = function(workspace) {
@@ -47,17 +46,18 @@ Blockly.Events.FinishedLoading = function(workspace) {
   this.workspaceId = workspace.id;
 
   /**
-   * The event group id for the group this event belongs to. Groups define
+   * The event group ID for the group this event belongs to. Groups define
    * events that should be treated as an single action from the user's
    * perspective, and should be undone together.
    * @type {string}
    */
-  this.group = Blockly.Events.group_;
+  this.group = Blockly.Events.getGroup();
 
   // Workspace events do not undo or redo.
   this.recordUndo = false;
 };
-goog.inherits(Blockly.Events.FinishedLoading, Blockly.Events.Abstract);
+Blockly.utils.object.inherits(Blockly.Events.FinishedLoading,
+    Blockly.Events.Ui);
 
 /**
  * Type of this event.

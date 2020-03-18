@@ -123,7 +123,13 @@ Blockly.PXTBlockly.FunctionUtils.domToMutation = function(xmlElement) {
   this.name_ = xmlElement.getAttribute('name');
   this.functionId_ = xmlElement.getAttribute('functionid');
   this.ensureIds_();
-  this.updateDisplay_();
+
+  if (this.type !== Blockly.FUNCTION_DEFINITION_BLOCK_TYPE) {
+    this.updateDisplay_();
+  } else if (!this.getFieldValue('function_name') && this.name_) {
+    // pxt-blockly handle old function case where name was stored in text_
+    this.setFieldValue(this.name_, 'function_name');
+  }
 };
 
 /**
@@ -379,7 +385,7 @@ Blockly.PXTBlockly.FunctionUtils.deleteShadows_ = function(connectionMap) {
  */
 Blockly.PXTBlockly.FunctionUtils.updateLabelEditor_ = function(text) {
   Blockly.Events.disable();
-  this.getField('function_name').setText(text);
+  this.getField('function_name').setValue(text);
   Blockly.Events.enable();
 }
 
@@ -692,8 +698,9 @@ Blockly.PXTBlockly.FunctionUtils.updateDeclarationMutation_ = function() {
         // Nothing to save
         break;
       case Blockly.DUMMY_INPUT:
-        // This is the function name text input
-        this.name_ = input.fieldRow[0].getText();
+        // This is the function name text input. Previously stored in the text
+        // attribute (now deprecated), so we check both text and value
+        this.name_ = input.fieldRow[0].getValue() || input.fieldRow[0].getText();
         break;
       case Blockly.INPUT_VALUE:
         // Inspect the argument editor to add the argument to our mutation.
@@ -898,6 +905,12 @@ Blockly.Blocks['function_declaration'] = {
    * @this Blockly.Block
    */
   init: function() {
+    this.jsonInit({
+      "style": {
+        "hat": "cap"
+      }
+    });
+
     /* Data known about the function. */
     this.name_ = ""; // The name of the function.
     this.arguments_ = []; // The arguments of this function.
@@ -909,7 +922,7 @@ Blockly.Blocks['function_declaration'] = {
     this.setDeletable(false);
     this.setMovable(false);
     this.contextMenu = false;
-    this.setStartHat(true);
+    this.setInputsInline(true);
     this.statementConnection_ = null;
   },
   // Shared.
@@ -950,7 +963,10 @@ Blockly.Blocks['function_definition'] = {
    */
   init: function() {
     this.jsonInit({
-      "extensions": ["function_contextmenu_edit"]
+      "extensions": ["function_contextmenu_edit"],
+      "style": {
+        "hat": "cap"
+      }
     });
 
     /* Data known about the function. */
@@ -963,7 +979,7 @@ Blockly.Blocks['function_definition'] = {
     this.setTooltip(Blockly.Msg.PROCEDURES_DEFNORETURN_TOOLTIP);
     this.setHelpUrl(Blockly.Msg.PROCEDURES_DEFNORETURN_HELPURL);
     this.setStatements_(true);
-    this.setStartHat(true);
+    this.setInputsInline(true);
     this.statementConnection_ = null;
   },
   // Shared.
@@ -1008,6 +1024,7 @@ Blockly.Blocks['function_call'] = {
     this.setColour(Blockly.Msg.PROCEDURES_HUE);
     this.setHelpUrl(Blockly.Msg.PROCEDURES_CALLNORETURN_HELPURL);
     this.setTooltip(Blockly.Msg.FUNCTION_CALL_TOOLTIP);
+    this.setInputsInline(true);
   },
   // Shared.
   mutationToDom: Blockly.PXTBlockly.FunctionUtils.mutationToDom,

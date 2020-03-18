@@ -11,6 +11,10 @@ git checkout --ours lua_compressed.js
 git checkout --ours javascript_compressed.js
 git checkout --ours python_compressed.js
 
-rm -rf accessible/*
-rm -rf demos/*
-rm -rf .github/*
+git rm accessible/*
+git rm .github/*
+git rm appengine/*
+git rm demos/*
+
+git add msg/js/*
+git add generators/*

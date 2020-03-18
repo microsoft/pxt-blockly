@@ -36,7 +36,7 @@ npm install .
 
 ## Building
 
-* `gulp build` to build blockly (install ``gulp`` if needed ``npm install -g gulp``)
+* `npm run build:core --closure-library` to build blockly (install ``gulp`` if needed ``npm install -g gulp``)
 
 ## Update Blockly.d.ts
 
@@ -44,7 +44,7 @@ npm install .
 
 ## Testing local changes in PXT
 
-* `gulp publish` from the ``develop`` branch to generate the blockly-compressed and blocks-compressed files, and copy them into the pxt-blockly node module folder
+* `gulp publish --closure-library` from the ``develop`` branch to generate the blockly-compressed and blocks-compressed files, and copy them into the pxt-blockly node module folder
 * run `pxt clean && pxt serve` in the **target** directory (eg pxt-arcade, or pxt-minecraft)
 
 **Make sure you've checked out the correct closure-library (see above)**

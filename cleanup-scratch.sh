@@ -42,9 +42,9 @@ git checkout --ours media/quote0.png
 git checkout --ours media/quote1.png
 
 # Core files to always favour
-git checkout --ours core/toolbox.js
-git checkout --ours core/zoom_controls.js
-git checkout --ours core/trashcan.js
+# git checkout --ours core/toolbox.js
+# git checkout --ours core/zoom_controls.js
+# git checkout --ours core/trashcan.js
 
 
 # Remove the field_variable_getter
@@ -58,17 +58,17 @@ git rm -rf blocks_vertical
 rm -rf shim/
 rm -rf TRADEMARK
 rm -rf .github/
-rm -rf blockly_compressed_horizontal.js
-rm -rf blockly_uncompressed_horizontal.js
-rm -rf blockly_compressed_vertical.js
-rm -rf blockly_uncompressed_vertical.js
-rm -rf blocks_compressed_horizontal.js
-rm -rf blocks_compressed_vertical.js
-rm -rf core/block_render_svg_horizontal.js
-rm -rf core/data_category.js
-rm -rf tests/horizontal_playground.html
-rm -rf tests/vertical_playground.html
-rm -rf tests/vertical_playground_compressed.html
+# rm -rf blockly_compressed_horizontal.js
+# rm -rf blockly_uncompressed_horizontal.js
+# rm -rf blockly_compressed_vertical.js
+# rm -rf blockly_uncompressed_vertical.js
+# rm -rf blocks_compressed_horizontal.js
+# rm -rf blocks_compressed_vertical.js
+# rm -rf core/block_render_svg_horizontal.js
+# rm -rf core/data_category.js
+# rm -rf tests/horizontal_playground.html
+# rm -rf tests/vertical_playground.html
+# rm -rf tests/vertical_playground_compressed.html
 rm -rf tests/jsunit/horizontal_tests.html
 rm -rf tests/jsunit/vertical_tests.html
 rm -rf tests/jsunit/procedure_test.js

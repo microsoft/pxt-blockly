@@ -1,9 +1,6 @@
 /**
  * @license
- * Visual Blocks Editor
- *
- * Copyright 2017 Google Inc.
- * https://developers.google.com/blockly/
+ * Copyright 2017 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,7 +46,7 @@ Blockly.WorkspaceDragger = function(workspace) {
    * The scroll position of the workspace at the beginning of the drag.
    * Coordinate system: pixel coordinates.
    * @type {!Blockly.utils.Coordinate}
-   * @private
+   * @protected
    */
   this.startScrollXY_ = new Blockly.utils.Coordinate(
       workspace.scrollX, workspace.scrollY);
@@ -58,6 +55,7 @@ Blockly.WorkspaceDragger = function(workspace) {
 /**
  * Sever all links from this object.
  * @package
+ * @suppress {checkTypes}
  */
 Blockly.WorkspaceDragger.prototype.dispose = function() {
   this.workspace_ = null;

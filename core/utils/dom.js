@@ -1,9 +1,6 @@
 /**
  * @license
- * Visual Blocks Editor
- *
- * Copyright 2019 Google Inc.
- * https://developers.google.com/blockly/
+ * Copyright 2019 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +28,8 @@
  * @namespace
  */
 goog.provide('Blockly.utils.dom');
+
+goog.require('Blockly.utils.userAgent');
 
 
 /**
@@ -62,6 +61,27 @@ Blockly.utils.dom.Node = {
   COMMENT_NODE: 8,
   DOCUMENT_POSITION_CONTAINED_BY: 16
 };
+
+/**
+ * Temporary cache of text widths.
+ * @type {Object}
+ * @private
+ */
+Blockly.utils.dom.cacheWidths_ = null;
+
+/**
+ * Number of current references to cache.
+ * @type {number}
+ * @private
+ */
+Blockly.utils.dom.cacheReference_ = 0;
+
+/**
+ * A HTML canvas context used for computing text width.
+ * @type {CanvasRenderingContext2D}
+ * @private
+ */
+Blockly.utils.dom.canvasContext_ = null;
 
 /**
  * Helper method for creating SVG elements.
@@ -196,4 +216,114 @@ Blockly.utils.dom.containsNode = function(parent, descendant) {
 Blockly.utils.dom.setCssTransform = function(element, transform) {
   element.style['transform'] = transform;
   element.style['-webkit-transform'] = transform;
+};
+
+/**
+ * Start caching text widths. Every call to this function MUST also call
+ * stopTextWidthCache. Caches must not survive between execution threads.
+ */
+Blockly.utils.dom.startTextWidthCache = function() {
+  Blockly.utils.dom.cacheReference_++;
+  if (!Blockly.utils.dom.cacheWidths_) {
+    Blockly.utils.dom.cacheWidths_ = {};
+  }
+};
+
+/**
+ * Stop caching field widths. Unless caching was already on when the
+ * corresponding call to startTextWidthCache was made.
+ */
+Blockly.utils.dom.stopTextWidthCache = function() {
+  Blockly.utils.dom.cacheReference_--;
+  if (!Blockly.utils.dom.cacheReference_) {
+    Blockly.utils.dom.cacheWidths_ = null;
+  }
+};
+
+/**
+ * Gets the width of a text element, caching it in the process.
+ * @param {!Element} textElement An SVG 'text' element.
+ * @return {number} Width of element.
+ */
+Blockly.utils.dom.getTextWidth = function(textElement) {
+  var key = textElement.textContent + '\n' + textElement.className.baseVal;
+  var width;
+
+  // Return the cached width if it exists.
+  if (Blockly.utils.dom.cacheWidths_) {
+    width = Blockly.utils.dom.cacheWidths_[key];
+    if (width) {
+      return width;
+    }
+  }
+
+  // Attempt to compute fetch the width of the SVG text element.
+  try {
+    if (Blockly.utils.userAgent.IE || Blockly.utils.userAgent.EDGE) {
+      width = textElement.getBBox().width;
+    } else {
+      width = textElement.getComputedTextLength();
+    }
+  } catch (e) {
+    // In other cases where we fail to get the computed text. Instead, use an
+    // approximation and do not cache the result. At some later point in time
+    // when the block is inserted into the visible DOM, this method will be
+    // called again and, at that point in time, will not throw an exception.
+    return textElement.textContent.length * 8;
+  }
+
+  // Cache the computed width and return.
+  if (Blockly.utils.dom.cacheWidths_) {
+    Blockly.utils.dom.cacheWidths_[key] = width;
+  }
+  return width;
+};
+
+/**
+ * Gets the width of a text element using a faster method than `getTextWidth`.
+ * This method requires that we know the text element's font family and size in
+ * advance. Similar to `getTextWidth`, we cache the width we compute.
+ * @param {!Element} textElement An SVG 'text' element.
+ * @param {number} fontSize The font size to use.
+ * @param {string} fontWeight The font weight to use.
+ * @param {string} fontFamily The font family to use.
+ * @return {number} Width of element.
+ */
+Blockly.utils.dom.getFastTextWidth = function(textElement,
+    fontSize, fontWeight, fontFamily) {
+  var text = textElement.textContent;
+  var key = text + '\n' + textElement.className.baseVal;
+  var width;
+
+  // Return the cached width if it exists.
+  if (Blockly.utils.dom.cacheWidths_) {
+    width = Blockly.utils.dom.cacheWidths_[key];
+    if (width) {
+      return width;
+    }
+  }
+
+  if (!Blockly.utils.dom.canvasContext_) {
+    // Inject the canvas element used for computing text widths.
+    var computeCanvas = document.createElement('canvas');
+    computeCanvas.className = 'blocklyComputeCanvas';
+    document.body.appendChild(computeCanvas);
+
+    // Initialize the HTML canvas context and set the font.
+    // The context font must match blocklyText's fontsize and font-family
+    // set in CSS.
+    Blockly.utils.dom.canvasContext_ = computeCanvas.getContext('2d');
+  }
+  // Set the desired font size and family.
+  Blockly.utils.dom.canvasContext_.font =
+    fontWeight + ' ' + fontSize + 'pt ' + fontFamily;
+
+  // Measure the text width using the helper canvas context.
+  width = Blockly.utils.dom.canvasContext_.measureText(text).width;
+
+  // Cache the computed width and return.
+  if (Blockly.utils.dom.cacheWidths_) {
+    Blockly.utils.dom.cacheWidths_[key] = width;
+  }
+  return width;
 };
