@@ -16153,6 +16153,31 @@ declare module Blockly {
 
 declare module Blockly {
 
+    class MenuSeparator extends MenuSeparator__Class { }
+    /** Fake class which should be extended to avoid inheriting static properties */
+    class MenuSeparator__Class extends Blockly.Component__Class  { 
+    
+            /**
+             * Class representing an item in a menu.
+             *
+             * @constructor
+             * @extends {Blockly.Component}
+             */
+            constructor();
+    
+            /**
+             * Returns true if the menu item is enabled, false otherwise.
+             * @return {boolean} Whether the menu item is enabled.
+             * @package
+             */
+            isEnabled(): boolean;
+    } 
+    
+}
+
+
+declare module Blockly {
+
     class MenuItem extends MenuItem__Class { }
     /** Fake class which should be extended to avoid inheriting static properties */
     class MenuItem__Class extends Blockly.Component__Class  { 
@@ -16276,31 +16301,6 @@ declare module Blockly {
              * @package
              */
             onAction<T>(fn: { (_0: Blockly.MenuItem): any }, opt_obj?: T): void;
-    } 
-    
-}
-
-
-declare module Blockly {
-
-    class MenuSeparator extends MenuSeparator__Class { }
-    /** Fake class which should be extended to avoid inheriting static properties */
-    class MenuSeparator__Class extends Blockly.Component__Class  { 
-    
-            /**
-             * Class representing an item in a menu.
-             *
-             * @constructor
-             * @extends {Blockly.Component}
-             */
-            constructor();
-    
-            /**
-             * Returns true if the menu item is enabled, false otherwise.
-             * @return {boolean} Whether the menu item is enabled.
-             * @package
-             */
-            isEnabled(): boolean;
     } 
     
 }
