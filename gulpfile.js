@@ -28,6 +28,7 @@ gulp.rename = require('gulp-rename');
 gulp.insert = require('gulp-insert');
 gulp.umd = require('gulp-umd');
 gulp.git = require('gulp-git');
+gulp.bump = require('gulp-bump');
 
 var path = require('path');
 var fs = require('fs');
