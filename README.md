@@ -44,7 +44,7 @@ npm install .
 
 ## Testing local changes in PXT
 
-* `gulp publish --closure-library` from the ``develop`` branch to generate the blockly-compressed and blocks-compressed files, and copy them into the pxt-blockly node module folder
+* `gulp publish --closure-library` from the ``develop`` branch to generate the blockly-compressed, blocks-compressed, and typings files, and copy them to pxt-blockly
 * run `pxt clean && pxt serve` in the **target** directory (eg pxt-arcade, or pxt-minecraft)
 
 **Make sure you've checked out the correct closure-library (see above)**
@@ -53,7 +53,7 @@ See [more tips about **pxt+pxt-blockly** testing](https://github.com/Microsoft/p
 
 ## Updating pxt-blockly in PXT
 
-* `gulp bump` to bump blockly version, commit, and tag.
+* `gulp bump --closure-library` to bump blockly version, commit, and tag.
 
 * After the Travis has deployed the package to npm, update the pxt-blockly version in `package.json` in the pxt repo.
 
