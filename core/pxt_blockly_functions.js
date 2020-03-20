@@ -144,7 +144,7 @@ Blockly.Functions.getCallers = function(name, workspace) {
     // the deleted arg reporters and returns early (because the mutation hasn't changed between the
     // first pass and the 2nd pass). Uncommenting the below if() makes it so the definition is only
     // processed once, so the arg reporters are deleted and never fixed by the 2nd pass.
-    if (blocks[i].type == Blockly.FUNCTION_CALL_BLOCK_TYPE) {
+    if (blocks[i].type == Blockly.FUNCTION_CALL_BLOCK_TYPE || blocks[i].type === Blockly.FUNCTION_CALL_OUTPUT_BLOCK_TYPE) {
       if (blocks[i].getName) {
         var funcName = blocks[i].getName();
         if (funcName == name) {
@@ -333,7 +333,7 @@ Blockly.Functions.createFunctionCallbackFactory_ = function(workspace) {
 Blockly.Functions.editFunctionCallback_ = function(block) {
   // Edit can come from either the function definition or a function call.
   // Normalize by setting the block to the definition block for the function.
-  if (block.type == Blockly.FUNCTION_CALL_BLOCK_TYPE) {
+  if (block.type == Blockly.FUNCTION_CALL_BLOCK_TYPE || block.type == Blockly.FUNCTION_CALL_OUTPUT_BLOCK_TYPE) {
     // This is a call block, find the definition block corresponding to the
     // name. Make sure to search the correct workspace, call block can be in flyout.
     var workspaceToSearch = block.workspace.isFlyout ?
@@ -648,7 +648,7 @@ Blockly.Functions.isFunctionArgumentReporter = function(block) {
  * Create a flyout, creates the DOM elements for the flyout, and initializes the flyout.
  * @param {!Blockly.Workspace} workspace The target and parent workspace for this flyout. The workspace's options will
  *     be used to create the flyout's inner workspace.
- * @param {!Element} siblingNode The flyout is added after this reference node. 
+ * @param {!Element} siblingNode The flyout is added after this reference node.
  * @return {!Blockly.Flyout} The newly created flyout.
  */
 Blockly.Functions.createFlyout = function (workspace, siblingNode) {
