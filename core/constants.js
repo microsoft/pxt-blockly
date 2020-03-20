@@ -329,3 +329,9 @@ Blockly.FUNCTION_DECLARATION_BLOCK_TYPE = 'function_declaration';
  * @const {string}
  */
 Blockly.FUNCTION_CALL_BLOCK_TYPE = 'function_call';
+
+/**
+ * The type of all procedure call blocks with return values.
+ * @const {string}
+ */
+Blockly.FUNCTION_CALL_OUTPUT_BLOCK_TYPE = 'function_call_output';

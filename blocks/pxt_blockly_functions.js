@@ -149,6 +149,7 @@ Blockly.PXTBlockly.FunctionUtils.ensureIds_ = function() {
         }
       }
       break;
+    case Blockly.FUNCTION_CALL_OUTPUT_BLOCK_TYPE:
     case Blockly.FUNCTION_CALL_BLOCK_TYPE:
       var def = Blockly.Functions.getDefinition(this.name_, this.workspace);
       if (def) {
@@ -313,6 +314,7 @@ Blockly.PXTBlockly.FunctionUtils.createAllInputs_ = function(connectionMap) {
   if (!hasTitle) {
     var labelText = '';
     switch (this.type) {
+      case Blockly.FUNCTION_CALL_OUTPUT_BLOCK_TYPE:
       case Blockly.FUNCTION_CALL_BLOCK_TYPE:
         labelText = Blockly.Msg.FUNCTIONS_CALL_TITLE;
         break;
@@ -1045,7 +1047,55 @@ Blockly.Blocks['function_call'] = {
   addFunctionLabel_: Blockly.PXTBlockly.FunctionUtils.addLabelField_,
   updateFunctionLabel_: Blockly.PXTBlockly.FunctionUtils.updateLabelField_,
 
-  // Only exists on function_call.
+  // Only exists on function_call and function_call_output.
+  attachShadow_: Blockly.PXTBlockly.FunctionUtils.attachShadow_,
+  buildShadowDom_: Blockly.PXTBlockly.FunctionUtils.buildShadowDom_,
+  onchange: Blockly.PXTBlockly.FunctionUtils.onCallerChange
+};
+
+Blockly.Blocks['function_call_output'] = {
+  /**
+   * Block for calling a function with a return value.
+   * @this Blockly.Block
+   */
+  init: function() {
+    this.jsonInit({
+      "extensions": ["function_contextmenu_edit"]
+    });
+    /* Data known about the function. */
+    this.name_ = ""; // The name of the function.
+    this.arguments_ = []; // The arguments of this function.
+    this.functionId_ = ""; // An ID, independent from the block ID, to track a function across its call, definition and declaration blocks.
+
+    this.setPreviousStatement(false);
+    this.setNextStatement(false);
+    this.setOutput(true, null);
+    this.setOutputShape(Blockly.OUTPUT_SHAPE_ROUND);
+    this.setColour(Blockly.Msg.PROCEDURES_HUE);
+    this.setHelpUrl(Blockly.Msg.PROCEDURES_CALLNORETURN_HELPURL);
+    this.setTooltip(Blockly.Msg.FUNCTION_CALL_TOOLTIP);
+    this.setInputsInline(true);
+  },
+  // Shared.
+  mutationToDom: Blockly.PXTBlockly.FunctionUtils.mutationToDom,
+  domToMutation: Blockly.PXTBlockly.FunctionUtils.domToMutation,
+  getName: Blockly.PXTBlockly.FunctionUtils.getName,
+  getFunctionId: Blockly.PXTBlockly.FunctionUtils.getFunctionId,
+  getArguments: Blockly.PXTBlockly.FunctionUtils.getArguments,
+  removeValueInputs_: Blockly.PXTBlockly.FunctionUtils.removeValueInputs_,
+  disconnectOldBlocks_: Blockly.PXTBlockly.FunctionUtils.disconnectOldBlocks_,
+  deleteShadows_: Blockly.PXTBlockly.FunctionUtils.deleteShadows_,
+  createAllInputs_: Blockly.PXTBlockly.FunctionUtils.createAllInputs_,
+  updateDisplay_: Blockly.PXTBlockly.FunctionUtils.updateDisplay_,
+  setStatements_: Blockly.PXTBlockly.FunctionUtils.setStatements_,
+  ensureIds_: Blockly.PXTBlockly.FunctionUtils.ensureIds_,
+
+  // Exists on all three blocks, but have different implementations.
+  populateArgument_: Blockly.PXTBlockly.FunctionUtils.populateArgumentOnCaller_,
+  addFunctionLabel_: Blockly.PXTBlockly.FunctionUtils.addLabelField_,
+  updateFunctionLabel_: Blockly.PXTBlockly.FunctionUtils.updateLabelField_,
+
+  // Only exists on function_call and function_call_output.
   attachShadow_: Blockly.PXTBlockly.FunctionUtils.attachShadow_,
   buildShadowDom_: Blockly.PXTBlockly.FunctionUtils.buildShadowDom_,
   onchange: Blockly.PXTBlockly.FunctionUtils.onCallerChange
