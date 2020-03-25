@@ -775,6 +775,9 @@ Blockly.BlockSvg.prototype.generateContextMenu = function() {
   var block = this;
   var menuOptions = [];
 
+  // pxt-blockly restrict certain menu options to top blocks only
+  var isTopBlock = block.previousConnection == null && block.outputConnection == null;
+
   if (!this.isInFlyout) {
     if (this.isDeletable() && this.isMovable()) {
       menuOptions.push(Blockly.ContextMenu.blockDuplicateOption(block));
@@ -806,8 +809,8 @@ Blockly.BlockSvg.prototype.generateContextMenu = function() {
             }
           }
         }
-        // Option to collapse block
-        if (this.workspace.options.collapse) {
+        // Option to collapse block (pxt-blockly: top blocks only)
+        if (this.workspace.options.collapse && isTopBlock) {
           var collapseOption = {enabled: true};
           collapseOption.text = Blockly.Msg['COLLAPSE_BLOCK'];
           collapseOption.callback = function() {
@@ -816,8 +819,8 @@ Blockly.BlockSvg.prototype.generateContextMenu = function() {
           menuOptions.push(collapseOption);
         }
       } else {
-        // Option to expand block.
-        if (this.workspace.options.collapse) {
+        // Option to expand block. (pxt-blockly: top blocks only)
+        if (this.workspace.options.collapse && isTopBlock) {
           var expandOption = {enabled: true};
           expandOption.text = Blockly.Msg['EXPAND_BLOCK'];
           expandOption.callback = function() {
@@ -1213,7 +1216,7 @@ Blockly.BlockSvg.prototype.setWarningText = function(text, opt_id) {
     }
     parent = parent.getSurroundParent();
   }
-  if (collapsedParent) {
+  if (collapsedParent && text) {
     collapsedParent.setWarningText(Blockly.Msg['COLLAPSED_WARNINGS_WARNING'],
         Blockly.BlockSvg.COLLAPSED_WARNING_ID);
   }

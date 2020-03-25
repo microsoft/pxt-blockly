@@ -17077,6 +17077,18 @@ declare module Blockly.blockRendering {
             JAGGED_TEETH_WIDTH: number;
     
             /**
+             * pxt-blockly Radius of SVG path for ellipses in collapsed blocks.
+             * @type {number}
+             */
+            ELLIPSES_RADIUS: number;
+    
+            /**
+             * pxt-blockly Spacing of ellipses in collapsed blocks.
+             * @type {number}
+             */
+            ELLIPSES_SPACING: number;
+    
+            /**
              * Point size of text.
              * @type {number}
              */
@@ -17366,6 +17378,12 @@ declare module Blockly.blockRendering {
             OUTSIDE_CORNERS: Object;
     
             /**
+             * pxt-blockly A string containing path information about ellipses.
+             * @type {!string}
+             */
+            ELLIPSES: string;
+    
+            /**
              * Refresh constants properties that depend on the theme.
              * @param {!Blockly.Theme} theme The current workspace theme.
              * @package
@@ -17451,6 +17469,14 @@ declare module Blockly.blockRendering {
              * @package
              */
             makeJaggedTeeth(): Object;
+    
+            /**
+             * pxt-blockly
+             * @return {!string} A string containing path information about
+             *     collapsed block ellipses.
+             * @package
+             */
+            makeEllipses(): string;
     
             /**
              * @return {!Object} An object containing sizing and path information about
@@ -17713,6 +17739,14 @@ declare module Blockly.blockRendering {
              * @protected
              */
             drawStatementInput_(row: Blockly.blockRendering.Row): void;
+    
+            /**
+             * Add steps for a statement input.
+             * @param {!Blockly.blockRendering.Row} row The row that this input
+             *     belongs to.
+             * @protected
+             */
+            drawCollapsedStack_(row: Blockly.blockRendering.Row): void;
     
             /**
              * Add steps for the right side of a row that does not have value or
@@ -19138,6 +19172,13 @@ declare module Blockly.blockRendering {
             hasJaggedEdge: boolean;
     
             /**
+             * pxt-blockly Whether the row is a collapsed stack.
+             * @package
+             * @type {boolean}
+             */
+            isCollapsedStack: boolean;
+    
+            /**
              * The renderer's constant provider.
              * @type {!Blockly.blockRendering.ConstantProvider}
              * @protected
@@ -19360,6 +19401,29 @@ declare module Blockly.blockRendering {
              * @package
              */
             connectedBlockWidths: number;
+    
+            /**
+             * Inspect all subcomponents and populate all size properties on the row.
+             * @package
+             */
+            measure(): void;
+    } 
+    
+
+    class CollapsedInputRow extends CollapsedInputRow__Class { }
+    /** Fake class which should be extended to avoid inheriting static properties */
+    class CollapsedInputRow__Class extends Blockly.blockRendering.Row__Class  { 
+    
+            /**
+             * pxt-blockly An object containing information about a row representing a
+             *   collapsed statement input.
+             * @param {!Blockly.blockRendering.ConstantProvider} constants The rendering
+             *   constants provider.
+             * @package
+             * @constructor
+             * @extends {Blockly.blockRendering.Row}
+             */
+            constructor(constants: Blockly.blockRendering.ConstantProvider);
     
             /**
              * Inspect all subcomponents and populate all size properties on the row.

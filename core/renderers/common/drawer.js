@@ -115,6 +115,9 @@ Blockly.blockRendering.Drawer.prototype.drawOutline_ = function() {
     var row = this.info_.rows[r];
     if (row.hasJaggedEdge) {
       this.drawJaggedEdge_(row);
+    } else if (row.isCollapsedStack) {
+      // pxt-blockly rendering for collapsed stack
+      this.drawCollapsedStack_(row);
     } else if (row.hasStatement) {
       this.drawStatementInput_(row);
     } else if (row.hasExternalInput) {
@@ -221,6 +224,17 @@ Blockly.blockRendering.Drawer.prototype.drawStatementInput_ = function(row) {
 
   this.positionStatementInputConnection_(row);
 };
+
+/**
+ * pxt-blockly Add steps for a collapsed stack of blocks
+ * @param {!Blockly.blockRendering.Row} row The row that this input
+ *     belongs to.
+ * @protected
+ */
+Blockly.blockRendering.Drawer.prototype.drawCollapsedStack_ = function(row) {
+  // pass-through, currently only used in pxt renderer
+};
+
 
 /**
  * Add steps for the right side of a row that does not have value or

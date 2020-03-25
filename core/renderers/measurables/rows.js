@@ -147,6 +147,13 @@ Blockly.blockRendering.Row = function(constants) {
   this.hasJaggedEdge = false;
 
   /**
+   * pxt-blockly Whether the row is a collapsed stack.
+   * @package
+   * @type {boolean}
+   */
+  this.isCollapsedStack = false;
+
+  /**
    * The renderer's constant provider.
    * @type {!Blockly.blockRendering.ConstantProvider}
    * @protected
@@ -540,4 +547,30 @@ Blockly.blockRendering.InputRow.prototype.measure = function() {
  */
 Blockly.blockRendering.InputRow.prototype.endsWithElemSpacer = function() {
   return !this.hasExternalInput && !this.hasStatement;
+};
+
+
+/**
+ * pxt-blockly An object containing information about a row representing a
+ *   collapsed statement input.
+ * @param {!Blockly.blockRendering.ConstantProvider} constants The rendering
+ *   constants provider.
+ * @package
+ * @constructor
+ * @extends {Blockly.blockRendering.Row}
+ */
+Blockly.blockRendering.CollapsedInputRow = function(constants) {
+  Blockly.blockRendering.CollapsedInputRow.superClass_.constructor.call(this, constants);
+  this.type |= Blockly.blockRendering.Types.INPUT_ROW;
+};
+Blockly.utils.object.inherits(Blockly.blockRendering.CollapsedInputRow,
+    Blockly.blockRendering.Row);
+
+/**
+ * Inspect all subcomponents and populate all size properties on the row.
+ * @package
+ */
+Blockly.blockRendering.CollapsedInputRow.prototype.measure = function() {
+  this.width = this.minWidth;
+  this.height = this.constants_.EMPTY_STATEMENT_INPUT_HEIGHT;
 };

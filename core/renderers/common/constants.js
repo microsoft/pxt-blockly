@@ -242,6 +242,18 @@ Blockly.blockRendering.ConstantProvider = function() {
   this.JAGGED_TEETH_WIDTH = 6;
 
   /**
+   * pxt-blockly Radius of SVG path for ellipses in collapsed blocks.
+   * @type {number}
+   */
+  this.ELLIPSES_RADIUS = 6;
+
+  /**
+   * pxt-blockly Spacing of ellipses in collapsed blocks.
+   * @type {number}
+   */
+  this.ELLIPSES_SPACING = 8;
+
+  /**
    * Point size of text.
    * @type {number}
    */
@@ -559,6 +571,11 @@ Blockly.blockRendering.ConstantProvider.prototype.init = function() {
    * @type {!Object}
    */
   this.OUTSIDE_CORNERS = this.makeOutsideCorners();
+  /**
+   * pxt-blockly A string containing path information about ellipses.
+   * @type {!string}
+   */
+  this.ELLIPSES = this.makeEllipses();
 };
 
 /**
@@ -723,6 +740,31 @@ Blockly.blockRendering.ConstantProvider.prototype.makeJaggedTeeth = function() {
     width: width,
     path: mainPath
   };
+};
+
+/**
+ * pxt-blockly
+ * @return {!string} A string containing path information about
+ *     collapsed block ellipses.
+ * @package
+ */
+Blockly.blockRendering.ConstantProvider.prototype.makeEllipses = function() {
+  var r = this.ELLIPSES_RADIUS;
+  var spacing = this.ELLIPSES_SPACING;
+
+  var mainPath = "";
+  for (var i = 0; i < 3; i++) {
+    mainPath += Blockly.utils.svgPaths.lineTo(spacing, 0)
+    + Blockly.utils.svgPaths.arc('a', '180 1,1', r,
+      Blockly.utils.svgPaths.point(r * 2, 0));
+  }
+  for (var i = 0; i < 3; i++) {
+    mainPath += Blockly.utils.svgPaths.arc('a', '180 1,1', r,
+      Blockly.utils.svgPaths.point(- r * 2, 0))
+    + Blockly.utils.svgPaths.lineTo(-spacing, 0);
+  }
+
+  return mainPath;
 };
 
 /**
