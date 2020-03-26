@@ -674,7 +674,17 @@ Blockly.BlockSvg.prototype.setCollapsed = function(collapsed) {
       icons[i].setVisible(false);
     }
     var text = this.toString(Blockly.COLLAPSE_CHARS);
-    this.appendDummyInput(COLLAPSED_INPUT_NAME).appendField(text).init();
+    var collapsedInput = this.appendDummyInput(COLLAPSED_INPUT_NAME)
+      .appendField(text);
+
+    // pxt-blockly add chevron for expanding collapsed block
+    var self = this;
+    var image = this.workspace.getRenderer().getConstants().EXPAND_IMAGE_DATAURI;
+    if (image) {
+      collapsedInput.appendField(new Blockly.FieldImage(image, 24, 24, "*", function() { self.setCollapsed(false) }, false))
+    }
+
+    collapsedInput.init();
 
     // Add any warnings on enclosed blocks to this block.
     var descendants = this.getDescendants(true);

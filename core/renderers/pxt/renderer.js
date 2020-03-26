@@ -28,6 +28,7 @@ goog.require('Blockly.utils.object');
 goog.require('Blockly.pxt.ConstantProvider');
 goog.require('Blockly.pxt.PathObject');
 goog.require('Blockly.pxt.Drawer');
+goog.require('Blockly.pxt.RenderInfo');
 goog.require('Blockly.zelos.Renderer');
 
 
@@ -59,6 +60,17 @@ Blockly.pxt.Renderer.prototype.makePathObject = function(root, style) {
 };
 
 /**
+ * Create a new instance of the renderer's render info object.
+ * @param {!Blockly.BlockSvg} block The block to measure.
+ * @return {!Blockly.pxt.RenderInfo} The render info object.
+ * @protected
+ * @override
+ */
+Blockly.pxt.Renderer.prototype.makeRenderInfo_ = function(block) {
+  return new Blockly.pxt.RenderInfo(this, block);
+};
+
+/**
  * Create a new instance of the renderer's drawer.
  * @param {!Blockly.BlockSvg} block The block to render.
  * @param {!Blockly.blockRendering.RenderInfo} info An object containing all
@@ -69,7 +81,7 @@ Blockly.pxt.Renderer.prototype.makePathObject = function(root, style) {
  */
 Blockly.pxt.Renderer.prototype.makeDrawer_ = function(block, info) {
   return new Blockly.pxt.Drawer(block,
-      /** @type {!Blockly.zelos.RenderInfo} */ (info));
+      /** @type {!Blockly.pxt.RenderInfo} */ (info));
 };
 
 /**

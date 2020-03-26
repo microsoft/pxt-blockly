@@ -250,11 +250,7 @@ Blockly.blockRendering.RenderInfo.prototype.createRows_ = function() {
       return el.type == Blockly.NEXT_STATEMENT;
     })
     if (hasStatement) {
-      this.rows.push(activeRow);
-      activeRow = new Blockly.blockRendering.CollapsedInputRow(this.constants_);
-      this.inputRowNum_ ++;
-      activeRow.isCollapsedStack = true;
-      this.rows.push(activeRow);
+      activeRow = this.addCollapsedRow_(activeRow);
     } else {
       activeRow.hasJaggedEdge = true;
       activeRow.elements.push(
@@ -409,6 +405,16 @@ Blockly.blockRendering.RenderInfo.prototype.addInput_ = function(input, activeRo
   if (activeRow.align == null) {
     activeRow.align = input.align;
   }
+};
+
+/**
+ * Adds a collapsed row element for custom collapsed block rendering
+ * @param {!Blockly.blockRendering.Row} activeRow The row that is currently being
+ *     populated.
+ * @protected
+ */
+Blockly.blockRendering.RenderInfo.prototype.addCollapsedRow_ = function(activeRow) {
+  // pass-through, overwriten by pxt-blockly
 };
 
 /**

@@ -23,6 +23,7 @@
 
 goog.provide('Blockly.pxt.Drawer');
 
+goog.require('Blockly.blockRendering.Types');
 goog.require('Blockly.pxt.ConstantProvider');
 goog.require('Blockly.zelos.Drawer');
 goog.require('Blockly.utils.object');
@@ -81,4 +82,28 @@ Blockly.pxt.Drawer.prototype.drawCollapsedStack_ = function(row) {
       Blockly.utils.svgPaths.lineOnAxis('H', row.xPos + row.width - this.constants_.OUTSIDE_CORNERS.rightHeight) +
       this.constants_.OUTSIDE_CORNERS.topRight;
 
+};
+
+/**
+ * Add steps for the left side of the block, which may include an output
+ * connection
+ * @private
+ */
+Blockly.pxt.Drawer.prototype.drawLeft_ = function() {
+  Blockly.pxt.Drawer.superClass_.drawLeft_.call(this);
+  var hasCollapsedStack = this.info_.rows.find(function (el) {
+    return el.isCollapsedStack;
+  })
+
+  // we lift the pen in drawing the collapsed stack ellipses, so manually
+  // reconnect left side
+  if (hasCollapsedStack) {
+    var endY = this.info_.startY;
+    if (Blockly.blockRendering.Types.isLeftRoundedCorner(this.info_.topRow.elements[0])) {
+      endY += this.constants_.OUTSIDE_CORNERS.rightHeight;
+    }
+
+    this.outlinePath_ = this.outlinePath_.slice(0, -1);
+    this.outlinePath_ += Blockly.utils.svgPaths.lineOnAxis('V', endY);
+  }
 };
