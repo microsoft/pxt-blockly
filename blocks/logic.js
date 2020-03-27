@@ -60,6 +60,7 @@ Blockly.Blocks['controls_if'] = {
     this.appendDummyInput('THEN0')
         .appendField(Blockly.Msg.CONTROLS_IF_MSG_THEN);
     this.appendStatementInput('DO0');
+    this.setOutputShape(Blockly.OUTPUT_SHAPE_HEXAGONAL);
     this.updateShape_();
     this.setInputsInline(true);
     this.setColour(Blockly.Msg.LOGIC_HUE);
