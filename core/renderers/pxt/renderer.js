@@ -27,6 +27,8 @@ goog.require('Blockly.blockRendering');
 goog.require('Blockly.utils.object');
 goog.require('Blockly.pxt.ConstantProvider');
 goog.require('Blockly.pxt.PathObject');
+goog.require('Blockly.pxt.Drawer');
+goog.require('Blockly.pxt.RenderInfo');
 goog.require('Blockly.zelos.Renderer');
 
 
@@ -55,6 +57,31 @@ Blockly.utils.object.inherits(Blockly.pxt.Renderer,
 Blockly.pxt.Renderer.prototype.makePathObject = function(root, style) {
   return new Blockly.pxt.PathObject(root, style,
       /** @type {!Blockly.pxt.ConstantProvider} */ (this.getConstants()));
+};
+
+/**
+ * Create a new instance of the renderer's render info object.
+ * @param {!Blockly.BlockSvg} block The block to measure.
+ * @return {!Blockly.pxt.RenderInfo} The render info object.
+ * @protected
+ * @override
+ */
+Blockly.pxt.Renderer.prototype.makeRenderInfo_ = function(block) {
+  return new Blockly.pxt.RenderInfo(this, block);
+};
+
+/**
+ * Create a new instance of the renderer's drawer.
+ * @param {!Blockly.BlockSvg} block The block to render.
+ * @param {!Blockly.blockRendering.RenderInfo} info An object containing all
+ *   information needed to render this block.
+ * @return {!Blockly.pxt.Drawer} The drawer.
+ * @protected
+ * @override
+ */
+Blockly.pxt.Renderer.prototype.makeDrawer_ = function(block, info) {
+  return new Blockly.pxt.Drawer(block,
+      /** @type {!Blockly.pxt.RenderInfo} */ (info));
 };
 
 /**

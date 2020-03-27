@@ -124,7 +124,7 @@ Blockly.PXTBlockly.FunctionUtils.domToMutation = function(xmlElement) {
   this.functionId_ = xmlElement.getAttribute('functionid');
   this.ensureIds_();
 
-  if (this.type !== Blockly.FUNCTION_DEFINITION_BLOCK_TYPE) {
+  if (this.type !== Blockly.FUNCTION_DEFINITION_BLOCK_TYPE || !this.rendered) {
     this.updateDisplay_();
   } else if (!this.getFieldValue('function_name') && this.name_) {
     // pxt-blockly handle old function case where name was stored in text_
@@ -302,11 +302,14 @@ Blockly.PXTBlockly.FunctionUtils.removeValueInputs_ = function() {
 Blockly.PXTBlockly.FunctionUtils.createAllInputs_ = function(connectionMap) {
   var hasTitle = false;
   var hasName = false;
+  var hasCollapseIcon = false;
   this.inputList.forEach(function(i) {
     if (i.name == 'function_title') {
       hasTitle = true;
     } else if (i.name == 'function_name') {
       hasName = true;
+    } else if (i.name == 'function_collapse') {
+      hasCollapseIcon = true;
     }
   });
 
@@ -348,6 +351,11 @@ Blockly.PXTBlockly.FunctionUtils.createAllInputs_ = function(connectionMap) {
       self.populateArgument_(arg, connectionMap, input);
     }
   });
+
+  // If collapse button present, move after arguments
+  if (hasCollapseIcon) {
+    this.moveInputBefore('function_collapse', null);
+  }
 
   // Move the statement input (block mouth) back to the end.
   if (this.hasStatements_) {
@@ -556,6 +564,22 @@ Blockly.PXTBlockly.FunctionUtils.createArgumentReporter_ = function(arg) {
   }
   return newBlock;
 };
+
+
+/**
+ * Create the icon for collapsing the function block
+ * @return {!Blockly.BlockSvg} The newly created argument reporter block.
+ * @private
+ * @this Blockly.Block
+ */
+Blockly.PXTBlockly.FunctionUtils.createCollapseIcon_ = function() {
+  var image = this.workspace.getRenderer().getConstants().COLLAPSE_IMAGE_DATAURI;
+  var self = this;
+  if (image) {
+    self.appendDummyInput('function_collapse')
+      .appendField(new Blockly.FieldImage(image, 24, 24, "*", function() { self.setCollapsed(true) }, false))
+  }
+}
 
 /**
  * Populate the argument by attaching the correct child block or shadow to the
@@ -981,6 +1005,7 @@ Blockly.Blocks['function_definition'] = {
     this.setTooltip(Blockly.Msg.PROCEDURES_DEFNORETURN_TOOLTIP);
     this.setHelpUrl(Blockly.Msg.PROCEDURES_DEFNORETURN_HELPURL);
     this.setStatements_(true);
+    this.createCollapseIcon_();
     this.setInputsInline(true);
     this.statementConnection_ = null;
   },
@@ -1004,7 +1029,8 @@ Blockly.Blocks['function_definition'] = {
   updateFunctionLabel_: Blockly.PXTBlockly.FunctionUtils.updateLabelEditor_,
 
   // Only exists on function_definition.
-  createArgumentReporter_: Blockly.PXTBlockly.FunctionUtils.createArgumentReporter_
+  createArgumentReporter_: Blockly.PXTBlockly.FunctionUtils.createArgumentReporter_,
+  createCollapseIcon_: Blockly.PXTBlockly.FunctionUtils.createCollapseIcon_
 };
 
 Blockly.Blocks['function_call'] = {

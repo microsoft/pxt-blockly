@@ -57,6 +57,35 @@ Blockly.pxt.ConstantProvider = function() {
   this.ICON_SEPARATOR_HEIGHT = 8 * this.GRID_UNIT;
 
   /**
+   * Radius of SVG path for ellipses in collapsed blocks.
+   * @type {number}
+   * @package
+   */
+  this.ELLIPSES_RADIUS = 6;
+
+  /**
+   * Spacing of ellipses in collapsed blocks.
+   * @type {number}
+   * @package
+   */
+  this.ELLIPSES_SPACING = 8;
+
+  /**
+   * Data URI of svg for collapsing a block
+   * @type {string}
+   * @package
+   */
+  this.COLLAPSE_IMAGE_DATAURI = "data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3Csvg enable-background='new 0 0 24 24' version='1.1' viewBox='0 0 24 24' xml:space='preserve' xmlns='http://www.w3.org/2000/svg'%3E%3Cstyle type='text/css'%3E .st0%7Bfill:%23CF8B17;%7D .st1%7Bfill:%23FFFFFF;%7D%0A%3C/style%3E%3Ctitle%3Erepeat%3C/title%3E%3Ccircle cx='12' cy='12' r='10.503' fill='none' stroke='%23fff' stroke-linecap='square' stroke-linejoin='round' stroke-width='2'/%3E%3Cg transform='matrix(.0086269 0 0 -.0086269 4.8224 17.354)'%3E%3Cpath d='m1611 367.42q0 53-37 90l-651 651q-38 38-91 38-54 0-90-38l-651-651q-38-36-38-90 0-53 38-91l74-75q39-37 91-37 53 0 90 37l486 486 486-486q37-37 90-37 52 0 91 37l75 75q37 39 37 91z' fill='%23fff'/%3E%3C/g%3E%3C/svg%3E%0A";
+
+  /**
+   * Data URI of svg for expanding a block
+   * set.
+   * @type {string}
+   * @package
+   */
+  this.EXPAND_IMAGE_DATAURI = "data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3Csvg enable-background='new 0 0 24 24' version='1.1' viewBox='0 0 24 24' xml:space='preserve' xmlns='http://www.w3.org/2000/svg'%3E%3Cstyle type='text/css'%3E .st0%7Bfill:%23CF8B17;%7D .st1%7Bfill:%23FFFFFF;%7D%0A%3C/style%3E%3Ctitle%3Erepeat%3C/title%3E%3Ccircle cx='12' cy='12' r='10.503' fill='none' stroke='%23fff' stroke-linecap='square' stroke-linejoin='round' stroke-width='2'/%3E%3Cg transform='matrix(.0086269 0 0 -.0086269 4.8224 17.654)'%3E%3Cpath d='m1611 832q0-53-37-90l-651-651q-38-38-91-38-54 0-90 38l-651 651q-38 36-38 90 0 53 38 91l74 75q39 37 91 37 53 0 90-37l486-486 486 486q37 37 90 37 52 0 91-37l75-75q37-39 37-91z' fill='%23fff'/%3E%3C/g%3E%3C/svg%3E%0A";
+
+  /**
    * The ID of the highlighted glow filter, or the empty string if no filter is
    * set.
    * @type {string}
@@ -89,6 +118,19 @@ Blockly.pxt.ConstantProvider = function() {
 };
 Blockly.utils.object.inherits(Blockly.pxt.ConstantProvider,
     Blockly.zelos.ConstantProvider);
+
+/**
+ * @override
+ */
+Blockly.pxt.ConstantProvider.prototype.init = function() {
+  Blockly.pxt.ConstantProvider.superClass_.init.call(this);
+
+  /**
+   * A string containing path information about ellipses.
+   * @type {!string}
+   */
+  this.ELLIPSES = this.makeEllipses();
+};
 
 /**
  * @override
@@ -173,4 +215,28 @@ Blockly.pxt.ConstantProvider.prototype.createDom = function(svg) {
       }, defs);
   dropdownArrowImage.setAttributeNS('http://www.w3.org/1999/xlink',
       'xlink:href', this.FIELD_DROPDOWN_SVG_ARROW_DATAURI);
+};
+
+/**
+ * @return {!string} A string containing path information about
+ *     collapsed block ellipses.
+ * @package
+ */
+Blockly.blockRendering.ConstantProvider.prototype.makeEllipses = function() {
+  var r = this.ELLIPSES_RADIUS;
+  var spacing = this.ELLIPSES_SPACING;
+
+  var mainPath = "";
+  for (var i = 0; i < 3; i++) {
+    mainPath += Blockly.utils.svgPaths.moveBy(spacing, 0)
+    + Blockly.utils.svgPaths.arc('a', '180 1,1', r,
+      Blockly.utils.svgPaths.point(r * 2, 0));
+  }
+  for (var i = 0; i < 3; i++) {
+    mainPath += Blockly.utils.svgPaths.arc('a', '180 1,1', r,
+      Blockly.utils.svgPaths.point(- r * 2, 0))
+    + Blockly.utils.svgPaths.moveBy(-spacing, 0);
+  }
+
+  return mainPath;
 };

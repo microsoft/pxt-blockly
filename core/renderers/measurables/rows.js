@@ -147,6 +147,13 @@ Blockly.blockRendering.Row = function(constants) {
   this.hasJaggedEdge = false;
 
   /**
+   * pxt-blockly Whether the row is a collapsed stack.
+   * @package
+   * @type {boolean}
+   */
+  this.isCollapsedStack = false;
+
+  /**
    * The renderer's constant provider.
    * @type {!Blockly.blockRendering.ConstantProvider}
    * @protected

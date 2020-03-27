@@ -244,9 +244,18 @@ Blockly.blockRendering.RenderInfo.prototype.createRows_ = function() {
   }
 
   if (this.isCollapsed) {
-    activeRow.hasJaggedEdge = true;
-    activeRow.elements.push(
-        new Blockly.blockRendering.JaggedEdge(this.constants_));
+    // pxt-blockly for collapsed statement rendering, check for statement
+    // input anywhere in block
+    var hasStatement = this.block_.inputList.find(function (el) {
+      return el.type == Blockly.NEXT_STATEMENT;
+    })
+    if (hasStatement) {
+      activeRow = this.addCollapsedRow_(activeRow);
+    } else {
+      activeRow.hasJaggedEdge = true;
+      activeRow.elements.push(
+          new Blockly.blockRendering.JaggedEdge(this.constants_));
+    }
   }
 
   if (activeRow.elements.length || activeRow.hasDummyInput) {
@@ -320,8 +329,10 @@ Blockly.blockRendering.RenderInfo.prototype.populateBottomRow_ = function() {
 
   var followsStatement =
       this.block_.inputList.length &&
-      this.block_.inputList[this.block_.inputList.length - 1]
-          .type == Blockly.NEXT_STATEMENT;
+      (this.block_.inputList[this.block_.inputList.length - 1]
+          .type == Blockly.NEXT_STATEMENT ||
+       // pxt-blockly render after-statement height for collapsed stack
+       this.rows[this.rows.length-1].isCollapsedStack);
 
   // This is the minimum height for the row. If one of its elements has a
   // greater height it will be overwritten in the compute pass.
@@ -394,6 +405,16 @@ Blockly.blockRendering.RenderInfo.prototype.addInput_ = function(input, activeRo
   if (activeRow.align == null) {
     activeRow.align = input.align;
   }
+};
+
+/**
+ * Adds a collapsed row element for custom collapsed block rendering
+ * @param {!Blockly.blockRendering.Row} activeRow The row that is currently being
+ *     populated.
+ * @protected
+ */
+Blockly.blockRendering.RenderInfo.prototype.addCollapsedRow_ = function(activeRow) {
+  // pass-through, overwriten by pxt-blockly
 };
 
 /**
