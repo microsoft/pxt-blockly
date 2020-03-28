@@ -573,11 +573,13 @@ Blockly.PXTBlockly.FunctionUtils.createArgumentReporter_ = function(arg) {
  * @this Blockly.Block
  */
 Blockly.PXTBlockly.FunctionUtils.createCollapseIcon_ = function() {
-  var image = this.workspace.getRenderer().getConstants().COLLAPSE_IMAGE_DATAURI;
   var self = this;
-  if (image) {
-    self.appendDummyInput('function_collapse')
-      .appendField(new Blockly.FieldImage(image, 24, 24, "*", function() { self.setCollapsed(true) }, false))
+  if (self.workspace && self.workspace.getRenderer) {
+    var image = self.workspace.getRenderer().getConstants().COLLAPSE_IMAGE_DATAURI;
+    if (image) {
+      self.appendDummyInput('function_collapse')
+        .appendField(new Blockly.FieldImage(image, 24, 24, "*", function() { self.setCollapsed(true) }, false))
+    }
   }
 }
 
