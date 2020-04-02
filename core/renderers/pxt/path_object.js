@@ -80,6 +80,23 @@ Blockly.pxt.PathObject.prototype.setPath = function(pathString) {
 /**
  * @override
  */
+Blockly.pxt.PathObject.prototype.applyColour = function(block) {
+  Blockly.pxt.PathObject.superClass_.applyColour.call(this, block);
+
+  // For dark shadow blocks, add a lighter border to differentiate
+  if (block.isShadow() && block.getParent()) {
+    var colour = block.getParent().style.colourTertiary;
+    var rgb = Blockly.utils.colour.hexToRgb(colour);
+    var luminance = Blockly.utils.colour.luminance(rgb);
+    if (luminance < 0.15) {
+      this.svgPath.setAttribute('stroke', Blockly.utils.colour.lighten(colour, 0.3));
+    }
+  }
+};
+
+/**
+ * @override
+ */
 Blockly.pxt.PathObject.prototype.updateHighlighted = function(enable) {
   this.setClass_('blocklyHighlighted', enable);
   if (enable) {
