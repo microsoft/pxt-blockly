@@ -673,7 +673,7 @@ Blockly.BlockSvg.prototype.setCollapsed = function(collapsed) {
     for (i = 0; i < icons.length; i++) {
       icons[i].setVisible(false);
     }
-    var text = this.toString(Blockly.COLLAPSE_CHARS);
+    var text = this.toString(Blockly.COLLAPSE_CHARS, "", true); // pxt-blockly firstRow = true
     var collapsedInput = this.appendDummyInput(COLLAPSED_INPUT_NAME)
       .appendField(text);
 
@@ -681,7 +681,9 @@ Blockly.BlockSvg.prototype.setCollapsed = function(collapsed) {
     var self = this;
     var image = this.workspace.getRenderer().getConstants().EXPAND_IMAGE_DATAURI;
     if (image) {
-      collapsedInput.appendField(new Blockly.FieldImage(image, 24, 24, "*", function() { self.setCollapsed(false) }, false))
+      collapsedInput.appendField(new Blockly.FieldImage(image, 24, 24, "", function() {
+        self.setCollapsed(false)
+      }, false))
     }
 
     collapsedInput.init();
