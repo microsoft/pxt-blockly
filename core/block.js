@@ -1364,15 +1364,22 @@ Blockly.Block.prototype.setCollapsed = function(collapsed) {
  * @param {number=} opt_maxLength Truncate the string to this length.
  * @param {string=} opt_emptyToken The placeholder string used to denote an
  *     empty field. If not specified, '?' is used.
+ * @param {boolean=} opt_firstRow pxt-blockly Only include text from first row
  * @return {string} Text of block.
  */
-Blockly.Block.prototype.toString = function(opt_maxLength, opt_emptyToken) {
+Blockly.Block.prototype.toString = function(opt_maxLength, opt_emptyToken, opt_firstRow) {
   var text = [];
   var emptyFieldPlaceholder = opt_emptyToken || '?';
   if (this.collapsed_) {
     text.push(this.getInput('_TEMP_COLLAPSED_INPUT').fieldRow[0].getText());
   } else {
     for (var i = 0, input; (input = this.inputList[i]); i++) {
+      // pxt-blockly
+      if (opt_firstRow && (input.type == Blockly.NEXT_STATEMENT
+        || input.type == Blockly.PREVIOUS_STATEMENT)) {
+          break;
+      }
+
       for (var j = 0, field; (field = input.fieldRow[j]); j++) {
         text.push(field.getText());
       }

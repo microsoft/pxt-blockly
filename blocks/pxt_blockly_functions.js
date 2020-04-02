@@ -578,7 +578,9 @@ Blockly.PXTBlockly.FunctionUtils.createCollapseIcon_ = function() {
     var image = self.workspace.getRenderer().getConstants().COLLAPSE_IMAGE_DATAURI;
     if (image) {
       self.appendDummyInput('function_collapse')
-        .appendField(new Blockly.FieldImage(image, 24, 24, "*", function() { self.setCollapsed(true) }, false))
+        .appendField(new Blockly.FieldImage(image, 24, 24, "", function() {
+          self.setCollapsed(true)
+        }, false))
     }
   }
 }
