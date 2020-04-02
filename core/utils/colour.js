@@ -237,6 +237,15 @@ Blockly.utils.colour.lighten = function(colour, factor) {
 };
 
 /**
+ * Gets the luminance [0, 1] of an rgb color
+ * @param {!Array.<number>} rgb RGB array representation of the colour.
+ * @return {number} [0, 1] luminance.
+ */
+Blockly.utils.colour.luminance = function(rgb) {
+  return ((0.2126 * rgb[0]) + (0.7152 * rgb[1]) + (0.0722 * rgb[2])) / 255;
+}
+
+/**
  * A map that contains the 16 basic colour keywords as defined by W3C:
  * https://www.w3.org/TR/2018/REC-css-color-3-20180619/#html4
  * The keys of this map are the lowercase "readable" names of the colours,
