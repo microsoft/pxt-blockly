@@ -1305,9 +1305,10 @@ declare module Blockly {
              * @param {number=} opt_maxLength Truncate the string to this length.
              * @param {string=} opt_emptyToken The placeholder string used to denote an
              *     empty field. If not specified, '?' is used.
+             * @param {boolean=} opt_firstRow pxt-blockly Only include text from first row
              * @return {string} Text of block.
              */
-            toString(opt_maxLength?: number, opt_emptyToken?: string): string;
+            toString(opt_maxLength?: number, opt_emptyToken?: string, opt_firstRow?: boolean): string;
     
             /**
              * Shortcut for appending a value input row.
@@ -15256,6 +15257,13 @@ declare module Blockly.utils.colour {
      * @return {string} Combined colour represented in hex.
      */
     function lighten(colour: string, factor: number): string;
+
+    /**
+     * Gets the luminance [0, 1] of an rgb color
+     * @param {!Array.<number>} rgb RGB array representation of the colour.
+     * @return {number} [0, 1] luminance.
+     */
+    function luminance(rgb: number[]): number;
 
     /**
      * A map that contains the 16 basic colour keywords as defined by W3C:
