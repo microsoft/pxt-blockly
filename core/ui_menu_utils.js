@@ -40,8 +40,10 @@ goog.require('Blockly.utils.style');
 Blockly.utils.uiMenu.getSize = function(menu) {
   var menuDom = menu.getElement();
   var menuSize = Blockly.utils.style.getSize(/** @type {!Element} */ (menuDom));
+  var borderSize = Blockly.utils.style.getBorderBox(/** @type {!Element} */ (menuDom));
   // Recalculate height for the total content, not only box height.
-  menuSize.height = menuDom.scrollHeight;
+  // pxt-blockly add border size, and round up for fractional heights
+  menuSize.height = menuDom.scrollHeight + borderSize.top + borderSize.bottom + 1;
   return menuSize;
 };
 
