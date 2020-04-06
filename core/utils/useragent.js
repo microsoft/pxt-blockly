@@ -47,6 +47,7 @@ goog.require('Blockly.utils.global');
   // https://github.com/google/closure-library/blob/master/closure/goog/labs/useragent/browser.js
   Blockly.utils.userAgent.IE = has('Trident') || has('MSIE');
   Blockly.utils.userAgent.EDGE = has('Edge');
+  Blockly.utils.userAgent.EDGE_OR_IE = Blockly.utils.userAgent.EDGE || Blockly.utils.userAgent.IE;
   // Useragent for JavaFX:
   // Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.44
   //     (KHTML, like Gecko) JavaFX/8.0 Safari/537.44
