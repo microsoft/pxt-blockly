@@ -87,7 +87,7 @@ Blockly.Breakpoint.prototype.drawIcon_ = function(group) {
   //   'transform': 'scale(0.7)',
   // },
   // group);
-  
+
 };
 
 
@@ -125,7 +125,7 @@ Blockly.Breakpoint.prototype.setVisible = function(visible) {
   } else {
     this.bigDot.setAttribute('fill', '#ccc');
   }
-  
+
   this.set_ = !this.set_;
   this.block_.setBreakpoint(visible);
   };
@@ -135,7 +135,7 @@ Blockly.Breakpoint.prototype.setVisible = function(visible) {
  * @return {boolean} True if the breakpoint is Set.
  */
 Blockly.Breakpoint.prototype.isVisible = function() {
-  return !!this.set_;
+  return !!this.set_ && Blockly.Breakpoint.superClass_.isVisible.call(this);
 };
 
 /**
