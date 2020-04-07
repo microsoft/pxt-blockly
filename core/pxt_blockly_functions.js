@@ -395,6 +395,19 @@ Blockly.Functions.makeEditOption = function(block) {
   return editOption;
 };
 
+Blockly.Functions.makeGoToDefinitionOption = function(block) {
+  var gtdOption = {
+    enabled: true,
+    text: Blockly.Msg.FUNCTIONS_GO_TO_DEFINITION_OPTION,
+    callback: function() {
+      var functionName = block.getField("function_name").getText();
+      var definition = Blockly.Functions.getDefinition(functionName, block.workspace);
+      if (definition) block.workspace.centerOnBlock(definition.id);
+    }
+  };
+  return gtdOption;
+}
+
 /**
  * Converts an argument reporter block's output type to its equivalent
  * TypeScript type. For literal types, this means the output type in all lower
