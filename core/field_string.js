@@ -108,12 +108,14 @@ Blockly.FieldString.prototype.initView = function() {
 Blockly.FieldString.prototype.updateSize_ = function() {
   Blockly.FieldString.superClass_.updateSize_.call(this);
 
-  var xPadding = 3;
-  var addedWidth = this.positionLeft(this.size_.width + xPadding);
-  this.textElement_.setAttribute('x', addedWidth);
-  addedWidth += this.positionRight(addedWidth + this.size_.width + xPadding);
+  var sWidth = this.value_ ? this.size_.width : 1;
 
-  this.size_.width += addedWidth;
+  var xPadding = 3;
+  var addedWidth = this.positionLeft(sWidth + xPadding);
+  this.textElement_.setAttribute('x', addedWidth);
+  addedWidth += this.positionRight(addedWidth + sWidth + xPadding);
+
+  this.size_.width = sWidth + addedWidth;
 };
 
 // Position Left
