@@ -38,6 +38,7 @@ goog.require('Blockly.utils.dom');
 goog.require('Blockly.utils.uiMenu');
 goog.require('Blockly.utils.userAgent');
 goog.require('Blockly.Xml');
+goog.require('goog.ui.MenuSeparator');
 
 
 /**

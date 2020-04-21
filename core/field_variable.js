@@ -390,16 +390,6 @@ Blockly.FieldVariable.prototype.setTypes_ = function(opt_variableTypes,
 };
 
 /**
- * Refreshes the name of the variable by grabbing the name of the model.
- * Used when a variable gets renamed, but the ID stays the same. Should only
- * be called by the block.
- * @package
- */
-Blockly.FieldVariable.prototype.refreshVariableName = function() {
-  this.forceRerender();
-};
-
-/**
  * Return a sorted list of variable names for variable dropdown menus.
  * Include a special option at the end for creating a new variable name.
  * @return {!Array.<!Array>} Array of variable names/id tuples.
