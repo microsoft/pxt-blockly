@@ -795,8 +795,9 @@ Blockly.BlockSvg.prototype.generateContextMenu = function() {
       menuOptions.push(Blockly.ContextMenu.blockDuplicateOption(block));
     }
 
+    // pxt-blockly don't allow comments on shadow argument reporters
     if (this.workspace.options.comments && !this.collapsed_ &&
-        this.isEditable()) {
+        this.isEditable() && !Blockly.pxtBlocklyUtils.isShadowArgumentReporter(block)) {
       menuOptions.push(Blockly.ContextMenu.blockCommentOption(block));
     }
 

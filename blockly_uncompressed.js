@@ -43,7 +43,7 @@ goog.addDependency('../../../../core/components/tree/treenode.js', ['Blockly.tre
 goog.addDependency('../../../../core/connection.js', ['Blockly.Connection'], ['Blockly.Events', 'Blockly.Events.BlockMove', 'Blockly.Xml'], {});
 goog.addDependency('../../../../core/connection_db.js', ['Blockly.ConnectionDB'], ['Blockly.RenderedConnection'], {});
 goog.addDependency('../../../../core/constants.js', ['Blockly.constants'], [], {});
-goog.addDependency('../../../../core/contextmenu.js', ['Blockly.ContextMenu'], ['Blockly.Events', 'Blockly.Events.BlockCreate', 'Blockly.Menu', 'Blockly.MenuItem', 'Blockly.Msg', 'Blockly.Xml', 'Blockly.utils', 'Blockly.utils.Coordinate', 'Blockly.utils.dom', 'Blockly.utils.uiMenu', 'Blockly.utils.userAgent'], {});
+goog.addDependency('../../../../core/contextmenu.js', ['Blockly.ContextMenu'], ['Blockly.Events', 'Blockly.Events.BlockCreate', 'Blockly.Menu', 'Blockly.MenuItem', 'Blockly.Msg', 'Blockly.Xml', 'Blockly.utils', 'Blockly.utils.Coordinate', 'Blockly.utils.dom', 'Blockly.utils.uiMenu', 'Blockly.utils.userAgent', 'goog.ui.MenuSeparator'], {});
 goog.addDependency('../../../../core/css.js', ['Blockly.Css'], ['Blockly.Colours', 'Blockly.utils.userAgent'], {});
 goog.addDependency('../../../../core/dropdowndiv.js', ['Blockly.DropDownDiv'], ['Blockly.utils.dom', 'Blockly.utils.math', 'Blockly.utils.style'], {});
 goog.addDependency('../../../../core/events.js', ['Blockly.Events'], ['Blockly.utils'], {});
