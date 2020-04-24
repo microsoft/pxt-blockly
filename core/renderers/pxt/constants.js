@@ -263,6 +263,11 @@ Blockly.pxt.ConstantProvider.prototype.getCSS_ = function(name) {
     selector + ' .blocklyDraggable > .blocklyReplaceable > .blocklyConnectionIndicator {',
       'display: block;',
     '}',
+    selector + ' .blocklyConnectionLine {',
+      'stroke: #ff0000;',
+      'stroke-width: 4px;',
+      'stroke-linecap: round;',
+    '}'
     /* eslint-enable indent */
   ])
 }
