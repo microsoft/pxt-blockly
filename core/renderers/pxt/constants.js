@@ -222,7 +222,7 @@ Blockly.pxt.ConstantProvider.prototype.createDom = function(svg) {
  *     collapsed block ellipses.
  * @package
  */
-Blockly.blockRendering.ConstantProvider.prototype.makeEllipses = function() {
+Blockly.pxt.ConstantProvider.prototype.makeEllipses = function() {
   var r = this.ELLIPSES_RADIUS;
   var spacing = this.ELLIPSES_SPACING;
 
@@ -240,3 +240,29 @@ Blockly.blockRendering.ConstantProvider.prototype.makeEllipses = function() {
 
   return mainPath;
 };
+
+/**
+ * @override
+ */
+Blockly.pxt.ConstantProvider.prototype.getCSS_ = function(name) {
+  var selector = '.' + name + '-renderer';
+  var css = Blockly.pxt.ConstantProvider.superClass_.getCSS_.call(this, name);
+  return css.concat([
+    /* eslint-disable indent */
+    // Connection indicator.
+    selector + ' .blocklyConnectionIndicator {',
+      'fill: #ff0000;',
+      'fill-opacity: 0.9;',
+      'stroke: #ffff00;',
+      'stroke-width: 3px;',
+      'display: none;',
+    '}',
+    selector + ' .blocklyBlockDragSurface > g > .blocklyDraggable > .blocklyConnectionIndicator {',
+      'display: block;',
+    '}',
+    selector + ' .blocklyDraggable > .blocklyReplaceable > .blocklyConnectionIndicator {',
+      'display: block;',
+    '}',
+    /* eslint-enable indent */
+  ])
+}

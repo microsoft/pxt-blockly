@@ -107,3 +107,15 @@ Blockly.pxt.Drawer.prototype.drawLeft_ = function() {
     this.outlinePath_ += Blockly.utils.svgPaths.lineOnAxis('V', endY);
   }
 };
+
+/**
+ * Add steps to draw the left side of an output with a dynamic connection.
+ * @protected
+ */
+Blockly.pxt.Drawer.prototype.drawLeftDynamicConnection_ = function() {
+  Blockly.pxt.Drawer.superClass_.drawLeftDynamicConnection_.call(this);
+
+  this.block_.pathObject.positionConnectionIndicator(
+    this.block_.outputConnection.getOffsetInBlock().x,
+    this.block_.outputConnection.getOffsetInBlock().y);
+};

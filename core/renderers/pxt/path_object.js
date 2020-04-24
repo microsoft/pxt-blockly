@@ -59,6 +59,13 @@ Blockly.pxt.PathObject = function(root, style, constants) {
    */
   this.svgPathHighlightedWarning_ = null;
 
+  /**
+   * The output connection indicator svg of the block.
+   * @type {SVGElement}
+   * @private
+   */
+  this.svgOutputConnectionIndicator_ = null;
+
   Blockly.utils.dom.addClass(this.svgPath, 'blocklyBlockBackground'); // pxt-blockly
 };
 Blockly.utils.object.inherits(Blockly.pxt.PathObject,
@@ -139,4 +146,39 @@ Blockly.pxt.PathObject.prototype.updateHighlightedWarning = function(enable) {
       this.svgPathHighlightedWarning_ = null;
     }
   }
+};
+
+/**
+ * @override
+ */
+Blockly.pxt.PathObject.prototype.updateSelected = function(enable) {
+  Blockly.pxt.PathObject.superClass_.updateSelected.call(this, enable);
+
+  if (enable) {
+    if (this.svgOutputConnectionIndicator_) {
+      // Move connection indicator above highlight filter
+      this.svgRoot.removeChild(this.svgOutputConnectionIndicator_);
+      this.svgRoot.appendChild(this.svgOutputConnectionIndicator_);
+    }
+  }
+};
+
+/**
+ * Position the svg connection indicator on the path object
+ * @param {number} x The x offset.
+ * @param {number} y The y offset.
+ * @package
+ */
+Blockly.pxt.PathObject.prototype.positionConnectionIndicator = function(x,
+  y) {
+if (!this.svgOutputConnectionIndicator_) {
+  this.svgOutputConnectionIndicator_ = Blockly.utils.dom.createSvgElement('g',
+      {'class': 'blocklyConnectionIndicator'});
+  this.svgRoot.appendChild(this.svgOutputConnectionIndicator_);
+  console.log(this.svgRoot.toString())
+  Blockly.utils.dom.createSvgElement('circle', {'r': 9},
+      this.svgOutputConnectionIndicator_);
+}
+this.svgOutputConnectionIndicator_.setAttribute('transform',
+    'translate(' + x + ',' + y + ')');
 };
