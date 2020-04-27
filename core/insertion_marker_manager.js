@@ -100,6 +100,14 @@ Blockly.InsertionMarkerManager = function(block) {
   this.localConnection_ = null;
 
   /**
+   * pxt-blockly A line between the local connection and closest connection, to indicate
+   * where the inserted block will appear.
+   * @type {SVGElement}
+   * @private
+   */
+  this.connectionLine_ = null;
+
+  /**
    * Whether the block would be deleted if it were dropped immediately.
    * Updated on every mouse move.
    * @type {boolean}
@@ -231,6 +239,8 @@ Blockly.InsertionMarkerManager.prototype.update = function(dxy, deleteArea) {
     this.maybeShowPreview_(candidate);
     Blockly.Events.enable();
   }
+
+  this.updateConnectionLine_(dxy); // pxt-blockly
 };
 
 /**
@@ -502,6 +512,7 @@ Blockly.InsertionMarkerManager.prototype.maybeShowPreview_ = function(candidate)
 Blockly.InsertionMarkerManager.prototype.showPreview_ = function() {
   if (this.shouldReplace_()) {
     this.highlightBlock_();
+    this.createConnectionLine_(); // pxt-blockly
   } else {  // Should insert
     this.connectMarker_();
   }
@@ -512,6 +523,53 @@ Blockly.InsertionMarkerManager.prototype.showPreview_ = function() {
     this.closestConnection_.highlight();
   }
 };
+
+/**
+ * pxt-blockly Create the SVG line element to render between two highlighted connections
+ * @private
+ */
+Blockly.InsertionMarkerManager.prototype.createConnectionLine_ = function() {
+  if (!this.connectionLine_) {
+    this.connectionLine_ = Blockly.utils.dom.createSvgElement(
+      'line',
+      {
+        'class': 'blocklyConnectionLine',
+        'x1': 0,
+        'y1': 0,
+        'x2': 0,
+        'y2': 0
+      },
+      this.localConnection_.sourceBlock_.getSvgRoot());
+  }
+}
+
+/**
+ * pxt-blockly Update the position of the connection line element while block dragged
+ * @private
+ */
+Blockly.InsertionMarkerManager.prototype.updateConnectionLine_ = function(dxy) {
+  if (this.closestConnection_ && this.localConnection_ && this.connectionLine_) {
+    var offset = this.localConnection_.offsetInBlock_;
+    this.connectionLine_.setAttribute("x1", offset.x);
+    this.connectionLine_.setAttribute("y1", offset.y);
+
+    var x2 = this.closestConnection_.x - this.localConnection_.x - dxy.x + offset.x;
+    var y2 = this.closestConnection_.y - this.localConnection_.y - dxy.y + offset.y;
+    this.connectionLine_.setAttribute("x2", x2);
+    this.connectionLine_.setAttribute("y2", y2);
+  }
+};
+
+/**
+ * pxt-blockly Hide the connection line element when unhighlighting
+ * @private
+ */
+Blockly.InsertionMarkerManager.prototype.hideConnectionLine_ = function() {
+  if (this.localConnection_ && this.connectionLine_) {
+    this.localConnection_.sourceBlock_.getSvgRoot().removeChild(this.connectionLine_);
+    this.connectionLine_ = null;
+  }
+}
 
 /**
  * Show an insertion marker or replacement highlighting during a drag, if
@@ -559,6 +617,7 @@ Blockly.InsertionMarkerManager.prototype.hidePreview_ = function() {
   }
   if (this.highlightingBlock_) {
     this.unhighlightBlock_();
+    this.hideConnectionLine_(); // pxt-blockly
   } else if (this.markerConnection_) {
     this.disconnectMarker_();
   }
