@@ -260,7 +260,7 @@ Blockly.pxt.ConstantProvider.prototype.getCSS_ = function(name) {
     selector + ' .blocklyBlockDragSurface > g > .blocklyDraggable > .blocklyConnectionIndicator {',
       'display: block;',
     '}',
-    selector + ' .blocklyDraggable > .blocklyReplaceable > .blocklyConnectionIndicator {',
+    selector + ' .blocklyReplaceable > .blocklyConnectionIndicator {',
       'display: block;',
     '}',
     selector + ' .blocklyConnectionLine {',
