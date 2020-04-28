@@ -135,7 +135,7 @@ Blockly.Breakpoint.prototype.setVisible = function(visible) {
  * @return {boolean} True if the breakpoint is Set.
  */
 Blockly.Breakpoint.prototype.isVisible = function() {
-  return !!this.set_ && Blockly.Breakpoint.superClass_.isVisible.call(this);
+  return !!this.set_
 };
 
 /**
