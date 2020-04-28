@@ -264,9 +264,11 @@ Blockly.pxt.ConstantProvider.prototype.getCSS_ = function(name) {
       'display: block;',
     '}',
     selector + ' .blocklyConnectionLine {',
-      'stroke: #ff0000;',
+      'stroke: #ffff00;',
       'stroke-width: 4px;',
-      'stroke-linecap: round;',
+    '}',
+    selector + ' .blocklyConnectionLine.hidden {',
+      'display: none;',
     '}'
     /* eslint-enable indent */
   ])
