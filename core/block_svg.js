@@ -929,6 +929,10 @@ Blockly.BlockSvg.prototype.moveConnections = function(dx, dy) {
   for (var i = 0; i < this.childBlocks_.length; i++) {
     this.childBlocks_[i].moveConnections(dx, dy);
   }
+
+  // pxt-blockly Reposition any open editors
+  Blockly.WidgetDiv.repositionForWindowResize();
+  Blockly.DropDownDiv.repositionForWindowResize();
 };
 
 /**
