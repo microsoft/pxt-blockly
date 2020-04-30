@@ -250,17 +250,16 @@ Blockly.pxt.ConstantProvider.prototype.getCSS_ = function(name) {
   return css.concat([
     /* eslint-disable indent */
     // Connection indicator.
-    selector + ' .blocklyConnectionIndicator {',
+    selector + ' .blocklyConnectionIndicator, ' + selector + ' .blocklyInputConnectionIndicator {',
       'fill: #ff0000;',
       'fill-opacity: 0.9;',
       'stroke: #ffff00;',
       'stroke-width: 3px;',
+    '}',
+    selector + ' .blocklyConnectionIndicator {',
       'display: none;',
     '}',
     selector + ' .blocklyBlockDragSurface > g > .blocklyDraggable > .blocklyConnectionIndicator {',
-      'display: block;',
-    '}',
-    selector + ' .blocklyReplaceable > .blocklyConnectionIndicator {',
       'display: block;',
     '}',
     selector + ' .blocklyConnectionLine {',
