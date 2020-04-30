@@ -3505,6 +3505,11 @@ declare module Blockly {
     var CONNECTING_SNAP_RADIUS: any /*missing*/;
 
     /**
+     * pxt-blockly Radius of circle that highlights connection points when dragging blocks.
+     */
+    var CONNECTION_INDICATOR_RADIUS: any /*missing*/;
+
+    /**
      * How much to prefer staying connected to the current connection over moving to
      * a new connection.  The current previewed connection is considered to be this
      * much closer to the matching connection on the block than it actually is.
