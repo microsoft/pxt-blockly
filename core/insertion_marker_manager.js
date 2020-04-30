@@ -549,14 +549,26 @@ Blockly.InsertionMarkerManager.prototype.createConnectionLine_ = function() {
  */
 Blockly.InsertionMarkerManager.prototype.updateConnectionLine_ = function(dxy) {
   if (this.closestConnection_ && this.localConnection_ && this.connectionLine_) {
+    var radius = Blockly.CONNECTION_INDICATOR_RADIUS;
     var offset = this.localConnection_.offsetInBlock_;
-    this.connectionLine_.setAttribute("x1", offset.x);
-    this.connectionLine_.setAttribute("y1", offset.y);
 
     var x2 = this.closestConnection_.x - this.localConnection_.x - dxy.x + offset.x;
     var y2 = this.closestConnection_.y - this.localConnection_.y - dxy.y + offset.y;
-    this.connectionLine_.setAttribute("x2", x2);
-    this.connectionLine_.setAttribute("y2", y2);
+    // Offset the line by the radius of the indicator to prevent overlap
+    var atan = Math.atan2(y2 - offset.y, x2 - offset.x);
+
+    var len = Math.sqrt(Math.pow((x2 - offset.x), 2) + Math.pow((y2 - offset.y), 2));
+    // When the indicators are overlapping, we hide the line
+    if (len < radius * 2 + 1) {
+      Blockly.utils.dom.addClass(this.connectionLine_, "hidden");
+    } else {
+      Blockly.utils.dom.removeClass(this.connectionLine_, "hidden");
+      this.connectionLine_.setAttribute("x1", offset.x + Math.cos(atan) * radius);
+      this.connectionLine_.setAttribute("y1", offset.y + Math.sin(atan) * radius);
+
+      this.connectionLine_.setAttribute("x2", x2 - Math.cos(atan) * radius);
+      this.connectionLine_.setAttribute("y2", y2 - Math.sin(atan) * radius);
+    }
   }
 };
 

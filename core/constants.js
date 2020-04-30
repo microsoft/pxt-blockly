@@ -59,6 +59,11 @@ Blockly.SNAP_RADIUS = 48;
 Blockly.CONNECTING_SNAP_RADIUS = 96;
 
 /**
+ * pxt-blockly Radius of circle that highlights connection points when dragging blocks.
+ */
+Blockly.CONNECTION_INDICATOR_RADIUS = 9;
+
+/**
  * How much to prefer staying connected to the current connection over moving to
  * a new connection.  The current previewed connection is considered to be this
  * much closer to the matching connection on the block than it actually is.

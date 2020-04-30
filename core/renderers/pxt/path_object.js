@@ -175,7 +175,7 @@ if (!this.svgOutputConnectionIndicator_) {
   this.svgOutputConnectionIndicator_ = Blockly.utils.dom.createSvgElement('g',
       {'class': 'blocklyConnectionIndicator'});
   this.svgRoot.appendChild(this.svgOutputConnectionIndicator_);
-  Blockly.utils.dom.createSvgElement('circle', {'r': 9},
+  Blockly.utils.dom.createSvgElement('circle', {'r': Blockly.CONNECTION_INDICATOR_RADIUS},
       this.svgOutputConnectionIndicator_);
 }
 this.svgOutputConnectionIndicator_.setAttribute('transform',
