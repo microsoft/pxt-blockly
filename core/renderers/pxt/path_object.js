@@ -171,9 +171,18 @@ Blockly.pxt.PathObject.prototype.updateSelected = function(enable) {
 Blockly.pxt.PathObject.prototype.updateGrayscale = function(enable) {
   if (enable) {
     this.svgPath.setAttribute('filter',
+      'url(#' + this.constants_.grayscaleFilterId + ')');
+    var names = Object.keys(this.outlines_);
+    for (var i = 0; i < names.length; i++) {
+      this.outlines_[names[i]].setAttribute('filter',
         'url(#' + this.constants_.grayscaleFilterId + ')');
+    }
   } else {
     this.svgPath.setAttribute('filter', 'none');
+    var names = Object.keys(this.outlines_);
+    for (var i = 0; i < names.length; i++) {
+      this.outlines_[names[i]].setAttribute('filter', 'none');
+    }
   }
 };
 
