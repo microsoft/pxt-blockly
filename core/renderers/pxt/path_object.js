@@ -164,6 +164,20 @@ Blockly.pxt.PathObject.prototype.updateSelected = function(enable) {
 };
 
 /**
+ * Set whether the block shows in grayscale or not.
+ * @param {boolean} enable True if grayscale.
+ * @package
+ */
+Blockly.pxt.PathObject.prototype.updateGrayscale = function(enable) {
+  if (enable) {
+    this.svgPath.setAttribute('filter',
+        'url(#' + this.constants_.grayscaleFilterId + ')');
+  } else {
+    this.svgPath.setAttribute('filter', 'none');
+  }
+};
+
+/**
  * Position the svg connection indicator on the path object
  * @param {number} x The x offset.
  * @param {number} y The y offset.
