@@ -108,6 +108,13 @@ Blockly.InsertionMarkerManager = function(block) {
   this.connectionLine_ = null;
 
   /**
+   * pxt-blockly A circle at the location of the closest input connection.
+   * @type {SVGElement}
+   * @private
+   */
+  this.connectionIndicator_ = null;
+
+  /**
    * Whether the block would be deleted if it were dropped immediately.
    * Updated on every mouse move.
    * @type {boolean}
@@ -540,6 +547,16 @@ Blockly.InsertionMarkerManager.prototype.createConnectionLine_ = function() {
         'y2': 0
       },
       this.localConnection_.sourceBlock_.getSvgRoot());
+
+    // Create connection indicator for target/closes connection
+    this.connectionIndicator_ = Blockly.utils.dom.createSvgElement('g',
+      {'class': 'blocklyInputConnectionIndicator'},
+      this.closestConnection_.sourceBlock_.getSvgRoot());
+    Blockly.utils.dom.createSvgElement('circle',
+      {'r': Blockly.CONNECTION_INDICATOR_RADIUS}, this.connectionIndicator_);
+    var offset = this.closestConnection_.offsetInBlock_;
+    this.connectionIndicator_.setAttribute('transform',
+      'translate(' + offset.x + ',' + offset.y + ')');
   }
 }
 
@@ -580,6 +597,8 @@ Blockly.InsertionMarkerManager.prototype.hideConnectionLine_ = function() {
   if (this.localConnection_ && this.connectionLine_) {
     this.localConnection_.sourceBlock_.getSvgRoot().removeChild(this.connectionLine_);
     this.connectionLine_ = null;
+    this.closestConnection_.sourceBlock_.getSvgRoot().removeChild(this.connectionIndicator_);
+    this.connectionIndicator_ = null;
   }
 }
 
