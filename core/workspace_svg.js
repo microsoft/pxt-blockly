@@ -423,7 +423,7 @@ Blockly.WorkspaceSvg.prototype.toolboxCategoryCallbacks_ = {};
  * Developers may define this function to add custom menu options to the
  * workspace's context menu or edit the workspace-created set of menu options.
  * @param {!Array.<!Object>} options List of menu options to add to.
- * @param {!Event} e pxt-blockly Mouse event.
+ * @param {!Event} e The right-click event that triggered the context menu.
  */
 Blockly.WorkspaceSvg.prototype.configureContextMenu;
 
@@ -1839,7 +1839,6 @@ Blockly.WorkspaceSvg.prototype.showContextMenu = function(e) {
 
   // Allow the developer to add or modify menuOptions.
   if (this.configureContextMenu) {
-    // pxt-blockly Also pass in the event for custom menuOptions
     this.configureContextMenu(menuOptions, e);
   }
 
