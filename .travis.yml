@@ -1,9 +1,8 @@
 language: node_js
 os: linux
-dist: trusty
+dist: xenial
 node_js:
   - 8
-  - 10
 sudo: required
 addons:
   firefox: latest
@@ -11,6 +10,8 @@ addons:
 cache:
   directories:
   - node_modules
+env:
+  - TRAVIS_CI=true
 
 before_install:
   # Symlink closure library used by test/jsunit
