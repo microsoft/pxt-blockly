@@ -584,6 +584,14 @@ Blockly.DropDownDiv.isVisible = function() {
 };
 
 /**
+ * pxt-blockly Is the container displayed?
+ * @return {boolean} True if container is displayed on screen.
+ */
+Blockly.DropDownDiv.isDisplayed = function() {
+  return Blockly.DropDownDiv.DIV_.style.display != 'none';
+};
+
+/**
  * Hide the menu only if it is owned by the provided object.
  * @param {Object} owner Object which must be owning the drop-down to hide.
  * @param {boolean=} opt_withoutAnimation True if we should hide the dropdown
@@ -725,7 +733,7 @@ Blockly.DropDownDiv.repositionForWindowResize = function() {
   // when a field is focused, the soft keyboard opens triggering a window resize
   // event and we want the dropdown div to stick around so users can type into
   // it.
-  if (Blockly.DropDownDiv.owner_) {
+  if (Blockly.DropDownDiv.isVisible() && Blockly.DropDownDiv.isDisplayed()) {
     var field = /** @type {!Blockly.Field} */ (Blockly.DropDownDiv.owner_);
     var block = Blockly.DropDownDiv.owner_.getSourceBlock();
     var bBox = Blockly.DropDownDiv.positionToField_ ?
@@ -740,6 +748,6 @@ Blockly.DropDownDiv.repositionForWindowResize = function() {
     Blockly.DropDownDiv.positionInternal_(
         primaryX, primaryY, secondaryX, secondaryY);
   } else {
-    Blockly.DropDownDiv.hide();
+    Blockly.DropDownDiv.hideWithoutAnimation();
   }
 };

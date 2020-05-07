@@ -108,7 +108,8 @@ Blockly.WidgetDiv.repositionForWindowResize = function() {
   // when a field is focused, the soft keyboard opens triggering a window resize
   // event and we want the widget div to stick around so users can type into it.
   if (Blockly.WidgetDiv.owner_
-      && Blockly.WidgetDiv.owner_.getScaledBBox) {
+      && Blockly.WidgetDiv.owner_.getScaledBBox
+      && Blockly.WidgetDiv.isDisplayed()) {
     var widgetScaledBBox = Blockly.WidgetDiv.owner_.getScaledBBox();
     Blockly.WidgetDiv.DIV.style.left = widgetScaledBBox.left + 'px';
     Blockly.WidgetDiv.DIV.style.top = widgetScaledBBox.top + 'px';
@@ -150,6 +151,14 @@ Blockly.WidgetDiv.hide = function() {
  */
 Blockly.WidgetDiv.isVisible = function() {
   return !!Blockly.WidgetDiv.owner_;
+};
+
+/**
+ * pxt-blockly Is the container displayed?
+ * @return {boolean} True if container is displayed on screen.
+ */
+Blockly.WidgetDiv.isDisplayed = function() {
+  return Blockly.WidgetDiv.DIV.style.display != 'none';
 };
 
 /**
