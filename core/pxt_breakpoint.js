@@ -151,3 +151,5 @@ Blockly.Breakpoint.prototype.setIconLocation = function(xy) {
  */
 Blockly.Breakpoint.prototype.updateColour = function () {
 };
+Blockly.Breakpoint.prototype.applyColour = function () {
+};
