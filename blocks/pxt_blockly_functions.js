@@ -121,7 +121,10 @@ Blockly.PXTBlockly.FunctionUtils.domToMutation = function(xmlElement) {
 
   this.arguments_ = args;
   this.name_ = xmlElement.getAttribute('name');
-  this.functionId_ = xmlElement.getAttribute('functionid');
+
+  var functionId_ = xmlElement.getAttribute('functionid');
+  var idsInUse = Blockly.Functions.idsInUse(this.workspace);
+  if (idsInUse.indexOf(functionId_) < 0) this.functionId_ = functionId_;
   this.ensureIds_();
 
   if (this.type !== Blockly.FUNCTION_DEFINITION_BLOCK_TYPE || !this.rendered) {

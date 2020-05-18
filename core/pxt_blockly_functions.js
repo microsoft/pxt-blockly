@@ -454,6 +454,21 @@ Blockly.Functions.namesInUse = function(ws, exceptBlock, exceptFuncId) {
 }
 
 /**
+ * Returns a list of all current function IDs.
+ * @param {!Blockly.Workspace} ws The workspace to search.
+ * @return {!Array.<string>} The list of IDs in use.
+ */
+Blockly.Functions.idsInUse = function(ws) {
+  var ids = [];
+  ws.getAllBlocks().forEach(function(b) {
+    if (b.type == Blockly.FUNCTION_DEFINITION_BLOCK_TYPE) {
+      ids.push(b.getFunctionId());
+    }
+  });
+  return ids;
+}
+
+/**
  * Returns a name that is unique among existing functions and variables.
  * @param {string} name Proposed function name.
  * @param {!Blockly.Workspace} ws The workspace to search.
@@ -487,7 +502,14 @@ Blockly.Functions.rename = function(name) {
   var legalName = Blockly.Functions.findLegalName(name, this.sourceBlock_.workspace, this.sourceBlock_);
   var oldName = this.getValue();
 
-  if (!legalName || !oldName) return name;
+  if (!legalName) return name;
+
+  // For newly crecated functions (value not set yet), use legal name and save on block
+  if (!oldName) {
+    this.sourceBlock_.name_ = legalName;
+    return legalName;
+  }
+
   if (oldName != name && oldName != legalName) {
     // Temporarily change the function name to the new name so we can generate the new mutation,
     // but reset to the old name afterwards so that mutateCallersAndDefinition() can find the
