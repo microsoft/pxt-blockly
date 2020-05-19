@@ -381,7 +381,7 @@ Blockly.Variables.renameVariable = function(workspace, variable,
           }
         });
   };
-  promptAndCheckWithAlert('');
+  promptAndCheckWithAlert(variable.name || '');
 };
 
 /**
