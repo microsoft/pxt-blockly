@@ -14920,6 +14920,13 @@ declare module Blockly.Functions {
     function namesInUse(ws: Blockly.Workspace, exceptBlock: Blockly.Block, exceptFuncId: string): { [key: string]: boolean };
 
     /**
+     * Returns a list of all current function IDs.
+     * @param {!Blockly.Workspace} ws The workspace to search.
+     * @return {!Array.<string>} The list of IDs in use.
+     */
+    function idsInUse(ws: Blockly.Workspace): string[];
+
+    /**
      * Returns a name that is unique among existing functions and variables.
      * @param {string} name Proposed function name.
      * @param {!Blockly.Workspace} ws The workspace to search.
