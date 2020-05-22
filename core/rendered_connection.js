@@ -250,7 +250,7 @@ Blockly.RenderedConnection.prototype.getOffsetInBlock = function() {
 Blockly.RenderedConnection.prototype.tighten = function() {
   var dx = this.targetConnection.x - this.x;
   var dy = this.targetConnection.y - this.y;
-  if (dx != 0 || dy != 0) {
+  if (Math.round(dx) != 0 || Math.round(dy) != 0) {
     var block = this.targetBlock();
     var svgRoot = block.getSvgRoot();
     if (!svgRoot) {
