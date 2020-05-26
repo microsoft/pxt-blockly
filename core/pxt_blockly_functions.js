@@ -304,18 +304,16 @@ Blockly.Functions.createFunctionCallbackFactory_ = function(workspace) {
         '</xml>';
       var blockDom = Blockly.Xml.textToDom(blockText);
       Blockly.Events.setGroup(true);
-      var highestBlock = workspace.getTopBlocks(true)[0];
       var block = Blockly.Xml.domToBlock(blockDom.firstChild, workspace);
       block.updateDisplay_();
 
-      if (highestBlock) {
-        var rect = highestBlock.getBoundingRectangle();
-        var highestBlockY = rect.top;
-        var highestBlockX = rect.left;
-        var height = block.getHeightWidth().height;
-        var gap = 20 / workspace.scale;
-        var moveY = highestBlockY - height - gap;
-        block.moveBy(highestBlockX, moveY);
+      if (workspace.getMetrics) {
+        var metrics = workspace.getMetrics();
+        var blockDimensions = block.getHeightWidth();
+        block.moveBy(
+          metrics.viewLeft + (metrics.viewWidth / 2) - (blockDimensions.width / 2),
+          metrics.viewTop + (metrics.viewHeight / 2) - (blockDimensions.height / 2)
+        );
         block.scheduleSnapAndBump();
       }
 
