@@ -127,8 +127,8 @@ Blockly.PXTBlockly.FunctionUtils.domToMutation = function(xmlElement) {
   if (idsInUse.indexOf(functionId_) < 0) this.functionId_ = functionId_;
   this.ensureIds_();
 
-  var hw = this.getHeightWidth();
-  if (this.type !== Blockly.FUNCTION_DEFINITION_BLOCK_TYPE || (!hw.height && !hw.width)) {
+  var hw = this.getHeightWidth ? this.getHeightWidth() : null;
+  if (this.type !== Blockly.FUNCTION_DEFINITION_BLOCK_TYPE || (hw && !hw.height && !hw.width)) {
     this.updateDisplay_();
   } else if (!this.getFieldValue('function_name') && this.name_) {
     // pxt-blockly handle old function case where name was stored in text_
