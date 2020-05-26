@@ -131,6 +131,11 @@ Blockly.WidgetDiv.hide = function() {
     Blockly.WidgetDiv.dispose_ && Blockly.WidgetDiv.dispose_();
     Blockly.WidgetDiv.dispose_ = null;
     div.innerHTML = '';
+
+    var ws = Blockly.getMainWorkspace();
+    if (ws) {
+      ws.markFocused();
+    }
   }
   if (Blockly.WidgetDiv.rendererClassName_) {
     Blockly.utils.dom.removeClass(div, Blockly.WidgetDiv.rendererClassName_);
@@ -139,9 +144,6 @@ Blockly.WidgetDiv.hide = function() {
   if (Blockly.WidgetDiv.themeClassName_) {
     Blockly.utils.dom.removeClass(div, Blockly.WidgetDiv.themeClassName_);
     Blockly.WidgetDiv.themeClassName_ = null;
-  }
-  if (Blockly.getMainWorkspace()) {
-    Blockly.getMainWorkspace().markFocused();
   }
 };
 
