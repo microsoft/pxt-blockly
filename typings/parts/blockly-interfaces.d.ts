@@ -35,6 +35,7 @@ declare module Blockly {
       maxScale?: number;
       minScale?: number;
       scaleSpeed?: number;
+      pinch?: boolean;
     };
     renderer?: string;
     // PXT specific:
