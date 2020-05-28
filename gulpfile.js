@@ -1067,7 +1067,7 @@ function pxtPublishTask() {
 
 function pxtPublishTsTask() {
 	if (fs.existsSync('../pxt')) {
-		return gulp.src('./typings/blockly.d.ts').pipe(gulp.dest('../pxt/localtypings/'));
+		return gulp.src('./typings/blockly.d.ts').pipe(gulp.dest('../pxt/node_modules/pxt-blockly/typings/'));
 	}
 }
 
