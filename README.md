@@ -64,6 +64,8 @@ See [more tips about **pxt+pxt-blockly** testing](https://github.com/Microsoft/p
 
 * After the Travis has deployed the package to npm, update the pxt-blockly version in `package.json` in the pxt repo.
 
+* **FOR WINDOWS:** The google-closure dependency generation has issues with escaping the backslashes. This code is in `node_modules\google-closure-deps\lib\depfile.js`; adding `.replace(/\\/g, '/')` after all calls to `path.relative()` will fix it.
+
 ## Playground
 
 There is a playground manual testing page at [tests/playground.html](./tests/playground.html), which requires no build step or server running.
