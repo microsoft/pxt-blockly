@@ -419,7 +419,7 @@ return gulp.src(srcs)
       dep.setClosurePath(closurePath);
     }
 
-    const addDependency = closureDeps.depFile.getDepFileText(closurePath, deps);
+    const addDependency = closureDeps.depFile.getDepFileText(closurePath, deps).replace(/\\/g, '/');
 
     const requires = `goog.addDependency("base.js", [], []);
 
