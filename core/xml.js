@@ -170,6 +170,8 @@ Blockly.Xml.blockToDom = function(block, opt_noId) {
   if (commentText) {
     var size = block.commentModel.size;
     var pinned = block.commentModel.pinned;
+    var position = block.getCommentIcon && block.getCommentIcon()
+      ? block.getCommentIcon().getRelativePosition() : null;
 
     var commentElement = Blockly.utils.xml.createElement('comment');
     commentElement.appendChild(Blockly.utils.xml.createTextNode(commentText));
@@ -177,6 +179,10 @@ Blockly.Xml.blockToDom = function(block, opt_noId) {
       commentElement.setAttribute('pinned', pinned);
       commentElement.setAttribute('h', size.height);
       commentElement.setAttribute('w', size.width);
+      if (position) {
+        commentElement.setAttribute('relx', position.x);
+        commentElement.setAttribute('rely', position.y);
+      }
     }
     element.appendChild(commentElement);
   }
@@ -678,11 +684,17 @@ Blockly.Xml.domToBlockHeadless_ = function(xmlBlock, workspace) {
         var pinned = xmlChildElement.getAttribute('pinned') == 'true';
         var width = parseInt(xmlChildElement.getAttribute('w'), 10);
         var height = parseInt(xmlChildElement.getAttribute('h'), 10);
+        var x = parseInt(xmlChildElement.getAttribute('relx'), 10);
+        var y = parseInt(xmlChildElement.getAttribute('rely'), 10);
+
 
         block.setCommentText(text);
         block.commentModel.pinned = pinned;
         if (!isNaN(width) && !isNaN(height)) {
           block.commentModel.size = new Blockly.utils.Size(width, height);
+        }
+        if (!isNaN(x) && !isNaN(y)) {
+          block.commentModel.xy = new Blockly.utils.Coordinate(x, y);
         }
 
         if (pinned && block.getCommentIcon && !block.isInFlyout) {
@@ -690,6 +702,7 @@ Blockly.Xml.domToBlockHeadless_ = function(xmlBlock, workspace) {
             block.getCommentIcon().setVisible(true);
           }, 1);
         }
+
         break;
       case 'data':
         block.data = xmlChild.textContent;

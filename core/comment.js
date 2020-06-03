@@ -216,6 +216,10 @@ Blockly.Comment.prototype.createTextEditor_ = function() {
   textarea.setAttribute('dir', this.block_.RTL ? 'RTL' : 'LTR');
   textarea.value = this.model_.text;
 
+  if (!this.block_.isEditable()) {
+    textarea.setAttribute('readonly', true);
+  }
+
   body.appendChild(textarea);
   this.foreignObject_.appendChild(body);
 
@@ -394,16 +398,46 @@ Blockly.Comment.prototype.setVisible = function(visible) {
   if (visible) {
     this.createBubble_();
   } else {
+    this.model_.xy = this.getRelativePosition();
     this.disposeBubble_();
   }
 };
+
+/**
+ * Set the position of the comment relative to the block
+ * @param {Blockly.utils.Coordinate} coord coordinate of position
+ */
+Blockly.Comment.prototype.setRelativePosition = function(coord) {
+  this.model_.xy = coord;
+  if (this.bubble_) {
+    this.bubble_.relativeLeft_ = coord.x;
+    this.bubble_.relativeTop_ = coord.y;
+    this.bubble_.positionBubble_();
+    this.bubble_.renderArrow_();
+  }
+};
+
+/**
+ * Get position of comment relative to block
+ * @return {Blockly.utils.Coordinate} xy coordinate of position
+ */
+Blockly.Comment.prototype.getRelativePosition = function() {
+  if (this.bubble_) {
+    return new Blockly.utils.Coordinate(
+      this.bubble_.relativeLeft_,
+      this.bubble_.relativeTop_);
+  } else {
+    return this.model_.xy;
+  }
+};
+
 
 /**
  * Show the bubble. Handles deciding if it should be editable or not.
  * @private
  */
 Blockly.Comment.prototype.createBubble_ = function() {
-  if (!this.block_.isEditable() || Blockly.utils.userAgent.IE) {
+  if (Blockly.utils.userAgent.IE) {
     // Steal the code from warnings to make an uneditable text bubble.
     // MSIE does not support foreignobject; textareas are impossible.
     // https://docs.microsoft.com/en-us/openspecs/ie_standards/ms-svg/56e6e04c-7c8c-44dd-8100-bd745ee42034
@@ -428,6 +462,7 @@ Blockly.Comment.prototype.createEditableBubble_ = function() {
   this.bubble_.setSvgId(this.block_.id);
   this.bubble_.registerResizeEvent(this.onBubbleResize_.bind(this));
   this.applyColour();
+  this.setRelativePosition(this.model_.xy);
 };
 
 /**

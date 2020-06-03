@@ -158,7 +158,8 @@ Blockly.Block = function(workspace, prototypeName, opt_id) {
   this.commentModel = {
     text: null,
     pinned: false,
-    size: new Blockly.utils.Size(160, 80)
+    size: new Blockly.utils.Size(160, 80),
+    xy: new Blockly.utils.Coordinate(10, 10)
   };
 
   /**
@@ -239,7 +240,8 @@ Blockly.Block = function(workspace, prototypeName, opt_id) {
  * @typedef {{
  *            text:?string,
  *            pinned:boolean,
- *            size:Blockly.utils.Size
+ *            size:Blockly.utils.Size,
+ *            xy:Blockly.utils.Coordinate
  *          }}
  */
 Blockly.Block.CommentModel;
