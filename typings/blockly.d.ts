@@ -1647,8 +1647,9 @@ declare module Blockly {
      * @param {string} message The message to display to the user.
      * @param {string} defaultValue The value to initialize the prompt with.
      * @param {!function(?string)} callback The callback for handling user response.
+     * @param {Object=} options pxt-blockly Additional options for custom prompts.
      */
-    function prompt(message: string, defaultValue: string, callback: { (_0: string): any /*missing*/ }): void;
+    function prompt(message: string, defaultValue: string, callback: { (_0: string): any /*missing*/ }, options?: Object): void;
 
     /**
      * Define blocks from an array of JSON block definitions, as might be generated
