@@ -416,9 +416,10 @@ Blockly.confirm = function(message, callback) {
  * @param {string} message The message to display to the user.
  * @param {string} defaultValue The value to initialize the prompt with.
  * @param {!function(?string)} callback The callback for handling user response.
+ * @param {Object=} options pxt-blockly Additional options for custom prompts.
  */
-Blockly.prompt = function(message, defaultValue, callback) {
-  callback(prompt(message, defaultValue));
+Blockly.prompt = function(message, defaultValue, callback, options) {
+  callback(prompt(message, defaultValue, options));
 };
 
 /**
