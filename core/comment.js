@@ -173,12 +173,14 @@ Blockly.Comment.prototype.createEditor_ = function() {
 
   this.resizeTextarea_();
 
-  Blockly.bindEventWithChecks_(
-      this.deleteIcon_, 'mousedown', this, this.deleteMouseDown_);
-  Blockly.bindEventWithChecks_(
-      this.deleteIcon_, 'mouseup', this, this.deleteMouseUp_);
-  Blockly.bindEventWithChecks_(
-      this.minimizeArrow_, 'mousedown', this, this.minimizeMouseUp_);
+  if (this.block_.isEditable()) {
+    Blockly.bindEventWithChecks_(
+        this.deleteIcon_, 'mousedown', this, this.deleteMouseDown_);
+    Blockly.bindEventWithChecks_(
+        this.deleteIcon_, 'mouseup', this, this.deleteMouseUp_);
+    Blockly.bindEventWithChecks_(
+        this.minimizeArrow_, 'mousedown', this, this.minimizeMouseUp_);
+  }
 
   return this.svgGroup_;
 };
@@ -226,26 +228,28 @@ Blockly.Comment.prototype.createTextEditor_ = function() {
   // Ideally this would be hooked to the focus event for the comment.
   // However doing so in Firefox swallows the cursor for unknown reasons.
   // So this is hooked to mouseup instead.  No big deal.
-  this.onMouseUpWrapper_ = Blockly.bindEventWithChecks_(
-      textarea, 'mouseup', this, this.startEdit_, true, true);
-  // Don't zoom with mousewheel.
-  this.onWheelWrapper_ = Blockly.bindEventWithChecks_(
-      textarea, 'wheel', this, function(e) {
-        e.stopPropagation();
-      });
-  this.onChangeWrapper_ = Blockly.bindEventWithChecks_(
-      textarea, 'change', this, function(_e) {
-        if (this.cachedText_ != this.model_.text) {
-          Blockly.Events.fire(new Blockly.Events.BlockChange(
-              this.block_, 'comment', null, this.cachedText_, this.model_.text));
-        }
-      });
-  this.onInputWrapper_ = Blockly.bindEventWithChecks_(
-      textarea, 'input', this, function(_e) {
-        this.model_.text = textarea.value;
-      });
+  if (this.block_.isEditable()) {
+    this.onMouseUpWrapper_ = Blockly.bindEventWithChecks_(
+        textarea, 'mouseup', this, this.startEdit_, true, true);
+    // Don't zoom with mousewheel.
+    this.onWheelWrapper_ = Blockly.bindEventWithChecks_(
+        textarea, 'wheel', this, function(e) {
+          e.stopPropagation();
+        });
+    this.onChangeWrapper_ = Blockly.bindEventWithChecks_(
+        textarea, 'change', this, function(_e) {
+          if (this.cachedText_ != this.model_.text) {
+            Blockly.Events.fire(new Blockly.Events.BlockChange(
+                this.block_, 'comment', null, this.cachedText_, this.model_.text));
+          }
+        });
+    this.onInputWrapper_ = Blockly.bindEventWithChecks_(
+        textarea, 'input', this, function(_e) {
+          this.model_.text = textarea.value;
+        });
 
-  setTimeout(textarea.focus.bind(textarea), 0);
+    setTimeout(textarea.focus.bind(textarea), 0);
+  }
 
   return this.foreignObject_;
 };
