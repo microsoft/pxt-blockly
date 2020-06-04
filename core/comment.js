@@ -173,12 +173,14 @@ Blockly.Comment.prototype.createEditor_ = function() {
 
   this.resizeTextarea_();
 
-  Blockly.bindEventWithChecks_(
-      this.deleteIcon_, 'mousedown', this, this.deleteMouseDown_);
-  Blockly.bindEventWithChecks_(
-      this.deleteIcon_, 'mouseup', this, this.deleteMouseUp_);
-  Blockly.bindEventWithChecks_(
-      this.minimizeArrow_, 'mousedown', this, this.minimizeMouseUp_);
+  if (this.block_.isEditable()) {
+    Blockly.bindEventWithChecks_(
+        this.deleteIcon_, 'mousedown', this, this.deleteMouseDown_);
+    Blockly.bindEventWithChecks_(
+        this.deleteIcon_, 'mouseup', this, this.deleteMouseUp_);
+    Blockly.bindEventWithChecks_(
+        this.minimizeArrow_, 'mousedown', this, this.minimizeMouseUp_);
+  }
 
   return this.svgGroup_;
 };
@@ -216,32 +218,38 @@ Blockly.Comment.prototype.createTextEditor_ = function() {
   textarea.setAttribute('dir', this.block_.RTL ? 'RTL' : 'LTR');
   textarea.value = this.model_.text;
 
+  if (!this.block_.isEditable()) {
+    textarea.setAttribute('readonly', true);
+  }
+
   body.appendChild(textarea);
   this.foreignObject_.appendChild(body);
 
   // Ideally this would be hooked to the focus event for the comment.
   // However doing so in Firefox swallows the cursor for unknown reasons.
   // So this is hooked to mouseup instead.  No big deal.
-  this.onMouseUpWrapper_ = Blockly.bindEventWithChecks_(
-      textarea, 'mouseup', this, this.startEdit_, true, true);
-  // Don't zoom with mousewheel.
-  this.onWheelWrapper_ = Blockly.bindEventWithChecks_(
-      textarea, 'wheel', this, function(e) {
-        e.stopPropagation();
-      });
-  this.onChangeWrapper_ = Blockly.bindEventWithChecks_(
-      textarea, 'change', this, function(_e) {
-        if (this.cachedText_ != this.model_.text) {
-          Blockly.Events.fire(new Blockly.Events.BlockChange(
-              this.block_, 'comment', null, this.cachedText_, this.model_.text));
-        }
-      });
-  this.onInputWrapper_ = Blockly.bindEventWithChecks_(
-      textarea, 'input', this, function(_e) {
-        this.model_.text = textarea.value;
-      });
+  if (this.block_.isEditable()) {
+    this.onMouseUpWrapper_ = Blockly.bindEventWithChecks_(
+        textarea, 'mouseup', this, this.startEdit_, true, true);
+    // Don't zoom with mousewheel.
+    this.onWheelWrapper_ = Blockly.bindEventWithChecks_(
+        textarea, 'wheel', this, function(e) {
+          e.stopPropagation();
+        });
+    this.onChangeWrapper_ = Blockly.bindEventWithChecks_(
+        textarea, 'change', this, function(_e) {
+          if (this.cachedText_ != this.model_.text) {
+            Blockly.Events.fire(new Blockly.Events.BlockChange(
+                this.block_, 'comment', null, this.cachedText_, this.model_.text));
+          }
+        });
+    this.onInputWrapper_ = Blockly.bindEventWithChecks_(
+        textarea, 'input', this, function(_e) {
+          this.model_.text = textarea.value;
+        });
 
-  setTimeout(textarea.focus.bind(textarea), 0);
+    setTimeout(textarea.focus.bind(textarea), 0);
+  }
 
   return this.foreignObject_;
 };
@@ -394,16 +402,46 @@ Blockly.Comment.prototype.setVisible = function(visible) {
   if (visible) {
     this.createBubble_();
   } else {
+    this.model_.xy = this.getRelativePosition();
     this.disposeBubble_();
   }
 };
+
+/**
+ * Set the position of the comment relative to the block
+ * @param {Blockly.utils.Coordinate} coord coordinate of position
+ */
+Blockly.Comment.prototype.setRelativePosition = function(coord) {
+  this.model_.xy = coord;
+  if (this.bubble_) {
+    this.bubble_.relativeLeft_ = coord.x;
+    this.bubble_.relativeTop_ = coord.y;
+    this.bubble_.positionBubble_();
+    this.bubble_.renderArrow_();
+  }
+};
+
+/**
+ * Get position of comment relative to block
+ * @return {Blockly.utils.Coordinate} xy coordinate of position
+ */
+Blockly.Comment.prototype.getRelativePosition = function() {
+  if (this.bubble_) {
+    return new Blockly.utils.Coordinate(
+      this.bubble_.relativeLeft_,
+      this.bubble_.relativeTop_);
+  } else {
+    return this.model_.xy;
+  }
+};
+
 
 /**
  * Show the bubble. Handles deciding if it should be editable or not.
  * @private
  */
 Blockly.Comment.prototype.createBubble_ = function() {
-  if (!this.block_.isEditable() || Blockly.utils.userAgent.IE) {
+  if (Blockly.utils.userAgent.IE) {
     // Steal the code from warnings to make an uneditable text bubble.
     // MSIE does not support foreignobject; textareas are impossible.
     // https://docs.microsoft.com/en-us/openspecs/ie_standards/ms-svg/56e6e04c-7c8c-44dd-8100-bd745ee42034
@@ -428,6 +466,7 @@ Blockly.Comment.prototype.createEditableBubble_ = function() {
   this.bubble_.setSvgId(this.block_.id);
   this.bubble_.registerResizeEvent(this.onBubbleResize_.bind(this));
   this.applyColour();
+  this.setRelativePosition(this.model_.xy);
 };
 
 /**
