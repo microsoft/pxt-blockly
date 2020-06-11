@@ -378,8 +378,8 @@ Blockly.Connection.prototype.canConnectToPrevious_ = function(candidate) {
   var isFirstStatementConnection = this == firstStatementConnection;
   var isNextConnection = this == this.sourceBlock_.nextConnection;
 
-  // Can connect to the first statement input of a C-shaped or E-shaped 
-  // block, or to the next connection of any statement block, but not to 
+  // Can connect to the first statement input of a C-shaped or E-shaped
+  // block, or to the next connection of any statement block, but not to
   // the second statement input of an E-shaped block.
   if (isComplexStatement && !isFirstStatementConnection && !isNextConnection) {
     return false;
@@ -462,7 +462,7 @@ Blockly.Connection.prototype.isConnectionAllowed = function(candidate) {
         // Ensure the root block of this stack has an argument reporter
         // matching the name and the type of this reporter.
         var rootBlock = candidate.getSourceBlock().getRootBlock();
-        if (!Blockly.pxtBlocklyUtils.hasMatchingArgumentReporter(rootBlock, this.sourceBlock_)) {
+        if (rootBlock.isEnabled() && !Blockly.pxtBlocklyUtils.hasMatchingArgumentReporter(rootBlock, this.sourceBlock_)) {
           return false;
         }
       }
