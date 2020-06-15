@@ -1210,45 +1210,6 @@ Blockly.PXTBlockly.FunctionUtils.createCustomArgumentReporter = function(typeNam
       'argument_reporter_custom', typeName, ws);
 };
 
-/**
- * Function argument reporters cannot exist outside functions that define them
- * as arguments. Enforce this whenever an event is fired.
- * @param {!Blockly.Events.Abstract} event Change event.
- * @this Blockly.Block
- */
-Blockly.PXTBlockly.FunctionUtils.onReporterChange = function(event) {
-  if (!this.workspace || this.workspace.isFlyout) {
-    // Block is deleted or is in a flyout.
-    return;
-  }
-
-  var thisWasCreated =
-    event.type === Blockly.Events.BLOCK_CREATE && event.ids.indexOf(this.id) != -1;
-  var thisWasDragged =
-    event.type === Blockly.Events.END_DRAG && event.allNestedIds.indexOf(this.id) != -1;
-
-  if (thisWasCreated || thisWasDragged) {
-    var rootBlock = this.getRootBlock();
-    var isTopBlock = Blockly.Functions.isFunctionArgumentReporter(rootBlock);
-
-    if (isTopBlock || rootBlock.previousConnection != null) {
-      // Reporter is by itself on the workspace, or it is slotted into a
-      // stack of statements that is not attached to a function or event. Let
-      // it exist until it is connected to a function or event handler.
-      return;
-    }
-
-    // Ensure an argument with this name and type is defined on the root block.
-    if (!Blockly.pxtBlocklyUtils.hasMatchingArgumentReporter(rootBlock, this)) {
-      // No argument with this name is defined on the root block; delete this
-      // reporter.
-      Blockly.Events.setGroup(event.group);
-      this.dispose();
-      Blockly.Events.setGroup(false);
-    }
-  }
-};
-
 // Argument editor blocks
 
 Blockly.Blocks['argument_editor_boolean'] = {
@@ -1359,7 +1320,6 @@ Blockly.Blocks['argument_reporter_boolean'] = {
     });
     this.typeName_ = 'boolean';
   },
-  onchange: Blockly.PXTBlockly.FunctionUtils.onReporterChange,
   getTypeName: Blockly.PXTBlockly.FunctionUtils.getTypeName
 };
 
@@ -1379,7 +1339,6 @@ Blockly.Blocks['argument_reporter_number'] = {
     });
     this.typeName_ = 'number';
   },
-  onchange: Blockly.PXTBlockly.FunctionUtils.onReporterChange,
   getTypeName: Blockly.PXTBlockly.FunctionUtils.getTypeName
 };
 
@@ -1399,7 +1358,6 @@ Blockly.Blocks['argument_reporter_string'] = {
     });
     this.typeName_ = 'string';
   },
-  onchange: Blockly.PXTBlockly.FunctionUtils.onReporterChange,
   getTypeName: Blockly.PXTBlockly.FunctionUtils.getTypeName
 };
 
@@ -1421,7 +1379,6 @@ Blockly.Blocks['argument_reporter_custom'] = {
     });
     this.typeName_ = '';
   },
-  onchange: Blockly.PXTBlockly.FunctionUtils.onReporterChange,
   getTypeName: Blockly.PXTBlockly.FunctionUtils.getTypeName,
   mutationToDom: Blockly.PXTBlockly.FunctionUtils.argumentMutationToDom,
   domToMutation: Blockly.PXTBlockly.FunctionUtils.argumentDomToMutation
