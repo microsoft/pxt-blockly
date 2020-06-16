@@ -164,6 +164,13 @@ Blockly.BlockDragger.prototype.startBlockDrag = function(currentDragDeltaXY,
     this.draggingBlock_.bringToFront();
   }
 
+  // pxt-blockly Clear the icon stack if we are only dragging one block
+  if (healStack) {
+    this.dragIconData_ = this.dragIconData_.filter(d => {
+      return d.icon.block_.id == this.draggingBlock_.id
+    });
+  }
+
   // During a drag there may be a lot of rerenders, but not field changes.
   // Turn the cache on so we don't do spurious remeasures during the drag.
   Blockly.utils.dom.startTextWidthCache();
@@ -237,7 +244,7 @@ Blockly.BlockDragger.prototype.endBlockDrag = function(e, currentDragDeltaXY) {
   this.dragBlock(e, currentDragDeltaXY);
   this.dragIconData_ = [];
   this.fireDragEndEvent_();
-  
+
   Blockly.utils.dom.stopTextWidthCache();
 
   Blockly.blockAnimations.disconnectUiStop();
