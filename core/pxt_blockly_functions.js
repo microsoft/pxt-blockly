@@ -500,7 +500,8 @@ Blockly.Functions.rename = function(name) {
   var legalName = Blockly.Functions.findLegalName(name, this.sourceBlock_.workspace, this.sourceBlock_);
   var oldName = this.getValue();
 
-  if (!legalName) return name;
+  if (!name) return oldName;
+  else if (!legalName) return name;
 
   // For newly crecated functions (value not set yet), use legal name and save on block
   if (!oldName) {
