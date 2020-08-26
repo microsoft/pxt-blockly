@@ -395,7 +395,7 @@ Blockly.FieldVariable.prototype.setTypes_ = function(opt_variableTypes,
  * @return {!Array.<!Array>} Array of variable names/id tuples.
  * @this {Blockly.FieldVariable}
  */
-Blockly.FieldVariable.dropdownCreate = function() {
+Blockly.FieldVariable.prototype.dropdownCreate = function() {
   if (!this.variable_) {
     throw Error('Tried to call dropdownCreate on a variable field with no' +
         ' variable selected.');
