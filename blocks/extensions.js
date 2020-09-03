@@ -39,7 +39,7 @@ Blockly.PXTBlockly.Extensions.FUNCTION_CONTEXTMENU_EDIT = {
    * @this Blockly.Block
    */
   customContextMenu: function(menuOptions) {
-    menuOptions.push(Blockly.Functions.makeEditOption(this));
+    menuOptions.push(Blockly.Functions.makeGoToDefinitionOption(this));
   }
 };
 
