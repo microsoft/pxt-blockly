@@ -1637,6 +1637,9 @@ Blockly.Msg.PROCEDURES_IFRETURN_WARNING = 'Warning: This block may be used only 
 /// pxt-blockly: Context menu option to edit functions
 Blockly.Msg.FUNCTIONS_EDIT_OPTION = 'Edit';
 /** @type {string} */
+/// pxt-blockly: Context menu option to create a call block for a function
+Blockly.Msg.FUNCTIONS_CREATE_CALL_OPTION = 'Create \'call %1\'';
+/** @type {string} */
 /// pxt-blockly: Context menu option to go to definition of functions
 Blockly.Msg.FUNCTIONS_GO_TO_DEFINITION_OPTION = 'Go to definition';
 /** @type {string} */
