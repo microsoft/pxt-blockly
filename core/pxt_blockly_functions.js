@@ -393,6 +393,29 @@ Blockly.Functions.makeEditOption = function(block) {
   return editOption;
 };
 
+/**
+ * Make a context menu option for creating a function call block.
+ * This appears in the context menu for function definitions.
+ * @param {!Blockly.BlockSvg} block The block where the right-click originated.
+ * @return {!Object} A menu option, containing text, enabled, and a callback.
+ * @package
+ */
+Blockly.Functions.makeCreateCallOption = function(block) {
+  var functionName = block.getField("function_name").getText();
+
+  var mutation = goog.dom.createDom('mutation');
+  mutation.setAttribute('name', functionName);
+  var callBlock = goog.dom.createDom('block', null, mutation);
+  callBlock.setAttribute('type', 'function_call');
+
+  var option = {
+    enabled: block.workspace.remainingCapacity() > 0,
+    text: Blockly.Msg.FUNCTIONS_CREATE_CALL_OPTION.replace("%1", functionName),
+    callback: Blockly.ContextMenu.callbackFactory(block, callBlock),
+  };
+  return option;
+}
+
 Blockly.Functions.makeGoToDefinitionOption = function(block) {
   var gtdOption = {
     enabled: true,

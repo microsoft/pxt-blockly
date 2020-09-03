@@ -997,7 +997,6 @@ Blockly.Blocks['function_definition'] = {
    */
   init: function() {
     this.jsonInit({
-      "extensions": ["function_contextmenu_edit"],
       "style": {
         "hat": "cap"
       }
@@ -1017,6 +1016,12 @@ Blockly.Blocks['function_definition'] = {
     this.setInputsInline(true);
     this.statementConnection_ = null;
   },
+
+  customContextMenu: function(menuOptions) {
+    menuOptions.push(Blockly.Functions.makeEditOption(this));
+    menuOptions.push(Blockly.Functions.makeCreateCallOption(this));
+  },
+
   // Shared.
   mutationToDom: Blockly.PXTBlockly.FunctionUtils.mutationToDom,
   domToMutation: Blockly.PXTBlockly.FunctionUtils.domToMutation,
