@@ -376,6 +376,8 @@ Blockly.FieldNumber.prototype.showNumPad_ = function() {
   contentDiv.style.width = Blockly.FieldNumber.DROPDOWN_WIDTH + 'px';
 
   Blockly.DropDownDiv.showPositionedByField(this, this.onHide_.bind(this));
+
+  this.htmlInput_.select();
 };
 
 /**
