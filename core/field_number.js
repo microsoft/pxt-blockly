@@ -567,8 +567,9 @@ Blockly.FieldNumber.prototype.doClassValidation_ = function(opt_newValue) {
  * @protected
  * @override
  */
-Blockly.FieldNumber.prototype.widgetCreate_ = function() {
-  var htmlInput = Blockly.FieldNumber.superClass_.widgetCreate_.call(this);
+Blockly.FieldNumber.prototype.widgetCreate_ = function(
+    readOnly, withArrow, arrowCallback) {
+  var htmlInput = Blockly.FieldNumber.superClass_.widgetCreate_.call(this, readOnly, withArrow, arrowCallback);
 
   // Set the accessibility state
   if (this.min_ > -Infinity) {
