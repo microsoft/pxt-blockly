@@ -386,9 +386,15 @@ Blockly.FieldTextInput.prototype.showEditor_ = function(_opt_e,
   this.workspace_ = this.sourceBlock_.workspace;
   var quietInput = opt_quietInput || false;
   var readOnly = opt_readOnly || false;
+  var isTouchEvent = undefined;
+  if (_opt_e instanceof PointerEvent) {
+    isTouchEvent = _opt_e.pointerType === "touch";
+  }
+
   if (!quietInput && (Blockly.utils.userAgent.MOBILE ||
                       Blockly.utils.userAgent.ANDROID ||
-                      Blockly.utils.userAgent.IPAD)) {
+                      Blockly.utils.userAgent.IPAD) ||
+                      isTouchEvent) {
     this.showPromptEditor_();
   } else {
     this.showInlineEditor_(quietInput, readOnly, opt_withArrow, opt_arrowCallback);
@@ -445,7 +451,7 @@ Blockly.FieldTextInput.prototype.showInlineEditor_ = function(
 Blockly.FieldTextInput.prototype.widgetCreate_ = function(
     readOnly, withArrow, arrowCallback) {
   var div = Blockly.WidgetDiv.DIV;
- 
+
   Blockly.utils.dom.addClass(this.getClickTarget_(), 'editing');
 
   var htmlInput = /** @type {HTMLInputElement} */ (document.createElement('input'));
