@@ -392,6 +392,9 @@ Blockly.Xml.domToWorkspace = function(xml, workspace) {
                  'swap the arguments.');
   }
 
+  // pxtblockly
+  workspace.loadingEventsDisabled = true;
+
   var width;  // Not used in LTR.
   if (workspace.RTL) {
     width = workspace.getWidth();
@@ -467,6 +470,13 @@ Blockly.Xml.domToWorkspace = function(xml, workspace) {
   if (workspace.setResizesEnabled) {
     workspace.setResizesEnabled(true);
   }
+
+  // pxtblockly
+  workspace.loadingEventsDisabled = false;
+  workspace.getAllBlocks(false).forEach(function (block) {
+    block.onLoadedIntoWorkspace();
+  });
+
   Blockly.Events.fire(new Blockly.Events.FinishedLoading(workspace));
   return newBlockIds;
 };

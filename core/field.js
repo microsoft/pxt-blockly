@@ -337,6 +337,14 @@ Blockly.Field.prototype.initModel = function() {
 };
 
 /**
+ * pxtblockly: used by subclasses to perform upgrades from legacy values into
+ * new. No-op by default.
+ * @package
+ */
+Blockly.Field.prototype.onLoadedIntoWorkspace = function() {
+};
+
+/**
  * Create a field border rect element. Not to be overridden by subclasses.
  * Instead modify the result of the function inside initView, or create a
  * separate function to call.

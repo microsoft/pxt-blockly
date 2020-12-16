@@ -870,7 +870,12 @@ Blockly.WorkspaceSvg.prototype.dispose = function() {
  * @override
  */
 Blockly.WorkspaceSvg.prototype.newBlock = function(prototypeName, opt_id) {
-  return new Blockly.BlockSvg(this, prototypeName, opt_id);
+  var block = new Blockly.BlockSvg(this, prototypeName, opt_id);
+  // pxtblockly
+  if (!this.loadingEventsDisabled) {
+    block.onLoadedIntoWorkspace();
+  }
+  return block;
 };
 
 /**
