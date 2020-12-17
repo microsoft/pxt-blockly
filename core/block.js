@@ -1918,7 +1918,7 @@ Blockly.Block.prototype.enableBreakpoint = function(enable) {
 }
 
 /**
- * Returns a boolean representing if the block has a breakpoint set or not 
+ * Returns a boolean representing if the block has a breakpoint set or not
  * (regardless of whether it is enabled).
  * @return {boolean} Block's breakpoint set or not.
  */
@@ -2072,4 +2072,20 @@ Blockly.Block.prototype.toDevString = function() {
     msg += ' (id="' + this.id + '")';
   }
   return msg;
+};
+
+
+/**
+ * pxtblockly: this function notifies all fields that they are loaded in the
+ * workspace. used in pxt for fields that need to upgrade legacy values so that
+ * they know when it's safe to perform the upgrade
+ */
+Blockly.Block.prototype.onLoadedIntoWorkspace = function() {
+  for (var i = 0, input; (input = this.inputList[i]); i++) {
+    for (var j = 0, field; (field = input.fieldRow[j]); j++) {
+      if (field.onLoadedIntoWorkspace) {
+        field.onLoadedIntoWorkspace();
+      }
+    }
+  }
 };

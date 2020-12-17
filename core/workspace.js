@@ -48,6 +48,11 @@ Blockly.Workspace = function(opt_options) {
   /** @type {number} */
   this.toolboxPosition = this.options.toolboxPosition;
 
+  // pxtblockly: used to prevent workspace load notifications from happening while
+  // workspace is still being loaded from xml
+  /** @type {boolean} */
+  this.loadingEventsDisabled = false;
+
   /**
    * @type {!Array.<!Blockly.Block>}
    * @private
@@ -558,7 +563,12 @@ Blockly.Workspace.prototype.getWidth = function() {
  * @return {!Blockly.Block} The created block.
  */
 Blockly.Workspace.prototype.newBlock = function(prototypeName, opt_id) {
-  return new Blockly.Block(this, prototypeName, opt_id);
+  var block = new Blockly.Block(this, prototypeName, opt_id);
+  // pxtblockly
+  if (!this.loadingEventsDisabled) {
+    block.onLoadedIntoWorkspace();
+  }
+  return block;
 };
 
 /**
