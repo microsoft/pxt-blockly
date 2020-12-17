@@ -48,7 +48,7 @@ Blockly.Workspace = function(opt_options) {
   /** @type {number} */
   this.toolboxPosition = this.options.toolboxPosition;
 
-  // pxtblockly: used to prevent workspace load notifcations from happening while
+  // pxtblockly: used to prevent workspace load notifications from happening while
   // workspace is still being loaded from xml
   /** @type {boolean} */
   this.loadingEventsDisabled = false;
