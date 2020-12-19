@@ -235,7 +235,7 @@ Blockly.Touch.isMouseOrTouchEvent = function(e) {
  */
 Blockly.Touch.isTouchEvent = function(e) {
   if (e instanceof PointerEvent) {
-      if (e.pointerType == "mouse")
+      if (e.pointerType && e.pointerType == "mouse")
           return false;
   }
   return Blockly.utils.string.startsWith(e.type, 'touch') ||
