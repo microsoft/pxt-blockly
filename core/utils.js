@@ -587,6 +587,47 @@ Blockly.utils.getBlockTypeCounts = function(block, opt_stripFollowing) {
   return typeCountsMap;
 };
 
+var resizeFromKeyboard = true;
+var initialWidth = 0;
+var debounceTimeout = null;
+
+/**
+ * Called in the resize event handler to sense if the source
+ * is from an on screen keyboard or user.
+ * @param {!Blockly.WorkspaceSvg} workspace Any workspace in the SVG.
+ */
+Blockly.utils.resizeTracker = function(workspace) {
+  if (debounceTimeout) {
+    clearTimeout(debounceTimeout);
+  }
+  debounceTimeout = setTimeout(function(){
+    resizeFromKeyboard = true;
+    initialWidth = workspace.width;
+  }, 1000);
+
+  if (resizeFromKeyboard) {
+    // If the on-screen keyboard is causing the resize, only the
+    // height will change.
+    if (workspace.width != initialWidth) {
+      resizeFromKeyboard = false;
+    }
+  }
+}
+
+/**
+ * Use during resize to see if the source of the resize
+ * is from an on-screen keyboard appearing.
+ */
+Blockly.utils.isOnScreenKeyboardResize = function() {
+  if (document.activeElement.className == "blocklyHtmlInput" && resizeFromKeyboard) {
+    // If it is an input element, the resize might be triggered by the
+    // onscreen keyboard, but we also need to make sure only the height changed
+    return true;
+  }
+
+  return false;
+}
+
 /**
  * Converts screen coordinates to workspace coordinates.
  * @param {Blockly.WorkspaceSvg} ws The workspace to find the coordinates on.
