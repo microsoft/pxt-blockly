@@ -588,7 +588,8 @@ Blockly.utils.getBlockTypeCounts = function(block, opt_stripFollowing) {
 };
 
 var resizeFromKeyboard = true;
-var initialWidth = 0;
+var initialWidth = 0; // The width of the window before resizing started
+var lastHeight = 0; // The height at each frame of the resize
 var debounceTimeout = null;
 
 /**
@@ -601,15 +602,35 @@ Blockly.utils.resizeTracker = function(workspace) {
     clearTimeout(debounceTimeout);
   }
   debounceTimeout = setTimeout(function(){
+    var injectionDiv = workspace.getInjectionDiv();
     resizeFromKeyboard = true;
-    initialWidth = workspace.width;
+    initialWidth = injectionDiv.clientWidth;
+    lastHeight = injectionDiv.clientHeight;
   }, 1000);
 
-  if (resizeFromKeyboard) {
-    // If the on-screen keyboard is causing the resize, only the
-    // height will change.
-    if (workspace.width != initialWidth) {
-      resizeFromKeyboard = false;
+  var injectionDiv = workspace.getInjectionDiv();
+  if (injectionDiv) {
+    if (initialWidth == 0) {
+      // Initialize the correct values
+      resizeFromKeyboard = true;
+      initialWidth = injectionDiv.clientWidth;
+      lastHeight = injectionDiv.clientHeight;
+    }
+
+    if (resizeFromKeyboard) {
+      // If the on-screen keyboard is causing the resize, only the
+      // height will change.
+      var currWidth = injectionDiv.clientWidth;
+      var currHeight = injectionDiv.clientHeight;
+
+      if (currWidth != initialWidth) {
+        resizeFromKeyboard = false;
+      }
+      if (currHeight > lastHeight) {
+        resizeFromKeyboard = false;
+      } else {
+        lastHeight = currHeight;
+      }
     }
   }
 }
@@ -619,7 +640,7 @@ Blockly.utils.resizeTracker = function(workspace) {
  * is from an on-screen keyboard appearing.
  */
 Blockly.utils.isOnScreenKeyboardResize = function() {
-  if (document.activeElement.className == "blocklyHtmlInput" && resizeFromKeyboard) {
+  if (Blockly.utils.dom.hasClass(document.activeElement, "blocklyHtmlInput") && resizeFromKeyboard) {
     // If it is an input element, the resize might be triggered by the
     // onscreen keyboard, but we also need to make sure only the height changed
     return true;

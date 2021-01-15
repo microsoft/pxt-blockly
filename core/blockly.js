@@ -356,7 +356,6 @@ Blockly.hideChaffOnResize = function(opt_allowToolbox) {
  */
 Blockly.hideChaffInternal_ = function(opt_allowToolbox) {
   if (!Blockly.utils.isOnScreenKeyboardResize()) {
-    // If the onscreen keyboard isn't the source of the resize, hide everything
     Blockly.Tooltip.hide();
     Blockly.WidgetDiv.hide();
     Blockly.DropDownDiv.hideWithoutAnimation();
