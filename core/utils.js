@@ -604,8 +604,10 @@ Blockly.utils.resizeTracker = function(workspace) {
   debounceTimeout = setTimeout(function(){
     var injectionDiv = workspace.getInjectionDiv();
     resizeFromKeyboard = true;
-    initialWidth = injectionDiv.clientWidth;
-    lastHeight = injectionDiv.clientHeight;
+    if (injectionDiv) {
+      initialWidth = injectionDiv.clientWidth;
+      lastHeight = injectionDiv.clientHeight;
+    }
   }, 1000);
 
   var injectionDiv = workspace.getInjectionDiv();
