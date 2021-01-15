@@ -386,14 +386,10 @@ Blockly.FieldTextInput.prototype.showEditor_ = function(_opt_e,
   this.workspace_ = this.sourceBlock_.workspace;
   var quietInput = opt_quietInput || false;
   var readOnly = opt_readOnly || false;
-  var isTouchEvent = false;
-  if (_opt_e)
-    isTouchEvent = Blockly.Touch.isTouchEvent(_opt_e);
 
   if (!quietInput && (Blockly.utils.userAgent.MOBILE ||
                       Blockly.utils.userAgent.ANDROID ||
-                      Blockly.utils.userAgent.IPAD ||
-                      isTouchEvent)) {
+                      Blockly.utils.userAgent.IPAD)) {
     this.showPromptEditor_();
   } else {
     this.showInlineEditor_(quietInput, readOnly, opt_withArrow, opt_arrowCallback);

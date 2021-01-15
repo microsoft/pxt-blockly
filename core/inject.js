@@ -371,6 +371,7 @@ Blockly.init_ = function(mainWorkspace) {
   var workspaceResizeHandler = Blockly.bindEventWithChecks_(window, 'resize',
       null,
       function() {
+        Blockly.utils.resizeTracker(mainWorkspace);
         Blockly.hideChaffOnResize(true);
         Blockly.svgResize(mainWorkspace);
       });

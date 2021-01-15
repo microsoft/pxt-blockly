@@ -355,9 +355,11 @@ Blockly.hideChaffOnResize = function(opt_allowToolbox) {
  * @private
  */
 Blockly.hideChaffInternal_ = function(opt_allowToolbox) {
-  Blockly.Tooltip.hide();
-  Blockly.WidgetDiv.hide();
-  Blockly.DropDownDiv.hideWithoutAnimation();
+  if (!Blockly.utils.isOnScreenKeyboardResize()) {
+    Blockly.Tooltip.hide();
+    Blockly.WidgetDiv.hide();
+    Blockly.DropDownDiv.hideWithoutAnimation();
+  }
   if (!opt_allowToolbox) {
     var workspace = Blockly.getMainWorkspace();
     // For now the trashcan flyout always autocloses because it overlays the
