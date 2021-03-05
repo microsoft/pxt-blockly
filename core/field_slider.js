@@ -138,7 +138,7 @@ Blockly.FieldSlider.prototype.init = function() {
  * @private
  */
 Blockly.FieldSlider.prototype.showEditor_ = function(e) {
-  Blockly.FieldSlider.superClass_.showEditor_.call(this, e, false);
+  Blockly.FieldSlider.superClass_.showEditor_.call(this, e);
   if (this.max_ == Infinity || this.min_ == -Infinity) {
     return;
   }
