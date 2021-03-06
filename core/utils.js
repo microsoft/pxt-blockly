@@ -587,6 +587,70 @@ Blockly.utils.getBlockTypeCounts = function(block, opt_stripFollowing) {
   return typeCountsMap;
 };
 
+var resizeFromKeyboard = true;
+var initialWidth = 0; // The width of the window before resizing started
+var lastHeight = 0; // The height at each frame of the resize
+var debounceTimeout = null;
+
+/**
+ * Called in the resize event handler to sense if the source
+ * is from an on screen keyboard or user.
+ * @param {!Blockly.WorkspaceSvg} workspace Any workspace in the SVG.
+ */
+Blockly.utils.resizeTracker = function(workspace) {
+  if (debounceTimeout) {
+    clearTimeout(debounceTimeout);
+  }
+  debounceTimeout = setTimeout(function(){
+    var injectionDiv = workspace.getInjectionDiv();
+    resizeFromKeyboard = true;
+    if (injectionDiv) {
+      initialWidth = injectionDiv.clientWidth;
+      lastHeight = injectionDiv.clientHeight;
+    }
+  }, 1000);
+
+  var injectionDiv = workspace.getInjectionDiv();
+  if (injectionDiv) {
+    if (initialWidth == 0) {
+      // Initialize the correct values
+      resizeFromKeyboard = true;
+      initialWidth = injectionDiv.clientWidth;
+      lastHeight = injectionDiv.clientHeight;
+    }
+
+    if (resizeFromKeyboard) {
+      // If the on-screen keyboard is causing the resize, only the
+      // height will change.
+      var currWidth = injectionDiv.clientWidth;
+      var currHeight = injectionDiv.clientHeight;
+
+      if (currWidth != initialWidth) {
+        resizeFromKeyboard = false;
+      }
+      if (currHeight > lastHeight) {
+        resizeFromKeyboard = false;
+      } else {
+        lastHeight = currHeight;
+      }
+    }
+  }
+}
+
+/**
+ * Use during resize to see if the source of the resize
+ * is from an on-screen keyboard appearing.
+ */
+Blockly.utils.isOnScreenKeyboardResize = function() {
+  if (Blockly.utils.dom.hasClass(document.activeElement, "blocklyHtmlInput") && resizeFromKeyboard) {
+    // If it is an input element, the resize might be triggered by the
+    // onscreen keyboard, but we also need to make sure only the height changed
+    return true;
+  }
+
+  return false;
+}
+
 /**
  * Converts screen coordinates to workspace coordinates.
  * @param {Blockly.WorkspaceSvg} ws The workspace to find the coordinates on.
