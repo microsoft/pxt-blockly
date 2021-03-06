@@ -47,7 +47,7 @@ Blockly.FieldSlider = function(opt_value, opt_min, opt_max, opt_precision,
     null, null, opt_validator);
   this.setConstraints(opt_min, opt_max, opt_precision);
 
-  this.step_ = parseFloat(opt_step);
+  this.step_ = parseFloat(opt_step) || undefined;
   this.labelText_ = opt_labelText;
 };
 Blockly.utils.object.inherits(Blockly.FieldSlider, Blockly.FieldNumber);
@@ -180,10 +180,10 @@ Blockly.FieldSlider.prototype.addSlider_ = function(contentDiv) {
     this.readout_ = elements[1];
   }
   this.slider_ = new goog.ui.Slider();
-  this.slider_.setMoveToPointEnabled(false);
   this.slider_.setMinimum(this.min_);
   this.slider_.setMaximum(this.max_);
-  if (this.step_) this.slider_.setUnitIncrement(this.step_);
+  this.slider_.setMoveToPointEnabled(!this.step_);
+  if (this.step_) this.slider_.setBlockIncrement(this.step_);
   this.slider_.setRightToLeft(this.sourceBlock_.RTL);
 
   var value = parseFloat(this.getValue());
