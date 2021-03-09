@@ -80,7 +80,7 @@ Blockly.Css.inject = function(hasCss, pathToMedia) {
   // Strip off any trailing slash (either Unix or Windows).
   var mediaPath = pathToMedia.replace(/[\\/]$/, '');
   text = text.replace(/<<<PATH>>>/g, mediaPath);
-  // pxt-blockly: Scratch rendering. Dynamically replace colours in 
+  // pxt-blockly: Scratch rendering. Dynamically replace colours in
   // the CSS text, in case they have been set at run-time injection.
   for (var colourProperty in Blockly.Colours) {
     if (Blockly.Colours.hasOwnProperty(colourProperty)) {
@@ -917,7 +917,7 @@ Blockly.Css.CONTENT = [
   '.blocklyDropDownDiv .goog-slider-horizontal .goog-slider-thumb {',
      'width: 26px;',
      'height: 26px;',
-     'margin-top: -1px;',
+     'top: -1px;',
      'position: absolute;',
      'background-color: white;',
      'border-radius: 100%;',
