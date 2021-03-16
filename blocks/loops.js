@@ -259,7 +259,7 @@ Blockly.Constants.Loops.CUSTOM_CONTEXT_MENU_CREATE_VARIABLES_GET_MIXIN = {
    * @this {Blockly.Block}
    */
   customContextMenu: function(options) {
-    if (this.isInFlyout) {
+    if (this.isInFlyout || this.inDebugWorkspace()) {
       return;
     }
     var variable = this.getField('VAR').getVariable();

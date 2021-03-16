@@ -118,7 +118,7 @@ Blockly.Constants.Variables.CUSTOM_CONTEXT_MENU_VARIABLE_GETTER_SETTER_MIXIN = {
    * @this {Blockly.Block}
    */
   customContextMenu: function(options) {
-    if (this.isCollapsed()) {
+    if (this.isCollapsed() || this.inDebugWorkspace()) {
       return;
     }
 
@@ -182,7 +182,7 @@ Blockly.Constants.Variables.CUSTOM_CONTEXT_MENU_VARIABLE_REPORTER_MIXIN = {
    * @this Blockly.Block
    */
   customContextMenu: function(options) {
-    if (this.isCollapsed()) {
+    if (this.isCollapsed() || this.inDebugWorkspace()) {
       return;
     }
     var renameOption = {

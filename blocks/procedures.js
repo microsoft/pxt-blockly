@@ -390,7 +390,7 @@ Blockly.Blocks['procedures_defnoreturn'] = {
     options.push(option);
 
     // Add options to create getters for each parameter.
-    if (!this.isCollapsed()) {
+    if (!this.isCollapsed() && !this.inDebugWorkspace()) {
       for (var i = 0; i < this.argumentVarModels_.length; i++) {
         var argOption = {enabled: true};
         var argVar = this.argumentVarModels_[i];

@@ -775,7 +775,15 @@ Blockly.Block.prototype.getDescendants = function(ordered, opt_ignoreShadows) {
  */
 Blockly.Block.prototype.isDeletable = function() {
   return this.deletable_ && !this.isShadow_ &&
-      !(this.workspace && this.workspace.options.readOnly);
+      !(this.workspace && (this.workspace.options.readOnly || this.workspace.options.debugMode));
+};
+
+/**
+ * Get whether this block is in a workspace with the debugMode option set or not.
+ * @return {boolean} True if deletable.
+ */
+ Blockly.Block.prototype.inDebugWorkspace = function() {
+  return !!(this.workspace && this.workspace.options.debugMode);
 };
 
 /**
@@ -791,7 +799,7 @@ Blockly.Block.prototype.setDeletable = function(deletable) {
  * @return {boolean} True if movable.
  */
 Blockly.Block.prototype.isMovable = function() {
-  return this.isMovablePersisted() && !(this.workspace && this.workspace.options.debugMode);
+  return this.isMovablePersisted() && !this.inDebugWorkspace();
 };
 
 /**
@@ -875,7 +883,7 @@ Blockly.Block.prototype.setInsertionMarker = function(insertionMarker) {
  * @return {boolean} True if editable.
  */
 Blockly.Block.prototype.isEditable = function() {
-  return this.isEditablePersisted() && !(this.workspace && this.workspace.options.debugMode);
+  return this.isEditablePersisted() && !this.inDebugWorkspace();
 };
 
 /**
