@@ -198,7 +198,7 @@ Blockly.WorkspaceCommentSvg.prototype.showContextMenu = function(e) {
   var comment = this;
   var menuOptions = [];
 
-  if (this.isDeletable() && this.isMovable()) {
+  if (this.isDeletable() && this.isMovable() && !this.inDebugWorkspace()) {
     menuOptions.push(Blockly.ContextMenu.commentDuplicateOption(comment));
     menuOptions.push(Blockly.ContextMenu.commentDeleteOption(comment));
   }
