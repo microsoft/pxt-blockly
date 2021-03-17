@@ -265,7 +265,7 @@ Blockly.Constants.Loops.CUSTOM_CONTEXT_MENU_CREATE_VARIABLES_GET_MIXIN = {
     var variable = this.getField('VAR').getVariable();
     var varName = variable.name;
     if (!this.isCollapsed() && varName != null) {
-      var option = {enabled: true};
+      var option = {enabled: !this.inDebugWorkspace()};
       option.text =
           Blockly.Msg['VARIABLES_SET_CREATE_GET'].replace('%1', varName);
       var xmlField = Blockly.Variables.generateVariableFieldDom(variable);

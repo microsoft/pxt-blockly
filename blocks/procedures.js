@@ -373,7 +373,7 @@ Blockly.Blocks['procedures_defnoreturn'] = {
       return;
     }
     // Add option to create caller.
-    var option = {enabled: true};
+    var option = {enabled: !this.options.debugMode};
     var name = this.getFieldValue('NAME');
     option.text = Blockly.Msg['PROCEDURES_CREATE_DO'].replace('%1', name);
     var xmlMutation = Blockly.utils.xml.createElement('mutation');
@@ -392,7 +392,7 @@ Blockly.Blocks['procedures_defnoreturn'] = {
     // Add options to create getters for each parameter.
     if (!this.isCollapsed()) {
       for (var i = 0; i < this.argumentVarModels_.length; i++) {
-        var argOption = {enabled: true};
+        var argOption = {enabled: !this.inDebugWorkspace()};
         var argVar = this.argumentVarModels_[i];
         argOption.text = Blockly.Msg['VARIABLES_SET_CREATE_GET']
             .replace('%1', argVar.name);

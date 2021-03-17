@@ -191,7 +191,7 @@ Blockly.WorkspaceCommentSvg.prototype.pathMouseDown_ = function(e) {
  * @package
  */
 Blockly.WorkspaceCommentSvg.prototype.showContextMenu = function(e) {
-  if (this.workspace.options.readOnly) {
+  if (this.workspace.options.readOnly || this.workspace.options.debugMode) {
     return;
   }
   // Save the current workspace comment in a variable for use in closures.

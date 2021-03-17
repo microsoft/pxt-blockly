@@ -1778,7 +1778,7 @@ Blockly.WorkspaceSvg.prototype.showContextMenu = function(e) {
     };
 
     // Option to collapse top blocks.
-    var collapseOption = {enabled: hasExpandedBlocks};
+    var collapseOption = {enabled: hasExpandedBlocks && !this.options.debugMode};
     collapseOption.text = Blockly.Msg['COLLAPSE_ALL'];
     collapseOption.callback = function() {
       toggleOption(true);
@@ -1786,7 +1786,7 @@ Blockly.WorkspaceSvg.prototype.showContextMenu = function(e) {
     menuOptions.push(collapseOption);
 
     // Option to expand top blocks.
-    var expandOption = {enabled: hasCollapsedBlocks};
+    var expandOption = {enabled: hasCollapsedBlocks && !this.options.debugMode};
     expandOption.text = Blockly.Msg['EXPAND_ALL'];
     expandOption.callback = function() {
       toggleOption(false);
@@ -1822,7 +1822,7 @@ Blockly.WorkspaceSvg.prototype.showContextMenu = function(e) {
   var deleteOption = {
     text: deleteList.length == 1 ? Blockly.Msg['DELETE_BLOCK'] :
         Blockly.Msg['DELETE_X_BLOCKS'].replace('%1', String(deleteList.length)),
-    enabled: deleteList.length > 0,
+    enabled: deleteList.length > 0 && !this.options.debugMode,
     callback: function() {
       if (ws.currentGesture_) {
         ws.currentGesture_.cancel();

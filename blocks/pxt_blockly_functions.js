@@ -1018,6 +1018,7 @@ Blockly.Blocks['function_definition'] = {
   },
 
   customContextMenu: function(menuOptions) {
+    if (this.inDebugWorkspace()) return;
     menuOptions.push(Blockly.Functions.makeEditOption(this));
     menuOptions.push(Blockly.Functions.makeCreateCallOption(this));
   },

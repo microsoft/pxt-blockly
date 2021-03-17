@@ -133,7 +133,7 @@ Blockly.Constants.Variables.CUSTOM_CONTEXT_MENU_VARIABLE_GETTER_SETTER_MIXIN = {
         var contextMenuMsg = Blockly.Msg['VARIABLES_SET_CREATE_GET'];
       }
 
-      var option = {enabled: this.workspace.remainingCapacity() > 0};
+      var option = {enabled: this.workspace.remainingCapacity() > 0 && !this.inDebugWorkspace()};
       var name = this.getField('VAR').getText();
       option.text = contextMenuMsg.replace('%1', name);
       var xmlField = Blockly.utils.xml.createElement('field');
@@ -149,13 +149,13 @@ Blockly.Constants.Variables.CUSTOM_CONTEXT_MENU_VARIABLE_GETTER_SETTER_MIXIN = {
       if (this.type == 'variables_get' || this.type == 'variables_get_reporter') {
         var renameOption = {
           text: Blockly.Msg.RENAME_VARIABLE,
-          enabled: true,
+          enabled: !this.inDebugWorkspace(),
           callback: Blockly.Constants.Variables.RENAME_OPTION_CALLBACK_FACTORY(this)
         };
         var name = this.getField('VAR').getText();
         var deleteOption = {
           text: Blockly.Msg.DELETE_VARIABLE.replace('%1', name),
-          enabled: true,
+          enabled: !this.inDebugWorkspace(),
           callback: Blockly.Constants.Variables.DELETE_OPTION_CALLBACK_FACTORY(this)
         };
         options.unshift(renameOption);
@@ -187,7 +187,7 @@ Blockly.Constants.Variables.CUSTOM_CONTEXT_MENU_VARIABLE_REPORTER_MIXIN = {
     }
     var renameOption = {
       text: Blockly.Msg.RENAME_VARIABLE,
-      enabled: true,
+      enabled: !this.inDebugWorkspace(),
       callback: Blockly.Constants.Variables.RENAME_OPTION_CALLBACK_FACTORY(this)
     };
     options.unshift(renameOption);
@@ -198,7 +198,7 @@ Blockly.Constants.Variables.CUSTOM_CONTEXT_MENU_VARIABLE_REPORTER_MIXIN = {
         options.unshift(separator);
       }
       for (var i = variablesList.length - 1; i >= 0; i--) {
-        var option = {enabled: true};
+        var option = {enabled: !this.inDebugWorkspace()};
         option.text = variablesList[i].name;
 
         option.callback =

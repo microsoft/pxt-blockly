@@ -779,6 +779,14 @@ Blockly.Block.prototype.isDeletable = function() {
 };
 
 /**
+ * Get whether this block is in a workspace with the debugMode option set or not.
+ * @return {boolean} True if deletable.
+ */
+ Blockly.Block.prototype.inDebugWorkspace = function() {
+  return !!(this.workspace && this.workspace.options.debugMode);
+};
+
+/**
  * Set whether this block is deletable or not.
  * @param {boolean} deletable True if deletable.
  */
@@ -791,7 +799,7 @@ Blockly.Block.prototype.setDeletable = function(deletable) {
  * @return {boolean} True if movable.
  */
 Blockly.Block.prototype.isMovable = function() {
-  return this.isMovablePersisted() && !(this.workspace && this.workspace.options.debugMode);
+  return this.isMovablePersisted() && !this.inDebugWorkspace();
 };
 
 /**
@@ -875,7 +883,7 @@ Blockly.Block.prototype.setInsertionMarker = function(insertionMarker) {
  * @return {boolean} True if editable.
  */
 Blockly.Block.prototype.isEditable = function() {
-  return this.isEditablePersisted() && !(this.workspace && this.workspace.options.debugMode);
+  return this.isEditablePersisted() && !this.inDebugWorkspace();
 };
 
 /**

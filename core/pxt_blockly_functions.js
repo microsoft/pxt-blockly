@@ -384,7 +384,7 @@ Blockly.Functions.editFunctionExternalHandler = function(mutation, callback) {
  */
 Blockly.Functions.makeEditOption = function(block) {
   var editOption = {
-    enabled: true,
+    enabled: !block.inDebugWorkspace(),
     text: Blockly.Msg.FUNCTIONS_EDIT_OPTION,
     callback: function() {
       Blockly.Functions.editFunctionCallback_(block);
@@ -409,7 +409,7 @@ Blockly.Functions.makeCreateCallOption = function(block) {
   callBlock.setAttribute('type', 'function_call');
 
   var option = {
-    enabled: block.workspace.remainingCapacity() > 0,
+    enabled: block.workspace.remainingCapacity() > 0 && !block.inDebugWorkspace(),
     text: Blockly.Msg.FUNCTIONS_CREATE_CALL_OPTION.replace("%1", functionName),
     callback: Blockly.ContextMenu.callbackFactory(block, callBlock),
   };
@@ -418,7 +418,7 @@ Blockly.Functions.makeCreateCallOption = function(block) {
 
 Blockly.Functions.makeGoToDefinitionOption = function(block) {
   var gtdOption = {
-    enabled: true,
+    enabled: !block.inDebugWorkspace(),
     text: Blockly.Msg.FUNCTIONS_GO_TO_DEFINITION_OPTION,
     callback: function() {
       var functionName = block.getField("function_name").getText();

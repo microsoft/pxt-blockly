@@ -810,7 +810,7 @@ Blockly.BlockSvg.prototype.generateContextMenu = function() {
                 this.inputList[i].type != Blockly.NEXT_STATEMENT) {
               // Only display this option if there are two value or dummy inputs
               // next to each other.
-              var inlineOption = {enabled: true};
+              var inlineOption = {enabled: !this.inDebugWorkspace()};
               var isInline = this.getInputsInline();
               inlineOption.text = isInline ?
                   Blockly.Msg['EXTERNAL_INPUTS'] : Blockly.Msg['INLINE_INPUTS'];
@@ -824,7 +824,7 @@ Blockly.BlockSvg.prototype.generateContextMenu = function() {
         }
         // Option to collapse block (pxt-blockly: top blocks only)
         if (this.workspace.options.collapse && isTopBlock) {
-          var collapseOption = {enabled: true};
+          var collapseOption = {enabled: !this.inDebugWorkspace()};
           collapseOption.text = Blockly.Msg['COLLAPSE_BLOCK'];
           collapseOption.callback = function() {
             block.setCollapsed(true);
@@ -834,7 +834,7 @@ Blockly.BlockSvg.prototype.generateContextMenu = function() {
       } else {
         // Option to expand block. (pxt-blockly: top blocks only)
         if (this.workspace.options.collapse && isTopBlock) {
-          var expandOption = {enabled: true};
+          var expandOption = {enabled: !this.inDebugWorkspace()};
           expandOption.text = Blockly.Msg['EXPAND_BLOCK'];
           expandOption.callback = function() {
             block.setCollapsed(false);
@@ -849,7 +849,7 @@ Blockly.BlockSvg.prototype.generateContextMenu = function() {
       var disableOption = {
         text: this.isEnabled() ?
             Blockly.Msg['DISABLE_BLOCK'] : Blockly.Msg['ENABLE_BLOCK'],
-        enabled: !this.getInheritedDisabled(),
+        enabled: !this.getInheritedDisabled() && !this.inDebugWorkspace(),
         callback: function() {
           var group = Blockly.Events.getGroup();
           if (!group) {

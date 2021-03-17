@@ -223,7 +223,7 @@ Blockly.ContextMenu.blockDeleteOption = function(block) {
   var deleteOption = {
     text: descendantCount == 1 ? Blockly.Msg['DELETE_BLOCK'] :
         Blockly.Msg['DELETE_X_BLOCKS'].replace('%1', String(descendantCount)),
-    enabled: true,
+    enabled: !block.inDebugWorkspace(),
     callback: function() {
       Blockly.Events.setGroup(true);
       block.dispose(true, true);
@@ -259,7 +259,7 @@ Blockly.ContextMenu.blockHelpOption = function(block) {
  * @package
  */
 Blockly.ContextMenu.blockDuplicateOption = function(block) {
-  var enabled = block.isDuplicatable();
+  var enabled = block.isDuplicatable() && !block.inDebugWorkspace();
   var duplicateOption = {
     text: Blockly.Msg['DUPLICATE_BLOCK'],
     enabled: enabled,
@@ -279,7 +279,7 @@ Blockly.ContextMenu.blockDuplicateOption = function(block) {
  */
 Blockly.ContextMenu.blockCommentOption = function(block) {
   var commentOption = {
-    enabled: !Blockly.utils.userAgent.IE
+    enabled: !Blockly.utils.userAgent.IE && !block.inDebugWorkspace()
   };
   // If there's already a comment, add an option to delete it.
   if (block.getCommentIcon()) {
@@ -308,7 +308,7 @@ Blockly.ContextMenu.blockCommentOption = function(block) {
 Blockly.ContextMenu.commentDeleteOption = function(comment) {
   var deleteOption = {
     text: Blockly.Msg['REMOVE_COMMENT'],
-    enabled: true,
+    enabled: !comment.workspace.options.debugMode,
     callback: function() {
       Blockly.Events.setGroup(true);
       comment.dispose(true, true);
@@ -328,7 +328,7 @@ Blockly.ContextMenu.commentDeleteOption = function(comment) {
 Blockly.ContextMenu.commentDuplicateOption = function(comment) {
   var duplicateOption = {
     text: Blockly.Msg['DUPLICATE_COMMENT'],
-    enabled: true,
+    enabled: !comment.workspace.options.debugMode,
     callback: function() {
       Blockly.duplicate(comment);
     }
@@ -393,7 +393,7 @@ Blockly.ContextMenu.workspaceCommentOption = function(ws, e) {
     // Foreign objects don't work in IE.  Don't let the user create comments
     // that they won't be able to edit.
     // TODO shakao check if uneditable comments still work
-    enabled: !Blockly.utils.userAgent.IE
+    enabled: !Blockly.utils.userAgent.IE && !ws.options.debugMode
   };
   wsCommentOption.text = Blockly.Msg['ADD_COMMENT'];
   wsCommentOption.callback = function() {

@@ -95,6 +95,8 @@ Blockly.Constants.VariablesDynamic.CUSTOM_CONTEXT_MENU_VARIABLE_GETTER_SETTER_MI
    * @this {Blockly.Block}
    */
   customContextMenu: function(options) {
+    if (!this.inDebugWorkspace()) return;
+
     // Getter blocks have the option to create a setter block, and vice versa.
     if (!this.isInFlyout) {
       var opposite_type;
@@ -123,17 +125,17 @@ Blockly.Constants.VariablesDynamic.CUSTOM_CONTEXT_MENU_VARIABLE_GETTER_SETTER_MI
       option.callback = Blockly.ContextMenu.callbackFactory(this, xmlBlock);
       options.push(option);
     } else {
-      if (this.type == 'variables_get_dynamic' ||
-       this.type == 'variables_get_reporter_dynamic') {
+      if ((this.type == 'variables_get_dynamic' ||
+       this.type == 'variables_get_reporter_dynamic')) {
         var renameOption = {
           text: Blockly.Msg.RENAME_VARIABLE,
-          enabled: true,
+          enabled: !this.inDebugWorkspace(),
           callback: Blockly.Constants.Variables.RENAME_OPTION_CALLBACK_FACTORY(this)
         };
         var name = this.getField('VAR').getText();
         var deleteOption = {
           text: Blockly.Msg.DELETE_VARIABLE.replace('%1', name),
-          enabled: true,
+          enabled: !this.inDebugWorkspace(),
           callback: Blockly.Constants.Variables.DELETE_OPTION_CALLBACK_FACTORY(this)
         };
         options.unshift(renameOption);
