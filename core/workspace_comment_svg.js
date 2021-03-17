@@ -191,14 +191,14 @@ Blockly.WorkspaceCommentSvg.prototype.pathMouseDown_ = function(e) {
  * @package
  */
 Blockly.WorkspaceCommentSvg.prototype.showContextMenu = function(e) {
-  if (this.workspace.options.readOnly) {
+  if (this.workspace.options.readOnly || this.workspace.options.debugMode) {
     return;
   }
   // Save the current workspace comment in a variable for use in closures.
   var comment = this;
   var menuOptions = [];
 
-  if (this.isDeletable() && this.isMovable() && !this.inDebugWorkspace()) {
+  if (this.isDeletable() && this.isMovable()) {
     menuOptions.push(Blockly.ContextMenu.commentDuplicateOption(comment));
     menuOptions.push(Blockly.ContextMenu.commentDeleteOption(comment));
   }
