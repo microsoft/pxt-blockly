@@ -276,12 +276,13 @@ Blockly.FieldDropdown.prototype.createTextArrow_ = function() {
  * @protected
  */
 Blockly.FieldDropdown.prototype.createSVGArrow_ = function() {
-  
+
   // IE and iOS have issues with the <use> element, place the image inline instead
   // https://developer.mozilla.org/en-US/docs/Web/SVG/Element/use#Browser_compatibility
   var placeImageInline = Blockly.utils.userAgent.IE || Blockly.utils.userAgent.IOS;
   var arrowElement = placeImageInline ? 'image' : 'use';
-  var arrowHref = placeImageInline ? this.constants_.FIELD_DROPDOWN_SVG_ARROW_DATAURI : '#blocklyDropdownArrowSvg';
+  var arrowHref = placeImageInline ? this.constants_.FIELD_DROPDOWN_SVG_ARROW_DATAURI :
+    ("#" + (this.constants_.dropdownArrowImageId || 'blocklyDropdownArrowSvg'));
 
   this.svgArrow_ = Blockly.utils.dom.createSvgElement(arrowElement, {
     'height': this.constants_.FIELD_DROPDOWN_SVG_ARROW_SIZE + 'px',
