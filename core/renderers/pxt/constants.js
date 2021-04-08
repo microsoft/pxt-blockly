@@ -115,6 +115,13 @@ Blockly.pxt.ConstantProvider = function() {
    */
   this.warningGlowFilter_ = null;
 
+  /**
+   * The ID of the dropdown arrow SVG, or the empty string if no SVG is
+   * set.
+   * @type {string}
+   * @package
+   */
+  this.dropdownArrowImageId = ''
 };
 Blockly.utils.object.inherits(Blockly.pxt.ConstantProvider,
     Blockly.zelos.ConstantProvider);
@@ -209,12 +216,13 @@ Blockly.pxt.ConstantProvider.prototype.createDom = function(svg) {
   var arrowSize = this.FIELD_DROPDOWN_SVG_ARROW_SIZE;
   var dropdownArrowImage = Blockly.utils.dom.createSvgElement('image',
       {
-        'id': 'blocklyDropdownArrowSvg',
+        'id': 'blocklyDropdownArrowSvg' + this.randomIdentifier_,
         'height': arrowSize + 'px',
         'width': arrowSize + 'px'
       }, defs);
   dropdownArrowImage.setAttributeNS('http://www.w3.org/1999/xlink',
       'xlink:href', this.FIELD_DROPDOWN_SVG_ARROW_DATAURI);
+  this.dropdownArrowImageId = dropdownArrowImage.id;
 };
 
 /**
