@@ -59,6 +59,7 @@ Blockly.pxtBlocklyUtils.isShadowArgumentReporter = function(block) {
       block.type === 'argument_reporter_boolean' ||
       block.type === 'argument_reporter_number' ||
       block.type === 'argument_reporter_string' ||
+      block.type === 'argument_reporter_array' ||
       block.type === 'argument_reporter_custom' ||
       (Blockly.pxtBlocklyUtils._duplicateOnDragWhitelist &&
         Blockly.pxtBlocklyUtils._duplicateOnDragWhitelist.indexOf(block.type) !== -1));
