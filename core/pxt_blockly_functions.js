@@ -698,6 +698,7 @@ Blockly.Functions.isFunctionArgumentReporter = function(block) {
   return block.type == 'argument_reporter_boolean' ||
     block.type == 'argument_reporter_number' ||
     block.type == 'argument_reporter_string' ||
+    block.type == 'argument_reporter_array' ||
     block.type == 'argument_reporter_custom';
 };
 

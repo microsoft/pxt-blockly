@@ -1676,6 +1676,9 @@ Blockly.Msg.FUNCTIONS_DEFAULT_STRING_ARG_NAME = 'text'
 /// pxt-blockly: Default name for a number arg on a function declaration
 Blockly.Msg.FUNCTIONS_DEFAULT_NUMBER_ARG_NAME = 'num'
 /** @type {string} */
+/// pxt-blockly: Default name for an array arg on a function declaration
+Blockly.Msg.FUNCTIONS_DEFAULT_ARRAY_ARG_NAME = 'list'
+/** @type {string} */
 /// pxt-blockly: Default name for a non-literal arg on a function declaration
 Blockly.Msg.FUNCTIONS_DEFAULT_CUSTOM_ARG_NAME = 'arg'
 

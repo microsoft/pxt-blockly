@@ -463,6 +463,12 @@ Blockly.PXTBlockly.FunctionUtils.getShadowBlockInfoFromType_ = function(argument
       fieldName = 'TEXT';
       fieldValue = 'abc';
       break;
+    case 'Array':
+      shadowType = 'variables_get';
+      fieldName = "VAR";
+      fieldValue = Blockly.Variables.getOrCreateVariablePackage(ws, null,
+          Blockly.Msg.FUNCTIONS_DEFAULT_ARRAY_ARG_NAME, '').getId();
+      break;
     default:
       // This is probably a custom type. Use a variable as the shadow.
       shadowType = 'variables_get';
@@ -544,6 +550,9 @@ Blockly.PXTBlockly.FunctionUtils.createArgumentReporter_ = function(arg) {
       break;
     case 'string':
       blockType = 'argument_reporter_string';
+      break;
+    case 'Array':
+      blockType = 'argument_reporter_array'
       break;
     default:
       blockType = 'argument_reporter_custom';
@@ -696,6 +705,9 @@ Blockly.PXTBlockly.FunctionUtils.createArgumentEditor_ = function(argumentType, 
       case 'string':
         blockType = 'argument_editor_string';
         break;
+      case 'Array':
+        blockType = 'argument_editor_array';
+        break;
       default:
         blockType = 'argument_editor_custom';
     }
@@ -816,6 +828,15 @@ Blockly.PXTBlockly.FunctionUtils.addStringExternal = function() {
 Blockly.PXTBlockly.FunctionUtils.addNumberExternal = function() {
   this.addParam_('number', Blockly.Msg.FUNCTIONS_DEFAULT_NUMBER_ARG_NAME);
 };
+
+/**
+ * Externally-visible function to add an array argument to the function
+ * declaration.
+ * @public
+ */
+Blockly.PXTBlockly.FunctionUtils.addArrayExternal = function() {
+  this.addParam_('Array', Blockly.Msg.FUNCTIONS_DEFAULT_ARRAY_ARG_NAME);
+}
 
 /**
  * Externally-visible function to add a custom argument to the function
@@ -986,6 +1007,7 @@ Blockly.Blocks['function_declaration'] = {
   addBooleanExternal: Blockly.PXTBlockly.FunctionUtils.addBooleanExternal,
   addStringExternal: Blockly.PXTBlockly.FunctionUtils.addStringExternal,
   addNumberExternal: Blockly.PXTBlockly.FunctionUtils.addNumberExternal,
+  addArrayExternal: Blockly.PXTBlockly.FunctionUtils.addArrayExternal,
   addCustomExternal: Blockly.PXTBlockly.FunctionUtils.addCustomExternal,
   updateFunctionSignature: Blockly.PXTBlockly.FunctionUtils.updateDeclarationMutation_
 };
@@ -1284,6 +1306,28 @@ Blockly.Blocks['argument_editor_number'] = {
   removeFieldCallback: Blockly.PXTBlockly.FunctionUtils.removeArgumentCallback_
 };
 
+Blockly.Blocks['argument_editor_array'] = {
+  init: function() {
+    this.jsonInit({
+      "message0": " %1",
+      "args0": [
+        {
+          "type": "field_argument_editor",
+          "name": "TEXT",
+          "text": "list"
+        }
+      ],
+      "colour": Blockly.Colours.textField,
+      "colourSecondary": Blockly.Colours.textField,
+      "colourTertiary": Blockly.Colours.textField,
+      "extensions": ["output_array"]
+    });
+    this.typeName_ = 'Array';
+  },
+  getTypeName: Blockly.PXTBlockly.FunctionUtils.getTypeName,
+  removeFieldCallback: Blockly.PXTBlockly.FunctionUtils.removeArgumentCallback_
+};
+
 Blockly.Blocks['argument_editor_custom'] = {
   init: function() {
     this.jsonInit({
@@ -1363,6 +1407,25 @@ Blockly.Blocks['argument_reporter_string'] = {
       "extensions": ["output_string"]
     });
     this.typeName_ = 'string';
+  },
+  getTypeName: Blockly.PXTBlockly.FunctionUtils.getTypeName
+};
+
+Blockly.Blocks['argument_reporter_array'] = {
+  init: function() {
+    this.jsonInit({
+      "message0": " %1",
+      "args0": [
+        {
+          "type": "field_label_hover",
+          "name": "VALUE",
+          "text": ""
+        }
+      ],
+      "colour": Blockly.Msg.REPORTERS_HUE,
+      "extensions": ["output_array"]
+    });
+    this.typeName_ = 'Array';
   },
   getTypeName: Blockly.PXTBlockly.FunctionUtils.getTypeName
 };

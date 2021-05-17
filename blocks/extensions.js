@@ -82,6 +82,19 @@ Blockly.PXTBlockly.Extensions.OUTPUT_BOOLEAN = function() {
   this.setOutput(true, 'Boolean');
 };
 
+/**
+ * pxt-blockly
+ * Extension to represent an array reporter. That means the block has inline
+ * inputs, a round output shape, and a 'Array' output type.
+ * @this {Blockly.Block}
+ * @readonly
+ */
+ Blockly.PXTBlockly.Extensions.OUTPUT_ARRAY = function() {
+  this.setInputsInline(true);
+  this.setOutputShape(Blockly.OUTPUT_SHAPE_ROUND);
+  this.setOutput(true, 'Array');
+};
+
 Blockly.PXTBlockly.Extensions.registerAll = function() {
   Blockly.Extensions.register('inline-svgs', this.INLINE_SVGS);
 
@@ -91,6 +104,7 @@ Blockly.PXTBlockly.Extensions.registerAll = function() {
   Blockly.Extensions.register('output_number', Blockly.PXTBlockly.Extensions.OUTPUT_NUMBER);
   Blockly.Extensions.register('output_string', Blockly.PXTBlockly.Extensions.OUTPUT_STRING);
   Blockly.Extensions.register('output_boolean', Blockly.PXTBlockly.Extensions.OUTPUT_BOOLEAN);
+  Blockly.Extensions.register('output_array', Blockly.PXTBlockly.Extensions.OUTPUT_ARRAY)
 };
 
 Blockly.PXTBlockly.Extensions.registerAll();
