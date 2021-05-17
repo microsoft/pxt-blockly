@@ -1691,11 +1691,6 @@ goog.addDependency('promise/testsuiteadapter.js', ['goog.promise.testSuiteAdapte
 goog.addDependency('promise/testsuiteadapter.js', ['goog.promise.testSuiteAdapter'], ['goog.Promise'], {});
 goog.addDependency('promise/thenable.js', ['goog.Thenable'], [], {});
 goog.addDependency('promise/thenable.js', ['goog.Thenable'], [], {});
-goog.addDependency('proto/proto.js', ['goog.proto'], ['goog.proto.Serializer'], {});
-goog.addDependency('proto/proto.js', ['goog.proto'], ['goog.proto.Serializer'], {});
-goog.addDependency('proto/serializer.js', ['goog.proto.Serializer'], ['goog.json.Serializer', 'goog.string'], {});
-goog.addDependency('proto/serializer.js', ['goog.proto.Serializer'], ['goog.json.Serializer', 'goog.string'], {});
-goog.addDependency('proto/serializer_test.js', ['goog.protoTest'], ['goog.proto', 'goog.testing.testSuite'], {'lang': 'es6', 'module': 'goog'});
 goog.addDependency('proto2/descriptor.js', ['goog.proto2.Descriptor', 'goog.proto2.Metadata'], ['goog.array', 'goog.asserts', 'goog.object', 'goog.string'], {});
 goog.addDependency('proto2/descriptor.js', ['goog.proto2.Descriptor', 'goog.proto2.Metadata'], ['goog.array', 'goog.asserts', 'goog.object', 'goog.string'], {});
 goog.addDependency('proto2/descriptor_test.js', ['goog.proto2.DescriptorTest'], ['goog.proto2.Descriptor', 'goog.proto2.Message', 'goog.testing.testSuite'], {'lang': 'es6', 'module': 'goog'});
@@ -1724,6 +1719,11 @@ goog.addDependency('proto2/textformatserializer.js', ['goog.proto2.TextFormatSer
 goog.addDependency('proto2/textformatserializer_test.js', ['goog.proto2.TextFormatSerializerTest'], ['goog.proto2.ObjectSerializer', 'goog.proto2.TextFormatSerializer', 'goog.testing.testSuite', 'proto2.TestAllTypes'], {'lang': 'es6', 'module': 'goog'});
 goog.addDependency('proto2/util.js', ['goog.proto2.Util'], ['goog.asserts'], {});
 goog.addDependency('proto2/util.js', ['goog.proto2.Util'], ['goog.asserts'], {});
+goog.addDependency('proto/proto.js', ['goog.proto'], ['goog.proto.Serializer'], {});
+goog.addDependency('proto/proto.js', ['goog.proto'], ['goog.proto.Serializer'], {});
+goog.addDependency('proto/serializer.js', ['goog.proto.Serializer'], ['goog.json.Serializer', 'goog.string'], {});
+goog.addDependency('proto/serializer.js', ['goog.proto.Serializer'], ['goog.json.Serializer', 'goog.string'], {});
+goog.addDependency('proto/serializer_test.js', ['goog.protoTest'], ['goog.proto', 'goog.testing.testSuite'], {'lang': 'es6', 'module': 'goog'});
 goog.addDependency('pubsub/pubsub.js', ['goog.pubsub.PubSub'], ['goog.Disposable', 'goog.array', 'goog.async.run'], {});
 goog.addDependency('pubsub/pubsub.js', ['goog.pubsub.PubSub'], ['goog.Disposable', 'goog.array', 'goog.async.run'], {});
 goog.addDependency('pubsub/pubsub_test.js', ['goog.pubsub.PubSubTest'], ['goog.array', 'goog.pubsub.PubSub', 'goog.testing.MockClock', 'goog.testing.testSuite'], {'lang': 'es6', 'module': 'goog'});
