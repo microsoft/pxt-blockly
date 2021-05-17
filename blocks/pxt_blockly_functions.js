@@ -466,8 +466,7 @@ Blockly.PXTBlockly.FunctionUtils.getShadowBlockInfoFromType_ = function(argument
     case 'Array':
       shadowType = 'variables_get';
       fieldName = "VAR";
-      fieldValue = Blockly.Variables.getOrCreateVariablePackage(ws, null,
-          Blockly.Msg.FUNCTIONS_DEFAULT_ARRAY_ARG_NAME, '').getId();
+      fieldValue = Blockly.Variables.getOrCreateVariablePackage(ws, null, "list", '').getId();
       break;
     default:
       // This is probably a custom type. Use a variable as the shadow.
