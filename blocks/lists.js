@@ -282,19 +282,21 @@ Blockly.Blocks['lists_create_with'] = {
         }
 
         if (newShadowType) {
-          var shadowDom = Blockly.utils.xml.createElement('shadow');
-          var shadowInputType = newShadowType;
-          shadowDom.setAttribute('type', shadowInputType);
-          var shadowDomField = Blockly.utils.xml.createElement('field');
-          shadowDomField.setAttribute('name', 'NUM');
-          shadowDom.appendChild(shadowDomField);
-          if (shadowDom) {
-            shadowDom.setAttribute('id', Blockly.utils.genUid());
-            newInput.connection.setShadowDom(shadowDom);
-            newInput.connection.respawnShadow_();
-          }
+          var shadowDom = createShadowDom(newShadowType);
+          newInput.connection.setShadowDom(shadowDom);
+          newInput.connection.respawnShadow_();
         }
       }
+    }
+
+    function createShadowDom(type) {
+      var shadowDom = Blockly.utils.xml.createElement('shadow');
+      shadowDom.setAttribute('type', type);
+      var shadowDomField = Blockly.utils.xml.createElement('field');
+      shadowDomField.setAttribute('name', 'NUM');
+      shadowDom.appendChild(shadowDomField);
+      shadowDom.setAttribute('id', Blockly.utils.genUid());
+      return shadowDom;
     }
   },
   removeItem_: function() {
