@@ -144,6 +144,7 @@ Blockly.Blocks['lists_create_with'] = {
     this.setHelpUrl(Blockly.Msg['LISTS_CREATE_WITH_HELPURL']);
     this.setStyle('list_blocks');
     this.itemCount_ = 3;
+    this.horizontalAfter_ = 3;
     this.updateShape_();
     this.setOutput(true, 'Array');
     this.setOutputShape(Blockly.OUTPUT_SHAPE_ROUND);
@@ -159,6 +160,9 @@ Blockly.Blocks['lists_create_with'] = {
   mutationToDom: function() {
     var container = Blockly.utils.xml.createElement('mutation');
     container.setAttribute('items', this.itemCount_);
+    if (this.horizontalAfter_) {
+      container.setAttribute('horizontalafter', this.horizontalAfter_);
+    }
     return container;
   },
   /**
@@ -168,6 +172,10 @@ Blockly.Blocks['lists_create_with'] = {
    */
   domToMutation: function(xmlElement) {
     this.itemCount_ = parseInt(xmlElement.getAttribute('items'), 10);
+    var horizontalAfterOverride = xmlElement.getAttribute('horizontalafter');
+    if (horizontalAfterOverride) {
+      this.horizontalAfter_ = parseInt(horizontalAfterOverride, 10);
+    }
     this.updateShape_();
   },
   /**
@@ -368,7 +376,7 @@ Blockly.Blocks['lists_create_with'] = {
     buttons.appendField(new Blockly.FieldImage(this.ADD_IMAGE_DATAURI, 24, 24, "*", add, false));
 
     /* Switch to vertical list when the list is too long */
-    var showHorizontalList = this.itemCount_ <= 5;
+    var showHorizontalList = this.itemCount_ <= this.horizontalAfter_;
     this.setInputsInline(showHorizontalList);
     this.setOutputShape(showHorizontalList ?
       Blockly.OUTPUT_SHAPE_ROUND : Blockly.OUTPUT_SHAPE_SQUARE);
