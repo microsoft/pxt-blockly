@@ -272,17 +272,31 @@ Blockly.Blocks['lists_create_with'] = {
         // Create a new shadow DOM with the same type as the first input
         // but with an empty default value
         var newInput = this.getInput('ADD' + (this.itemCount_ - 1));
-        var connectedBlock = firstInput.connection.targetConnection;
-        var connectedBlockType = connectedBlock.getSourceBlock();
+        var targetConnection = firstInput.connection.targetConnection;
+        var connectedBlock = targetConnection && targetConnection.getSourceBlock();
+        var newShadowType = connectedBlock && connectedBlock.type;
 
-        var newShadowType = connectedBlockType && connectedBlockType.type;
         if (!newShadowType) {
           var shadowInputDom = firstInput.connection.getShadowDom();
           newShadowType = shadowInputDom && shadowInputDom.getAttribute('type');
         }
+        // TODO: make it so it is created as a field on top of the current shadow, not instead of?
 
         if (newShadowType) {
           var shadowDom = createShadowDom(newShadowType);
+          if (connectedBlock && connectedBlock.inputList) {
+            for (var i = 0; i < connectedBlock.inputList.length; i++) {
+              var input = connectedBlock.inputList[i];
+              var fieldShadow = input.connection && input.connection.getShadowDom();
+              var fieldShadowType = fieldShadow && fieldShadow.getAttribute('type');
+              if (!fieldShadowType)
+                continue;
+              var value = Blockly.utils.xml.createElement('value');
+              value.setAttribute('name', input.name);
+              value.appendChild(createShadowDom(fieldShadowType));
+              shadowDom.appendChild(value);
+            }
+          }
           newInput.connection.setShadowDom(shadowDom);
           newInput.connection.respawnShadow_();
         }
