@@ -272,30 +272,18 @@ Blockly.Blocks['lists_create_with'] = {
         // Create a new shadow DOM with the same type as the first input
         // but with an empty default value
         var newInput = this.getInput('ADD' + (this.itemCount_ - 1));
-        var targetConnection = firstInput.connection.targetConnection;
-        var connectedBlock = targetConnection && targetConnection.getSourceBlock();
-        var newShadowType = connectedBlock && connectedBlock.type;
-
-        if (!newShadowType) {
-          var shadowInputDom = firstInput.connection.getShadowDom();
-          newShadowType = shadowInputDom && shadowInputDom.getAttribute('type');
-        }
-        // TODO: make it so it is created as a field on top of the current shadow, not instead of?
-
+        var shadowInputDom = firstInput.connection.getShadowDom();
+        var newShadowType = shadowInputDom && shadowInputDom.getAttribute('type');
         if (newShadowType) {
           var shadowDom = createShadowDom(newShadowType);
-          if (connectedBlock && connectedBlock.inputList) {
-            for (var i = 0; i < connectedBlock.inputList.length; i++) {
-              var input = connectedBlock.inputList[i];
-              var fieldShadow = input.connection && input.connection.getShadowDom();
-              var fieldShadowType = fieldShadow && fieldShadow.getAttribute('type');
-              if (!fieldShadowType)
-                continue;
-              var value = Blockly.utils.xml.createElement('value');
-              value.setAttribute('name', input.name);
-              value.appendChild(createShadowDom(fieldShadowType));
-              shadowDom.appendChild(value);
-            }
+          var childValues = getChildrenByTag(shadowInputDom, 'value');
+
+          for (var i = 0; i < childValues.length; i++) {
+            var input = childValues[i];
+            var inputName = input.getAttribute('name');
+            var fieldShadow = getChildrenByTag(input, 'shadow')[0];
+            var fieldShadowType = fieldShadow && fieldShadow.getAttribute('type');
+            appendValueDom(shadowDom, inputName, fieldShadowType);
           }
           newInput.connection.setShadowDom(shadowDom);
           newInput.connection.respawnShadow_();
@@ -303,6 +291,27 @@ Blockly.Blocks['lists_create_with'] = {
       }
     }
 
+    function getChildrenByTag(domNode, tag) {
+      var output = [];
+      if (!domNode || !domNode.children)
+        return output;
+
+      for (var i = 0; i < domNode.children.length; i++) {
+        var child = domNode.children[i];
+        if (child.tagName === tag) {
+          output.push(child);
+        }
+      }
+      return output;
+    }
+    function appendValueDom(parent, name, type) {
+      if (!name || !type)
+        return;
+      var value = Blockly.utils.xml.createElement('value');
+      value.setAttribute('name', name);
+      value.appendChild(createShadowDom(type));
+      parent.appendChild(value);
+    }
     function createShadowDom(type) {
       var shadowDom = Blockly.utils.xml.createElement('shadow');
       shadowDom.setAttribute('type', type);
