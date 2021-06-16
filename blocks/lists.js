@@ -265,16 +265,25 @@ Blockly.Blocks['lists_create_with'] = {
     this.restoreConnections_();
     // Add shadow block
     if (this.itemCount_ > 1) {
+
       // Find shadow type
       var firstInput = this.getInput('ADD' + 0);
       if (firstInput && firstInput.connection.targetConnection) {
         // Create a new shadow DOM with the same type as the first input
         // but with an empty default value
         var newInput = this.getInput('ADD' + (this.itemCount_ - 1));
-        var shadowInputDom = firstInput.connection.getShadowDom();
-        if (shadowInputDom) {
+        var connectedBlock = firstInput.connection.targetConnection;
+        var connectedBlockType = connectedBlock.getSourceBlock();
+
+        var newShadowType = connectedBlockType && connectedBlockType.type;
+        if (!newShadowType) {
+          var shadowInputDom = firstInput.connection.getShadowDom();
+          newShadowType = shadowInputDom && shadowInputDom.getAttribute('type');
+        }
+
+        if (newShadowType) {
           var shadowDom = Blockly.utils.xml.createElement('shadow');
-          var shadowInputType = shadowInputDom.getAttribute('type');
+          var shadowInputType = newShadowType;
           shadowDom.setAttribute('type', shadowInputType);
           var shadowDomField = Blockly.utils.xml.createElement('field');
           shadowDomField.setAttribute('name', 'NUM');
