@@ -280,9 +280,9 @@ Blockly.Blocks['lists_create_with'] = {
           for (var i = 0; i < childValues.length; i++) {
             var input = childValues[i];
             var inputName = input.getAttribute('name');
-            var fieldShadow = getChildrenByTag(input, 'shadow')[0];
-            var fieldShadowType = fieldShadow && fieldShadow.getAttribute('type');
-            appendValueDom(shadowDom, inputName, fieldShadowType);
+            var valueShadow = getChildrenByTag(input, 'shadow')[0];
+            var valueShadowType = valueShadow && valueShadow.getAttribute('type');
+            appendValueDom(shadowDom, inputName, valueShadowType);
           }
           newInput.connection.setShadowDom(shadowDom);
         }
@@ -299,9 +299,9 @@ Blockly.Blocks['lists_create_with'] = {
           if (connectedBlock && connectedBlock.inputList) {
             for (var i = 0; i < connectedBlock.inputList.length; i++) {
               var input = connectedBlock.inputList[i];
-              var fieldShadow = input.connection && input.connection.getShadowDom();
-              var fieldShadowType = fieldShadow && fieldShadow.getAttribute('type');
-              appendValueDom(blockDom, input.name, fieldShadowType);
+              var valueShadow = input.connection && input.connection.getShadowDom();
+              var valueShadowType = valueShadow && valueShadow.getAttribute('type');
+              appendValueDom(blockDom, input.name, valueShadowType);
             }
           }
           var fieldBlock = Blockly.Xml.domToBlock(blockDom, this.workspace);
