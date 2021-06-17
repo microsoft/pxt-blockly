@@ -144,6 +144,7 @@ Blockly.Blocks['lists_create_with'] = {
     this.setHelpUrl(Blockly.Msg['LISTS_CREATE_WITH_HELPURL']);
     this.setStyle('list_blocks');
     this.itemCount_ = 3;
+    this.horizontalAfter_ = 3;
     this.updateShape_();
     this.setOutput(true, 'Array');
     this.setOutputShape(Blockly.OUTPUT_SHAPE_ROUND);
@@ -159,6 +160,9 @@ Blockly.Blocks['lists_create_with'] = {
   mutationToDom: function() {
     var container = Blockly.utils.xml.createElement('mutation');
     container.setAttribute('items', this.itemCount_);
+    if (this.horizontalAfter_) {
+      container.setAttribute('horizontalafter', this.horizontalAfter_);
+    }
     return container;
   },
   /**
@@ -168,6 +172,10 @@ Blockly.Blocks['lists_create_with'] = {
    */
   domToMutation: function(xmlElement) {
     this.itemCount_ = parseInt(xmlElement.getAttribute('items'), 10);
+    var horizontalAfterOverride = xmlElement.getAttribute('horizontalafter');
+    if (horizontalAfterOverride) {
+      this.horizontalAfter_ = parseInt(horizontalAfterOverride, 10);
+    }
     this.updateShape_();
   },
   /**
@@ -264,20 +272,72 @@ Blockly.Blocks['lists_create_with'] = {
         // but with an empty default value
         var newInput = this.getInput('ADD' + (this.itemCount_ - 1));
         var shadowInputDom = firstInput.connection.getShadowDom();
-        if (shadowInputDom) {
-          var shadowDom = Blockly.utils.xml.createElement('shadow');
-          var shadowInputType = shadowInputDom.getAttribute('type');
-          shadowDom.setAttribute('type', shadowInputType);
-          var shadowDomField = Blockly.utils.xml.createElement('field');
-          shadowDomField.setAttribute('name', 'NUM');
-          shadowDom.appendChild(shadowDomField);
-          if (shadowDom) {
-            shadowDom.setAttribute('id', Blockly.utils.genUid());
-            newInput.connection.setShadowDom(shadowDom);
-            newInput.connection.respawnShadow_();
+        var newShadowType = shadowInputDom && shadowInputDom.getAttribute('type');
+        if (newShadowType) {
+          var shadowDom = createBlockDom('shadow', newShadowType);
+          var childValues = getChildrenByTag(shadowInputDom, 'value');
+
+          for (var i = 0; i < childValues.length; i++) {
+            var input = childValues[i];
+            var inputName = input.getAttribute('name');
+            var valueShadow = getChildrenByTag(input, 'shadow')[0];
+            var valueShadowType = valueShadow && valueShadow.getAttribute('type');
+            appendValueDom(shadowDom, inputName, valueShadowType);
           }
+          newInput.connection.setShadowDom(shadowDom);
+        }
+
+        var targetConnection = firstInput.connection.targetConnection;
+        var connectedBlock = targetConnection && targetConnection.getSourceBlock();
+        var newFieldType = connectedBlock && connectedBlock.type;
+        if (!newFieldType || newFieldType === newShadowType) {
+          // block in the slot matches shadow; respawn to emit shadow block
+          newInput.connection.respawnShadow_();
+        } else {
+          // copy field as well if it's not the same type as the shadow
+          var blockDom = createBlockDom('block', newFieldType);
+          if (connectedBlock && connectedBlock.inputList) {
+            for (var i = 0; i < connectedBlock.inputList.length; i++) {
+              var input = connectedBlock.inputList[i];
+              var valueShadow = input.connection && input.connection.getShadowDom();
+              var valueShadowType = valueShadow && valueShadow.getAttribute('type');
+              appendValueDom(blockDom, input.name, valueShadowType);
+            }
+          }
+          var fieldBlock = Blockly.Xml.domToBlock(blockDom, this.workspace);
+          newInput.connection.connect(fieldBlock.outputConnection);
         }
       }
+    }
+
+    function getChildrenByTag(domNode, tag) {
+      var output = [];
+      if (!domNode || !domNode.children)
+        return output;
+
+      for (var i = 0; i < domNode.children.length; i++) {
+        var child = domNode.children[i];
+        if (child.tagName === tag) {
+          output.push(child);
+        }
+      }
+      return output;
+    }
+
+    function appendValueDom(parent, name, type) {
+      if (!name || !type)
+        return;
+      var value = Blockly.utils.xml.createElement('value');
+      value.setAttribute('name', name);
+      value.appendChild(createBlockDom('shadow', type));
+      parent.appendChild(value);
+    }
+
+    function createBlockDom(tag, type) {
+      var shadowDom = Blockly.utils.xml.createElement(tag);
+      shadowDom.setAttribute('type', type);
+      shadowDom.setAttribute('id', Blockly.utils.genUid());
+      return shadowDom;
     }
   },
   removeItem_: function() {
@@ -368,7 +428,7 @@ Blockly.Blocks['lists_create_with'] = {
     buttons.appendField(new Blockly.FieldImage(this.ADD_IMAGE_DATAURI, 24, 24, "*", add, false));
 
     /* Switch to vertical list when the list is too long */
-    var showHorizontalList = this.itemCount_ <= 5;
+    var showHorizontalList = this.itemCount_ <= this.horizontalAfter_;
     this.setInputsInline(showHorizontalList);
     this.setOutputShape(showHorizontalList ?
       Blockly.OUTPUT_SHAPE_ROUND : Blockly.OUTPUT_SHAPE_SQUARE);
