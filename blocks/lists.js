@@ -336,9 +336,6 @@ Blockly.Blocks['lists_create_with'] = {
     function createBlockDom(tag, type) {
       var shadowDom = Blockly.utils.xml.createElement(tag);
       shadowDom.setAttribute('type', type);
-      var shadowDomField = Blockly.utils.xml.createElement('field');
-      shadowDomField.setAttribute('name', 'NUM');
-      shadowDom.appendChild(shadowDomField);
       shadowDom.setAttribute('id', Blockly.utils.genUid());
       return shadowDom;
     }
