@@ -265,7 +265,6 @@ Blockly.Blocks['lists_create_with'] = {
     this.restoreConnections_();
     // Add shadow block
     if (this.itemCount_ > 1) {
-
       // Find shadow type
       var firstInput = this.getInput('ADD' + 0);
       if (firstInput && firstInput.connection.targetConnection) {
@@ -291,7 +290,7 @@ Blockly.Blocks['lists_create_with'] = {
         var targetConnection = firstInput.connection.targetConnection;
         var connectedBlock = targetConnection && targetConnection.getSourceBlock();
         var newFieldType = connectedBlock && connectedBlock.type;
-        if (newFieldType === newShadowType) {
+        if (!newFieldType || newFieldType === newShadowType) {
           // block in the slot matches shadow; respawn to emit shadow block
           newInput.connection.respawnShadow_();
         } else {
