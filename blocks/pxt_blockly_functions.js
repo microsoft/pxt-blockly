@@ -616,7 +616,7 @@ Blockly.PXTBlockly.FunctionUtils.populateArgumentOnCaller_ = function(arg, conne
     oldShadow = saveInfo['shadow'];
   }
 
-  if (connectionMap && oldBlock) {
+  if (connectionMap && oldBlock && oldBlock.outputConnection.canConnectWithReason(input.connection) === Blockly.Connection.CAN_CONNECT) {
     // Reattach the old block and shadow DOM.
     connectionMap[input.name] = null;
     oldBlock.outputConnection.connect(input.connection);
@@ -624,6 +624,7 @@ Blockly.PXTBlockly.FunctionUtils.populateArgumentOnCaller_ = function(arg, conne
     input.connection.setShadowDom(shadowDom);
   } else {
     this.attachShadow_(input, arg.type);
+    if (oldBlock && oldBlock.isShadow_) oldBlock.setShadow(false);
   }
 };
 
