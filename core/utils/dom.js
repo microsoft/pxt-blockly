@@ -1,18 +1,7 @@
 /**
  * @license
  * Copyright 2019 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 /**
@@ -29,6 +18,7 @@
  */
 goog.provide('Blockly.utils.dom');
 
+goog.require('Blockly.utils.Svg');
 goog.require('Blockly.utils.userAgent');
 
 
@@ -55,7 +45,7 @@ Blockly.utils.dom.XLINK_NS = 'http://www.w3.org/1999/xlink';
  * https://developer.mozilla.org/en-US/docs/Web/API/Node/nodeType
  * @enum {number}
  */
-Blockly.utils.dom.Node = {
+Blockly.utils.dom.NodeType = {
   ELEMENT_NODE: 1,
   TEXT_NODE: 3,
   COMMENT_NODE: 8,
@@ -85,14 +75,17 @@ Blockly.utils.dom.canvasContext_ = null;
 
 /**
  * Helper method for creating SVG elements.
- * @param {string} name Element's tag name.
+ * @param {string|Blockly.utils.Svg<T>} name Element's tag name.
  * @param {!Object} attrs Dictionary of attribute names and values.
- * @param {Element} parent Optional parent on which to append the element.
- * @return {!SVGElement} Newly created SVG element.
+ * @param {Element=} opt_parent Optional parent on which to append the element.
+ * @return {T} Newly created SVG element.  The return type is {!SVGElement} if
+ *     name is a string or a more specific type if it a member of
+ *     Blockly.utils.Svg
+ * @template T
  */
-Blockly.utils.dom.createSvgElement = function(name, attrs, parent) {
-  var e = /** @type {!SVGElement} */
-      (document.createElementNS(Blockly.utils.dom.SVG_NS, name));
+Blockly.utils.dom.createSvgElement = function(name, attrs, opt_parent) {
+  var e = /** @type {T} */
+      (document.createElementNS(Blockly.utils.dom.SVG_NS, String(name)));
   for (var key in attrs) {
     e.setAttribute(key, attrs[key]);
   }
@@ -102,8 +95,8 @@ Blockly.utils.dom.createSvgElement = function(name, attrs, parent) {
   if (document.body.runtimeStyle) {  // Indicates presence of IE-only attr.
     e.runtimeStyle = e.currentStyle = e.style;
   }
-  if (parent) {
-    parent.appendChild(e);
+  if (opt_parent) {
+    opt_parent.appendChild(e);
   }
   return e;
 };
@@ -125,6 +118,20 @@ Blockly.utils.dom.addClass = function(element, className) {
   }
   element.setAttribute('class', classes + className);
   return true;
+};
+
+/**
+ * Removes multiple calsses from an element.
+ * @param {!Element} element DOM element to remove classes from.
+ * @param {string} classNames A string of one or multiple class names for an
+ *    element.
+ */
+Blockly.utils.dom.removeClasses = function(element, classNames) {
+  var classList = classNames.split(' ');
+  for (var i = 0; i < classList.length; i++) {
+    var cssName = classList[i];
+    Blockly.utils.dom.removeClass(element, cssName);
+  }
 };
 
 /**
@@ -168,8 +175,8 @@ Blockly.utils.dom.hasClass = function(element, className) {
 
 /**
  * Removes a node from its parent. No-op if not attached to a parent.
- * @param {Node} node The node to remove.
- * @return {Node} The node removed if removed; else, null.
+ * @param {?Node} node The node to remove.
+ * @return {?Node} The node removed if removed; else, null.
  */
 // Copied from Closure goog.dom.removeNode
 Blockly.utils.dom.removeNode = function(node) {
@@ -203,7 +210,7 @@ Blockly.utils.dom.insertAfter = function(newNode, refNode) {
  */
 Blockly.utils.dom.containsNode = function(parent, descendant) {
   return !!(parent.compareDocumentPosition(descendant) &
-            Blockly.utils.dom.Node.DOCUMENT_POSITION_CONTAINED_BY);
+            Blockly.utils.dom.NodeType.DOCUMENT_POSITION_CONTAINED_BY);
 };
 
 /**
@@ -225,7 +232,7 @@ Blockly.utils.dom.setCssTransform = function(element, transform) {
 Blockly.utils.dom.startTextWidthCache = function() {
   Blockly.utils.dom.cacheReference_++;
   if (!Blockly.utils.dom.cacheWidths_) {
-    Blockly.utils.dom.cacheWidths_ = {};
+    Blockly.utils.dom.cacheWidths_ = Object.create(null);
   }
 };
 
@@ -291,6 +298,24 @@ Blockly.utils.dom.getTextWidth = function(textElement) {
  */
 Blockly.utils.dom.getFastTextWidth = function(textElement,
     fontSize, fontWeight, fontFamily) {
+  return Blockly.utils.dom.getFastTextWidthWithSizeString(textElement,
+      fontSize + 'pt', fontWeight, fontFamily);
+};
+
+/**
+ * Gets the width of a text element using a faster method than `getTextWidth`.
+ * This method requires that we know the text element's font family and size in
+ * advance. Similar to `getTextWidth`, we cache the width we compute.
+ * This method is similar to ``getFastTextWidth`` but expects the font size
+ * parameter to be a string.
+ * @param {!Element} textElement An SVG 'text' element.
+ * @param {string} fontSize The font size to use.
+ * @param {string} fontWeight The font weight to use.
+ * @param {string} fontFamily The font family to use.
+ * @return {number} Width of element.
+ */
+Blockly.utils.dom.getFastTextWidthWithSizeString = function(textElement,
+    fontSize, fontWeight, fontFamily) {
   var text = textElement.textContent;
   var key = text + '\n' + textElement.className.baseVal;
   var width;
@@ -316,7 +341,7 @@ Blockly.utils.dom.getFastTextWidth = function(textElement,
   }
   // Set the desired font size and family.
   Blockly.utils.dom.canvasContext_.font =
-    fontWeight + ' ' + fontSize + 'pt ' + fontFamily;
+      fontWeight + ' ' + fontSize + ' ' + fontFamily;
 
   // Measure the text width using the helper canvas context.
   width = Blockly.utils.dom.canvasContext_.measureText(text).width;
@@ -326,4 +351,41 @@ Blockly.utils.dom.getFastTextWidth = function(textElement,
     Blockly.utils.dom.cacheWidths_[key] = width;
   }
   return width;
+};
+
+/**
+ * Measure a font's metrics. The height and baseline values.
+ * @param {string} text Text to measure the font dimensions of.
+ * @param {string} fontSize The font size to use.
+ * @param {string} fontWeight The font weight to use.
+ * @param {string} fontFamily The font family to use.
+ * @return {{height: number, baseline: number}} Font measurements.
+ */
+Blockly.utils.dom.measureFontMetrics = function(text, fontSize, fontWeight,
+    fontFamily) {
+
+  var span = document.createElement('span');
+  span.style.font = fontWeight + ' ' + fontSize + ' ' + fontFamily;
+  span.textContent = text;
+
+  var block = document.createElement('div');
+  block.style.width = '1px';
+  block.style.height = '0px';
+
+  var div = document.createElement('div');
+  div.setAttribute('style', 'position: fixed; top: 0; left: 0; display: flex;');
+  div.appendChild(span);
+  div.appendChild(block);
+
+  document.body.appendChild(div);
+  try {
+    var result = {};
+    div.style.alignItems = 'baseline';
+    result.baseline = block.offsetTop - span.offsetTop;
+    div.style.alignItems = 'flex-end';
+    result.height = block.offsetTop - span.offsetTop;
+  } finally {
+    document.body.removeChild(div);
+  }
+  return result;
 };

@@ -226,7 +226,7 @@ def test_count_by():
   x_start = float(1 + 0)
   x_end = float(8 + 0)
   x_inc = float(1 - 2)
-  for x in (x_start <= x_end) and upRange(x_start, x_end, 1 - 2) or downRange(x_start, x_end, 1 - 2):
+  for x in (x_start <= x_end) and upRange(x_start, x_end, x_inc) or downRange(x_start, x_end, x_inc):
     loglist.append(x)
   assertEquals(loglist, [1, 2, 3, 4, 5, 6, 7, 8], 'count up non-trivial ints')
   loglist = []
@@ -239,7 +239,7 @@ def test_count_by():
   x_start3 = float(5 + 0.5)
   x_end3 = float(1 + 0)
   x_inc2 = float(1 + 0)
-  for x in (x_start3 <= x_end3) and upRange(x_start3, x_end3, 1 + 0) or downRange(x_start3, x_end3, 1 + 0):
+  for x in (x_start3 <= x_end3) and upRange(x_start3, x_end3, x_inc2) or downRange(x_start3, x_end3, x_inc2):
     loglist.append(x)
   assertEquals(loglist, [5.5, 4.5, 3.5, 2.5, 1.5], 'count with floats')
 
@@ -636,7 +636,7 @@ def test_get_text_complex():
   assertEquals(text.find(text_random_letter(get_Blockly())) + 1 > 0, True, 'get random complex')
   check_number_of_calls('get random complex')
   number_of_calls = 0
-  assertEquals(text.find(text_random_letter((get_Blockly() if True else None))) + 1 > 0, True, 'get random order complex')
+  assertEquals(text.find(text_random_letter(get_Blockly() if True else None)) + 1 > 0, True, 'get random order complex')
   check_number_of_calls('get random order complex')
   number_of_calls = 0
   assertEquals(get_Blockly()[2], 'o', 'get # complex')
@@ -782,6 +782,20 @@ def test_replace():
   assertEquals('aaaaa'.replace('a', ''), '', 'empty replacement 3')
   assertEquals(''.replace('a', 'chicken'), '', 'empty source')
 
+# Tests the "multiline" block.
+def test_multiline():
+  global test_name, naked, proc_x, proc_y, func_x, func_y, func_a, n, ok, log, count, varToChange, rand, item, text, number_of_calls, list2, proc_z, func_z, x, proc_w, func_c, if2, i, loglist, changing_list, list_copy, unittestResults
+  assertEquals('', '', 'no text')
+  assertEquals('Google', 'Google', 'simple')
+  assertEquals('paragraph' + '\n' +
+  'with newlines' + '\n' +
+  'yup', 'paragraph' + '\n' +
+  'with newlines' + '\n' +
+  'yup', 'no compile error with newlines')
+  assertEquals(('bark bark' + '\n' +
+  'bark bark bark' + '\n' +
+  'bark bark bark bark').count('bark'), 9, 'count with newlines')
+
 # Checks that the number of calls is one in order
 # to confirm that a function was only called once.
 def check_number_of_calls2(test_name):
@@ -871,6 +885,18 @@ def test_get_lists_simple():
   assertEquals(list2[-3], 'Kirk', 'get #-end simple')
   # The order for index for #-end is addition because this will catch errors in generators where most perform the operation ... - index.
   assertEquals(list2[-int(0 + 3)], 'Kirk', 'get #-end order simple')
+
+# Tests the "get" block with create list call.
+def test_get_lists_create_list():
+  global test_name, naked, proc_x, proc_y, func_x, func_y, func_a, n, ok, log, count, varToChange, rand, item, text, number_of_calls, list2, proc_z, func_z, x, proc_w, func_c, if2, i, loglist, changing_list, list_copy, unittestResults
+  assertEquals(['Kirk', 'Spock', 'McCoy'][0], 'Kirk', 'get first create list')
+  assertEquals(['Kirk', 'Spock', 'McCoy'][-1], 'McCoy', 'get last simple')
+  assertEquals(first_index(['Kirk', 'Spock', 'McCoy'], random.choice(['Kirk', 'Spock', 'McCoy'])) > 0, True, 'get random simple')
+  assertEquals(['Kirk', 'Spock', 'McCoy'][1], 'Spock', 'get # simple')
+  assertEquals(['Kirk', 'Spock', 'McCoy'][int((2 if True else None) - 1)], 'Spock', 'get # order simple')
+  assertEquals(['Kirk', 'Spock', 'McCoy'][-3], 'Kirk', 'get #-end simple')
+  # The order for index for #-end is addition because this will catch errors in generators where most perform the operation ... - index.
+  assertEquals(['Kirk', 'Spock', 'McCoy'][-int(0 + 3)], 'Kirk', 'get #-end order simple')
 
 # Creates a list for use with the get test.
 def get_star_wars():
@@ -1384,6 +1410,7 @@ test_trim()
 test_count_text()
 test_text_reverse()
 test_replace()
+test_multiline()
 print(unittest_report())
 unittestResults = None
 
@@ -1395,6 +1422,7 @@ test_lists_length()
 test_find_lists_simple()
 test_find_lists_complex()
 test_get_lists_simple()
+test_get_lists_create_list()
 test_get_lists_complex()
 test_getRemove()
 test_remove()

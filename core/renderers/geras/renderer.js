@@ -1,18 +1,7 @@
 /**
  * @license
  * Copyright 2019 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 /**
@@ -31,6 +20,11 @@ goog.require('Blockly.geras.HighlightConstantProvider');
 goog.require('Blockly.geras.PathObject');
 goog.require('Blockly.geras.RenderInfo');
 goog.require('Blockly.utils.object');
+
+goog.requireType('Blockly.blockRendering.ConstantProvider');
+goog.requireType('Blockly.blockRendering.RenderInfo');
+goog.requireType('Blockly.BlockSvg');
+goog.requireType('Blockly.Theme');
 
 
 /**
@@ -59,9 +53,20 @@ Blockly.utils.object.inherits(Blockly.geras.Renderer,
  * @package
  * @override
  */
-Blockly.geras.Renderer.prototype.init = function() {
-  Blockly.geras.Renderer.superClass_.init.call(this);
+Blockly.geras.Renderer.prototype.init = function(theme,
+    opt_rendererOverrides) {
+  Blockly.geras.Renderer.superClass_.init.call(this, theme,
+      opt_rendererOverrides);
   this.highlightConstants_ = this.makeHighlightConstants_();
+  this.highlightConstants_.init();
+};
+
+/**
+ * @override
+ */
+Blockly.geras.Renderer.prototype.refreshDom = function(svg, theme) {
+  Blockly.geras.Renderer.superClass_.refreshDom.call(this, svg, theme);
+  this.getHighlightConstants().init();
 };
 
 /**

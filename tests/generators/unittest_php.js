@@ -1,18 +1,7 @@
 /**
  * @license
  * Copyright 2015 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 /**
@@ -23,7 +12,7 @@
 
 Blockly.PHP['unittest_main'] = function(block) {
   // Container for unit tests.
-  var resultsVar = Blockly.PHP.variableDB_.getName('unittestResults',
+  var resultsVar = Blockly.PHP.nameDB_.getName('unittestResults',
       Blockly.Names.DEVELOPER_VARIABLE_TYPE);
   var functionName = Blockly.PHP.provideFunction_(
       'unittest_report',
@@ -73,7 +62,7 @@ Blockly.PHP['unittest_main'] = function(block) {
 };
 
 Blockly.PHP['unittest_main'].defineAssert_ = function(block) {
-  var resultsVar = Blockly.PHP.variableDB_.getName('unittestResults',
+  var resultsVar = Blockly.PHP.nameDB_.getName('unittestResults',
       Blockly.Names.DEVELOPER_VARIABLE_TYPE);
   var functionName = Blockly.PHP.provideFunction_(
       'assertEquals',
@@ -103,9 +92,9 @@ Blockly.PHP['unittest_assertequals'] = function(block) {
   var message = Blockly.PHP.valueToCode(block, 'MESSAGE',
     Blockly.PHP.ORDER_NONE) || '';
   var actual = Blockly.PHP.valueToCode(block, 'ACTUAL',
-          Blockly.PHP.ORDER_COMMA) || 'null';
+          Blockly.PHP.ORDER_NONE) || 'null';
   var expected = Blockly.PHP.valueToCode(block, 'EXPECTED',
-          Blockly.PHP.ORDER_COMMA) || 'null';
+          Blockly.PHP.ORDER_NONE) || 'null';
   return Blockly.PHP['unittest_main'].defineAssert_() +
       '(' + actual + ', ' + expected + ', ' + message + ');\n';
 };
@@ -115,7 +104,7 @@ Blockly.PHP['unittest_assertvalue'] = function(block) {
   var message = Blockly.PHP.valueToCode(block, 'MESSAGE',
     Blockly.PHP.ORDER_NONE) || '';
   var actual = Blockly.PHP.valueToCode(block, 'ACTUAL',
-          Blockly.PHP.ORDER_COMMA) || 'null';
+          Blockly.PHP.ORDER_NONE) || 'null';
   var expected = block.getFieldValue('EXPECTED');
   if (expected == 'TRUE') {
       expected = 'true';
@@ -130,7 +119,7 @@ Blockly.PHP['unittest_assertvalue'] = function(block) {
 
 Blockly.PHP['unittest_fail'] = function(block) {
   // Always assert an error.
-  var resultsVar = Blockly.PHP.variableDB_.getName('unittestResults',
+  var resultsVar = Blockly.PHP.nameDB_.getName('unittestResults',
       Blockly.Names.DEVELOPER_VARIABLE_TYPE);
   var message = Blockly.PHP.quote_(block.getFieldValue('MESSAGE'));
   var functionName = Blockly.PHP.provideFunction_(

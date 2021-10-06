@@ -1,18 +1,7 @@
 /**
  * @license
  * Copyright 2012 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 /**
@@ -28,11 +17,15 @@
 goog.provide('Blockly.Variables');
 
 goog.require('Blockly.Blocks');
+/** @suppress {extraRequire} */
+goog.require('Blockly.constants');
 goog.require('Blockly.Msg');
 goog.require('Blockly.utils');
 goog.require('Blockly.utils.xml');
 goog.require('Blockly.VariableModel');
 goog.require('Blockly.Xml');
+
+goog.requireType('Blockly.Workspace');
 
 
 /**
@@ -48,7 +41,7 @@ Blockly.Variables.NAME_TYPE = Blockly.VARIABLE_CATEGORY_NAME;
  * To get a list of all variables on a workspace, including unused variables,
  * call Workspace.getAllVariables.
  * @param {!Blockly.Workspace} ws The workspace to search for variables.
- * @return {!Array.<!Blockly.VariableModel>} Array of variable models.
+ * @return {!Array<!Blockly.VariableModel>} Array of variable models.
  */
 Blockly.Variables.allUsedVarModels = function(ws) {
   var blocks = ws.getAllBlocks(false).filter(block => !block.disabled); // TODO shakao verify filter needed
@@ -75,20 +68,6 @@ Blockly.Variables.allUsedVarModels = function(ws) {
 };
 
 /**
- * Find all user-created variables that are in use in the workspace and return
- * only their names.
- * For use by generators.
- * To get a list of all variables on a workspace, including unused variables,
- * call Workspace.getAllVariables.
- * @deprecated January 2018
- */
-Blockly.Variables.allUsedVariables = function() {
-  console.warn('Deprecated call to Blockly.Variables.allUsedVariables. ' +
-      'Use Blockly.Variables.allUsedVarModels instead.\nIf this is a major ' +
-      'issue please file a bug on GitHub.');
-};
-
-/**
  * @private
  * @type {Object<string,boolean>}
  */
@@ -102,7 +81,7 @@ Blockly.Variables.ALL_DEVELOPER_VARS_WARNINGS_BY_BLOCK_TYPE_ = {};
  * your block and return a list of variable names.
  * For use by generators.
  * @param {!Blockly.Workspace} workspace The workspace to search.
- * @return {!Array.<string>} A list of non-duplicated variable names.
+ * @return {!Array<string>} A list of non-duplicated variable names.
  */
 Blockly.Variables.allDeveloperVariables = function(workspace) {
   var blocks = workspace.getAllBlocks(false);
@@ -137,7 +116,7 @@ Blockly.Variables.allDeveloperVariables = function(workspace) {
  * Construct the elements (blocks and button) required by the flyout for the
  * variable category.
  * @param {!Blockly.Workspace} workspace The workspace containing variables.
- * @return {!Array.<!Element>} Array of XML elements.
+ * @return {!Array<!Element>} Array of XML elements.
  */
 Blockly.Variables.flyoutCategory = function(workspace) {
   var xmlList = [];
@@ -159,7 +138,7 @@ Blockly.Variables.flyoutCategory = function(workspace) {
 /**
  * Construct the blocks required by the flyout for the variable category.
  * @param {!Blockly.Workspace} workspace The workspace containing variables.
- * @return {!Array.<!Element>} Array of XML block elements.
+ * @return {!Array<!Element>} Array of XML block elements.
  */
 Blockly.Variables.flyoutCategoryBlocks = function(workspace) {
   var variableModelList = workspace.getVariablesOfType('');
@@ -290,7 +269,7 @@ Blockly.Variables.createVariableButtonHandler = function(
         function(text) {
           if (text) {
             var existing =
-                Blockly.Variables.nameUsedWithAnyType_(text, workspace);
+                Blockly.Variables.nameUsedWithAnyType(text, workspace);
             // pxt-blockly: also check function names
             var existingFunction = Blockly.Functions.getDefinition(text, workspace);
             if (existing || existingFunction) {
@@ -340,16 +319,17 @@ Blockly.Variables.createVariable =
     Blockly.Variables.createVariableButtonHandler;
 
 /**
- * Rename a variable with the given workspace, variableType, and oldName.
+ * Opens a prompt that allows the user to enter a new name for a variable.
+ * Triggers a rename if the new name is valid. Or re-prompts if there is a
+ * collision.
  * @param {!Blockly.Workspace} workspace The workspace on which to rename the
  *     variable.
- * @param {Blockly.VariableModel} variable Variable to rename.
+ * @param {!Blockly.VariableModel} variable Variable to rename.
  * @param {function(?string=)=} opt_callback A callback. It will
  *     be passed an acceptable new variable name, or null if change is to be
  *     aborted (cancel button), or undefined if an existing variable was chosen.
  */
-Blockly.Variables.renameVariable = function(workspace, variable,
-    opt_callback) {
+Blockly.Variables.renameVariable = function(workspace, variable, opt_callback) {
   // This function needs to be named so it can be called recursively.
   var promptAndCheckWithAlert = function(defaultName) {
     var promptText =
@@ -414,7 +394,7 @@ Blockly.Variables.promptName = function(promptText, defaultText, callback) {
  * @param {string} type The type to exclude from the search.
  * @param {!Blockly.Workspace} workspace The workspace to search for the
  *     variable.
- * @return {Blockly.VariableModel} The variable with the given name and a
+ * @return {?Blockly.VariableModel} The variable with the given name and a
  *     different type, or null if none was found.
  * @private
  */
@@ -435,11 +415,10 @@ Blockly.Variables.nameUsedWithOtherType_ = function(name, type, workspace) {
  * @param {string} name The name to search for.
  * @param {!Blockly.Workspace} workspace The workspace to search for the
  *     variable.
- * @return {Blockly.VariableModel} The variable with the given name,
+ * @return {?Blockly.VariableModel} The variable with the given name,
  *     or null if none was found.
- * @private
  */
-Blockly.Variables.nameUsedWithAnyType_ = function(name, workspace) {
+Blockly.Variables.nameUsedWithAnyType = function(name, workspace) {
   var allVariables = workspace.getVariableMap().getAllVariables();
 
   name = name.toLowerCase();
@@ -474,7 +453,7 @@ Blockly.Variables.generateVariableFieldXmlString = function(variableModel) {
  * Generate DOM objects representing a variable field.
  * @param {!Blockly.VariableModel} variableModel The variable model to
  *     represent.
- * @return {Element} The generated DOM.
+ * @return {?Element} The generated DOM.
  * @public
  */
 Blockly.Variables.generateVariableFieldDom = function(variableModel) {
@@ -524,7 +503,7 @@ Blockly.Variables.getOrCreateVariablePackage = function(workspace, id, opt_name,
  *     Only used if lookup by ID fails.
  * @param {string=} opt_type The type to use to look up the variable.
  *     Only used if lookup by ID fails.
- * @return {Blockly.VariableModel} The variable corresponding to the given ID
+ * @return {?Blockly.VariableModel} The variable corresponding to the given ID
  *     or name + type combination, or null if not found.
  * @public
  */
@@ -592,9 +571,9 @@ Blockly.Variables.createVariable_ = function(workspace, id, opt_name,
  * workspace after adding a new block, using the given list of variables that
  * were in the workspace before the new block was added.
  * @param {!Blockly.Workspace} workspace The workspace to inspect.
- * @param {!Array.<!Blockly.VariableModel>} originalVariables The array of
+ * @param {!Array<!Blockly.VariableModel>} originalVariables The array of
  *     variables that existed in the workspace before adding the new block.
- * @return {!Array.<!Blockly.VariableModel>} The new array of variables that
+ * @return {!Array<!Blockly.VariableModel>} The new array of variables that
  *     were freshly added to the workspace after creating the new block,
  *     or [] if no new variables were added to the workspace.
  * @package

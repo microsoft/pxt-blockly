@@ -1,18 +1,7 @@
 /**
  * @license
  * Copyright 2019 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 /**
@@ -26,15 +15,17 @@
 goog.provide('Blockly.FieldMultilineInput');
 
 goog.require('Blockly.Css');
-goog.require('Blockly.DropDownDiv');
+goog.require('Blockly.Field');
+goog.require('Blockly.fieldRegistry');
 goog.require('Blockly.FieldTextInput');
 goog.require('Blockly.utils');
 goog.require('Blockly.utils.aria');
-goog.require('Blockly.utils.Coordinate');
 goog.require('Blockly.utils.dom');
 goog.require('Blockly.utils.KeyCodes');
 goog.require('Blockly.utils.object');
+goog.require('Blockly.utils.Svg');
 goog.require('Blockly.utils.userAgent');
+goog.require('Blockly.WidgetDiv');
 
 
 /**
@@ -46,17 +37,12 @@ goog.require('Blockly.utils.userAgent');
  *     text as an argument and returns either the accepted text, a replacement
  *     text, or null to abort the change.
  * @param {Object=} opt_config A map of options used to configure the field.
- *    See the [field creation documentation]{@link https://developers.google.com/blockly/guides/create-custom-blocks/fields/built-in-fields/text-input#creation}
+ *    See the [field creation documentation]{@link https://developers.google.com/blockly/guides/create-custom-blocks/fields/built-in-fields/multiline-text-input#creation}
  *    for a list of properties this parameter supports.
  * @extends {Blockly.FieldTextInput}
  * @constructor
  */
 Blockly.FieldMultilineInput = function(opt_value, opt_validator, opt_config) {
-  // TODO: Once this field is documented the opt_config link should point to its
-  //  creation documentation, rather than the text input field's.
-  if (opt_value == null) {
-    opt_value = '';
-  }
   Blockly.FieldMultilineInput.superClass_.constructor.call(this,
       opt_value, opt_validator, opt_config);
 
@@ -66,17 +52,32 @@ Blockly.FieldMultilineInput = function(opt_value, opt_validator, opt_config) {
    * @type {SVGGElement}
    */
   this.textGroup_ = null;
+
+  /**
+   * Defines the maximum number of lines of field.
+   * If exceeded, scrolling functionality is enabled.
+   * @type {number}
+   * @protected
+   */
+  this.maxLines_ = Infinity;
+
+  /**
+   * Whether Y overflow is currently occurring.
+   * @type {boolean}
+   * @protected
+   */
+  this.isOverflowedY_ = false;
 };
 Blockly.utils.object.inherits(Blockly.FieldMultilineInput,
     Blockly.FieldTextInput);
 
-
 /**
- * The default height of a single line of text.
- * @type {number}
- * @const
+ * @override
  */
-Blockly.FieldMultilineInput.LINE_HEIGHT = 20;
+Blockly.FieldMultilineInput.prototype.configure_ = function(config) {
+  Blockly.FieldMultilineInput.superClass_.configure_.call(this, config);
+  config.maxLines && this.setMaxLines(config.maxLines);
+};
 
 /**
  * Construct a FieldMultilineInput from a JSON arg object,
@@ -99,8 +100,8 @@ Blockly.FieldMultilineInput.fromJson = function(options) {
  * @package
  */
 Blockly.FieldMultilineInput.prototype.toXml = function(fieldElement) {
-  // Replace '\n' characters with html-escaped equivalent '&#10'. This is
-  // needed so the plain-text representation of the xml produced by
+  // Replace '\n' characters with HTML-escaped equivalent '&#10'. This is
+  // needed so the plain-text representation of the XML produced by
   // `Blockly.Xml.domToText` will appear on a single line (this is a limitation
   // of the plain-text format).
   fieldElement.textContent = this.getValue().replace(/\n/g, '&#10;');
@@ -124,46 +125,63 @@ Blockly.FieldMultilineInput.prototype.fromXml = function(fieldElement) {
  */
 Blockly.FieldMultilineInput.prototype.initView = function() {
   this.createBorderRect_();
-  this.textGroup_ = /** @type {!SVGGElement} **/
-      (Blockly.utils.dom.createSvgElement('g',
-          {
-            'class': 'blocklyEditableText',
-          }, this.fieldGroup_));
+  this.textGroup_ = Blockly.utils.dom.createSvgElement(
+      Blockly.utils.Svg.G, {
+        'class': 'blocklyEditableText',
+      }, this.fieldGroup_);
 };
 
 /**
  * Get the text from this field as displayed on screen.  May differ from getText
  * due to ellipsis, and other formatting.
  * @return {string} Currently displayed text.
- * @private
+ * @protected
+ * @override
  */
 Blockly.FieldMultilineInput.prototype.getDisplayText_ = function() {
-  var value = this.value_;
-  if (!value) {
+  var textLines = this.getText();
+  if (!textLines) {
     // Prevent the field from disappearing if empty.
     return Blockly.Field.NBSP;
   }
-  var lines = value.split('\n');
-  value = '';
-  for (var i = 0; i < lines.length; i++) {
+  var lines = textLines.split('\n');
+  textLines = '';
+  var displayLinesNumber = this.isOverflowedY_ ? this.maxLines_ : lines.length;
+  for (var i = 0; i < displayLinesNumber; i++) {
     var text = lines[i];
     if (text.length > this.maxDisplayLength) {
       // Truncate displayed string and add an ellipsis ('...').
       text = text.substring(0, this.maxDisplayLength - 4) + '...';
+    } else if (this.isOverflowedY_ && i === displayLinesNumber - 1) {
+      text = text.substring(0, text.length - 3) + '...';
     }
     // Replace whitespace with non-breaking spaces so the text doesn't collapse.
     text = text.replace(/\s/g, Blockly.Field.NBSP);
 
-    value += text;
-    if (i !== lines.length - 1) {
-      value += '\n';
+    textLines += text;
+    if (i !== displayLinesNumber - 1) {
+      textLines += '\n';
     }
   }
   if (this.sourceBlock_.RTL) {
     // The SVG is LTR, force value to be RTL.
-    value += '\u200F';
+    textLines += '\u200F';
   }
-  return value;
+  return textLines;
+};
+
+/**
+ * Called by setValue if the text input is valid. Updates the value of the
+ * field, and updates the text of the field if it is not currently being
+ * edited (i.e. handled by the htmlInput_). Is being redefined here to update
+ * overflow state of the field.
+ * @param {*} newValue The value to be saved. The default validator guarantees
+ * that this is a string.
+ * @protected
+ */
+Blockly.FieldMultilineInput.prototype.doValueUpdate_ = function(newValue) {
+  Blockly.FieldMultilineInput.superClass_.doValueUpdate_.call(this, newValue);
+  this.isOverflowedY_ = this.value_.split('\n').length > this.maxLines_;
 };
 
 /**
@@ -181,14 +199,26 @@ Blockly.FieldMultilineInput.prototype.render_ = function() {
   var lines = this.getDisplayText_().split('\n');
   var y = 0;
   for (var i = 0; i < lines.length; i++) {
-    var span = Blockly.utils.dom.createSvgElement('text', {
-      'class': 'blocklyText blocklyMultilineText',
-      x: this.constants_.FIELD_BORDER_RECT_X_PADDING,
-      y: y + this.constants_.FIELD_BORDER_RECT_Y_PADDING,
-      dy: Blockly.FieldMultilineInput.LINE_HEIGHT / 2
-    }, this.textGroup_);
+    var lineHeight = this.getConstants().FIELD_TEXT_HEIGHT +
+        this.getConstants().FIELD_BORDER_RECT_Y_PADDING;
+    var span = Blockly.utils.dom.createSvgElement(
+        Blockly.utils.Svg.TEXT, {
+          'class': 'blocklyText blocklyMultilineText',
+          x: this.getConstants().FIELD_BORDER_RECT_X_PADDING,
+          y: y + this.getConstants().FIELD_BORDER_RECT_Y_PADDING,
+          dy: this.getConstants().FIELD_TEXT_BASELINE
+        }, this.textGroup_);
     span.appendChild(document.createTextNode(lines[i]));
-    y += Blockly.FieldMultilineInput.LINE_HEIGHT;
+    y += lineHeight;
+  }
+
+  if (this.isBeingEdited_) {
+    var htmlInput = /** @type {!HTMLElement} */(this.htmlInput_);
+    if (this.isOverflowedY_) {
+      Blockly.utils.dom.addClass(htmlInput, 'blocklyHtmlTextAreaInputOverflowedY');
+    } else {
+      Blockly.utils.dom.removeClass(htmlInput, 'blocklyHtmlTextAreaInputOverflowedY');
+    }
   }
 
   this.updateSize_();
@@ -229,34 +259,62 @@ Blockly.FieldMultilineInput.prototype.updateSize_ = function() {
     if (textWidth > totalWidth) {
       totalWidth = textWidth;
     }
-    totalHeight += Blockly.FieldMultilineInput.LINE_HEIGHT;
+    totalHeight += this.getConstants().FIELD_TEXT_HEIGHT +
+        (i > 0 ? this.getConstants().FIELD_BORDER_RECT_Y_PADDING : 0);
+  }
+  if (this.isBeingEdited_) {
+    // The default width is based on the longest line in the display text,
+    // but when it's being edited, width should be calculated based on the
+    // absolute longest line, even if it would be truncated after editing.
+    // Otherwise we would get wrong editor width when there are more
+    // lines than this.maxLines_.
+    var actualEditorLines = this.value_.split('\n');
+    var dummyTextElement = Blockly.utils.dom.createSvgElement(
+        Blockly.utils.Svg.TEXT,{'class': 'blocklyText blocklyMultilineText'});
+    var fontSize = this.getConstants().FIELD_TEXT_FONTSIZE;
+    var fontWeight = this.getConstants().FIELD_TEXT_FONTWEIGHT;
+    var fontFamily = this.getConstants().FIELD_TEXT_FONTFAMILY;
+
+    for (var i = 0; i < actualEditorLines.length; i++) {
+      if (actualEditorLines[i].length > this.maxDisplayLength) {
+        actualEditorLines[i] = actualEditorLines[i].substring(0, this.maxDisplayLength);
+      }
+      dummyTextElement.textContent = actualEditorLines[i];
+      var lineWidth = Blockly.utils.dom.getFastTextWidth(
+          dummyTextElement, fontSize, fontWeight, fontFamily);
+      if (lineWidth > totalWidth) {
+        totalWidth = lineWidth;
+      }
+    }
+
+    var scrollbarWidth = this.htmlInput_.offsetWidth - this.htmlInput_.clientWidth;
+    totalWidth += scrollbarWidth;
   }
   if (this.borderRect_) {
-    totalWidth += this.constants_.FIELD_BORDER_RECT_X_PADDING * 2;
+    totalHeight += this.getConstants().FIELD_BORDER_RECT_Y_PADDING * 2;
+    totalWidth += this.getConstants().FIELD_BORDER_RECT_X_PADDING * 2;
     this.borderRect_.setAttribute('width', totalWidth);
     this.borderRect_.setAttribute('height', totalHeight);
   }
   this.size_.width = totalWidth;
   this.size_.height = totalHeight;
+
+  this.positionBorderRect_();
 };
 
 /**
- * Resize the editor to fit the text.
- * @protected
+ * Show the inline free-text editor on top of the text.
+ * Overrides the default behaviour to force rerender in order to
+ * correct block size, based on editor text.
+ * @param {Event=} _opt_e Optional mouse event that triggered the field to open,
+ *     or undefined if triggered programmatically.
+ * @param {boolean=} opt_quietInput True if editor should be created without
+ *     focus.  Defaults to false.
+ * @override
  */
-Blockly.FieldMultilineInput.prototype.resizeEditor_ = function() {
-  var div = Blockly.WidgetDiv.DIV;
-  var bBox = this.getScaledBBox();
-  div.style.width = bBox.right - bBox.left + 'px';
-  div.style.height = bBox.bottom - bBox.top + 'px';
-
-  // In RTL mode block fields and LTR input fields the left edge moves,
-  // whereas the right edge is fixed.  Reposition the editor.
-  var x = this.sourceBlock_.RTL ? bBox.right - div.offsetWidth : bBox.left;
-  var xy = new Blockly.utils.Coordinate(x, bBox.top);
-
-  div.style.left = xy.x + 'px';
-  div.style.top = xy.y + 'px';
+Blockly.FieldMultilineInput.prototype.showEditor_ = function(_opt_e, opt_quietInput) {
+  Blockly.FieldMultilineInput.superClass_.showEditor_.call(this, _opt_e, opt_quietInput);
+  this.forceRerender();
 };
 
 /**
@@ -266,21 +324,24 @@ Blockly.FieldMultilineInput.prototype.resizeEditor_ = function() {
  */
 Blockly.FieldMultilineInput.prototype.widgetCreate_ = function() {
   var div = Blockly.WidgetDiv.DIV;
-  var scale = this.workspace_.scale;
+  var scale = this.workspace_.getScale();
 
-  var htmlInput = /** @type {HTMLTextAreaElement} */ (document.createElement('textarea'));
+  var htmlInput =
+    /** @type {HTMLTextAreaElement} */ (document.createElement('textarea'));
   htmlInput.className = 'blocklyHtmlInput blocklyHtmlTextAreaInput';
   htmlInput.setAttribute('spellcheck', this.spellcheck_);
-  var fontSize = (this.constants_.FIELD_TEXT_FONTSIZE * scale) + 'pt';
+  var fontSize = (this.getConstants().FIELD_TEXT_FONTSIZE * scale) + 'pt';
   div.style.fontSize = fontSize;
   htmlInput.style.fontSize = fontSize;
   var borderRadius = (Blockly.FieldTextInput.BORDERRADIUS * scale) + 'px';
   htmlInput.style.borderRadius = borderRadius;
-  var padding = this.constants_.FIELD_BORDER_RECT_X_PADDING * scale;
-  htmlInput.style.paddingLeft = padding + 'px';
-  htmlInput.style.width = 'calc(100% - ' + padding + 'px)';
-  htmlInput.style.lineHeight =
-      (Blockly.FieldMultilineInput.LINE_HEIGHT * scale) + 'px';
+  var paddingX = this.getConstants().FIELD_BORDER_RECT_X_PADDING * scale;
+  var paddingY = this.getConstants().FIELD_BORDER_RECT_Y_PADDING * scale / 2;
+  htmlInput.style.padding = paddingY + 'px ' + paddingX + 'px ' + paddingY +
+      'px ' + paddingX + 'px';
+  var lineHeight = this.getConstants().FIELD_TEXT_HEIGHT +
+      this.getConstants().FIELD_BORDER_RECT_Y_PADDING;
+  htmlInput.style.lineHeight = (lineHeight * scale) + 'px';
 
   div.appendChild(htmlInput);
 
@@ -297,6 +358,26 @@ Blockly.FieldMultilineInput.prototype.widgetCreate_ = function() {
   this.bindInputEvents_(htmlInput);
 
   return htmlInput;
+};
+
+/**
+ * Sets the maxLines config for this field.
+ * @param {number} maxLines Defines the maximum number of lines allowed,
+ *     before scrolling functionality is enabled.
+ */
+Blockly.FieldMultilineInput.prototype.setMaxLines = function(maxLines) {
+  if (typeof maxLines === 'number' && maxLines > 0 && maxLines !== this.maxLines_) {
+    this.maxLines_ = maxLines;
+    this.forceRerender();
+  }
+};
+
+/**
+ * Returns the maxLines config of this field.
+ * @return {number} The maxLines config value.
+ */
+Blockly.FieldMultilineInput.prototype.getMaxLines = function() {
+  return this.maxLines_;
 };
 
 /**
@@ -322,6 +403,9 @@ Blockly.Css.register([
     'overflow: hidden;',
     'height: 100%;',
     'text-align: left;',
+  '}',
+  '.blocklyHtmlTextAreaInputOverflowedY {',
+    'overflow-y: scroll;',
   '}'
   /* eslint-enable indent */
 ]);

@@ -1,21 +1,7 @@
 /**
  * @license
- * Visual Blocks Language
- *
- * Copyright 2016 Google Inc.
- * https://developers.google.com/blockly/
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Copyright 2016 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 /**
@@ -74,8 +60,8 @@ Blockly.Lua['controls_repeat_ext'] = function(block) {
   var branch = Blockly.Lua.statementToCode(block, 'DO');
   branch = Blockly.Lua.addLoopTrap(branch, block);
   branch = Blockly.Lua.addContinueLabel_(branch);
-  var loopVar = Blockly.Lua.variableDB_.getDistinctName(
-      'count', Blockly.Variables.NAME_TYPE);
+  var loopVar = Blockly.Lua.nameDB_.getDistinctName(
+      'count', Blockly.VARIABLE_CATEGORY_NAME);
   var code = 'for ' + loopVar + ' = 1, ' + repeats + ' do\n' +
       branch + 'end\n';
   return code;
@@ -100,8 +86,8 @@ Blockly.Lua['controls_whileUntil'] = function(block) {
 
 Blockly.Lua['controls_for'] = function(block) {
   // For loop.
-  var variable0 = Blockly.Lua.variableDB_.getName(
-      block.getField('VAR').getText(), Blockly.Variables.NAME_TYPE);
+  var variable0 = Blockly.Lua.nameDB_.getName(
+      block.getFieldValue('VAR'), Blockly.VARIABLE_CATEGORY_NAME);
   var startVar = Blockly.Lua.valueToCode(block, 'FROM',
       Blockly.Lua.ORDER_NONE) || '0';
   var endVar = Blockly.Lua.valueToCode(block, 'TO',
@@ -123,8 +109,8 @@ Blockly.Lua['controls_for'] = function(block) {
     code = '';
     // Determine loop direction at start, in case one of the bounds
     // changes during loop execution.
-    incValue = Blockly.Lua.variableDB_.getDistinctName(
-        variable0 + '_inc', Blockly.Variables.NAME_TYPE);
+    incValue = Blockly.Lua.nameDB_.getDistinctName(
+        variable0 + '_inc', Blockly.VARIABLE_CATEGORY_NAME);
     code += incValue + ' = ';
     if (Blockly.isNumber(increment)) {
       code += Math.abs(increment) + '\n';
@@ -143,8 +129,8 @@ Blockly.Lua['controls_for'] = function(block) {
 
 Blockly.Lua['controls_forEach'] = function(block) {
   // For each loop.
-  var variable0 = Blockly.Lua.variableDB_.getName(
-      block.getField('VAR').getText(), Blockly.Variables.NAME_TYPE);
+  var variable0 = Blockly.Lua.nameDB_.getName(
+      block.getFieldValue('VAR'), Blockly.VARIABLE_CATEGORY_NAME);
   var argument0 = Blockly.Lua.valueToCode(block, 'LIST',
       Blockly.Lua.ORDER_NONE) || '{}';
   var branch = Blockly.Lua.statementToCode(block, 'DO');

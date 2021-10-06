@@ -1,18 +1,7 @@
 /**
  * @license
  * Copyright 2016 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 /**
@@ -27,9 +16,13 @@
  */
 goog.provide('Blockly.Touch');
 
+/** @suppress {extraRequire} */
+goog.require('Blockly.constants');
 goog.require('Blockly.utils');
 goog.require('Blockly.utils.global');
 goog.require('Blockly.utils.string');
+
+goog.requireType('Blockly.Gesture');
 
 
 /**
@@ -182,7 +175,7 @@ Blockly.Touch.getTouchIdentifierFromEvent = function(e) {
 Blockly.Touch.checkTouchIdentifier = function(e) {
   var identifier = Blockly.Touch.getTouchIdentifierFromEvent(e);
 
-  // if (Blockly.touchIdentifier_ )is insufficient because Android touch
+  // if (Blockly.touchIdentifier_) is insufficient because Android touch
   // identifiers may be zero.
   if (Blockly.Touch.touchIdentifier_ !== undefined &&
       Blockly.Touch.touchIdentifier_ !== null) {
@@ -247,7 +240,7 @@ Blockly.Touch.isTouchEvent = function(e) {
  * point.
  * @param {!Event} e A mouse event or a touch event with one or more changed
  * touches.
- * @return {!Array.<!Event>} An array of mouse or touch events.  Each touch
+ * @return {!Array<!Event>} An array of mouse or touch events.  Each touch
  *     event will have exactly one changed touch.
  */
 Blockly.Touch.splitEventByTouches = function(e) {

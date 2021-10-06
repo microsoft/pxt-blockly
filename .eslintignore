@@ -2,8 +2,10 @@
 *_uncompressed*.js
 gulpfile.js
 /msg/*
+/dist/*
 /core/utils/global.js
 /tests/blocks/*
+/tests/themes/*
 /tests/compile/*
 /tests/jsunit/*
 /tests/workspace_svg/*
@@ -22,3 +24,4 @@ gulpfile.js
 /webpack.config.js
 /externs/*
 /closure/*
+/scripts/gulpfiles/*

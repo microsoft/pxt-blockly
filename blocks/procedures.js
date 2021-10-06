@@ -1,18 +1,7 @@
 /**
  * @license
  * Copyright 2012 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 /**
@@ -39,7 +28,8 @@ Blockly.Blocks['procedures_defnoreturn'] = {
    * @this {Blockly.Block}
    */
   init: function() {
-    var nameField = new Blockly.FieldTextInput('',
+    var initName = Blockly.Procedures.findLegalName('', this);
+    var nameField = new Blockly.FieldTextInput(initName,
         Blockly.Procedures.rename);
     nameField.setSpellcheck(false);
     this.appendDummyInput()
@@ -224,7 +214,7 @@ Blockly.Blocks['procedures_defnoreturn'] = {
     this.paramIds_ = [];
     this.argumentVarModels_ = [];
     var paramBlock = containerBlock.getInputTargetBlock('STACK');
-    while (paramBlock) {
+    while (paramBlock && !paramBlock.isInsertionMarker()) {
       var varName = paramBlock.getFieldValue('NAME');
       this.arguments_.push(varName);
       var variable = this.workspace.getVariable(varName, '');
@@ -274,7 +264,7 @@ Blockly.Blocks['procedures_defnoreturn'] = {
   },
   /**
    * Return all variables referenced by this block.
-   * @return {!Array.<string>} List of variable names.
+   * @return {!Array<string>} List of variable names.
    * @this {Blockly.Block}
    */
   getVars: function() {
@@ -282,7 +272,7 @@ Blockly.Blocks['procedures_defnoreturn'] = {
   },
   /**
    * Return all variables referenced by this block.
-   * @return {!Array.<!Blockly.VariableModel>} List of variable models.
+   * @return {!Array<!Blockly.VariableModel>} List of variable models.
    * @this {Blockly.Block}
    */
   getVarModels: function() {
@@ -416,7 +406,8 @@ Blockly.Blocks['procedures_defreturn'] = {
    * @this {Blockly.Block}
    */
   init: function() {
-    var nameField = new Blockly.FieldTextInput('',
+    var initName = Blockly.Procedures.findLegalName('', this);
+    var nameField = new Blockly.FieldTextInput(initName,
         Blockly.Procedures.rename);
     nameField.setSpellcheck(false);
     this.appendDummyInput()
@@ -542,11 +533,14 @@ Blockly.Blocks['procedures_mutatorarg'] = {
     var workspace = sourceBlock.workspace.targetWorkspace ||
         sourceBlock.workspace;
     var blocks = workspace.getAllBlocks(false);
+    var caselessName = varName.toLowerCase();
     for (var i = 0; i < blocks.length; i++) {
       if (blocks[i].id == this.getSourceBlock().id) {
         continue;
       }
-      if (blocks[i].getFieldValue('NAME') == varName) {
+      // Other blocks values may not be set yet when this is loaded.
+      var otherVar = blocks[i].getFieldValue('NAME');
+      if (otherVar && otherVar.toLowerCase() == caselessName) {
         return null;
       }
     }
@@ -600,7 +594,7 @@ Blockly.Blocks['procedures_callnoreturn'] = {
    */
   init: function() {
     this.appendDummyInput('TOPROW')
-        .appendField(this.id, 'NAME');
+        .appendField('', 'NAME');
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.setStyle('procedure_blocks');
@@ -640,8 +634,8 @@ Blockly.Blocks['procedures_callnoreturn'] = {
   },
   /**
    * Notification that the procedure's parameters have changed.
-   * @param {!Array.<string>} paramNames New param names, e.g. ['x', 'y', 'z'].
-   * @param {!Array.<string>} paramIds IDs of params (consistent for each
+   * @param {!Array<string>} paramNames New param names, e.g. ['x', 'y', 'z'].
+   * @param {!Array<string>} paramIds IDs of params (consistent for each
    *     parameter through the life of a mutator, regardless of param renaming),
    *     e.g. ['piua', 'f8b_', 'oi.o'].
    * @private
@@ -815,7 +809,15 @@ Blockly.Blocks['procedures_callnoreturn'] = {
   },
   /**
    * Return all variables referenced by this block.
-   * @return {!Array.<!Blockly.VariableModel>} List of variable models.
+   * @return {!Array<string>} List of variable names.
+   * @this {Blockly.Block}
+   */
+  getVars: function() {
+    return this.arguments_;
+  },
+  /**
+   * Return all variables referenced by this block.
+   * @return {!Array<!Blockly.VariableModel>} List of variable models.
    * @this {Blockly.Block}
    */
   getVarModels: function() {
@@ -844,7 +846,7 @@ Blockly.Blocks['procedures_callnoreturn'] = {
       var name = this.getProcedureCall();
       var def = Blockly.Procedures.getDefinition(name, this.workspace);
       if (def && (def.type != this.defType_ ||
-          JSON.stringify(def.arguments_) != JSON.stringify(this.arguments_))) {
+          JSON.stringify(def.getVars()) != JSON.stringify(this.arguments_))) {
         // The signatures don't match.
         def = null;
       }
@@ -873,8 +875,13 @@ Blockly.Blocks['procedures_callnoreturn'] = {
         block.appendChild(mutation);
         var field = Blockly.utils.xml.createElement('field');
         field.setAttribute('name', 'NAME');
-        field.appendChild(Blockly.utils.xml.createTextNode(
-            this.getProcedureCall()));
+        var callName = this.getProcedureCall();
+        if (!callName) {
+          // Rename if name is empty string.
+          callName = Blockly.Procedures.findLegalName('', this);
+          this.renameProcedure('', callName);
+        }
+        field.appendChild(Blockly.utils.xml.createTextNode(callName));
         block.appendChild(field);
         xml.appendChild(block);
         Blockly.Xml.domToWorkspace(xml, this.workspace);
@@ -898,7 +905,7 @@ Blockly.Blocks['procedures_callnoreturn'] = {
         // in most cases the old group should be ''
         var oldGroup = Blockly.Events.getGroup();
         if (oldGroup) {
-          // This should only be possible programatically and may indicate a problem
+          // This should only be possible programmatically and may indicate a problem
           // with event grouping. If you see this message please investigate. If the
           // use ends up being valid we may need to reorder events in the undo stack.
           console.log('Saw an existing group while responding to a definition change');
@@ -955,6 +962,7 @@ Blockly.Blocks['procedures_callreturn'] = {
     // Tooltip is set in domToMutation.
     this.setHelpUrl(Blockly.Msg['PROCEDURES_CALLRETURN_HELPURL']);
     this.arguments_ = [];
+    this.argumentVarModels_ = [];
     this.quarkConnections_ = {};
     this.quarkIds_ = null;
     this.previousEnabledState_ = true;
@@ -967,6 +975,7 @@ Blockly.Blocks['procedures_callreturn'] = {
   updateShape_: Blockly.Blocks['procedures_callnoreturn'].updateShape_,
   mutationToDom: Blockly.Blocks['procedures_callnoreturn'].mutationToDom,
   domToMutation: Blockly.Blocks['procedures_callnoreturn'].domToMutation,
+  getVars: Blockly.Blocks['procedures_callnoreturn'].getVars,
   getVarModels: Blockly.Blocks['procedures_callnoreturn'].getVarModels,
   onchange: Blockly.Blocks['procedures_callnoreturn'].onchange,
   customContextMenu:

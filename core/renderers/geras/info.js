@@ -1,18 +1,7 @@
 /**
  * @license
  * Copyright 2019 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 /**
@@ -25,24 +14,21 @@
 goog.provide('Blockly.geras');
 goog.provide('Blockly.geras.RenderInfo');
 
-goog.require('Blockly.blockRendering.BottomRow');
-goog.require('Blockly.blockRendering.InputRow');
-goog.require('Blockly.blockRendering.Measurable');
-goog.require('Blockly.blockRendering.NextConnection');
-goog.require('Blockly.blockRendering.OutputConnection');
-goog.require('Blockly.blockRendering.PreviousConnection');
-goog.require('Blockly.blockRendering.RenderInfo');
-goog.require('Blockly.blockRendering.BottomRow');
-goog.require('Blockly.blockRendering.InputRow');
-goog.require('Blockly.blockRendering.Measurable');
-goog.require('Blockly.blockRendering.NextConnection');
-goog.require('Blockly.blockRendering.OutputConnection');
-goog.require('Blockly.blockRendering.PreviousConnection');
-goog.require('Blockly.blockRendering.Types');
 goog.require('Blockly.blockRendering.ExternalValueInput');
+goog.require('Blockly.blockRendering.InputRow');
+goog.require('Blockly.blockRendering.InRowSpacer');
+goog.require('Blockly.blockRendering.RenderInfo');
+goog.require('Blockly.blockRendering.Types');
+/** @suppress {extraRequire} */
+goog.require('Blockly.constants');
 goog.require('Blockly.geras.InlineInput');
 goog.require('Blockly.geras.StatementInput');
+goog.require('Blockly.inputTypes');
 goog.require('Blockly.utils.object');
+
+goog.requireType('Blockly.blockRendering.Field');
+goog.requireType('Blockly.BlockSvg');
+goog.requireType('Blockly.geras.Renderer');
 
 
 /**
@@ -79,10 +65,9 @@ Blockly.geras.RenderInfo.prototype.getRenderer = function() {
 Blockly.geras.RenderInfo.prototype.populateBottomRow_ = function() {
   Blockly.geras.RenderInfo.superClass_.populateBottomRow_.call(this);
 
-  var followsStatement =
-      this.block_.inputList.length &&
-      this.block_.inputList[this.block_.inputList.length - 1]
-          .type == Blockly.NEXT_STATEMENT;
+  var followsStatement = this.block_.inputList.length &&
+      this.block_.inputList[this.block_.inputList.length - 1].type ==
+          Blockly.inputTypes.STATEMENT;
 
   // The minimum height of the bottom row is smaller in Geras than in other
   // renderers, because the dark path adds a pixel.
@@ -100,19 +85,19 @@ Blockly.geras.RenderInfo.prototype.populateBottomRow_ = function() {
  */
 Blockly.geras.RenderInfo.prototype.addInput_ = function(input, activeRow) {
   // Non-dummy inputs have visual representations onscreen.
-  if (this.isInline && input.type == Blockly.INPUT_VALUE) {
+  if (this.isInline && input.type == Blockly.inputTypes.VALUE) {
     activeRow.elements.push(
         new Blockly.geras.InlineInput(this.constants_, input));
     activeRow.hasInlineInput = true;
-  } else if (input.type == Blockly.NEXT_STATEMENT) {
+  } else if (input.type == Blockly.inputTypes.STATEMENT) {
     activeRow.elements.push(
         new Blockly.geras.StatementInput(this.constants_, input));
     activeRow.hasStatement = true;
-  } else if (input.type == Blockly.INPUT_VALUE) {
+  } else if (input.type == Blockly.inputTypes.VALUE) {
     activeRow.elements.push(
         new Blockly.blockRendering.ExternalValueInput(this.constants_, input));
     activeRow.hasExternalInput = true;
-  } else if (input.type == Blockly.DUMMY_INPUT) {
+  } else if (input.type == Blockly.inputTypes.DUMMY) {
     // Dummy inputs have no visual representation, but the information is still
     // important.
     activeRow.minHeight = Math.max(activeRow.minHeight,
@@ -172,7 +157,8 @@ Blockly.geras.RenderInfo.prototype.addElemSpacing_ = function() {
 Blockly.geras.RenderInfo.prototype.getInRowSpacing_ = function(prev, next) {
   if (!prev) {
     // Between an editable field and the beginning of the row.
-    if (next && Blockly.blockRendering.Types.isField(next) && next.isEditable) {
+    if (next && Blockly.blockRendering.Types.isField(next) &&
+        (/** @type Blockly.blockRendering.Field */ (next)).isEditable) {
       return this.constants_.MEDIUM_PADDING;
     }
     // Inline input at the beginning of the row.
@@ -190,7 +176,8 @@ Blockly.geras.RenderInfo.prototype.getInRowSpacing_ = function(prev, next) {
   if (!Blockly.blockRendering.Types.isInput(prev) && (!next ||
       Blockly.blockRendering.Types.isStatementInput(next))) {
     // Between an editable field and the end of the row.
-    if (Blockly.blockRendering.Types.isField(prev) && prev.isEditable) {
+    if (Blockly.blockRendering.Types.isField(prev) &&
+        (/** @type Blockly.blockRendering.Field */ (prev)).isEditable) {
       return this.constants_.MEDIUM_PADDING;
     }
     // Padding at the end of an icon-only row to make the block shape clearer.
@@ -231,7 +218,8 @@ Blockly.geras.RenderInfo.prototype.getInRowSpacing_ = function(prev, next) {
   if (!Blockly.blockRendering.Types.isInput(prev) &&
       next && Blockly.blockRendering.Types.isInput(next)) {
     // Between an editable field and an input.
-    if (prev.isEditable) {
+    if (Blockly.blockRendering.Types.isField(prev) &&
+        (/** @type Blockly.blockRendering.Field */ (prev)).isEditable) {
       if (Blockly.blockRendering.Types.isInlineInput(next)) {
         return this.constants_.SMALL_PADDING;
       } else if (Blockly.blockRendering.Types.isExternalInput(next)) {
@@ -257,9 +245,9 @@ Blockly.geras.RenderInfo.prototype.getInRowSpacing_ = function(prev, next) {
 
   // Spacing between an inline input and a field.
   if (Blockly.blockRendering.Types.isInlineInput(prev) &&
-      next && !Blockly.blockRendering.Types.isInput(next)) {
+      next && Blockly.blockRendering.Types.isField(next)) {
     // Editable field after inline input.
-    if (next.isEditable) {
+    if ((/** @type Blockly.blockRendering.Field */ (next)).isEditable) {
       return this.constants_.MEDIUM_PADDING;
     } else {
       // Noneditable field after inline input.
@@ -298,9 +286,10 @@ Blockly.geras.RenderInfo.prototype.getInRowSpacing_ = function(prev, next) {
   }
 
   // Spacing between two fields of the same editability.
-  if (!Blockly.blockRendering.Types.isInput(prev) &&
-      next && !Blockly.blockRendering.Types.isInput(next) &&
-      (prev.isEditable == next.isEditable)) {
+  if (Blockly.blockRendering.Types.isField(prev) &&
+      next && Blockly.blockRendering.Types.isField(next) &&
+      ((/** @type Blockly.blockRendering.Field */ (prev)).isEditable ==
+          (/** @type Blockly.blockRendering.Field */ (next)).isEditable)) {
     return this.constants_.LARGE_PADDING;
   }
 

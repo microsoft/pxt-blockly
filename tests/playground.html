@@ -68,6 +68,15 @@
 <script src="../blocks/pxt_blockly_functions.js"></script>
 <script src="blocks/test_blocks.js"></script>
 <script src="blocks/pxt_test_blocks.js"></script>
+<script src="themes/test_themes.js"></script>
+<script src="./playgrounds/screenshot.js"></script>
+<script src="../node_modules/@blockly/block-test/dist/index.js"></script>
+
+<script>
+// Custom requires for the playground.
+goog.require('Blockly.WorkspaceCommentSvg');
+goog.require('Blockly.WorkspaceCommentSvg.render');
+</script>
 <script>
 'use strict';
 var workspace = null;
@@ -80,17 +89,9 @@ function start() {
   var rtl = match && match[1] == 'rtl';
   document.forms.options.elements.dir.selectedIndex = Number(rtl);
   var toolbox = getToolboxElement();
-  var toolboxNames = [
-      'toolbox-categories',
-      'toolbox-categories-typed-variables',
-      'toolbox-simple',
-      'toolbox-test-blocks'
-  ];
-  document.forms.options.elements.toolbox.selectedIndex =
-      toolboxNames.indexOf(toolbox.id);
+  setToolboxDropdown();
   match = location.search.match(/side=([^&]+)/);
-  var side = match ? match[1] : 'start';
-  document.forms.options.elements.side.value = side;
+  var autoimport = !!location.search.match(/autoimport=([^&]+)/);
   // Create main workspace.
   workspace = Blockly.inject('blocklyDiv',
       {
@@ -104,7 +105,7 @@ function start() {
             colour: '#ccc',
             snap: true
           },
-        horizontalLayout: side == 'top' || side == 'bottom',
+        horizontalLayout: false,
         maxBlocks: Infinity,
         maxInstances: {'test_basic_limit_instances': 3},
         media: '../media/',
@@ -117,12 +118,8 @@ function start() {
           wheel: false,
         },
         toolbox: toolbox,
-        toolboxPosition: side == 'top' || side == 'start' ? 'start' : 'end',
-        toolboxOptions:
-          {
-            color: true,
-            inverted: true
-          },
+        toolboxPosition: 'start',
+        renderer: 'pxt',
         zoom:
           {
             controls: true,
@@ -134,7 +131,8 @@ function start() {
           },
         renderer: 'pxt'
       });
-  addToolboxButtonCallbacks();
+  initToolbox(workspace);
+  workspace.configureContextMenu = configureContextMenu;
   // Restore previously displayed text.
   if (sessionStorage) {
     var text = sessionStorage.getItem('textarea');
@@ -142,8 +140,10 @@ function start() {
       document.getElementById('importExport').value = text;
     }
     // Restore event logging state.
-    var state = sessionStorage.getItem('logEvents');
-    logEvents(Boolean(Number(state)));
+    var logMainEventsState = sessionStorage.getItem('logEvents');
+    logEvents(Boolean(Number(logMainEventsState)));
+    var logToolboxFlyoutEventsState = sessionStorage.getItem('logFlyoutEvents');
+    logFlyoutEvents(Boolean(Number(logToolboxFlyoutEventsState)));
   } else {
     // MSIE 11 does not support sessionStorage on file:// URLs.
     logEvents(false);
@@ -156,128 +156,6 @@ function start() {
   });
 }
 
-function addToolboxButtonCallbacks() {
-  var addAllBlocksToWorkspace = function(button) {
-    var workspace = button.getTargetWorkspace();
-    var blocks = button.workspace_.getTopBlocks();
-    for(var i = 0, block; block = blocks[i]; i++) {
-      var xml = Blockly.utils.xml.createElement('xml');
-      xml.appendChild(Blockly.Xml.blockToDom(block));
-      Blockly.Xml.appendDomToWorkspace(xml, workspace);
-    }
-  };
-  var randomizeLabelText = function(button) {
-    var blocks = button.targetWorkspace_
-        .getBlocksByType('test_fields_label_serializable');
-    var possible = 'AB';
-    for (var i = 0, block; block = blocks[i]; i++) {
-      var text = '';
-      for (var j = 0; j < 4; j++) {
-        text += possible.charAt(Math.floor(Math.random() * possible.length));
-      }
-      block.setFieldValue(text, 'LABEL');
-    }
-  };
-  var setRandomStyle = function(button) {
-    var blocks = button.workspace_.getAllBlocks();
-    var styles = Object.keys(Blockly.getTheme().getAllBlockStyles());
-    styles.splice(styles.indexOf(blocks[0].getStyleName()), 1);
-    var style = styles[Math.floor(Math.random() * styles.length)];
-    for(var i = 0, block; block = blocks[i]; i++) {
-      block.setStyle(style);
-    }
-  };
-  var toggleEnabled = function(button) {
-    var blocks = button.workspace_.getAllBlocks();
-    for(var i = 0, block; block = blocks[i]; i++) {
-      block.setEnabled(!block.isEnabled());
-    }
-  };
-  var toggleShadow = function(button) {
-    var blocks = button.workspace_.getAllBlocks();
-    for(var i = 0, block; block = blocks[i]; i++) {
-      block.setShadow(!block.isShadow());
-    }
-  };
-  var toggleCollapsed = function(button) {
-    var blocks = button.workspace_.getAllBlocks();
-    for(var i = 0, block; block = blocks[i]; i++) {
-      block.setCollapsed(!block.isCollapsed());
-    }
-  };
-  var setInput = function(button) {
-    Blockly.prompt('Input text to set.', 'ab', function(input) {
-      var blocks = button.getTargetWorkspace().getAllBlocks();
-      for(var i = 0, block; block = blocks[i]; i++) {
-        if (block.getField('INPUT')) {
-          block.setFieldValue(input, 'INPUT');
-        }
-      }
-    })
-  };
-  var changeImage = function(button) {
-    var blocks = button.workspace_.getBlocksByType('test_fields_image');
-    var possible = 'abcdefghijklm';
-    var image = possible.charAt(Math.floor(Math.random() * possible.length));
-    var src = 'https://blockly-demo.appspot.com/static/tests/media/'
-      + image + '.png';
-    for (var i = 0, block; block = blocks[i]; i++) {
-      var imageField = block.getField('IMAGE');
-      imageField.setValue(src);
-      imageField.setText(image);
-    }
-  };
-  var addVariables = function(button) {
-    workspace.createVariable('1a', '', '1A');
-    workspace.createVariable('1b', '', '1B');
-    workspace.createVariable('1c', '', '1C');
-    workspace.createVariable('2a', '', '2A');
-    workspace.createVariable('2b', '', '2B');
-    workspace.createVariable('2c', '', '2C');
-  };
-
-  workspace.registerButtonCallback(
-      'addVariables', addVariables);
-  workspace.registerButtonCallback(
-      'changeImage', changeImage);
-  workspace.registerButtonCallback(
-      'addAllBlocksToWorkspace', addAllBlocksToWorkspace);
-  workspace.registerButtonCallback(
-      'setInput', setInput);
-  workspace.registerButtonCallback(
-      'setRandomStyle', setRandomStyle);
-  workspace.registerButtonCallback(
-      'toggleEnabled', toggleEnabled);
-  workspace.registerButtonCallback(
-      'toggleShadow', toggleShadow);
-  workspace.registerButtonCallback(
-    'toggleCollapsed', toggleCollapsed);
-  workspace.registerButtonCallback(
-      'randomizeLabelText', randomizeLabelText);
-  workspace.registerButtonCallback(
-      'addDynamicOption', Blockly.TestBlocks.addDynamicDropdownOption);
-  workspace.registerButtonCallback(
-      'removeDynamicOption', Blockly.TestBlocks.removeDynamicDropdownOption);
-  workspace.registerButtonCallback(
-      'insertConnectionRows', Blockly.TestBlocks.insertConnectionRows);
-  workspace.registerButtonCallback(
-      'insertConnectionStacks', Blockly.TestBlocks.insertConnectionStacks);
-  workspace.registerButtonCallback(
-      'insertConnectionStatements',
-          Blockly.TestBlocks.insertConnectionStatements);
-}
-
-function changeTheme() {
-  var theme = document.getElementById('themeChanger');
-  if (theme.value === "modern") {
-    Blockly.setTheme(Blockly.Themes.Modern);
-  } else if (theme.value === "high_contrast") {
-    Blockly.setTheme(Blockly.Themes.HighContrast);
-  } else {
-    Blockly.setTheme(Blockly.Themes.Classic);
-  }
-}
-
 function setBackgroundColour() {
   // Set background colour to differentiate server vs local copy.
   if (location.protocol == 'file:') {
@@ -286,14 +164,46 @@ function setBackgroundColour() {
   }
 }
 
-function getToolboxElement() {
+function getToolboxSuffix() {
   var match = location.search.match(/toolbox=([^&]+)/);
   // Default to the basic toolbox with categories and untyped variables,
   // but override that if the toolbox type is set in the URL.
-  var toolboxSuffix = (match ? match[1] : 'categories');
+  return (match ? match[1] : 'categories');
+}
+
+function getToolboxElement() {
+  var toolboxSuffix = getToolboxSuffix();
+  if (toolboxSuffix == 'test-blocks') {
+    if (typeof window.toolboxTestBlocks !== 'undefined') {
+      return toolboxTestBlocks;
+    } else {
+      alert('You need to run \'npm install\' in order to use the test blocks.');
+      toolboxSuffix = 'categories';
+    }
+  }
   // The three possible values are: "simple", "categories",
   // "categories-typed-variables".
   return document.getElementById('toolbox-' + toolboxSuffix);
+}
+
+function setToolboxDropdown() {
+  var toolboxNames = [
+      'toolbox-categories',
+      'toolbox-categories-typed-variables',
+      'toolbox-simple',
+      'toolbox-test-blocks'
+  ];
+  var toolboxSuffix = getToolboxSuffix();
+  document.forms.options.elements.toolbox.selectedIndex =
+      toolboxNames.indexOf('toolbox-' + toolboxSuffix);
+}
+
+function initToolbox(workspace) {
+  var toolboxSuffix = getToolboxSuffix();
+  if (toolboxSuffix == 'test-blocks' &&
+      typeof window.toolboxTestBlocksInit !== 'undefined') {
+    toolboxTestBlocksInit(workspace);
+  }
 }
 
 function toXml() {
@@ -347,35 +257,32 @@ function logEvents(state) {
   }
 }
 
-function logger(e) {
-  console.log(e);
-}
-
-function centerOnBlock() {
-  if (Blockly.selected) {
-    workspace.centerOnBlock(Blockly.selected.id, true);
+function logFlyoutEvents(state) {
+  var checkbox = document.getElementById('logFlyoutCheck');
+  checkbox.checked = state;
+  if (sessionStorage) {
+    sessionStorage.setItem('logFlyoutEvents', Number(state));
+  }
+  var flyoutWorkspace = workspace.getFlyout().getWorkspace();
+  if (state) {
+    flyoutWorkspace.addChangeListener(logger);
+  } else {
+    flyoutWorkspace.removeChangeListener(logger);
   }
 }
 
-function highlightBlock() {
-  if (Blockly.selected) {
-    workspace.highlightBlock(Blockly.selected.id, true);
-  }
-}
-
-function unhighlightBlock() {
-  if (Blockly.selected) {
-    workspace.highlightBlock(Blockly.selected.id, false);
-  }
-}
-
-function highlightBlockWarning() {
-  if (Blockly.selected) {
-    var block = workspace.getBlockById(Blockly.selected.id);
-    if (block) {
-      block.setHighlightWarning(true);
+function configureContextMenu(menuOptions, e) {
+  var screenshotOption = {
+    text: 'Download Screenshot',
+    enabled: workspace.getTopBlocks().length,
+    callback: function() {
+      Blockly.downloadScreenshot(workspace);
     }
-  }
+  };
+  menuOptions.push(screenshotOption);
+
+  // Adds a default-sized workspace comment to the workspace.
+  menuOptions.push(Blockly.ContextMenu.workspaceCommentOption(workspace, e));
 }
 
 function unhighlightBlockWarning() {
@@ -503,6 +410,13 @@ line.blocklyFlyoutLine {
   fill: white;
 }
 
+  .blockRenderDebug {
+    display: none;
+  }
+
+  .zelos-renderer .blocklyFlyoutButton .blocklyText {
+    font-size: 1.5rem;
+  }
 </style>
 </head>
 <body onload="start()">
@@ -512,7 +426,8 @@ line.blocklyFlyoutLine {
   <h1>PXT-Blockly Playground</h1>
 
   <p><a href="javascript:void(workspace.setVisible(true))">Show</a>
-   - <a href="javascript:void(workspace.setVisible(false))">Hide</a></p>
+   - <a href="javascript:void(workspace.setVisible(false))">Hide</a>
+   - <a href="playgrounds/advanced_playground.html">Advanced</a></p>
 
   <form id="options">
     <select name="dir" onchange="document.forms.options.submit()">
@@ -525,18 +440,7 @@ line.blocklyFlyoutLine {
       <option value="simple">Simple</option>
       <option value="test-blocks">Test Blocks</option>
     </select>
-    <select name="side" onchange="document.forms.options.submit()">
-      <option value="start">Start</option>
-      <option value="end">End</option>
-      <option value="top">Top</option>
-      <option value="bottom">Bottom</option>
-    </select>
   </form>
-  <select id="themeChanger" name="theme" onchange="changeTheme()">
-    <option value="classic">Classic</option>
-    <option value="modern">Modern</option>
-    <option value="high_contrast">High Contrast</option>
-  </select>
   <p>
     <input type="button" value="Export to XML" onclick="toXml()">
     &nbsp;
@@ -579,6 +483,16 @@ line.blocklyFlyoutLine {
     <input type="button" value="Set warning on last clicked block" onclick="highlightBlockWarning()" />
     <input type="button" value="Remove warning from last clicked block" onclick="unhighlightBlockWarning()" />
   </p>
+  <ul class="playgroundToggleOptions">
+    <li>
+      <label for="logCheck">Log main workspace events:</label>
+      <input type="checkbox" onclick="logEvents(this.checked)" id="logCheck">
+    </li>
+    <li>
+    <label for="logFlyoutCheck">Log flyout events:</label>
+    <input type="checkbox" onclick="logFlyoutEvents(this.checked)" id="logFlyoutCheck">
+  </li>
+  </ul>
 
   <p>
     <input type="button" value="Undo" onclick="workspace.undo()" />

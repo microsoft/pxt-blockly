@@ -1,18 +1,7 @@
 /**
  * @license
  * Copyright 2016 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 /**
@@ -28,7 +17,7 @@ goog.require('Blockly.Lua');
 
 Blockly.Lua['lists_create_empty'] = function(block) {
   // Create an empty list.
-  return ['{}', Blockly.Lua.ORDER_ATOMIC];
+  return ['{}', Blockly.Lua.ORDER_HIGH];
 };
 
 Blockly.Lua['lists_create_with'] = function(block) {
@@ -39,7 +28,7 @@ Blockly.Lua['lists_create_with'] = function(block) {
         Blockly.Lua.ORDER_NONE) || 'None';
   }
   var code = '{' + elements.join(', ') + '}';
-  return [code, Blockly.Lua.ORDER_ATOMIC];
+  return [code, Blockly.Lua.ORDER_HIGH];
 };
 
 Blockly.Lua['lists_repeat'] = function(block) {
@@ -137,7 +126,7 @@ Blockly.Lua['lists_getIndex'] = function(block) {
   var mode = block.getFieldValue('MODE') || 'GET';
   var where = block.getFieldValue('WHERE') || 'FROM_START';
   var list = Blockly.Lua.valueToCode(block, 'VALUE', Blockly.Lua.ORDER_HIGH) ||
-      '{}';
+      '({})';
   var getIndex_ = Blockly.Lua.lists.getIndex_;
 
   // If `list` would be evaluated more than once (which is the case for LAST,
@@ -150,7 +139,7 @@ Blockly.Lua['lists_getIndex'] = function(block) {
       var atOrder = (where == 'FROM_END') ? Blockly.Lua.ORDER_ADDITIVE :
           Blockly.Lua.ORDER_NONE;
       var at = Blockly.Lua.valueToCode(block, 'AT', atOrder) || '1';
-      var listVar = Blockly.Lua.variableDB_.getDistinctName(
+      var listVar = Blockly.Lua.nameDB_.getDistinctName(
           'tmp_list', Blockly.VARIABLE_CATEGORY_NAME);
       at = getIndex_(listVar, where, at);
       var code = listVar + ' = ' + list + '\n' +
@@ -229,7 +218,7 @@ Blockly.Lua['lists_setIndex'] = function(block) {
       !list.match(/^\w+$/)) {
     // `list` is an expression, so we may not evaluate it more than once.
     // We can use multiple statements.
-    var listVar = Blockly.Lua.variableDB_.getDistinctName(
+    var listVar = Blockly.Lua.nameDB_.getDistinctName(
         'tmp_list', Blockly.VARIABLE_CATEGORY_NAME);
     code = listVar + ' = ' + list + '\n';
     list = listVar;

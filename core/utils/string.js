@@ -1,18 +1,7 @@
 /**
  * @license
  * Copyright 2019 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 /**
@@ -43,7 +32,7 @@ Blockly.utils.string.startsWith = function(str, prefix) {
 
 /**
  * Given an array of strings, return the length of the shortest one.
- * @param {!Array.<string>} array Array of strings.
+ * @param {!Array<string>} array Array of strings.
  * @return {number} Length of shortest string.
  */
 Blockly.utils.string.shortestStringLength = function(array) {
@@ -58,7 +47,7 @@ Blockly.utils.string.shortestStringLength = function(array) {
 /**
  * Given an array of strings, return the length of the common prefix.
  * Words may not be split.  Any space after a word is included in the length.
- * @param {!Array.<string>} array Array of strings.
+ * @param {!Array<string>} array Array of strings.
  * @param {number=} opt_shortest Length of shortest string.
  * @return {number} Length of common prefix.
  */
@@ -93,7 +82,7 @@ Blockly.utils.string.commonWordPrefix = function(array, opt_shortest) {
 /**
  * Given an array of strings, return the length of the common suffix.
  * Words may not be split.  Any space after a word is included in the length.
- * @param {!Array.<string>} array Array of strings.
+ * @param {!Array<string>} array Array of strings.
  * @param {number=} opt_shortest Length of shortest string.
  * @return {number} Length of common suffix.
  */
@@ -191,8 +180,8 @@ Blockly.utils.string.wrapLine_ = function(text, limit) {
 
 /**
  * Compute a score for how good the wrapping is.
- * @param {!Array.<string>} words Array of each word.
- * @param {!Array.<boolean>} wordBreaks Array of line breaks.
+ * @param {!Array<string>} words Array of each word.
+ * @param {!Array<boolean>} wordBreaks Array of line breaks.
  * @param {number} limit Width to wrap each line.
  * @return {number} Larger the better.
  * @private
@@ -243,10 +232,10 @@ Blockly.utils.string.wrapScore_ = function(words, wordBreaks, limit) {
 /**
  * Mutate the array of line break locations until an optimal solution is found.
  * No line breaks are added or deleted, they are simply moved around.
- * @param {!Array.<string>} words Array of each word.
- * @param {!Array.<boolean>} wordBreaks Array of line breaks.
+ * @param {!Array<string>} words Array of each word.
+ * @param {!Array<boolean>} wordBreaks Array of line breaks.
  * @param {number} limit Width to wrap each line.
- * @return {!Array.<boolean>} New array of optimal line breaks.
+ * @return {!Array<boolean>} New array of optimal line breaks.
  * @private
  */
 Blockly.utils.string.wrapMutate_ = function(words, wordBreaks, limit) {
@@ -277,8 +266,8 @@ Blockly.utils.string.wrapMutate_ = function(words, wordBreaks, limit) {
 
 /**
  * Reassemble the array of words into text, with the specified line breaks.
- * @param {!Array.<string>} words Array of each word.
- * @param {!Array.<boolean>} wordBreaks Array of line breaks.
+ * @param {!Array<string>} words Array of each word.
+ * @param {!Array<boolean>} wordBreaks Array of line breaks.
  * @return {string} Plain text.
  * @private
  */

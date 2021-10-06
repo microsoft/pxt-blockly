@@ -1,18 +1,7 @@
 /**
  * @license
  * Copyright 2016 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 /**
@@ -81,7 +70,8 @@ Blockly.FieldNumber = function(opt_value, opt_min, opt_max, opt_precision,
   this.decimalPlaces_ = null;
 
   Blockly.FieldNumber.superClass_.constructor.call(
-      this, opt_value || 0, opt_validator, numRestrictor, opt_config);
+      this, opt_value, opt_validator, opt_config);
+      // TODO shakao check if need numRestriction, if opt_value needs default
 
   if (!opt_config) {  // Only do one kind of configuration or the other.
     this.setConstraints(opt_min, opt_max, opt_precision);
@@ -90,6 +80,13 @@ Blockly.FieldNumber = function(opt_value, opt_min, opt_max, opt_precision,
   this.addArgType('number');
 };
 Blockly.utils.object.inherits(Blockly.FieldNumber, Blockly.FieldTextInput);
+
+/**
+ * The default value for this field.
+ * @type {*}
+ * @protected
+ */
+Blockly.FieldNumber.prototype.DEFAULT_VALUE = 0;
 
 /**
  * Construct a FieldNumber from a JSON arg object.
@@ -175,7 +172,8 @@ Blockly.FieldNumber.prototype.getNumRestrictor = function(opt_min, opt_max,
 /**
  * Configure the field based on the given map of options.
  * @param {!Object} config A map of options to configure the field based on.
- * @private
+ * @protected
+ * @override
  */
 Blockly.FieldNumber.prototype.configure_ = function(config) {
   Blockly.FieldNumber.superClass_.configure_.call(this, config);
@@ -298,17 +296,14 @@ Blockly.FieldNumber.prototype.setPrecision = function(precision) {
  * @private
  */
 Blockly.FieldNumber.prototype.setPrecisionInternal_ = function(precision) {
-  if (precision == null) {
-    // Number(precision) would also be 0, but set explicitly to be clear.
-    this.precision_ = 0;
-  } else {
-    precision = Number(precision);
-    if (!isNaN(precision)) {
-      this.precision_ = precision;
-    }
+  this.precision_ = Number(precision) || 0;
+  var precisionString = String(this.precision_);
+  if (precisionString.indexOf('e') != -1) {
+    // String() is fast.  But it turns .0000001 into '1e-7'.
+    // Use the much slower toLocaleString to access all the digits.
+    precisionString =
+        this.precision_.toLocaleString('en-US', {maximumFractionDigits: 20});
   }
-
-  var precisionString = this.precision_.toString();
   var decimalIndex = precisionString.indexOf('.');
   if (decimalIndex == -1) {
     // If the precision is 0 (float) allow any number of decimals,

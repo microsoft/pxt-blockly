@@ -7,7 +7,7 @@ The fork is maintained by the Microsoft MakeCode team, and is used to power the 
 Major additions and changes in this fork:
 * [scratch-blocks](https://github.com/llk/scratch-blocks) rendering of the blocks [block_render_svg.js](https://github.com/Microsoft/pxt-blockly/blob/develop/core/block_render_svg.js)
 * Using insertion markers instead of dragged connections [insertion_marker_manager.js](https://github.com/Microsoft/pxt-blockly/blob/develop/core/insertion_marker_manager.js)
-* Inverted and coloured toolbox modes [toolbox.js](https://github.com/Microsoft/pxt-blockly/blob/develop/core/toolbox.js#L428) 
+* Inverted and coloured toolbox modes [toolbox.js](https://github.com/Microsoft/pxt-blockly/blob/develop/core/toolbox.js#L428)
 * Supports disabled categories [toolbox.js](https://github.com/Microsoft/pxt-blockly/blob/develop/core/toolbox.js#L360)
 * Supports icons in the toolbox
 * Adds a number slider field [field_slider.js](https://github.com/Microsoft/pxt-blockly/blob/develop/core/field_slider.js)

@@ -807,7 +807,7 @@ function test_substring_complex() {
   assertEquals(subsequenceFromEndFromEnd(get_numbers(), 2, 1), '78', 'substring #-end complex');
   check_number_of_calls('substring #-end complex');
   number_of_calls = 0;
-  assertEquals(subsequenceFromEndFromEnd((true ? get_numbers() : null), ((0 + 3) - 1), ((0 + 2) - 1)), '78', 'substring #-end order order');
+  assertEquals(subsequenceFromEndFromEnd(true ? get_numbers() : null, ((0 + 3) - 1), ((0 + 2) - 1)), '78', 'substring #-end order order');
   check_number_of_calls('substring #-end order order');
   number_of_calls = 0;
   assertEquals(get_numbers(), text, 'substring first-last');
@@ -916,6 +916,20 @@ function test_replace() {
   assertEquals(textReplace('', 'a', 'chicken'), '', 'empty source');
 }
 
+// Tests the "multiline" block.
+function test_multiline() {
+  assertEquals('', '', 'no text');
+  assertEquals('Google', 'Google', 'simple');
+  assertEquals('paragraph' + '\n' +
+  'with newlines' + '\n' +
+  'yup', 'paragraph' + '\n' +
+  'with newlines' + '\n' +
+  'yup', 'no compile error with newlines');
+  assertEquals(textCount('bark bark' + '\n' +
+  'bark bark bark' + '\n' +
+  'bark bark bark bark', 'bark'), 9, 'count with newlines');
+}
+
 // Checks that the number of calls is one in order
 // to confirm that a function was only called once.
 function check_number_of_calls2(test_name) {
@@ -1016,6 +1030,18 @@ function test_get_lists_simple() {
   assertEquals(list.slice(-3)[0], 'Kirk', 'get #-end simple');
   // The order for index for #-end is addition because this will catch errors in generators where most perform the operation ... - index.
   assertEquals(list.slice((-(0 + 3)))[0], 'Kirk', 'get #-end order simple');
+}
+
+// Tests the "get" block with create list call.
+function test_get_lists_create_list() {
+  assertEquals(['Kirk', 'Spock', 'McCoy'][0], 'Kirk', 'get first create list');
+  assertEquals(['Kirk', 'Spock', 'McCoy'].slice(-1)[0], 'McCoy', 'get last simple');
+  assertEquals(['Kirk', 'Spock', 'McCoy'].indexOf(listsGetRandomItem(['Kirk', 'Spock', 'McCoy'], false)) + 1 > 0, true, 'get random simple');
+  assertEquals(['Kirk', 'Spock', 'McCoy'][1], 'Spock', 'get # simple');
+  assertEquals(['Kirk', 'Spock', 'McCoy'][((true ? 2 : null) - 1)], 'Spock', 'get # order simple');
+  assertEquals(['Kirk', 'Spock', 'McCoy'].slice(-3)[0], 'Kirk', 'get #-end simple');
+  // The order for index for #-end is addition because this will catch errors in generators where most perform the operation ... - index.
+  assertEquals(['Kirk', 'Spock', 'McCoy'].slice((-(0 + 3)))[0], 'Kirk', 'get #-end order simple');
 }
 
 // Creates a list for use with the get test.
@@ -1546,6 +1572,7 @@ test_trim();
 test_count_text();
 test_text_reverse();
 test_replace();
+test_multiline();
 console.log(unittest_report());
 unittestResults = null;
 
@@ -1557,6 +1584,7 @@ test_lists_length();
 test_find_lists_simple();
 test_find_lists_complex();
 test_get_lists_simple();
+test_get_lists_create_list();
 test_get_lists_complex();
 test_getRemove();
 test_remove();

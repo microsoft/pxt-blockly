@@ -128,5 +128,7 @@
 	"PROCEDURES_DEFRETURN_RETURN": "retorn",
 	"PROCEDURES_MUTATORCONTAINER_TITLE": "entradas",
 	"PROCEDURES_MUTATORARG_TITLE": "nom de l’entrada :",
-	"PROCEDURES_CREATE_DO": "Crear '%1'"
+	"PROCEDURES_CREATE_DO": "Crear '%1'",
+	"DIALOG_OK": "D'acòrdi",
+	"DIALOG_CANCEL": "Anullar"
 }

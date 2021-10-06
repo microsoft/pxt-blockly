@@ -1,18 +1,7 @@
 /**
  * @license
  * Copyright 2019 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 /**
@@ -23,25 +12,33 @@
 
 goog.provide('Blockly.blockRendering.Debug');
 
-goog.require('Blockly.blockRendering.BottomRow');
-goog.require('Blockly.blockRendering.InputRow');
 goog.require('Blockly.blockRendering.Measurable');
 goog.require('Blockly.blockRendering.RenderInfo');
 goog.require('Blockly.blockRendering.Row');
-goog.require('Blockly.blockRendering.SpacerRow');
-goog.require('Blockly.blockRendering.TopRow');
 goog.require('Blockly.blockRendering.Types');
+goog.require('Blockly.connectionTypes');
+/** @suppress {extraRequire} */
+goog.require('Blockly.constants');
+goog.require('Blockly.utils.dom');
+goog.require('Blockly.utils.Svg');
+
+goog.requireType('Blockly.blockRendering.ConstantProvider');
+goog.requireType('Blockly.blockRendering.InRowSpacer');
+goog.requireType('Blockly.BlockSvg');
+goog.requireType('Blockly.RenderedConnection');
 
 
 /**
  * An object that renders rectangles and dots for debugging rendering code.
+ * @param {!Blockly.blockRendering.ConstantProvider} constants The renderer's
+ *     constants.
  * @package
  * @constructor
  */
-Blockly.blockRendering.Debug = function() {
+Blockly.blockRendering.Debug = function(constants) {
   /**
    * An array of SVG elements that have been created by this object.
-   * @type {Array.<!SVGElement>}
+   * @type {Array<!SVGElement>}
    * @private
    */
   this.debugElements_ = [];
@@ -53,12 +50,19 @@ Blockly.blockRendering.Debug = function() {
    * @private
    */
   this.svgRoot_ = null;
+
+  /**
+   * The renderer's constant provider.
+   * @type {!Blockly.blockRendering.ConstantProvider}
+   * @private
+   */
+  this.constants_ = constants;
 };
 
 /**
  * Configuration object containing booleans to enable and disable debug
  * rendering of specific rendering components.
- * @type {!Object.<string, boolean>}
+ * @type {!Object<string, boolean>}
  */
 Blockly.blockRendering.Debug.config = {
   rowSpacers: true,
@@ -67,7 +71,8 @@ Blockly.blockRendering.Debug.config = {
   elems: true,
   connections: true,
   blockBounds: true,
-  connectedBlockBounds: true
+  connectedBlockBounds: true,
+  render: true
 };
 
 /**
@@ -100,7 +105,8 @@ Blockly.blockRendering.Debug.prototype.drawSpacerRow = function(row, cursorY, is
     cursorY -= height;
   }
 
-  this.debugElements_.push(Blockly.utils.dom.createSvgElement('rect',
+  this.debugElements_.push(Blockly.utils.dom.createSvgElement(
+      Blockly.utils.Svg.RECT,
       {
         'class': 'rowSpacerRect blockRenderDebug',
         'x': isRtl ? -(row.xPos + row.width) : row.xPos,
@@ -134,7 +140,8 @@ Blockly.blockRendering.Debug.prototype.drawSpacerElem = function(elem, rowHeight
     xPos = -(xPos + width);
   }
   var yPos = elem.centerline - elem.height / 2;
-  this.debugElements_.push(Blockly.utils.dom.createSvgElement('rect',
+  this.debugElements_.push(Blockly.utils.dom.createSvgElement(
+      Blockly.utils.Svg.RECT,
       {
         'class': 'elemSpacerRect blockRenderDebug',
         'x': xPos,
@@ -162,7 +169,8 @@ Blockly.blockRendering.Debug.prototype.drawRenderedElem = function(elem, isRtl) 
       xPos = -(xPos + elem.width);
     }
     var yPos = elem.centerline - elem.height / 2;
-    this.debugElements_.push(Blockly.utils.dom.createSvgElement('rect',
+    this.debugElements_.push(Blockly.utils.dom.createSvgElement(
+        Blockly.utils.Svg.RECT,
         {
           'class': 'rowRenderingRect blockRenderDebug',
           'x': xPos,
@@ -174,6 +182,24 @@ Blockly.blockRendering.Debug.prototype.drawRenderedElem = function(elem, isRtl) 
           'stroke-width': '1px'
         },
         this.svgRoot_));
+
+    if (Blockly.blockRendering.Types.isField(elem) &&
+        elem.field instanceof Blockly.FieldLabel) {
+      var baseline = this.constants_.FIELD_TEXT_BASELINE;
+      this.debugElements_.push(Blockly.utils.dom.createSvgElement(
+          Blockly.utils.Svg.RECT,
+          {
+            'class': 'rowRenderingRect blockRenderDebug',
+            'x': xPos,
+            'y': yPos + baseline,
+            'width': elem.width,
+            'height': '0.1px',
+            'stroke': 'red',
+            'fill': 'none',
+            'stroke-width': '0.5px'
+          },
+          this.svgRoot_));
+    }
   }
 
 
@@ -200,24 +226,25 @@ Blockly.blockRendering.Debug.prototype.drawConnection = function(conn) {
   var colour;
   var size;
   var fill;
-  if (conn.type == Blockly.INPUT_VALUE) {
+  if (conn.type == Blockly.connectionTypes.INPUT_VALUE) {
     size = 4;
     colour = 'magenta';
     fill = 'none';
-  } else if (conn.type == Blockly.OUTPUT_VALUE) {
+  } else if (conn.type == Blockly.connectionTypes.OUTPUT_VALUE) {
     size = 2;
     colour = 'magenta';
     fill = colour;
-  } else if (conn.type == Blockly.NEXT_STATEMENT) {
+  } else if (conn.type == Blockly.connectionTypes.NEXT_STATEMENT) {
     size = 4;
     colour = 'goldenrod';
     fill = 'none';
-  } else if (conn.type == Blockly.PREVIOUS_STATEMENT) {
+  } else if (conn.type == Blockly.connectionTypes.PREVIOUS_STATEMENT) {
     size = 2;
     colour = 'goldenrod';
     fill = colour;
   }
-  this.debugElements_.push(Blockly.utils.dom.createSvgElement('circle',
+  this.debugElements_.push(Blockly.utils.dom.createSvgElement(
+      Blockly.utils.Svg.CIRCLE,
       {
         'class': 'blockRenderDebug',
         'cx': conn.offsetInBlock_.x,
@@ -240,7 +267,8 @@ Blockly.blockRendering.Debug.prototype.drawRenderedRow = function(row, cursorY, 
   if (!Blockly.blockRendering.Debug.config.rows) {
     return;
   }
-  this.debugElements_.push(Blockly.utils.dom.createSvgElement('rect',
+  this.debugElements_.push(Blockly.utils.dom.createSvgElement(
+      Blockly.utils.Svg.RECT,
       {
         'class': 'elemRenderingRect blockRenderDebug',
         'x': isRtl ? -(row.xPos + row.width) : row.xPos,
@@ -258,7 +286,8 @@ Blockly.blockRendering.Debug.prototype.drawRenderedRow = function(row, cursorY, 
   }
 
   if (Blockly.blockRendering.Debug.config.connectedBlockBounds) {
-    this.debugElements_.push(Blockly.utils.dom.createSvgElement('rect',
+    this.debugElements_.push(Blockly.utils.dom.createSvgElement(
+        Blockly.utils.Svg.RECT,
         {
           'class': 'connectedBlockWidth blockRenderDebug',
           'x': isRtl ? -(row.xPos + row.widthWithConnectedBlocks) : row.xPos,
@@ -312,7 +341,8 @@ Blockly.blockRendering.Debug.prototype.drawBoundingBox = function(info) {
   // Bounding box without children.
   var xPos = info.RTL ? -info.width : 0;
   var yPos = 0;
-  this.debugElements_.push(Blockly.utils.dom.createSvgElement('rect',
+  this.debugElements_.push(Blockly.utils.dom.createSvgElement(
+      Blockly.utils.Svg.RECT,
       {
         'class': 'blockBoundingBox blockRenderDebug',
         'x': xPos,
@@ -329,7 +359,8 @@ Blockly.blockRendering.Debug.prototype.drawBoundingBox = function(info) {
   if (Blockly.blockRendering.Debug.config.connectedBlockBounds) {
     // Bounding box with children.
     xPos = info.RTL ? -info.widthWithChildren : 0;
-    this.debugElements_.push(Blockly.utils.dom.createSvgElement('rect',
+    this.debugElements_.push(Blockly.utils.dom.createSvgElement(
+        Blockly.utils.Svg.RECT,
         {
           'class': 'blockRenderDebug',
           'x': xPos,
@@ -382,4 +413,23 @@ Blockly.blockRendering.Debug.prototype.drawDebug = function(block, info) {
   }
 
   this.drawBoundingBox(info);
+
+  this.drawRender(block.pathObject.svgPath);
+};
+
+
+/**
+ * Show a debug filter to highlight that a block has been rendered.
+ * @param {!SVGElement} svgPath The block's SVG path.
+ * @package
+ */
+Blockly.blockRendering.Debug.prototype.drawRender = function(svgPath) {
+  if (!Blockly.blockRendering.Debug.config.render) {
+    return;
+  }
+  svgPath.setAttribute('filter',
+      'url(#' + this.constants_.debugFilterId + ')');
+  setTimeout(function() {
+    svgPath.setAttribute('filter', '');
+  }, 100);
 };

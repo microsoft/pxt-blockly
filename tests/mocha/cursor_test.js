@@ -1,22 +1,12 @@
 /**
  * @license
  * Copyright 2019 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 suite('Cursor', function() {
   setup(function() {
+    sharedTestSetup.call(this);
     Blockly.defineBlocksWithJsonArray([{
       "type": "input_statement",
       "message0": "%1 %2 %3 %4",
@@ -83,10 +73,7 @@ suite('Cursor', function() {
     };
   });
   teardown(function() {
-    delete Blockly.Blocks['input_statement'];
-    delete Blockly.Blocks['field_input'];
-
-    this.workspace.dispose();
+    sharedTestTeardown.call(this);
   });
 
   test('Next - From a Previous skip over next connection and block', function() {
@@ -94,14 +81,14 @@ suite('Cursor', function() {
     this.cursor.setCurNode(prevNode);
     this.cursor.next();
     var curNode = this.cursor.getCurNode();
-    assertEquals(curNode.getLocation(), this.blocks.B.previousConnection);
+    chai.assert.equal(curNode.getLocation(), this.blocks.B.previousConnection);
   });
   test('Next - From last block in a stack go to next connection', function() {
     var prevNode = Blockly.ASTNode.createConnectionNode(this.blocks.B.previousConnection);
     this.cursor.setCurNode(prevNode);
     this.cursor.next();
     var curNode = this.cursor.getCurNode();
-    assertEquals(curNode.getLocation(), this.blocks.B.nextConnection);
+    chai.assert.equal(curNode.getLocation(), this.blocks.B.nextConnection);
   });
 
   test('In - From output connection', function() {
@@ -110,7 +97,7 @@ suite('Cursor', function() {
     this.cursor.setCurNode(outputNode);
     this.cursor.in();
     var curNode = this.cursor.getCurNode();
-    assertEquals(curNode.getLocation(), fieldBlock.inputList[0].fieldRow[0]);
+    chai.assert.equal(curNode.getLocation(), fieldBlock.inputList[0].fieldRow[0]);
   });
 
   test('Prev - From previous connection skip over next connection', function() {
@@ -119,7 +106,7 @@ suite('Cursor', function() {
     this.cursor.setCurNode(prevConnectionNode);
     this.cursor.prev();
     var curNode = this.cursor.getCurNode();
-    assertEquals(curNode.getLocation(), this.blocks.A.previousConnection);
+    chai.assert.equal(curNode.getLocation(), this.blocks.A.previousConnection);
   });
 
   test('Out - From field skip over block node', function() {
@@ -128,6 +115,6 @@ suite('Cursor', function() {
     this.cursor.setCurNode(fieldNode);
     this.cursor.out();
     var curNode = this.cursor.getCurNode();
-    assertEquals(curNode.getLocation(), this.blocks.E.outputConnection);
+    chai.assert.equal(curNode.getLocation(), this.blocks.E.outputConnection);
   });
 });

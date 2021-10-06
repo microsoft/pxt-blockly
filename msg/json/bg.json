@@ -1,14 +1,14 @@
 {
 	"@metadata": {
 		"authors": [
-			"Gkostov",
-			"Vodnokon4e",
 			"Alpinistbg",
-			"Miroslav35232",
-			"StanProg",
-			"ShockD",
+			"Gkostov",
 			"InsomniHat",
-			"Vlad5250"
+			"Miroslav35232",
+			"ShockD",
+			"StanProg",
+			"Vlad5250",
+			"Vodnokon4e"
 		]
 	},
 	"VARIABLES_DEFAULT_NAME": "елемент",
@@ -353,5 +353,7 @@
 	"PROCEDURES_IFRETURN_WARNING": "Предупреждение: Този блок може да се използва само във функция.",
 	"WORKSPACE_COMMENT_DEFAULT_TEXT": "Коментирайте нещо...",
 	"WORKSPACE_ARIA_LABEL": "Работна област на Blockly",
-	"COLLAPSED_WARNINGS_WARNING": "Свитите блокове съдържат предупреждения."
+	"COLLAPSED_WARNINGS_WARNING": "Свитите блокове съдържат предупреждения.",
+	"DIALOG_OK": "ОК",
+	"DIALOG_CANCEL": "Отказ"
 }

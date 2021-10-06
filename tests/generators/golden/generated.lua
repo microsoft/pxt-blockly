@@ -1012,6 +1012,21 @@ function test_replace()
 end
 
 
+-- Tests the "multiline" block.
+function test_multiline()
+  assertEquals('', '', 'no text')
+  assertEquals('Google', 'Google', 'simple')
+  assertEquals('paragraph' .. '\n' ..
+  'with newlines' .. '\n' ..
+  'yup', 'paragraph' .. '\n' ..
+  'with newlines' .. '\n' ..
+  'yup', 'no compile error with newlines')
+  assertEquals(text_count('bark bark' .. '\n' ..
+  'bark bark bark' .. '\n' ..
+  'bark bark bark bark', 'bark'), 9, 'count with newlines')
+end
+
+
 -- Checks that the number of calls is one in order
 -- to confirm that a function was only called once.
 function check_number_of_calls2(test_name)
@@ -1123,13 +1138,6 @@ function test_get_lists_simple()
 end
 
 
--- Creates a list for use with the get test.
-function get_star_wars()
-  number_of_calls = number_of_calls + 1
-  return {'Kirk', 'Spock', 'McCoy'}
-end
-
-
 function list_get_last(t)
   return t[#t]
 end
@@ -1141,6 +1149,26 @@ end
 function list_get_from_end(t, at)
   return t[#t + 1 - at]
 end
+
+-- Tests the "get" block with create list call.
+function test_get_lists_create_list()
+  assertEquals(({'Kirk', 'Spock', 'McCoy'})[1], 'Kirk', 'get first create list')
+  assertEquals(list_get_last(({'Kirk', 'Spock', 'McCoy'})), 'McCoy', 'get last simple')
+  assertEquals(first_index({'Kirk', 'Spock', 'McCoy'}, list_get_random(({'Kirk', 'Spock', 'McCoy'}))) > 0, true, 'get random simple')
+  assertEquals(({'Kirk', 'Spock', 'McCoy'})[2], 'Spock', 'get # simple')
+  assertEquals(({'Kirk', 'Spock', 'McCoy'})[true and 2 or nil], 'Spock', 'get # order simple')
+  assertEquals(list_get_from_end(({'Kirk', 'Spock', 'McCoy'}), 3), 'Kirk', 'get #-end simple')
+  -- The order for index for #-end is addition because this will catch errors in generators where most perform the operation ... - index.
+  assertEquals(list_get_from_end(({'Kirk', 'Spock', 'McCoy'}), 0 + 3), 'Kirk', 'get #-end order simple')
+end
+
+
+-- Creates a list for use with the get test.
+function get_star_wars()
+  number_of_calls = number_of_calls + 1
+  return {'Kirk', 'Spock', 'McCoy'}
+end
+
 
 -- Tests the "get" block with a function call.
 function test_get_lists_complex()
@@ -1815,6 +1843,7 @@ test_trim()
 test_count_text()
 test_text_reverse()
 test_replace()
+test_multiline()
 print(unittest_report())
 unittestResults = nil
 
@@ -1826,6 +1855,7 @@ test_lists_length()
 test_find_lists_simple()
 test_find_lists_complex()
 test_get_lists_simple()
+test_get_lists_create_list()
 test_get_lists_complex()
 test_getRemove()
 test_remove()

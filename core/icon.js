@@ -1,18 +1,7 @@
 /**
  * @license
  * Copyright 2013 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 /**
@@ -23,16 +12,22 @@
 
 goog.provide('Blockly.Icon');
 
+goog.require('Blockly.browserEvents');
 goog.require('Blockly.utils');
 goog.require('Blockly.utils.Coordinate');
 goog.require('Blockly.utils.dom');
 goog.require('Blockly.utils.Size');
+goog.require('Blockly.utils.Svg');
+
+goog.requireType('Blockly.BlockSvg');
+goog.requireType('Blockly.Bubble');
 
 
 /**
  * Class for an icon.
  * @param {Blockly.BlockSvg} block The block associated with this icon.
  * @constructor
+ * @abstract
  */
 Blockly.Icon = function(block) {
   /**
@@ -41,6 +36,12 @@ Blockly.Icon = function(block) {
    * @protected
    */
   this.block_ = block;
+
+  /**
+   * The icon SVG group.
+   * @type {?SVGGElement}
+   */
+  this.iconGroup_ = null;
 };
 
 /**
@@ -55,14 +56,14 @@ Blockly.Icon.prototype.SIZE = 25;
 
 /**
  * Bubble UI (if visible).
- * @type {Blockly.Bubble}
+ * @type {?Blockly.Bubble}
  * @protected
  */
 Blockly.Icon.prototype.bubble_ = null;
 
 /**
  * Absolute coordinate of icon's center.
- * @type {Blockly.utils.Coordinate}
+ * @type {?Blockly.utils.Coordinate}
  * @protected
  */
 Blockly.Icon.prototype.iconXY_ = null;
@@ -80,7 +81,8 @@ Blockly.Icon.prototype.createIcon = function() {
     ...
   </g>
   */
-  this.iconGroup_ = Blockly.utils.dom.createSvgElement('g',
+  this.iconGroup_ = Blockly.utils.dom.createSvgElement(
+      Blockly.utils.Svg.G,
       {'class': 'blocklyIconGroup'}, null);
   if (this.block_.isInFlyout) {
     Blockly.utils.dom.addClass(
@@ -89,7 +91,7 @@ Blockly.Icon.prototype.createIcon = function() {
   this.drawIcon_(this.iconGroup_);
 
   this.block_.getSvgRoot().appendChild(this.iconGroup_);
-  Blockly.bindEventWithChecks_(
+  Blockly.browserEvents.conditionalBind(
       this.iconGroup_, 'mouseup', this, this.iconClick_);
   this.updateEditable();
 };
@@ -217,7 +219,8 @@ Blockly.Icon.prototype.setIconLocation = function(xy) {
 Blockly.Icon.prototype.computeIconLocation = function() {
   // Find coordinates for the centre of the icon and update the arrow.
   var blockXY = this.block_.getRelativeToSurfaceXY();
-  var iconXY = Blockly.utils.getRelativeXY(this.iconGroup_);
+  var iconXY = Blockly.utils.getRelativeXY(
+      /** @type {!SVGElement} */ (this.iconGroup_));
   var newXY = new Blockly.utils.Coordinate(
       blockXY.x + iconXY.x + this.SIZE / 2,
       blockXY.y + iconXY.y + this.SIZE / 2);
@@ -228,7 +231,7 @@ Blockly.Icon.prototype.computeIconLocation = function() {
 
 /**
  * Returns the center of the block's icon relative to the surface.
- * @return {Blockly.utils.Coordinate} Object with x and y properties in
+ * @return {?Blockly.utils.Coordinate} Object with x and y properties in
  *     workspace coordinates.
  */
 Blockly.Icon.prototype.getIconLocation = function() {
@@ -246,3 +249,16 @@ Blockly.Icon.prototype.getCorrectedSize = function() {
   return new Blockly.utils.Size(
       Blockly.Icon.prototype.SIZE, Blockly.Icon.prototype.SIZE - 2);
 };
+
+/**
+ * Draw the icon.
+ * @param {!Element} group The icon group.
+ * @protected
+ */
+Blockly.Icon.prototype.drawIcon_;
+
+/**
+ * Show or hide the icon.
+ * @param {boolean} visible True if the icon should be visible.
+ */
+Blockly.Icon.prototype.setVisible;

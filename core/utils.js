@@ -1,18 +1,7 @@
 /**
  * @license
  * Copyright 2012 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 /**
@@ -29,14 +18,20 @@
  */
 goog.provide('Blockly.utils');
 
-goog.require('Blockly.Msg');
+/** @suppress {extraRequire} */
 goog.require('Blockly.constants');
+goog.require('Blockly.Msg');
 goog.require('Blockly.utils.colour');
 goog.require('Blockly.utils.Coordinate');
 goog.require('Blockly.utils.global');
+goog.require('Blockly.utils.Rect');
 goog.require('Blockly.utils.string');
 goog.require('Blockly.utils.style');
 goog.require('Blockly.utils.userAgent');
+
+goog.requireType('Blockly.Block');
+goog.requireType('Blockly.WorkspaceSvg');
+
 
 /**
  * Don't do anything for this event, just halt propagation.
@@ -58,7 +53,8 @@ Blockly.utils.isTargetInput = function(e) {
          e.target.type == 'number' || e.target.type == 'email' ||
          e.target.type == 'password' || e.target.type == 'search' ||
          e.target.type == 'tel' || e.target.type == 'url' ||
-         e.target.isContentEditable;
+         e.target.isContentEditable ||
+         (e.target.dataset && e.target.dataset.isTextInput == 'true');
 };
 
 /**
@@ -168,7 +164,7 @@ Blockly.utils.isRightButton = function(e) {
  * The origin (0,0) is the top-left corner of the Blockly SVG.
  * @param {!Event} e Mouse event.
  * @param {!Element} svg SVG element.
- * @param {SVGMatrix} matrix Inverted screen CTM to use.
+ * @param {?SVGMatrix} matrix Inverted screen CTM to use.
  * @return {!SVGPoint} Object with .x and .y properties.
  */
 Blockly.utils.mouseToSvg = function(e, svg, matrix) {
@@ -217,7 +213,7 @@ Blockly.utils.getScrollDeltaPixels = function(e) {
  * (e.g., '%%').
  * @param {string} message Text which might contain string table references and
  *     interpolation tokens.
- * @return {!Array.<string|number>} Array of strings and numbers.
+ * @return {!Array<string|number>} Array of strings and numbers.
  */
 Blockly.utils.tokenizeInterpolation = function(message) {
   return Blockly.utils.tokenizeInterpolation_(message, true);
@@ -261,7 +257,7 @@ Blockly.utils.checkMessageReferences = function(message) {
     var msgKey = m[i].toUpperCase();
     if (msgTable[msgKey.slice(6, -1)] == undefined) {
       // pxt-blockly: ignore, we use custom localization
-      // console.log('WARNING: No message string for ' + m[i] + ' in ' + message);
+      // console.warn('No message string for ' + m[i] + ' in ' + message);
       validSoFar = false;  // Continue to report other errors.
     }
   }
@@ -276,7 +272,7 @@ Blockly.utils.checkMessageReferences = function(message) {
  *     interpolation tokens.
  * @param {boolean} parseInterpolationTokens Option to parse numeric
  *     interpolation tokens (%1, %2, ...) when true.
- * @return {!Array.<string|number>} Array of strings and numbers.
+ * @return {!Array<string|number>} Array of strings and numbers.
  * @private
  */
 Blockly.utils.tokenizeInterpolation_ = function(message,
@@ -444,7 +440,7 @@ Blockly.utils.is3dSupported = function() {
   }
   // CC-BY-SA Lorenzo Polidori
   // stackoverflow.com/questions/5661671/detecting-transform-translate3d-support
-  if (!Blockly.utils.global.getComputedStyle) {
+  if (!Blockly.utils.global['getComputedStyle']) {
     return false;
   }
 
@@ -464,7 +460,7 @@ Blockly.utils.is3dSupported = function() {
   for (var t in transforms) {
     if (el.style[t] !== undefined) {
       el.style[t] = 'translate3d(1px,1px,1px)';
-      var computedStyle = Blockly.utils.global.getComputedStyle(el);
+      var computedStyle = Blockly.utils.global['getComputedStyle'](el);
       if (!computedStyle) {
         // getComputedStyle in Firefox returns null when Blockly is loaded
         // inside an iframe with display: none.  Returning false and not
@@ -508,19 +504,19 @@ Blockly.utils.runAfterPageLoad = function(fn) {
 /**
  * Get the position of the current viewport in window coordinates.  This takes
  * scroll into account.
- * @return {!Object} An object containing window width, height, and scroll
- *     position in window coordinates.
+ * @return {!Blockly.utils.Rect} An object containing window width, height, and
+ *     scroll position in window coordinates.
  * @package
  */
 Blockly.utils.getViewportBBox = function() {
   // Pixels, in window coordinates.
   var scrollOffset = Blockly.utils.style.getViewportPageOffset();
-  return {
-    right: document.documentElement.clientWidth + scrollOffset.x,
-    bottom: document.documentElement.clientHeight + scrollOffset.y,
-    top: scrollOffset.y,
-    left: scrollOffset.x
-  };
+  return new Blockly.utils.Rect(
+      scrollOffset.y,
+      document.documentElement.clientHeight + scrollOffset.y,
+      scrollOffset.x,
+      document.documentElement.clientWidth + scrollOffset.x
+  );
 };
 
 /**
@@ -653,10 +649,10 @@ Blockly.utils.isOnScreenKeyboardResize = function() {
 
 /**
  * Converts screen coordinates to workspace coordinates.
- * @param {Blockly.WorkspaceSvg} ws The workspace to find the coordinates on.
- * @param {Blockly.utils.Coordinate} screenCoordinates The screen coordinates to
- * be converted to workspace coordintaes
- * @return {Blockly.utils.Coordinate} The workspace coordinates.
+ * @param {!Blockly.WorkspaceSvg} ws The workspace to find the coordinates on.
+ * @param {!Blockly.utils.Coordinate} screenCoordinates The screen coordinates to
+ * be converted to workspace coordinates
+ * @return {!Blockly.utils.Coordinate} The workspace coordinates.
  * @package
  */
 Blockly.utils.screenToWsCoordinates = function(ws, screenCoordinates) {

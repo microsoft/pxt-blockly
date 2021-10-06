@@ -1,18 +1,7 @@
 /**
  * @license
  * Copyright 2019 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 /**
@@ -32,6 +21,11 @@ goog.provide('Blockly.blockRendering.SquareCorner');
 goog.require('Blockly.blockRendering.Measurable');
 goog.require('Blockly.blockRendering.Types');
 goog.require('Blockly.utils.object');
+
+goog.requireType('Blockly.blockRendering.ConstantProvider');
+goog.requireType('Blockly.Field');
+goog.requireType('Blockly.Icon');
+goog.requireType('Blockly.Input');
 
 
 /**
@@ -91,7 +85,7 @@ Blockly.utils.object.inherits(Blockly.blockRendering.JaggedEdge,
 Blockly.blockRendering.Field = function(constants, field, parentInput) {
   Blockly.blockRendering.Field.superClass_.constructor.call(this, constants);
   this.field = field;
-  this.isEditable = field.isCurrentlyEditable();
+  this.isEditable = field.EDITABLE;
   this.flipRtl = field.getFlipRtl();
   this.type |= Blockly.blockRendering.Types.FIELD;
 

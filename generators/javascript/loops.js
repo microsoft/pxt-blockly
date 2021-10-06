@@ -1,21 +1,7 @@
 /**
  * @license
- * Visual Blocks Language
- *
- * Copyright 2012 Google Inc.
- * https://developers.google.com/blockly/
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Copyright 2012 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 /**
@@ -42,12 +28,12 @@ Blockly.JavaScript['controls_repeat_ext'] = function(block) {
   var branch = Blockly.JavaScript.statementToCode(block, 'DO');
   branch = Blockly.JavaScript.addLoopTrap(branch, block);
   var code = '';
-  var loopVar = Blockly.JavaScript.variableDB_.getDistinctName(
-      'count', Blockly.Variables.NAME_TYPE);
+  var loopVar = Blockly.JavaScript.nameDB_.getDistinctName(
+      'count', Blockly.VARIABLE_CATEGORY_NAME);
   var endVar = repeats;
   if (!repeats.match(/^\w+$/) && !Blockly.isNumber(repeats)) {
-    var endVar = Blockly.JavaScript.variableDB_.getDistinctName(
-        'repeat_end', Blockly.Variables.NAME_TYPE);
+    endVar = Blockly.JavaScript.nameDB_.getDistinctName(
+        'repeat_end', Blockly.VARIABLE_CATEGORY_NAME);
     code += 'var ' + endVar + ' = ' + repeats + ';\n';
   }
   code += 'for (var ' + loopVar + ' = 0; ' +
@@ -76,8 +62,8 @@ Blockly.JavaScript['controls_whileUntil'] = function(block) {
 
 Blockly.JavaScript['controls_for'] = function(block) {
   // For loop.
-  var variable0 = Blockly.JavaScript.variableDB_.getName(
-      block.getField('VAR').getText(), Blockly.Variables.NAME_TYPE);
+  var variable0 = Blockly.JavaScript.nameDB_.getName(
+      block.getFieldValue('VAR'), Blockly.VARIABLE_CATEGORY_NAME);
   var argument0 = Blockly.JavaScript.valueToCode(block, 'FROM',
       Blockly.JavaScript.ORDER_ASSIGNMENT) || '0';
   var argument1 = Blockly.JavaScript.valueToCode(block, 'TO',
@@ -106,20 +92,20 @@ Blockly.JavaScript['controls_for'] = function(block) {
     // Cache non-trivial values to variables to prevent repeated look-ups.
     var startVar = argument0;
     if (!argument0.match(/^\w+$/) && !Blockly.isNumber(argument0)) {
-      startVar = Blockly.JavaScript.variableDB_.getDistinctName(
-          variable0 + '_start', Blockly.Variables.NAME_TYPE);
+      startVar = Blockly.JavaScript.nameDB_.getDistinctName(
+          variable0 + '_start', Blockly.VARIABLE_CATEGORY_NAME);
       code += 'var ' + startVar + ' = ' + argument0 + ';\n';
     }
     var endVar = argument1;
     if (!argument1.match(/^\w+$/) && !Blockly.isNumber(argument1)) {
-      var endVar = Blockly.JavaScript.variableDB_.getDistinctName(
-          variable0 + '_end', Blockly.Variables.NAME_TYPE);
+      endVar = Blockly.JavaScript.nameDB_.getDistinctName(
+          variable0 + '_end', Blockly.VARIABLE_CATEGORY_NAME);
       code += 'var ' + endVar + ' = ' + argument1 + ';\n';
     }
     // Determine loop direction at start, in case one of the bounds
     // changes during loop execution.
-    var incVar = Blockly.JavaScript.variableDB_.getDistinctName(
-        variable0 + '_inc', Blockly.Variables.NAME_TYPE);
+    var incVar = Blockly.JavaScript.nameDB_.getDistinctName(
+        variable0 + '_inc', Blockly.VARIABLE_CATEGORY_NAME);
     code += 'var ' + incVar + ' = ';
     if (Blockly.isNumber(increment)) {
       code += Math.abs(increment) + ';\n';
@@ -141,8 +127,8 @@ Blockly.JavaScript['controls_for'] = function(block) {
 
 Blockly.JavaScript['controls_forEach'] = function(block) {
   // For each loop.
-  var variable0 = Blockly.JavaScript.variableDB_.getName(
-      block.getField('VAR').getText(), Blockly.Variables.NAME_TYPE);
+  var variable0 = Blockly.JavaScript.nameDB_.getName(
+      block.getFieldValue('VAR'), Blockly.VARIABLE_CATEGORY_NAME);
   var argument0 = Blockly.JavaScript.valueToCode(block, 'LIST',
       Blockly.JavaScript.ORDER_ASSIGNMENT) || '[]';
   var branch = Blockly.JavaScript.statementToCode(block, 'DO');
@@ -151,12 +137,12 @@ Blockly.JavaScript['controls_forEach'] = function(block) {
   // Cache non-trivial values to variables to prevent repeated look-ups.
   var listVar = argument0;
   if (!argument0.match(/^\w+$/)) {
-    listVar = Blockly.JavaScript.variableDB_.getDistinctName(
-        variable0 + '_list', Blockly.Variables.NAME_TYPE);
+    listVar = Blockly.JavaScript.nameDB_.getDistinctName(
+        variable0 + '_list', Blockly.VARIABLE_CATEGORY_NAME);
     code += 'var ' + listVar + ' = ' + argument0 + ';\n';
   }
-  var indexVar = Blockly.JavaScript.variableDB_.getDistinctName(
-      variable0 + '_index', Blockly.Variables.NAME_TYPE);
+  var indexVar = Blockly.JavaScript.nameDB_.getDistinctName(
+      variable0 + '_index', Blockly.VARIABLE_CATEGORY_NAME);
   branch = Blockly.JavaScript.INDENT + variable0 + ' = ' +
       listVar + '[' + indexVar + '];\n' + branch;
   code += 'for (var ' + indexVar + ' in ' + listVar + ') {\n' + branch + '}\n';
