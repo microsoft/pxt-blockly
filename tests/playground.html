@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>PXT-Blockly Playground</title>
+<title>PXT Blockly Playground</title>
 <script src="../blockly_uncompressed.js"></script>
 <script src="../generators/javascript.js"></script>
 <script src="../generators/javascript/logic.js"></script>
@@ -55,6 +55,7 @@
 <script src="../generators/dart/variables_dynamic.js"></script>
 <script src="../generators/dart/procedures.js"></script>
 <script src="../msg/messages.js"></script>
+<!-- pxt-blockly -->
 <script src="../blocks/extensions.js"></script>
 <script src="../blocks/logic.js"></script>
 <script src="../blocks/loops.js"></script>
@@ -66,8 +67,8 @@
 <script src="../blocks/variables_dynamic.js"></script>
 <script src="../blocks/procedures.js"></script>
 <script src="../blocks/pxt_blockly_functions.js"></script>
-<script src="blocks/test_blocks.js"></script>
-<script src="blocks/pxt_test_blocks.js"></script>
+<script src="compile/test_blocks.js"></script>
+<script src="compile/pxt_test_blocks.js"></script>
 <script src="themes/test_themes.js"></script>
 <script src="./playgrounds/screenshot.js"></script>
 <script src="../node_modules/@blockly/block-test/dist/index.js"></script>
@@ -108,6 +109,7 @@ function start() {
         horizontalLayout: false,
         maxBlocks: Infinity,
         maxInstances: {'test_basic_limit_instances': 3},
+        maxTrashcanContents: 256,
         media: '../media/',
         oneBasedIndex: true,
         readOnly: false,
@@ -115,7 +117,7 @@ function start() {
         move: {
           scrollbars: true,
           drag: true,
-          wheel: false,
+          wheel: true,
         },
         toolbox: toolbox,
         toolboxPosition: 'start',
@@ -123,13 +125,12 @@ function start() {
         zoom:
           {
             controls: true,
-            wheel: true,
+            wheel: false,
             startScale: 1.0,
             maxScale: 4,
             minScale: 0.25,
             scaleSpeed: 1.1
-          },
-        renderer: 'pxt'
+          }
       });
   initToolbox(workspace);
   workspace.configureContextMenu = configureContextMenu;
@@ -149,11 +150,9 @@ function start() {
     logEvents(false);
   }
   taChange();
-
-  // Register help icon handler
-  workspace.registerButtonCallback('GROUP_HELP', function(button) {
-    alert("Help icon triggered")
-  });
+  if (autoimport) {
+    fromXml();
+  }
 }
 
 function setBackgroundColour() {
@@ -217,6 +216,9 @@ function toXml() {
 
 function fromXml() {
   var input = document.getElementById('importExport');
+  if (!input.value) {
+    return;
+  }
   var xml = Blockly.Xml.textToDom(input.value);
   Blockly.Xml.domToWorkspace(xml, workspace);
   taChange();
@@ -285,13 +287,8 @@ function configureContextMenu(menuOptions, e) {
   menuOptions.push(Blockly.ContextMenu.workspaceCommentOption(workspace, e));
 }
 
-function unhighlightBlockWarning() {
-  if (Blockly.selected) {
-    var block = workspace.getBlockById(Blockly.selected.id);
-    if (block) {
-      block.setHighlightWarning(false);
-    }
-  }
+function logger(e) {
+  console.log(e);
 }
 
 function airstrike(n) {
@@ -310,16 +307,6 @@ function airstrike(n) {
         Math.round(Math.random() * 600 + 40) + ')');
     block.render();
   }
-}
-
-function toggleBreakpoints() {
-  workspace.options.debugMode = !workspace.options.debugMode;
-  var blocks = workspace.getAllBlocks();
-  blocks.forEach(block => {
-    if (block.nextConnection && block.previousConnection) {
-      block.enableBreakpoint(workspace.options.debugMode);
-    }
-  });
 }
 
 function spaghetti(n) {
@@ -367,48 +354,43 @@ var spaghettiXml = [
 
 </script>
 
-<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
 <style>
-html, body {
-  height: 100%;
-}
-body {
-  background-color: #fff;
-  font-family: sans-serif;
-  overflow: hidden;
-}
-h1 {
-  font-weight: normal;
-  font-size: 140%;
-}
-#blocklyDiv {
-  float: right;
-  height: 95%;
-  width: 70%;
-}
-#importExport {
-  font-family: monospace;
-}
+  html, body {
+    height: 100%;
+  }
+  body {
+    background-color: #fff;
+    font-family: sans-serif;
+    overflow: hidden;
+  }
+  h1 {
+    font-weight: normal;
+    font-size: 140%;
+  }
+  #blocklyDiv {
+    float: right;
+    height: 95%;
+    width: 70%;
+  }
+  #importExport {
+    font-family: monospace;
+  }
 
-.ioLabel>.blocklyFlyoutLabelText {
-  font-style: italic;
-}
+  .ioLabel>.blocklyFlyoutLabelText {
+    font-style: italic;
+  }
 
-.blocklyFlyoutLabelText {
-  fill: white !important;
-}
-.blocklyFlyoutHeading>.blocklyFlyoutLabelText {
-  font-size: 1.5rem;
-}
-line.blocklyFlyoutLine {
-  stroke: white;
-}
-.blocklyFlyoutLabelIcon {
-  font-family: 'Font Awesome\ 5 Free';
-  font-size: 1.5rem;
-  font-weight: 900;
-  fill: white;
-}
+  #blocklyDiv.renderingDebug .blockRenderDebug {
+    display: block;
+  }
+
+  .playgroundToggleOptions {
+    list-style: none;
+    padding: 0;
+  }
+  .playgroundToggleOptions li {
+    margin-top: 1em;
+  }
 
   .blockRenderDebug {
     display: none;
@@ -423,7 +405,7 @@ line.blocklyFlyoutLine {
 
   <div id="blocklyDiv"></div>
 
-  <h1>PXT-Blockly Playground</h1>
+  <h1>Blockly Playground</h1>
 
   <p><a href="javascript:void(workspace.setVisible(true))">Show</a>
    - <a href="javascript:void(workspace.setVisible(false))">Hide</a>
@@ -464,24 +446,6 @@ line.blocklyFlyoutLine {
     Stress test: &nbsp;
     <input type="button" value="Airstrike!" onclick="airstrike(100)">
     <input type="button" value="Spaghetti!" onclick="spaghetti(8)">
-    <input type="button" value="Debug!" onclick="toggleBreakpoints()">
-  </p>
-
-  <p>
-    Center on block : &nbsp;
-    <input type="button" value="center on last clicked block" onclick="centerOnBlock()" />
-  </p>
-
-  <p>
-    Highlight: &nbsp;
-    <input type="button" value="Highlight last clicked block" onclick="highlightBlock()" />
-    <input type="button" value="Unhighlight last clicked block" onclick="unhighlightBlock()" />
-  </p>
-
-  <p>
-    Warning: &nbsp;
-    <input type="button" value="Set warning on last clicked block" onclick="highlightBlockWarning()" />
-    <input type="button" value="Remove warning from last clicked block" onclick="unhighlightBlockWarning()" />
   </p>
   <ul class="playgroundToggleOptions">
     <li>
@@ -494,16 +458,6 @@ line.blocklyFlyoutLine {
   </li>
   </ul>
 
-  <p>
-    <input type="button" value="Undo" onclick="workspace.undo()" />
-    <input type="button" value="Redo" onclick="workspace.undo(true)" />
-    <input type="button" value="Clear" onclick="workspace.clear()" />
-  </p>
-
-  <p>
-    Log events: &nbsp;
-    <input type="checkbox" onclick="logEvents(this.checked)" id="logCheck">
-  </p>
 
   <!-- The next three blocks of XML are sample toolboxes for testing basic
   configurations.  For more information on building toolboxes, see https://developers.google.com/blockly/guides/configure/web/toolbox -->
@@ -540,411 +494,6 @@ line.blocklyFlyoutLine {
   Variables category uses untyped variable blocks.
   See https://developers.google.com/blockly/guides/create-custom-blocks/variables#untyped_variable_blocks for more information. -->
   <xml xmlns="https://developers.google.com/blockly/xml" id="toolbox-categories" style="display: none">
-    <category name="Logic" categorystyle="logic_category" iconclass="blocklyTreeIconCustom logic">
-      <label text="Logic" web-icon="" web-class="blocklyFlyoutHeading"></label>
-      <block type="controls_if">
-        <value name="IF0">
-          <shadow type="logic_boolean">
-          </shadow>
-        </value>
-      </block>
-      <block type="controls_if">
-        <mutation else="1"></mutation>
-        <value name="IF0">
-          <shadow type="logic_boolean">
-          </shadow>
-        </value>
-      </block>
-      <block type="logic_compare">
-        <value name="A">
-          <shadow type="math_number">
-            <field name="NUM">10</field>
-          </shadow>
-        </value>
-        <value name="B">
-          <shadow type="math_number">
-            <field name="NUM">10</field>
-          </shadow>
-        </value>
-      </block>
-      <block type="logic_operation"></block>
-      <block type="logic_negate"></block>
-      <block type="logic_boolean"></block>
-      <block type="logic_null" disabled="true"></block>
-      <block type="logic_ternary"></block>
-    </category>
-    <category name="Loops" categorystyle="loop_category" iconclass="blocklyTreeIconCustom loops">
-      <label text="Loops" web-icon="" web-class="blocklyFlyoutHeading"></label>
-      <label text="Basic" web-line="1.0"></label>
-      <block type="controls_repeat_ext">
-        <value name="TIMES">
-          <shadow type="math_number">
-            <field name="NUM">10</field>
-          </shadow>
-        </value>
-      </block>
-      <block type="controls_repeat" disabled="true"></block>
-      <block type="controls_whileUntil" disabled="true"></block>
-      <label text="Advanced" web-line="1.0"></label>
-      <block type="controls_for">
-        <value name="VAR">
-          <shadow type="variables_get_reporter">
-            <field name="VAR">index</field>
-          </shadow>
-        </value>
-        <value name="FROM">
-          <shadow type="math_arithmetic">
-            <value name="A">
-              <shadow type="math_number">
-                <field name="NUM">1</field>
-              </shadow>
-            </value>
-            <value name="B">
-              <shadow type="math_number">
-                <field name="NUM">1</field>
-              </shadow>
-            </value>
-          </shadow>
-        </value>
-        <value name="TO">
-          <shadow type="math_number">
-            <field name="NUM">10</field>
-          </shadow>
-        </value>
-        <value name="BY">
-          <shadow type="math_number">
-            <field name="NUM">1</field>
-          </shadow>
-        </value>
-      </block>
-      <block type="controls_forEach">
-        <value name="VAR">
-          <shadow type="variables_get_reporter">
-            <field name="VAR">item</field>
-          </shadow>
-        </value>
-      </block>
-      <block type="controls_flow_statements"></block>
-    </category>
-    <category name="Math" categorystyle="math_category" iconclass="blocklyTreeIconCustom math">
-      <label text="Math" web-icon="" web-class="blocklyFlyoutHeading"></label>
-      <block type="math_number" gap="32">
-        <field name="NUM">123</field>
-      </block>
-      <block type="math_number_minmax" gap="32">
-        <mutation min="0" max="100"></mutation>
-      </block>
-      <label text="Arithmetic" web-line="0.0"></label>
-      <block type="math_arithmetic">
-        <value name="A">
-          <shadow type="math_number">
-            <field name="NUM">1</field>
-          </shadow>
-        </value>
-        <value name="B">
-          <shadow type="math_number">
-            <field name="NUM">1</field>
-          </shadow>
-        </value>
-      </block>
-      <block type="math_single">
-        <value name="NUM">
-          <shadow type="math_number">
-            <field name="NUM">9</field>
-          </shadow>
-        </value>
-      </block>
-      <block type="math_trig">
-        <value name="NUM">
-          <shadow type="math_number">
-            <field name="NUM">45</field>
-          </shadow>
-        </value>
-      </block>
-      <block type="math_constant"></block>
-      <block type="math_number_property">
-        <value name="NUMBER_TO_CHECK">
-          <shadow type="math_number">
-            <field name="NUM">0</field>
-          </shadow>
-        </value>
-      </block>
-      <label text="Advanced" web-line="2.0" web-line-width="200"></label>
-      <block type="math_round">
-        <value name="NUM">
-          <shadow type="math_number">
-            <field name="NUM">3.1</field>
-          </shadow>
-        </value>
-      </block>
-      <block type="math_on_list"></block>
-      <block type="math_modulo">
-        <value name="DIVIDEND">
-          <shadow type="math_number">
-            <field name="NUM">64</field>
-          </shadow>
-        </value>
-        <value name="DIVISOR">
-          <shadow type="math_number">
-            <field name="NUM">10</field>
-          </shadow>
-        </value>
-      </block>
-      <block type="math_constrain">
-        <value name="VALUE">
-          <shadow type="math_number">
-            <field name="NUM">50</field>
-          </shadow>
-        </value>
-        <value name="LOW">
-          <shadow type="math_number">
-            <field name="NUM">1</field>
-          </shadow>
-        </value>
-        <value name="HIGH">
-          <shadow type="math_number">
-            <field name="NUM">100</field>
-          </shadow>
-        </value>
-      </block>
-      <label text="Random" web-line="4.0"></label>
-      <block type="math_random_int">
-        <value name="FROM">
-          <shadow type="math_number">
-            <field name="NUM">1</field>
-          </shadow>
-        </value>
-        <value name="TO">
-          <shadow type="math_number">
-            <field name="NUM">100</field>
-          </shadow>
-        </value>
-      </block>
-      <block type="math_random_float"></block>
-      <block type="math_atan2">
-        <value name="X">
-          <shadow type="math_number">
-            <field name="NUM">1</field>
-          </shadow>
-        </value>
-        <value name="Y">
-          <shadow type="math_number">
-            <field name="NUM">1</field>
-          </shadow>
-        </value>
-      </block>
-    </category>
-    <category name="Text" categorystyle="text_category" iconclass="blocklyTreeIconCustom text">
-      <label text="Text" web-icon="" web-class="blocklyFlyoutHeading"></label>
-      <block type="text"></block>
-      <block type="text_join"></block>
-      <!--<block type="text_append">
-        <value name="TEXT">
-          <shadow type="text"></shadow>
-        </value>
-      </block>-->
-      <block type="text_length">
-        <value name="VALUE">
-          <shadow type="text">
-            <field name="TEXT">abc</field>
-          </shadow>
-        </value>
-      </block>
-      <block type="text_isEmpty">
-        <value name="VALUE">
-          <shadow type="text">
-            <field name="TEXT"></field>
-          </shadow>
-        </value>
-      </block>
-      <block type="text_indexOf">
-        <value name="VALUE">
-          <block type="variables_get">
-            <field name="VAR">text</field>
-          </block>
-        </value>
-        <value name="FIND">
-          <shadow type="text">
-            <field name="TEXT">abc</field>
-          </shadow>
-        </value>
-      </block>
-      <label text="Group with help" web-help-button="true" callbackkey="GROUP_HELP" web-line="1.0"></label>
-      <block type="text_charAt">
-        <value name="VALUE">
-          <block type="variables_get">
-            <field name="VAR">text</field>
-          </block>
-        </value>
-      </block>
-      <block type="text_getSubstring">
-        <value name="STRING">
-          <block type="variables_get">
-            <field name="VAR">text</field>
-          </block>
-        </value>
-      </block>
-      <block type="text_changeCase">
-        <value name="TEXT">
-          <shadow type="text">
-            <field name="TEXT">abc</field>
-          </shadow>
-        </value>
-      </block>
-      <block type="text_trim">
-        <value name="TEXT">
-          <shadow type="text">
-            <field name="TEXT">abc</field>
-          </shadow>
-        </value>
-      </block>
-      <block type="text_count">
-        <value name="SUB">
-          <shadow type="text"></shadow>
-        </value>
-        <value name="TEXT">
-          <shadow type="text"></shadow>
-        </value>
-      </block>
-      <block type="text_replace">
-        <value name="FROM">
-          <shadow type="text"></shadow>
-        </value>
-        <value name="TO">
-          <shadow type="text"></shadow>
-        </value>
-        <value name="TEXT">
-          <shadow type="text"></shadow>
-        </value>
-      </block>
-      <block type="text_reverse">
-        <value name="TEXT">
-          <shadow type="text"></shadow>
-        </value>
-      </block>
-      <label text="Input/Output:" web-class="ioLabel"></label>
-      <block type="text_print">
-        <value name="TEXT">
-          <shadow type="text">
-            <field name="TEXT">abc</field>
-          </shadow>
-        </value>
-      </block>
-      <block type="text_prompt_ext">
-        <value name="TEXT">
-          <shadow type="text">
-            <field name="TEXT">abc</field>
-          </shadow>
-        </value>
-      </block>
-    </category>
-    <category name="Lists" categorystyle="list_category" iconclass="blocklyTreeIconCustom lists">
-      <label text="Lists" web-icon="" web-class="blocklyFlyoutHeading"></label>
-      <block type="lists_create_with">
-        <mutation items="0" type="math_number"></mutation>
-      </block>
-      <block type="lists_create_with">
-        <mutation items="3" type="text"></mutation>
-        <value name="ADD0">
-          <shadow type="math_number">
-            <field name="NUM">1</field>
-          </shadow>
-        </value>
-        <value name="ADD1">
-          <shadow type="math_number">
-            <field name="NUM">2</field>
-          </shadow>
-        </value>
-        <value name="ADD2">
-          <shadow type="math_number">
-            <field name="NUM">3</field>
-          </shadow>
-        </value>
-      </block>
-      <block type="lists_create_with">
-        <mutation items="2" type="text"></mutation>
-        <value name="ADD0">
-          <shadow type="text">
-            <field name="TEXT">Hello</field>
-          </shadow>
-        </value>
-        <value name="ADD1">
-          <shadow type="text">
-            <field name="TEXT">World</field>
-          </shadow>
-        </value>
-      </block>
-      <block type="lists_repeat">
-        <value name="NUM">
-          <shadow type="math_number">
-            <field name="NUM">5</field>
-          </shadow>
-        </value>
-      </block>
-      <block type="lists_length"></block>
-      <block type="lists_isEmpty"></block>
-      <block type="lists_indexOf"></block>
-      <block type="lists_getIndex"></block>
-      <block type="lists_setIndex"></block>
-      <block type="lists_getSublist"></block>
-      <block type="lists_split">
-        <value name="DELIM">
-          <shadow type="text">
-            <field name="TEXT">,</field>
-          </shadow>
-        </value>
-      </block>
-      <block type="lists_sort"></block>
-      <block type="lists_reverse"></block>
-    </category>
-    <category name="Colour" categorystyle="colour_category" iconclass="blocklyTreeIconCustom colour">
-      <label text="Colour" web-icon="" web-class="blocklyFlyoutHeading"></label>
-      <block type="colour_picker"></block>
-      <block type="colour_random"></block>
-      <block type="colour_rgb">
-        <value name="RED">
-          <shadow type="math_number">
-            <field name="NUM">100</field>
-          </shadow>
-        </value>
-        <value name="GREEN">
-          <shadow type="math_number">
-            <field name="NUM">50</field>
-          </shadow>
-        </value>
-        <value name="BLUE">
-          <shadow type="math_number">
-            <field name="NUM">0</field>
-          </shadow>
-        </value>
-      </block>
-      <block type="colour_blend">
-        <value name="COLOUR1">
-          <shadow type="colour_picker">
-            <field name="COLOUR">#ff0000</field>
-          </shadow>
-        </value>
-        <value name="COLOUR2">
-          <shadow type="colour_picker">
-            <field name="COLOUR">#3333ff</field>
-          </shadow>
-        </value>
-        <value name="RATIO">
-          <shadow type="math_number">
-            <field name="NUM">0.5</field>
-          </shadow>
-        </value>
-      </block>
-    </category>
-    <sep></sep>
-    <category name="Variables" categorystyle="variable_category" custom="VARIABLE" iconclass="blocklyTreeIconCustom variables"></category>
-    <category name="Functions" categorystyle="procedure_category" custom="PROCEDURE" iconclass="blocklyTreeIconCustom functions"></category>
-  </xml>
-
-  <!-- toolbox-categories-typed-variables has a category menu and an
-  auto-closing flyout.  The Variables category uses typed variable blocks.
-  See https://developers.google.com/blockly/guides/create-custom-blocks/variables#typed_variable_blocks for more information. -->
-  <xml xmlns="https://developers.google.com/blockly/xml" id="toolbox-categories-typed-variables" style="display: none">
     <category name="Logic" categorystyle="logic_category">
       <block type="controls_if"></block>
       <block type="logic_compare"></block>
@@ -965,11 +514,6 @@ line.blocklyFlyoutLine {
       <block type="controls_repeat" disabled="true"></block>
       <block type="controls_whileUntil"></block>
       <block type="controls_for">
-        <value name="VAR">
-          <shadow type="variables_get_reporter">
-            <field name="VAR">index</field>
-          </shadow>
-        </value>
         <value name="FROM">
           <shadow type="math_number">
             <field name="NUM">1</field>
@@ -986,13 +530,7 @@ line.blocklyFlyoutLine {
           </shadow>
         </value>
       </block>
-      <block type="controls_forEach">
-        <value name="VAR">
-          <shadow type="variables_get_reporter">
-            <field name="VAR">item</field>
-          </shadow>
-        </value>
-      </block>
+      <block type="controls_forEach"></block>
       <block type="controls_flow_statements"></block>
     </category>
     <category name="Math" categorystyle="math_category">
@@ -1098,6 +636,349 @@ line.blocklyFlyoutLine {
     </category>
     <category name="Text" categorystyle="text_category">
       <block type="text"></block>
+      <block type="text_multiline"></block>
+      <block type="text_join"></block>
+      <block type="text_append">
+        <value name="TEXT">
+          <shadow type="text"></shadow>
+        </value>
+      </block>
+      <block type="text_length">
+        <value name="VALUE">
+          <shadow type="text">
+            <field name="TEXT">abc</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="text_isEmpty">
+        <value name="VALUE">
+          <shadow type="text">
+            <field name="TEXT"></field>
+          </shadow>
+        </value>
+      </block>
+      <block type="text_indexOf">
+        <value name="VALUE">
+          <block type="variables_get">
+            <field name="VAR">text</field>
+          </block>
+        </value>
+        <value name="FIND">
+          <shadow type="text">
+            <field name="TEXT">abc</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="text_charAt">
+        <value name="VALUE">
+          <block type="variables_get">
+            <field name="VAR">text</field>
+          </block>
+        </value>
+      </block>
+      <block type="text_getSubstring">
+        <value name="STRING">
+          <block type="variables_get">
+            <field name="VAR">text</field>
+          </block>
+        </value>
+      </block>
+      <block type="text_changeCase">
+        <value name="TEXT">
+          <shadow type="text">
+            <field name="TEXT">abc</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="text_trim">
+        <value name="TEXT">
+          <shadow type="text">
+            <field name="TEXT">abc</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="text_count">
+        <value name="SUB">
+          <shadow type="text"></shadow>
+        </value>
+        <value name="TEXT">
+          <shadow type="text"></shadow>
+        </value>
+      </block>
+      <block type="text_replace">
+        <value name="FROM">
+          <shadow type="text"></shadow>
+        </value>
+        <value name="TO">
+          <shadow type="text"></shadow>
+        </value>
+        <value name="TEXT">
+          <shadow type="text"></shadow>
+        </value>
+      </block>
+      <block type="text_reverse">
+        <value name="TEXT">
+          <shadow type="text"></shadow>
+        </value>
+      </block>
+      <label text="Input/Output:" web-class="ioLabel"></label>
+      <block type="text_print">
+        <value name="TEXT">
+          <shadow type="text">
+            <field name="TEXT">abc</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="text_prompt_ext">
+        <value name="TEXT">
+          <shadow type="text">
+            <field name="TEXT">abc</field>
+          </shadow>
+        </value>
+      </block>
+    </category>
+    <category name="Lists" categorystyle="list_category">
+      <block type="lists_create_with">
+        <mutation items="0"></mutation>
+      </block>
+      <block type="lists_create_with"></block>
+      <block type="lists_repeat">
+        <value name="NUM">
+          <shadow type="math_number">
+            <field name="NUM">5</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="lists_length"></block>
+      <block type="lists_isEmpty"></block>
+      <block type="lists_indexOf">
+        <value name="VALUE">
+          <block type="variables_get">
+            <field name="VAR">list</field>
+          </block>
+        </value>
+      </block>
+      <block type="lists_getIndex">
+        <value name="VALUE">
+          <block type="variables_get">
+            <field name="VAR">list</field>
+          </block>
+        </value>
+      </block>
+      <block type="lists_setIndex">
+        <value name="LIST">
+          <block type="variables_get">
+            <field name="VAR">list</field>
+          </block>
+        </value>
+      </block>
+      <block type="lists_getSublist">
+        <value name="LIST">
+          <block type="variables_get">
+            <field name="VAR">list</field>
+          </block>
+        </value>
+      </block>
+      <block type="lists_split">
+        <value name="DELIM">
+          <shadow type="text">
+            <field name="TEXT">,</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="lists_sort"></block>
+      <block type="lists_reverse"></block>
+    </category>
+    <category name="Colour" categorystyle="colour_category">
+      <block type="colour_picker"></block>
+      <block type="colour_random"></block>
+      <block type="colour_rgb">
+        <value name="RED">
+          <shadow type="math_number">
+            <field name="NUM">100</field>
+          </shadow>
+        </value>
+        <value name="GREEN">
+          <shadow type="math_number">
+            <field name="NUM">50</field>
+          </shadow>
+        </value>
+        <value name="BLUE">
+          <shadow type="math_number">
+            <field name="NUM">0</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="colour_blend">
+        <value name="COLOUR1">
+          <shadow type="colour_picker">
+            <field name="COLOUR">#ff0000</field>
+          </shadow>
+        </value>
+        <value name="COLOUR2">
+          <shadow type="colour_picker">
+            <field name="COLOUR">#3333ff</field>
+          </shadow>
+        </value>
+        <value name="RATIO">
+          <shadow type="math_number">
+            <field name="NUM">0.5</field>
+          </shadow>
+        </value>
+      </block>
+    </category>
+    <sep></sep>
+    <category name="Variables" categorystyle="variable_category" custom="VARIABLE"></category>
+    <category name="Functions" categorystyle="procedure_category" custom="PROCEDURE"></category>
+  </xml>
+
+  <!-- toolbox-categories-typed-variables has a category menu and an
+  auto-closing flyout.  The Variables category uses typed variable blocks.
+  See https://developers.google.com/blockly/guides/create-custom-blocks/variables#typed_variable_blocks for more information. -->
+  <xml xmlns="https://developers.google.com/blockly/xml" id="toolbox-categories-typed-variables" style="display: none">
+    <category name="Logic" categorystyle="logic_category">
+      <block type="controls_if"></block>
+      <block type="logic_compare"></block>
+      <block type="logic_operation"></block>
+      <block type="logic_negate"></block>
+      <block type="logic_boolean"></block>
+      <block type="logic_null" disabled="true"></block>
+      <block type="logic_ternary"></block>
+    </category>
+    <category name="Loops" categorystyle="loop_category">
+      <block type="controls_repeat_ext">
+        <value name="TIMES">
+          <shadow type="math_number">
+            <field name="NUM">10</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="controls_repeat" disabled="true"></block>
+      <block type="controls_whileUntil"></block>
+      <block type="controls_for">
+        <value name="FROM">
+          <shadow type="math_number">
+            <field name="NUM">1</field>
+          </shadow>
+        </value>
+        <value name="TO">
+          <shadow type="math_number">
+            <field name="NUM">10</field>
+          </shadow>
+        </value>
+        <value name="BY">
+          <shadow type="math_number">
+            <field name="NUM">1</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="controls_forEach"></block>
+      <block type="controls_flow_statements"></block>
+    </category>
+    <category name="Math" categorystyle="math_category">
+      <block type="math_number" gap="32">
+        <field name="NUM">123</field>
+      </block>
+      <block type="math_arithmetic">
+        <value name="A">
+          <shadow type="math_number">
+            <field name="NUM">1</field>
+          </shadow>
+        </value>
+        <value name="B">
+          <shadow type="math_number">
+            <field name="NUM">1</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="math_single">
+        <value name="NUM">
+          <shadow type="math_number">
+            <field name="NUM">9</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="math_trig">
+        <value name="NUM">
+          <shadow type="math_number">
+            <field name="NUM">45</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="math_constant"></block>
+      <block type="math_number_property">
+        <value name="NUMBER_TO_CHECK">
+          <shadow type="math_number">
+            <field name="NUM">0</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="math_round">
+        <value name="NUM">
+          <shadow type="math_number">
+            <field name="NUM">3.1</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="math_on_list"></block>
+      <block type="math_modulo">
+        <value name="DIVIDEND">
+          <shadow type="math_number">
+            <field name="NUM">64</field>
+          </shadow>
+        </value>
+        <value name="DIVISOR">
+          <shadow type="math_number">
+            <field name="NUM">10</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="math_constrain">
+        <value name="VALUE">
+          <shadow type="math_number">
+            <field name="NUM">50</field>
+          </shadow>
+        </value>
+        <value name="LOW">
+          <shadow type="math_number">
+            <field name="NUM">1</field>
+          </shadow>
+        </value>
+        <value name="HIGH">
+          <shadow type="math_number">
+            <field name="NUM">100</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="math_random_int">
+        <value name="FROM">
+          <shadow type="math_number">
+            <field name="NUM">1</field>
+          </shadow>
+        </value>
+        <value name="TO">
+          <shadow type="math_number">
+            <field name="NUM">100</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="math_random_float"></block>
+      <block type="math_atan2">
+        <value name="X">
+          <shadow type="math_number">
+            <field name="NUM">1</field>
+          </shadow>
+        </value>
+        <value name="Y">
+          <shadow type="math_number">
+            <field name="NUM">1</field>
+          </shadow>
+        </value>
+      </block>
+    </category>
+    <category name="Text" categorystyle="text_category">
+      <block type="text"></block>
+      <block type="text_multiline"></block>
       <block type="text_join"></block>
       <block type="text_append">
         <value name="TEXT">
@@ -1291,494 +1172,6 @@ line.blocklyFlyoutLine {
     <sep></sep>
     <category name="Variables" categorystyle="variable_category" custom="VARIABLE_DYNAMIC"></category>
     <category name="Functions" categorystyle="procedure_category" custom="PROCEDURE"></category>
-  </xml>
-  <!-- toolbox-test-blocks has a category menu and an auto-closing flyout.
-  The blocks in this toolbox reflect block configurations not used by
-  the standard predefined blocks, and so test alternative block rendering
-  code paths. -->
-  <xml xmlns="https://developers.google.com/blockly/xml" id="toolbox-test-blocks" style="display: none">
-    <category name="Align">
-      <block type="test_align_dummy_right"></block>
-      <block type="test_align_all"></block>
-      <block type="test_align_with_external_input"></block>
-    </category>
-    <category name="Argument Reporters">
-      <block type="event_with_draggable_params_all">
-        <value name="HANDLER_DRAG_PARAM_myStr">
-          <shadow type="argument_reporter_string">
-            <field name="VALUE">myStr</field>
-          </shadow>
-        </value>
-        <value name="HANDLER_DRAG_PARAM_myNum">
-          <shadow type="argument_reporter_number">
-            <field name="VALUE">myNum</field>
-          </shadow>
-        </value>
-        <value name="HANDLER_DRAG_PARAM_myBool">
-          <shadow type="argument_reporter_boolean">
-            <field name="VALUE">myBool</field>
-          </shadow>
-        </value>
-        <value name="HANDLER_DRAG_PARAM_myArg">
-          <shadow type="argument_reporter_custom">
-            <field name="VALUE">myArg</field>
-          </shadow>
-        </value>
-        <statement name="STACK"></statement>
-      </block>
-      <block type="event_with_draggable_params_string">
-        <value name="HANDLER_DRAG_PARAM_myStr">
-          <shadow type="argument_reporter_string">
-            <field name="VALUE">myStr</field>
-          </shadow>
-        </value>
-        <statement name="STACK"></statement>
-      </block>
-      <block type="event_with_draggable_params_number">
-        <value name="HANDLER_DRAG_PARAM_myNum">
-          <shadow type="argument_reporter_number">
-            <field name="VALUE">myNum</field>
-          </shadow>
-        </value>
-        <statement name="STACK"></statement>
-      </block>
-      <block type="event_with_draggable_params_boolean">
-        <value name="HANDLER_DRAG_PARAM_myBool">
-          <shadow type="argument_reporter_boolean">
-            <field name="VALUE">myBool</field>
-          </shadow>
-        </value>
-        <statement name="STACK"></statement>
-      </block>
-      <block type="event_with_draggable_params_custom">
-        <value name="HANDLER_DRAG_PARAM_myArg">
-          <shadow type="argument_reporter_custom">
-            <field name="VALUE">myArg</field>
-          </shadow>
-        </value>
-        <statement name="STACK"></statement>
-      </block>
-      <block type="event_with_draggable_params_wrong_names">
-        <value name="HANDLER_DRAG_PARAM_myNum">
-          <shadow type="argument_reporter_boolean">
-            <field name="VALUE">myNum</field>
-          </shadow>
-        </value>
-        <value name="HANDLER_DRAG_PARAM_myBool">
-            <shadow type="argument_reporter_number">
-              <field name="VALUE">myBool</field>
-            </shadow>
-          </value>
-        <statement name="STACK"></statement>
-      </block>
-      <block type="event_with_draggable_variable">
-        <value name="HANDLER_DRAG_PARAM_myVar1">
-          <shadow type="variables_get_reporter">
-            <field name="VAR">myVar1</field>
-          </shadow>
-        </value>
-        <value name="HANDLER_DRAG_PARAM_myVar2">
-            <shadow type="variables_get_reporter">
-              <field name="VAR">myVar2</field>
-            </shadow>
-          </value>
-        <statement name="STACK"></statement>
-      </block>
-      <block type="controls_forEach">
-        <value name="VAR">
-          <shadow type="variables_get_reporter">
-            <field name="VAR">item</field>
-          </shadow>
-        </value>
-      </block>
-    </category>
-    <category name="Basic">
-      <block type="test_basic_empty"></block>
-      <block type="test_basic_empty_with_mutator"></block>
-      <block type="test_basic_dummy"></block>
-      <block type="test_basic_multiple_dummy"></block>
-      <block type="test_basic_stack"></block>
-      <block type="test_basic_row"></block>
-      <block type="test_basic_value_to_stack"></block>
-      <block type="test_basic_value_to_statement"></block>
-      <block type="test_basic_limit_instances"></block>
-      <block type="test_basic_tooltips"></block>
-      <block type="test_basic_javascript"></block>
-    </category>
-    <category name="Connections" expanded="true">
-      <category name="Row">
-        <label text="blocks have"></label>
-        <sep gap="-1"></sep>
-        <label text="tooltips"></label>
-
-        <button text="insert" callbackkey="insertConnectionRows"></button>
-        <sep gap="7"></sep>
-        <block type="test_connections_row_input"></block>
-        <sep gap="7"></sep>
-        <block type="test_connections_row_blue"></block>
-        <sep gap="7"></sep>
-        <block type="test_connections_row_yellow"></block>
-        <sep gap="7"></sep>
-        <block type="test_connections_row_red"></block>
-        <sep gap="7"></sep>
-        <block type="test_connections_row_output"></block>
-        <block type="test_connections_row_yellow">
-          <value name="NAME">
-            <block type="test_connections_row_yellow" movable="false"></block>
-          </value>
-        </block>
-        <sep gap="7"></sep>
-        <block type="test_connections_multivalue_1valid"></block>
-        <sep gap="7"></sep>
-        <block type="test_connections_multivalue_2valid"></block>
-      </category>
-      <category name="Stack">
-        <label text="blocks have"></label>
-        <sep gap="-1"></sep>
-        <label text="tooltips"></label>
-
-        <button text="insert" callbackkey="insertConnectionStacks"></button>
-        <sep gap="7"></sep>
-        <block type="test_connections_stack_next"></block>
-        <sep gap="7"></sep>
-        <block type="test_connections_stack_blue"></block>
-        <sep gap="7"></sep>
-        <block type="test_connections_stack_yellow"></block>
-        <sep gap="7"></sep>
-        <block type="test_connections_stack_red"></block>
-        <sep gap="7"></sep>
-        <block type="test_connections_stack_prev"></block>
-        <block type="test_connections_stack_yellow">
-          <next>
-            <block type="test_connections_stack_yellow" movable="false"></block>
-          </next>
-        </block>
-      </category>
-      <category name="Statement">
-        <label text="blocks have"></label>
-        <sep gap="-1"></sep>
-        <label text="tooltips"></label>
-
-        <button text="insert" callbackkey="insertConnectionStatements"></button>
-        <sep gap="7"></sep>
-        <block type="test_connections_statement_blue"></block>
-        <sep gap="7"></sep>
-        <block type="test_connections_statement_yellow"></block>
-        <sep gap="7"></sep>
-        <block type="test_connections_statement_red"></block>
-        <block type="test_connections_statement_nonext"></block>
-        <sep gap="7"></sep>
-        <block type="test_connections_multistatement_1valid"></block>
-        <sep gap="7"></sep>
-        <block type="test_connections_multistatement_2valid"></block>
-      </category>
-    </category>
-    <category name="Drag">
-      <label text="Drag each to the workspace"></label>
-      <block type="text_print">
-        <value name="TEXT">
-          <block type="text">
-            <field name="TEXT">Drag me by this child</field>
-          </block>
-        </value>
-      </block>
-      <block type="text_print">
-        <value name="TEXT">
-          <shadow type="text">
-            <field name="TEXT">Drag me by this shadow</field>
-          </shadow>
-        </value>
-      </block>
-      <block type="text_print">
-        <value name="TEXT">
-          <shadow type="text">
-            <field name="TEXT">Shadow value</field>
-          </shadow>
-        </value>
-        <next>
-          <shadow type="text_print">
-            <value name="TEXT">
-              <shadow type="text">
-                <field name="TEXT">Shadow statement</field>
-              </shadow>
-            </value>
-          </shadow>
-        </next>
-      </block>
-      <label text="Multiple Variable Refs"></label>
-      <block type="text_print">
-        <value name="TEXT">
-          <block type="variables_get">
-            <field name="VAR" id="item">item</field>
-          </block>
-        </value>
-        <next>
-          <block type="text_print">
-            <value name="TEXT">
-              <block type="variables_get">
-                <field name="VAR" id="item">item</field>
-              </block>
-            </value>
-          </block>
-        </next>
-      </block>
-      <label text="Procedure Definitions"></label>
-      <block type="procedures_defnoreturn">
-        <field name="NAME">without arguments</field>
-        <statement name="STACK">
-          <block type="text_print">
-            <value name="TEXT">
-              <shadow type="text">
-                <field name="TEXT">No argument reference.</field>
-              </shadow>
-            </value>
-          </block>
-        </statement>
-      </block>
-      <block type="procedures_defnoreturn">
-        <mutation>
-          <arg name="fnArgument"></arg>
-        </mutation>
-        <field name="NAME">with one argument</field>
-        <statement name="STACK">
-          <block type="text_print">
-            <value name="TEXT">
-              <shadow type="text">
-                <field name="TEXT">Expected an argument reference here.</field>
-              </shadow>
-              <block type="variables_get">
-                <field name="VAR">fnArgument</field>
-              </block>
-            </value>
-          </block>
-        </statement>
-      </block>
-      <block type="function_definition" x="-94" y="-314">
-        <mutation name="test_func" functionid="0J3HE)kqi0a7@]osR(iu">
-            <arg name="bool" id="LBgq/Ni@{1GbB@=WqW+0" type="boolean" />
-        </mutation>
-        <field name="function_name">test_func</field>
-        <value name="LBgq/Ni@{1GbB@=WqW+0">
-            <shadow type="argument_reporter_boolean">
-                <field name="VALUE">bool</field>
-            </shadow>
-        </value>
-      </block>
-      <block type="function_call">
-        <mutation name="test_func" functionid="0J3HE)kqi0a7@]osR(iu">
-          <arg name="bool" id="LBgq/Ni@{1GbB@=WqW+0" type="boolean" />
-        </mutation>
-        <value name="LBgq/Ni@{1GbB@=WqW+0">
-          <shadow type="logic_boolean">
-            <field name="BOOL">TRUE</field>
-          </shadow>
-        </value>
-      </block>
-      <block type="function_definition" x="-94" y="-166">
-        <mutation name="test" functionid="Bmm1NH_Q^;B[)`SAkgMv" />
-        <field name="function_name">test</field>
-      </block>
-      <block type="function_call">
-        <mutation name="test" functionid="Bmm1NH_Q^;B[)`SAkgMv" />
-      </block>
-    </category>
-    <category name="Fields" expanded="true">
-      <category name="Defaults">
-        <button text="add blocks to workspace" callbackKey="addAllBlocksToWorkspace"></button>
-        <sep gap="8"></sep>
-        <button text="set random style" callbackKey="setRandomStyle"></button>
-        <sep gap="8"></sep>
-        <button text="toggle enabled" callbackKey="toggleEnabled"></button>
-        <sep gap="8"></sep>
-        <button text="toggle shadow" callbackKey="toggleShadow"></button>
-        <sep gap="8"></sep>
-        <button text="toggle collapsed" callbackKey="toggleCollapsed"></button>
-        <block type="test_fields_angle"></block>
-        <block type="test_fields_checkbox"></block>
-        <block type="test_fields_colour"></block>
-        <block type="test_fields_colour_options"></block>
-        <block type="test_fields_text_input"></block>
-        <block type="test_fields_only_text_input"></block>
-        <block type="test_fields_multilinetext"></block>
-        <block type="test_fields_variable"></block>
-        <button text="randomize label text" callbackKey="randomizeLabelText"></button>
-        <sep gap="12"></sep>
-        <block type="test_fields_label_serializable"></block>
-        <button text="change image" callbackKey="changeImage"></button>
-        <sep gap="12"></sep>
-        <block type="test_fields_image"></block>
-      </category>
-      <category name="Numbers">
-        <block type="test_numbers_float">
-          <field name="NUM">123.456</field>
-        </block>
-        <block type="test_numbers_hundredths">
-          <field name="NUM">123.456</field>
-        </block>
-        <block type="test_numbers_halves">
-          <field name="NUM">123.456</field>
-        </block>
-        <block type="test_numbers_whole">
-          <field name="NUM">123.456</field>
-        </block>
-        <block type="test_numbers_three_halves">
-          <field name="NUM">123.456</field>
-        </block>
-        <block type="test_numbers_whole_bounded">
-          <field name="NOTE">60</field>
-        </block>
-      </category>
-      <category name="Angles">
-        <block type="test_angles_clockwise"></block>
-        <block type="test_angles_offset"></block>
-        <block type="test_angles_wrap"></block>
-        <block type="test_angles_round_30"></block>
-        <block type="test_angles_round_0"></block>
-        <block type="test_angles_protractor"></block>
-        <block type="test_angles_compass"></block>
-      </category>
-      <category name="Drop-downs">
-        <label text="Dynamic"></label>
-        <block type="test_dropdowns_dynamic"></block>
-        <button text="Add option" callbackKey="addDynamicOption"></button>
-        <button text="Remove option" callbackKey="removeDynamicOption"></button>
-        <block type="test_dropdowns_dynamic_random"></block>
-        <label text="Other"></label>
-        <block type="test_dropdowns_long"></block>
-        <block type="test_dropdowns_images"></block>
-        <block type="test_dropdowns_images_and_text"></block>
-      </category>
-      <category name="Images">
-        <block type="test_images_datauri"></block>
-        <block type="test_images_small"></block>
-        <block type="test_images_large"></block>
-        <block type="test_images_fliprtl"></block>
-        <block type="test_images_missing"></block>
-        <block type="test_images_many_icons"></block>
-        <block type="test_images_clickhandler"></block>
-      </category>
-      <category name="Emoji! o((*^ᴗ^*))o">
-        <label text="Unicode & Emojis"></label>
-        <block type="test_style_emoji"></block>
-        <block type="text">
-          <field name="TEXT">Robot face in text field: &#x1f916;</field>
-        </block>
-        <block type="text">
-          <field name="TEXT">Zalgo in text field: B&#776;&#788;&#862;&#795;&#842;&#827;&#806;&#837;&#812;&#792;&#816;&#846;&#805;l&#771;&#832;&#833;&#864;&#849;&#849;&#789;&#861;&#801;&#854;&#863;&#811;&#826;&#812;&#790;&#803;&#819;o&#843;&#777;&#778;&#785;&#831;&#829;&#794;&#825;&#857;&#814;&#802;&#811;&#852;c&#843;&#786;&#849;&#778;&#861;&#775;&#825;&#825;&#796;&#857;&#825;&#800;&#824;k&#778;&#850;&#833;&#774;&#772;&#782;&#862;&#770;&#789;&#788;&#841;&#801;&#811;&#860;&#839;&#790;&#819;&#854;l&#832;&#774;&#836;&#831;&#776;&#787;&#855;&#816;&#793;&#798;&#819;&#809;&#800;&#854;&#815;y&#864;&#783;&#856;&#773;&#832;&#808;&#799;&#839;&#814;&#840;&#812;&#793;&#818;&#801;</field>
-        </block>
-      </category>
-      <category name="Validators">
-        <button text="add blocks to workspace" callbackKey="addAllBlocksToWorkspace"></button>
-        <sep gap="8"></sep>
-        <button text="set input" callbackKey="setInput"></button>
-        <label text="Angles"></label>
-        <sep gap="12"></sep>
-        <block type="test_validators_angle_null"></block>
-        <sep gap="12"></sep>
-        <block type="test_validators_angle_mult30_force"></block>
-        <sep gap="12"></sep>
-        <block type="test_validators_angle_mult30_null"></block>
-        <label text="Checkboxes"></label>
-        <sep gap="12"></sep>
-        <block type="test_validators_checkbox_null"></block>
-        <sep gap="12"></sep>
-        <block type="test_validators_checkbox_match"></block>
-        <sep gap="12"></sep>
-        <block type="test_validators_checkbox_not_match_null"></block>
-        <label text="Colours"></label>
-        <sep gap="12"></sep>
-        <block type="test_validators_colour_null"></block>
-        <sep gap="12"></sep>
-        <block type="test_validators_colour_force_red"></block>
-        <sep gap="12"></sep>
-        <block type="test_validators_colour_red_null"></block>
-        <label text="Dropdowns"></label>
-        <sep gap="12"></sep>
-        <block type="test_validators_dropdown_null"></block>
-        <sep gap="12"></sep>
-        <block type="test_validators_dropdown_force_1s"></block>
-        <sep gap="12"></sep>
-        <block type="test_validators_dropdown_1s_null"></block>
-        <label text="Numbers"></label>
-        <sep gap="12"></sep>
-        <block type="test_validators_number_null"></block>
-        <sep gap="12"></sep>
-        <block type="test_validators_number_mult10_force"></block>
-        <sep gap="12"></sep>
-        <block type="test_validators_number_mult10_null"></block>
-        <label text="Text"></label>
-        <sep gap="12"></sep>
-        <block type="test_validators_text_null"></block>
-        <sep gap="12"></sep>
-        <block type="test_validators_text_A"></block>
-        <sep gap="12"></sep>
-        <block type="test_validators_text_B"></block>
-        <label text="Variables"></label>
-        <sep gap="8"></sep>
-        <button text="add test variables" callbackKey="addVariables" web-class="modifiesWorkspace"></button>
-        <sep gap="12"></sep>
-        <block type="test_validators_variable_null"></block>
-        <sep gap="12"></sep>
-        <block type="test_validators_variable_force_1s"></block>
-        <sep gap="12"></sep>
-        <block type="test_validators_variable_1s_null"></block>
-      </category>
-      <category name="PXT Fields">
-        <block type="test_basic_row">
-          <value name="INPUT">
-            <shadow type="test_fields_text_dropdown">
-              <field name="FIELDNAME">Hello World</field>
-            </shadow>
-          </value>
-        </block>
-        <block type="test_basic_row">
-          <value name="INPUT">
-            <shadow type="test_fields_number_dropdown">
-              <field name="FIELDNAME">10</field>
-            </shadow>
-          </value>
-        </block>
-        <block type="test_fields_vertical_separator"></block>
-      </category>
-    </category>
-    <category name="Mutators">
-      <label text="logic_compare"></label>
-      <block type="logic_compare">
-        <value name="A">
-          <shadow type="math_number">
-            <field name="NUM">10</field>
-          </shadow>
-        </value>
-        <value name="B">
-          <shadow type="math_number">
-            <field name="NUM">10</field>
-          </shadow>
-        </value>
-      </block>
-      <block type="logic_compare">
-        <value name="A">
-          <block type="math_number">
-            <field name="NUM">10</field>
-          </block>
-        </value>
-        <value name="B">
-          <block type="math_number">
-            <field name="NUM">10</field>
-          </block>
-        </value>
-      </block>
-    </category>
-    <category name="Style">
-      <label text="Hats"></label>
-      <block type="test_style_hat"></block>
-      <label text="Colour"></label>
-      <block type="test_style_hex1"></block>
-      <block type="test_style_hex2"></block>
-      <block type="test_style_hex3"></block>
-      <block type="test_style_no_colour"></block>
-      <block type="test_style_hex4"></block>
-      <block type="test_style_hex5"></block>
-    </category>
   </xml>
 </body>
 </html>

@@ -378,7 +378,7 @@ Blockly.WorkspaceCommentSvg.prototype.addDeleteDom_ = function() {
         'class': 'blocklyDeleteIconShape'
       },
       this.deleteGroup_);
-    Blockly.WorkspaceCommentSvg.drawDeleteIcon(this.deleteIcon_)
+    Blockly.WorkspaceCommentSvg.drawDeleteIcon(this.deleteGroup_)
 };
 
 /**
@@ -751,12 +751,12 @@ Blockly.WorkspaceCommentSvg.prototype.setSize = function(width, height) {
     this.svgHandleTarget_.setAttribute('transform', 'translate(' + -width + ', 1)');
     this.minimizeArrow_.setAttribute('transform', 'translate(' + -width + ', 1)');
     if (this.isDeletable()) {
-      this.deleteIcon_.setAttribute('transform', 'translate(' +
+      this.deleteGroup_.setAttribute('transform', 'translate(' +
       (-width + Blockly.WorkspaceCommentSvg.DELETE_ICON_SIZE +
         Blockly.WorkspaceCommentSvg.TOP_BAR_ICON_INSET) + ',' + (0) + ') scale(-1 1)');
     }
   } else if (this.isDeletable()) {
-    this.deleteIcon_.setAttribute('transform', 'translate(' +
+    this.deleteGroup_.setAttribute('transform', 'translate(' +
       (width - Blockly.WorkspaceCommentSvg.DELETE_ICON_SIZE -
        Blockly.WorkspaceCommentSvg.TOP_BAR_ICON_INSET) + ',' +
       (0) + ')');

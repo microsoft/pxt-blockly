@@ -51,6 +51,7 @@ goog.require('Blockly.constants');
 goog.require('Blockly.Events.BlockChange');
 goog.require('Blockly.Field');
 goog.require('Blockly.Names');
+goog.require('Blockly.pxtBlocklyUtils');
 goog.require('Blockly.Workspace');
 
 /**
@@ -655,7 +656,7 @@ Blockly.Functions.mutateCallersAndDefinition = function(name, ws, mutation) {
           // Then, go through all descendants of the function definition and
           // look for argument reporters to update.
           definitionBlock.getDescendants().forEach(function(d) {
-            if (!Blockly.Functions.isFunctionArgumentReporter(d)) {
+            if (!Blockly.pxtBlocklyUtils.isFunctionArgumentReporter(d)) {
               return;
             }
 
@@ -686,20 +687,6 @@ Blockly.Functions.mutateCallersAndDefinition = function(name, ws, mutation) {
   } else {
     console.warn('Attempted to change function ' + name + ', but no definition block was found on the workspace');
   }
-};
-
-/**
- * Whether a block is a function argument reporter.
- * @param {!Blockly.BlockSvg} block The block that should be used to make this
- *     decision.
- * @return {boolean} True if the block is a function argument reporter.
- */
-Blockly.Functions.isFunctionArgumentReporter = function(block) {
-  return block.type == 'argument_reporter_boolean' ||
-    block.type == 'argument_reporter_number' ||
-    block.type == 'argument_reporter_string' ||
-    block.type == 'argument_reporter_array' ||
-    block.type == 'argument_reporter_custom';
 };
 
 /**

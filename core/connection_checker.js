@@ -18,6 +18,7 @@ goog.require('Blockly.connectionTypes');
 /** @suppress {extraRequire} */
 goog.require('Blockly.constants');
 goog.require('Blockly.IConnectionChecker');
+goog.require('Blockly.pxtBlocklyUtils');
 goog.require('Blockly.registry');
 
 goog.requireType('Blockly.RenderedConnection');
@@ -225,16 +226,16 @@ Blockly.ConnectionChecker.prototype.doDragChecks = function(a, b, distance) {
 
       // pxt-blockly: don't allow connecting a block to an argument reporter
       // shadow.
-      if (candidate.targetConnection) {
+      if (b && b.targetBlock()) {
         var targetBlock = b.targetBlock();
-        if (targetBlock.isShadow() && Blockly.Functions.isFunctionArgumentReporter(targetBlock)) {
+        if (targetBlock.isShadow() && Blockly.pxtBlocklyUtils.isFunctionArgumentReporter(targetBlock)) {
           return false;
         }
       }
 
       // pxt-blockly: don't allow putting argument reporters outside their
       // respective function or event handler.
-      if (Blockly.Functions.isFunctionArgumentReporter(a.getSourceBlock())) {
+      if (Blockly.pxtBlocklyUtils.isFunctionArgumentReporter(a.getSourceBlock())) {
         // Ensure the root block of this stack has an argument reporter
         // matching the name and the type of this reporter.
         var rootBlock = b.getSourceBlock().getRootBlock();

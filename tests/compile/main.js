@@ -10,6 +10,9 @@ goog.provide('Main');
 goog.require('Blockly');
 goog.require('Blockly.geras.Renderer');
 goog.require('Blockly.VerticalFlyout');
+// pxt-blockly
+goog.require('Blockly.pxt.Renderer');
+goog.require('Blockly.PXTBlockly.Extensions');
 // Blocks
 goog.require('Blockly.Constants.Logic');
 goog.require('Blockly.Constants.Loops');

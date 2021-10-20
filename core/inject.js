@@ -15,7 +15,6 @@ goog.provide('Blockly.inject');
 goog.require('Blockly.BlockDragSurfaceSvg');
 goog.require('Blockly.browserEvents');
 goog.require('Blockly.Css');
-goog.require('Blockly.constants');
 goog.require('Blockly.DropDownDiv');
 goog.require('Blockly.Events');
 goog.require('Blockly.Grid');
@@ -142,12 +141,6 @@ Blockly.createDom_ = function(container, options) {
   // https://neil.fraser.name/news/2015/11/01/
   var rnd = String(Math.random()).substring(2);
 
-  // options.stackGlowFilterId = stackGlowFilter.id;
-  // options.replacementGlowFilterId = replacementGlowFilter.id;
-  // options.highlightGlowFilterId = highlightGlowFilter.id;
-  // options.warningGlowFilterId = warningGlowFilter.id;
-  // options.selectedGlowFilterId = selectedGlowFilter.id;
-  // options.disabledPatternId = disabledPattern.id;
   options.gridPattern = Blockly.Grid.createDom(rnd, options.gridOptions, defs);
   return svg;
 };
@@ -496,8 +489,11 @@ Blockly.inject.loadSounds_ = function(pathToMedia, workspace) {
     audioMgr.preload();
   };
 
-  // opt_noCaptureIdentifier is true because this is an action to take on a
-  // click, not a drag.
+  // These are bound on mouse/touch events with Blockly.bindEventWithChecks_, so
+  // they restrict the touch identifier that will be recognized.  But this is
+  // really something that happens on a click, not a drag, so that's not
+  // necessary.
+
   // Android ignores any sound not loaded as a result of a user action.
   soundBinds.push(Blockly.browserEvents.conditionalBind(
       document, 'mousemove', null, unbindSounds, true));

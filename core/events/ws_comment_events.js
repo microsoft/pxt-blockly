@@ -58,7 +58,7 @@ Blockly.Events.CommentBase = function(opt_comment) {
    * comment.
    * @type {string}
    */
-  this.blockId = comment.blockId || null;
+  this.blockId = opt_comment.blockId || null;
 
   /**
    * The event group id for the group this event belongs to. Groups define
@@ -358,7 +358,7 @@ Blockly.Events.CommentMove = function(opt_comment) {
    */
   this.comment_ = opt_comment;
 
-  this.workspaceWidth_ = comment.workspace.getWidth();
+  this.workspaceWidth_ = opt_comment.workspace.getWidth();
   /**
    * The location before the move, in workspace coordinates.
    * @type {!Blockly.utils.Coordinate}

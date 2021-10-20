@@ -142,8 +142,10 @@ Blockly.pxt.ConstantProvider.prototype.init = function() {
 /**
  * @override
  */
-Blockly.pxt.ConstantProvider.prototype.createDom = function(svg) {
-  Blockly.pxt.ConstantProvider.superClass_.createDom.call(this, svg);
+Blockly.pxt.ConstantProvider.prototype.createDom = function(svg,
+    tagName, selector) {
+  Blockly.pxt.ConstantProvider.superClass_.createDom.call(this, svg,
+    tagName, selector);
   var defs = Blockly.utils.dom.createSvgElement('defs', {}, svg);
 
   // Filter for highlighting
@@ -252,9 +254,8 @@ Blockly.pxt.ConstantProvider.prototype.makeEllipses = function() {
 /**
  * @override
  */
-Blockly.pxt.ConstantProvider.prototype.getCSS_ = function(name) {
-  var selector = '.' + name + '-renderer';
-  var css = Blockly.pxt.ConstantProvider.superClass_.getCSS_.call(this, name);
+Blockly.pxt.ConstantProvider.prototype.getCSS_ = function(selector) {
+  var css = Blockly.pxt.ConstantProvider.superClass_.getCSS_.call(this, selector);
   return css.concat([
     /* eslint-disable indent */
     // Connection indicator.

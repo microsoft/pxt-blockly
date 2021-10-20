@@ -200,7 +200,29 @@ Blockly.Blocks['lists_create_with'] = {
   //     itemBlock = itemBlock.nextConnection &&
   //         itemBlock.nextConnection.targetBlock();
   //   }
+  //   // Disconnect any children that don't belong.
+  //   for (var i = 0; i < this.itemCount_; i++) {
+  //     var connection = this.getInput('ADD' + i).connection.targetConnection;
+  //     if (connection && connections.indexOf(connection) == -1) {
+  //       connection.disconnect();
+  //     }
+  //   }
+  //   this.itemCount_ = connections.length;
+  //   this.updateShape_();
+  //   // Reconnect any child blocks.
+  //   for (var i = 0; i < this.itemCount_; i++) {
+  //     Blockly.Mutator.reconnect(connections[i], this, 'ADD' + i);
+  //   }
   // },
+  /**
+   * Store pointers to any connected child blocks.
+   */
+  storeConnections_: function() {
+    this.valueConnections_ = [];
+    for (var i = 0; i < this.itemCount_; i++) {
+      this.valueConnections_.push(this.getInput('ADD' + i).connection.targetConnection);
+    }
+  },
   restoreConnections_: function() {
     for (var i = 0; i < this.itemCount_; i++) {
       Blockly.Mutator.reconnect(this.valueConnections_[i], this, 'ADD' + i);

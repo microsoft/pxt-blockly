@@ -32,7 +32,6 @@ goog.require('Blockly.IBoundedElement');
 goog.require('Blockly.ICopyable');
 goog.require('Blockly.IDraggable');
 goog.require('Blockly.Msg');
-goog.require('Blockly.navigation');
 goog.require('Blockly.pxtBlocklyUtils');
 goog.require('Blockly.RenderedConnection');
 goog.require('Blockly.TabNavigateCursor');

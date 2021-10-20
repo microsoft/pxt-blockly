@@ -340,10 +340,10 @@ Blockly.VerticalFlyout.prototype.reflowInternal_ = function() {
   // pxtblockly: restrict to the view width to prevent the
   // scrollbar from rendering off-screen. This means if the workspace
   // resizes, the flyout will be too small but that isn't an issue in pxt
-  var targetWorkspaceMetrics = this.targetWorkspace_.getMetrics();
-  if (targetWorkspaceMetrics) {
-    flyoutWidth = Math.min(flyoutWidth, targetWorkspaceMetrics.viewWidth);
-  }
+  // var targetWorkspaceMetrics = this.targetWorkspace_.getMetrics();
+  // if (targetWorkspaceMetrics) {
+  //   flyoutWidth = Math.min(flyoutWidth, targetWorkspaceMetrics.viewWidth);
+  // }
 
   if (this.width_ != flyoutWidth) {
     for (var i = 0, block; (block = blocks[i]); i++) {

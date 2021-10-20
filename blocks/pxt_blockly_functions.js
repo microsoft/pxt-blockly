@@ -31,6 +31,7 @@
  * @fileoverview Utility functions for handling functions (pxt-blockly's custom procedures).
  */
 'use strict';
+goog.provide('Blockly.PXTBlockly.FunctionUtils');
 
 Blockly.PXTBlockly.FunctionUtils = {};
 

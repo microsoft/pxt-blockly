@@ -140,10 +140,7 @@ Blockly.utils.aria.State = {
   VALUEMAX: 'valuemax',
 
   // ARIA property for slider minimum value. Value: number.
-  VALUEMIN: 'valuemin',
-
-  // ARIA state for a disabled item. Value: one of {true, false}.
-  DISABLED: 'disabled' // pxt-blockly
+  VALUEMIN: 'valuemin'
 };
 
 /**

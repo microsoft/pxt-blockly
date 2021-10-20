@@ -81,6 +81,9 @@ Blockly.FieldLabel.prototype.EDITABLE = false;
  * @protected
  */
 Blockly.FieldLabel.prototype.bindEvents_ = function() {
+  var clickTarget = this.getClickTarget_()
+  clickTarget.mouseOverWrapper_ = [];
+  clickTarget.mouseOutWrapper_ = [];
   return;
 };
 

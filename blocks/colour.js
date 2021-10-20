@@ -20,8 +20,6 @@ goog.provide('Blockly.Constants.Colour');
 
 goog.require('Blockly');
 goog.require('Blockly.Blocks');
-goog.require('Blockly.Colours');
-goog.require('Blockly.constants');
 goog.require('Blockly.FieldColour');
 goog.require('Blockly.FieldLabel');
 

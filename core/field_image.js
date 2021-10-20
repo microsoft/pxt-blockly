@@ -206,7 +206,7 @@ Blockly.FieldImage.prototype.initView = function() {
  * @override
  */
 // TODO shakao verify we want this
-ototype.updateSize_ = function() {
+Blockly.FieldImage.prototype.updateSize_ = function() {
   // NOP
 };
 

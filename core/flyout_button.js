@@ -74,11 +74,10 @@ Blockly.FlyoutButton = function(workspace, targetWorkspace, json, isLabel) {
    * @type {?string}
    * @private
    */
-  this.helpButtonIcon_ = xml.getAttribute('web-help-button') || null;
+  this.helpButtonIcon_ = json['web-help-button'] || null;
 
   /**
    * The key to the function called when this button is clicked.
-   * TODO shakao check if callbackkey changes needed pxt-blockly/commit/3dc9e08f9add5147ab42946692017bac953cf9ad
    * @type {string}
    * @private
    */
@@ -98,17 +97,17 @@ Blockly.FlyoutButton = function(workspace, targetWorkspace, json, isLabel) {
    * @type {?string}
    * @private
    */
-  this.icon_ = xml.getAttribute('web-icon') || null;
-  this.iconClass_ = xml.getAttribute('web-icon-class') || null;
-  this.iconColor_ = xml.getAttribute('web-icon-color') || null;
+  this.icon_ = json['web-icon'] || null;
+  this.iconClass_ = json['web-icon-class'] || null;
+  this.iconColor_ = json['web-icon-color'] || null;
 
   /**
    * If specified, a line to add underneath this button.
    * @type {?string}
    * @private
    */
-  this.line_ = xml.getAttribute('web-line') || null;
-  this.lineWidth_ = xml.getAttribute('web-line-width') || null;
+  this.line_ = json['web-line'] || null;
+  this.lineWidth_ = json['web-line-width'] || null;
 
   /**
    * Mouse up event data.
@@ -229,10 +228,10 @@ Blockly.FlyoutButton.prototype.createDom = function() {
     svgIcon.setAttribute('dominant-baseline', 'central');
     svgIcon.setAttribute('dy', Blockly.utils.userAgent.EDGE_OR_IE ?
       Blockly.Field.IE_TEXT_OFFSET : '0');
-    svgIcon.setAttribute('x', this.targetWorkspace_.RTL ? this.width + Blockly.FlyoutButton.MARGIN : 0);
-    svgIcon.setAttribute('y', this.height / 2);
+    svgIcon.setAttribute('x', this.targetWorkspace_.RTL ? this.width + Blockly.FlyoutButton.MARGIN_X : 0);
+    svgIcon.setAttribute('y', this.height / 2 + Blockly.FlyoutButton.MARGIN_Y);
 
-    this.width += Blockly.utils.dom.getTextWidth(svgIcon) + Blockly.FlyoutButton.MARGIN;
+    this.width += Blockly.utils.dom.getTextWidth(svgIcon) + Blockly.FlyoutButton.MARGIN_X;
   }
 
   if (this.helpButtonIcon_) {
@@ -240,7 +239,7 @@ Blockly.FlyoutButton.prototype.createDom = function() {
     var helpButtonMarginX = 15;
     var helpButtonMarginY = 10;
     var helpButtonX = this.workspace_.RTL ?
-      - this.width + Blockly.FlyoutButton.MARGIN + helpButtonMarginX :
+      - this.width + Blockly.FlyoutButton.MARGIN_X + helpButtonMarginX :
       this.width + helpButtonMarginX;
     this.helpButtonImage_ = Blockly.utils.dom.createSvgElement(
         'image',
@@ -352,24 +351,6 @@ Blockly.FlyoutButton.prototype.getButtonText = function() {
  */
 Blockly.FlyoutButton.prototype.getTargetWorkspace = function() {
   return this.targetWorkspace_;
-};
-
-/**
- * Get the text of this button.
- * @return {string} The text on the button.
- * @package
- */
-Blockly.FlyoutButton.prototype.getText = function() {
-  return this.text_;
-};
-
-/**
- * Get the position of this button.
- * @return {!Blockly.utils.Coordinate} The button position.
- * @package
- */
-Blockly.FlyoutButton.prototype.getPosition = function() {
-  return this.position_;
 };
 
 /**

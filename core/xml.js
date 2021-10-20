@@ -761,6 +761,8 @@ Blockly.Xml.applyCommentTagNodes_ = function(xmlChildren, block) {
     }
 
     // pxt-blockly: Save comment position
+    var x = parseInt(xmlChild.getAttribute('relx'), 10);
+    var y = parseInt(xmlChild.getAttribute('rely'), 10);
     if (!isNaN(x) && !isNaN(y)) {
       block.commentModel.xy = new Blockly.utils.Coordinate(x, y);
     }

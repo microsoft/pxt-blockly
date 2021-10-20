@@ -93,13 +93,11 @@ Blockly.Workspace = function(opt_options) {
    * @protected
    */
   this.undoStack_ = [];
-
   /**
    * @type {!Array<!Blockly.Events.Abstract>}
    * @protected
    */
   this.redoStack_ = [];
-
   /**
    * @type {!Object}
    * @private
@@ -314,8 +312,8 @@ Blockly.Workspace.prototype.removeTopComment = function(comment) {
 };
 
 /**
- * pxt-blockly: Finds the top-level comments and returns them. Comments
- * are optionally sorted by position; top to bottom (with slight LTR or RTL bias).
+ * Finds the top-level comments and returns them.  Comments are optionally
+ * sorted by position; top to bottom (with slight LTR or RTL bias).
  * @param {boolean} ordered Sort the list if true.
  * @return {!Array<!Blockly.WorkspaceComment>} The top-level comment objects.
  * @package
@@ -335,33 +333,9 @@ Blockly.Workspace.prototype.getTopComments = function(ordered) {
 };
 
 /**
- * Find top-level comments in workspace. Comments are optionally sorted
- * by position; top to bottom (with slight LTR or RTL bias).
- * @param {boolean} ordered Sort the list if true.
- * @return {!Array<!Blockly.WorkspaceComment>} The top-level comment objects.
- * @package
- */
-Blockly.Workspace.prototype.getTopComments = function(ordered) {
-  // Copy the topComments_ list.
-  var comments = [].concat(this.topComments_);
-  if (ordered && comments.length > 1) {
-    var offset = Math.sin(goog.math.toRadians(Blockly.Workspace.SCAN_ANGLE));
-    if (this.RTL) {
-      offset *= -1;
-    }
-    comments.sort(function(a, b) {
-      var aXY = a.getRelativeToSurfaceXY();
-      var bXY = b.getRelativeToSurfaceXY();
-      return (aXY.y + offset * aXY.x) - (bXY.y + offset * bXY.x);
-    });
-  }
-  return comments;
-};
-
-/**
  * Find all blocks in workspace.  Blocks are optionally sorted
  * by position; top to bottom (with slight LTR or RTL bias).
- * @param {boolean=} ordered Sort the list if true.
+ * @param {boolean} ordered Sort the list if true.
  * @return {!Array<!Blockly.Block>} Array of blocks.
  */
 Blockly.Workspace.prototype.getAllBlocks = function(ordered) {

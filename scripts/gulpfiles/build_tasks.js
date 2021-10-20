@@ -393,6 +393,8 @@ return gulp.src(maybeAddClosureLibrary(['core/**/**/*.js']))
 
     const addDependency = closureDeps.depFile
         .getDepFileText(closurePath, deps)
+        // pxt-blockly: Fix for closure generated dependencies on Windows
+        .replace(/\.\..*core/g, '../../../../core')
         .replace(/\\/g, '\/');
 
     const requires = `goog.addDependency("base.js", [], []);
