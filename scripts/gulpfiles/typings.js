@@ -31,7 +31,8 @@ function getFilePath(basePath, filter, excludePaths) {
   dirContents.forEach((fn) => {
     const filePath = path.join(basePath, fn);
     const excluded =
-        !excludePaths.every((exPath) => !filePath.startsWith(exPath));
+        // pxt-blockly: Normalize excludedPaths for windows
+        !excludePaths.every((exPath) => !filePath.startsWith(path.normalize(exPath)));
     if (excluded) {
       return;
     }
@@ -64,6 +65,8 @@ function typings() {
     "core/renderers/minimalist",
     "core/renderers/thrasos",
     "core/renderers/zelos",
+    // pxt-blockly
+    "core/renderers/pxt",
   ];
   const blocklySrcs = [
       'core',
@@ -81,6 +84,11 @@ function typings() {
     if (file.indexOf('core/msg.js') > -1) {
       return;
     }
+    // pxt-blockly: Create subdirectories if they don't yet exist
+    const fileDirs = path.join(tmpDir, file).replace(/\/[^\/]+$/i, "");
+    if (!fs.existsSync(fileDirs)){
+      fs.mkdirSync(fileDirs, { recursive: true });
+    }
     const cmd = `node ./node_modules/typescript-closure-tools/definition-generator/src/main.js ${file} ${typescriptFileName}`;
     console.log(`Generating typings for ${file}`);
     execSync(cmd, { stdio: 'inherit' });
@@ -89,6 +97,9 @@ function typings() {
   const srcs = [
     'typings/templates/blockly-header.template',
     'typings/templates/blockly-interfaces.template',
+    // pxt-blockly
+    'typings/templates/goog-closure.template',
+    'typings/templates/blockly-colours.template',
     `${tmpDir}/core/**/*`,
     `${tmpDir}/msg/**`
   ];

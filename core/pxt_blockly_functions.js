@@ -697,18 +697,21 @@ Blockly.Functions.mutateCallersAndDefinition = function(name, ws, mutation) {
  * @return {!Blockly.Flyout} The newly created flyout.
  */
 Blockly.Functions.createFlyout = function (workspace, siblingNode) {
-  let flyoutWorkspaceOptions = {
-    disabledPatternId: workspace.options.disabledPatternId,
-    parentWorkspace: workspace,
-    RTL: workspace.RTL,
-    oneBasedIndex: workspace.options.oneBasedIndex,
-    horizontalLayout: workspace.horizontalLayout,
-    toolboxPosition: workspace.options.toolboxPosition,
-    zoomOptions: workspace.options.zoomOptions,
-    renderer: workspace.options.renderer,
-    // pxt-blockly: pass the newFunctions option
-    newFunctions: workspace.options.newFunctions,
-  };
+  let flyoutWorkspaceOptions = new Blockly.Options(
+    /** @type {!Blockly.BlocklyOptions} */
+    ({
+      'disabledPatternId': workspace.options.disabledPatternId,
+      'parentWorkspace': workspace,
+      'rtl': workspace.RTL,
+      'oneBasedIndex': workspace.options.oneBasedIndex,
+      'horizontalLayout': workspace.horizontalLayout,
+      'toolboxPosition': workspace.options.toolboxPosition,
+      'zoomOptions': workspace.options.zoomOptions,
+      'renderer': workspace.options.renderer,
+      'rendererOverrides': workspace.options.rendererOverrides,
+      // pxt-blockly: pass the newFunctions option
+      'newFunctions': workspace.options.newFunctions,
+    }));
   let newFlyout;
   if (flyoutWorkspaceOptions.horizontalLayout) {
     newFlyout = new Blockly.HorizontalFlyout(flyoutWorkspaceOptions);

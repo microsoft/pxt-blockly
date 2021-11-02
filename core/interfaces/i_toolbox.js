@@ -59,6 +59,13 @@ Blockly.IToolbox.prototype.getHeight;
 Blockly.IToolbox.prototype.getFlyout;
 
 /**
+ * Gets the toolbox flyout.
+ * @param {Blockly.IFlyout} flyout The toolbox flyout.
+ * @return {void}.
+ */
+ Blockly.IToolbox.prototype.setFlyout;
+
+/**
  * Gets the workspace for the toolbox.
  * @return {!Blockly.WorkspaceSvg} The parent workspace for the toolbox.
  */

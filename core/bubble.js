@@ -954,7 +954,6 @@ Blockly.Bubble.prototype.setAutoLayout = function(enable) {
   this.autoLayout_ = enable;
 };
 
-// TODO shakao check if below 2 need to be commented out
 /**
  * Create the text for a non editable bubble.
  * @param {string} text The text to display.

@@ -126,7 +126,7 @@ Blockly.FlyoutButton = function(workspace, targetWorkspace, json, isLabel) {
 /**
  * The horizontal margin around the text in the button.
  */
-Blockly.FlyoutButton.MARGIN_X = 5;
+Blockly.FlyoutButton.MARGIN_X = 15;
 
 /**
  * The vertical margin around the text in the button.
@@ -212,9 +212,10 @@ Blockly.FlyoutButton.prototype.createDom = function() {
   var fontFamily = Blockly.utils.style.getComputedStyle(svgText, 'fontFamily');
   this.width = Blockly.utils.dom.getFastTextWidthWithSizeString(svgText,
       fontSize, fontWeight, fontFamily);
-  var fontMetrics = Blockly.utils.dom.measureFontMetrics(text, fontSize,
-      fontWeight, fontFamily);
-  this.height = fontMetrics.height;
+  // pxt-blockly: Not used
+  // var fontMetrics = Blockly.utils.dom.measureFontMetrics(text, fontSize,
+  //     fontWeight, fontFamily);
+  // this.height = fontMetrics.height;
 
   // pxtblockly: support for icons in toolbox labels
   if (this.icon_ || this.iconClass_) {
@@ -231,7 +232,7 @@ Blockly.FlyoutButton.prototype.createDom = function() {
     svgIcon.setAttribute('x', this.targetWorkspace_.RTL ? this.width + Blockly.FlyoutButton.MARGIN_X : 0);
     svgIcon.setAttribute('y', this.height / 2 + Blockly.FlyoutButton.MARGIN_Y);
 
-    this.width += Blockly.utils.dom.getTextWidth(svgIcon) + Blockly.FlyoutButton.MARGIN_X;
+    this.width += Blockly.utils.dom.getTextWidth(svgIcon) + 2 * Blockly.FlyoutButton.MARGIN_X;
   }
 
   if (this.helpButtonIcon_) {
@@ -280,8 +281,10 @@ Blockly.FlyoutButton.prototype.createDom = function() {
   svgText.setAttribute('dy', Blockly.utils.userAgent.EDGE_OR_IE ?
     Blockly.Field.IE_TEXT_OFFSET : '0');
   svgText.setAttribute('x', this.width / 2);
-  svgText.setAttribute('y', this.height / 2 - fontMetrics.height / 2 +
-      fontMetrics.baseline);
+  svgText.setAttribute('y', this.height / 2);
+  // pxt-blockly: Not used
+  // svgText.setAttribute('y', this.height / 2 - fontMetrics.height / 2 +
+  //     fontMetrics.baseline);
 
   this.updateTransform_();
 

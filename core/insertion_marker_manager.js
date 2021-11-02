@@ -800,6 +800,7 @@ Blockly.InsertionMarkerManager.prototype.hideInsertionInputOutline_ = function()
 Blockly.InsertionMarkerManager.prototype.showReplacementFade_ = function() {
   this.fadedBlock_ = this.closestConnection_.targetBlock();
   this.fadedBlock_.fadeForReplacement(true);
+  this.createConnectionLine_(); // pxt-blockly
 };
 
 /**
@@ -809,6 +810,7 @@ Blockly.InsertionMarkerManager.prototype.showReplacementFade_ = function() {
 Blockly.InsertionMarkerManager.prototype.hideReplacementFade_ = function() {
   this.fadedBlock_.fadeForReplacement(false);
   this.fadedBlock_ = null;
+  this.hideConnectionLine_(); // pxt-blockly
 };
 
 /**

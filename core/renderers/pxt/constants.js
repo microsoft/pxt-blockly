@@ -277,6 +277,11 @@ Blockly.pxt.ConstantProvider.prototype.getCSS_ = function(selector) {
     '}',
     selector + ' .blocklyConnectionLine.hidden {',
       'display: none;',
+    '}',
+
+    // Flyout heading.
+    selector + ' .blocklyFlyoutHeading .blocklyFlyoutLabelText {' +
+      'font-size: 1.5rem;',
     '}'
     /* eslint-enable indent */
   ])

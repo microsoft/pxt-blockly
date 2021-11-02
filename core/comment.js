@@ -598,8 +598,6 @@ Blockly.Css.register([
     'padding: 3px;',
     'resize: none;',
     'display: block;',
-    // TODO shakao verify we need this?
-    'text-overflow: hidden;',
     // pxt-blockly: Comment styles
     'color: $colour_text;',
     'overflow: hidden;',

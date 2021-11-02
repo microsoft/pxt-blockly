@@ -674,7 +674,6 @@ Blockly.DropDownDiv.hideWithoutAnimation = function() {
   if (Blockly.DropDownDiv.animateOutTimer_) {
     clearTimeout(Blockly.DropDownDiv.animateOutTimer_);
   }
-  // TODO shakao verify Blockly.DropDownDiv.positionInternal_() not needed
 
   // Reset style properties in case this gets called directly
   // instead of hide() - see discussion on #2551.

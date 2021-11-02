@@ -836,9 +836,11 @@ Blockly.Xml.applyInputTagNodes_ = function(xmlChildren, workspace, block,
     var nodeName = xmlChild.getAttribute('name');
     var input = block.getInput(nodeName);
     if (!input) {
-      console.warn('Ignoring non-existent input ' + nodeName + ' in block ' +
-          prototypeName);
-      break;
+      // pxt-blockly
+      // console.warn('Ignoring non-existent input ' + nodeName + ' in block ' +
+      //     prototypeName);
+      // break;
+      continue;
     }
     var childBlockInfo = Blockly.Xml.findChildBlocks_(xmlChild);
     if (childBlockInfo.childBlockElement) {

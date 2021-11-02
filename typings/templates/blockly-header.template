@@ -9,4 +9,5 @@
  * @author samelh@google.com (Sam El-Husseini)
  */
 
-export = Blockly;
+// pxt-blockly
+// export = Blockly;

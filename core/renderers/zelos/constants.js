@@ -950,6 +950,7 @@ Blockly.zelos.ConstantProvider.prototype.getCSS_ = function(selector) {
     // Flyout labels.
     selector + ' .blocklyFlyoutLabelText {',
       'fill: #575E75;',
+      'fill: #fff;',
     '}',
 
     // Bubbles.

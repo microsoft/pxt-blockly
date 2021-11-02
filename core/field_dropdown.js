@@ -675,7 +675,7 @@ Blockly.FieldDropdown.prototype.renderSelectedImage_ = function(imageJson) {
 
 /**
  * Renders the selected option, which must be text.
- * @private
+ * @protected pxt-blockly
  */
 Blockly.FieldDropdown.prototype.renderSelectedText_ = function() {
   // Retrieves the selected option to display through getText_.

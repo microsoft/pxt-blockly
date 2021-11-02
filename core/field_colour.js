@@ -43,7 +43,6 @@ goog.require('Blockly.utils.Size');
  */
 Blockly.FieldColour = function(opt_value, opt_validator, opt_config) {
   Blockly.FieldColour.superClass_.constructor.call(
-    // TODO shakao verify that opt_value can still be null
       this, opt_value, opt_validator, opt_config);
 
   /**

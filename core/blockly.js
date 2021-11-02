@@ -61,6 +61,9 @@ goog.requireType('Blockly.Connection');
 goog.requireType('Blockly.ICopyable');
 goog.requireType('Blockly.Workspace');
 
+// pxt-blockly
+/** @suppress {extraRequire} */
+goog.require('Blockly.Functions');
 
 /**
  * Blockly core version.

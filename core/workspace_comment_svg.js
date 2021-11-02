@@ -673,6 +673,16 @@ Blockly.WorkspaceCommentSvg.prototype.toCopyData = function() {
 };
 
 /**
+ * pxt-blockly:
+ * Returns a bounding box describing the dimensions of this workspace comment.
+ * @return {!{height: number, width: number}} Object with height and width properties.
+ */
+ Blockly.WorkspaceCommentSvg.prototype.getHeightWidth = function() {
+  console.warn('method is overriden by workspace_comment_render_svg.js');
+  return undefined;
+};
+
+/**
  * CSS for workspace comment.  See css.js for use.
  */
 Blockly.Css.register([

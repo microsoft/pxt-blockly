@@ -683,6 +683,15 @@ Blockly.Toolbox.prototype.getFlyout = function() {
 };
 
 /**
+ * pxt-blockly Set the toolbox flyout.
+ * @param {Blockly.IFlyout} flyout The toolbox flyout.
+ * @public
+ */
+ Blockly.Toolbox.prototype.setFlyout = function(flyout) {
+  this.flyout_ = flyout;
+};
+
+/**
  * Gets the workspace for the toolbox.
  * @return {!Blockly.WorkspaceSvg} The parent workspace for the toolbox.
  * @public

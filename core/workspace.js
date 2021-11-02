@@ -655,21 +655,6 @@ Blockly.Workspace.prototype.clearUndo = function() {
 };
 
 /**
- * @return {boolean} whether there are any events in the redo stack.
- * @package
- */
-Blockly.Workspace.prototype.hasRedoStack = function() {
-  return this.redoStack_.length != 0;
-};
-
-/**
- * @return {boolean} whether there are any events in the undo stack.
- * @package
- */
-Blockly.Workspace.prototype.hasUndoStack = function() {
-  return this.undoStack_.length != 0;
-};
-/**
  * When something in this workspace changes, call a function.
  * Note that there may be a few recent events already on the stack.  Thus the
  * new change listener might be called with events that occurred a few
@@ -713,20 +698,7 @@ Blockly.Workspace.prototype.fireChangeListener = function(event) {
  * @return {?Blockly.Block} The sought after block, or null if not found.
  */
 Blockly.Workspace.prototype.getBlockById = function(id) {
-  var block = this.blockDB_[id];
-  if (!block && this.getFlyout() && this.getFlyout().getWorkspace()) {
-    block = this.getFlyout().getWorkspace().blockDB_[id];
-  }
-  return block || null;
-};
-
-/**
- * Getter for the flyout associated with this workspace.  This is null in a
- * non-rendered workspace, but may be overriden by subclasses.
- * @return {Blockly.Flyout} The flyout on this workspace.
- */
-Blockly.Workspace.prototype.getFlyout = function() {
-  return null;
+  return this.blockDB_[id] || null;
 };
 
 /**

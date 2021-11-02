@@ -16,6 +16,8 @@
  */
 goog.provide('Blockly.Css');
 
+goog.require('Blockly.Colours');
+
 /**
  * Has CSS already been injected?
  * @type {boolean}

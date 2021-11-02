@@ -209,7 +209,8 @@ function buildCompressed() {
             js_output_file: 'blockly_compressed.js',
             externs: ['./externs/svg-externs.js', './externs/goog-externs.js'],
             define: defines,
-            output_wrapper: outputWrapperUMD('Blockly', [])
+            // pxt-blockly
+            // output_wrapper: outputWrapperUMD('Blockly', [])
           },
           argv.verbose, argv.debug, argv.strict))
       .pipe(gulp.sourcemaps.mapSources(function(sourcePath, file) {
