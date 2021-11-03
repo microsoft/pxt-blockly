@@ -126,12 +126,13 @@ Blockly.ContextMenuItems.registerCollapse = function() {
         var topBlocks = scope.workspace.getTopBlocks(false);
         for (var i = 0; i < topBlocks.length; i++) {
           var block = topBlocks[i];
-          while (block) {
-            if (!block.isCollapsed()) {
+          // pxt-blockly: Only collapse top blocks
+          // while (block) {
+            if (!block.isCollapsed() && block.previousConnection == null && block.outputConnection == null) {
               return 'enabled';
             }
-            block = block.getNextBlock();
-          }
+          //   block = block.getNextBlock();
+          // }
         }
         return 'disabled';
       }
@@ -402,7 +403,9 @@ Blockly.ContextMenuItems.registerCollapseExpandBlock = function() {
     },
     preconditionFn: function(/** @type {!Blockly.ContextMenuRegistry.Scope} */ scope) {
       var block = scope.block;
-      if (!block.isInFlyout && block.isMovable() && block.workspace.options.collapse) {
+      if (!block.isInFlyout && block.isMovable() && block.workspace.options.collapse
+        // pxt-blockly: Only collapse/expand top blocks
+        && scope.block.previousConnection == null && scope.block.outputConnection == null) {
         return 'enabled';
       }
       return 'hidden';

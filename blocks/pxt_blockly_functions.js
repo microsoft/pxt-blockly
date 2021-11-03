@@ -268,8 +268,8 @@ Blockly.PXTBlockly.FunctionUtils.disconnectOldBlocks_ = function() {
       // Remove the shadow DOM, then disconnect the block. Otherwise a shadow
       // block will respawn instantly, and we'd have to remove it when we remove
       // the input.
-      input.connection.setShadowDom(null);
-      if (target) {
+      input.connection.setShadowDom(null, true);
+      if (input.connection.targetConnection) {
         input.connection.disconnect();
       }
     }

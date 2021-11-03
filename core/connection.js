@@ -626,13 +626,15 @@ Blockly.Connection.prototype.getOutputShape = function() {
 /**
  * Changes the connection's shadow block.
  * @param {?Element} shadow DOM representation of a block or null.
+ * @param {boolean} skipDispose pxt-blocky: Do not automatically
+ *    dispose the shadow block
  */
-Blockly.Connection.prototype.setShadowDom = function(shadow) {
+Blockly.Connection.prototype.setShadowDom = function(shadow, skipDispose) {
   this.shadowDom_ = shadow;
   var target = this.targetBlock();
   if (!target) {
     this.respawnShadow_();
-  } else if (target.isShadow()) {
+  } else if (target.isShadow() && !skipDispose) {
     // The disconnect from dispose will automatically generate the new shadow.
     target.dispose(false);
     this.respawnShadow_();
