@@ -700,6 +700,7 @@ Blockly.Functions.createFlyout = function (workspace, siblingNode) {
   let flyoutWorkspaceOptions = new Blockly.Options(
     /** @type {!Blockly.BlocklyOptions} */
     ({
+      'scrollbars': true,
       'disabledPatternId': workspace.options.disabledPatternId,
       'parentWorkspace': workspace,
       'rtl': workspace.RTL,
@@ -711,6 +712,9 @@ Blockly.Functions.createFlyout = function (workspace, siblingNode) {
       'rendererOverrides': workspace.options.rendererOverrides,
       // pxt-blockly: pass the newFunctions option
       'newFunctions': workspace.options.newFunctions,
+      'move': {
+        'scrollbars': true,
+      }
     }));
   let newFlyout;
   if (flyoutWorkspaceOptions.horizontalLayout) {

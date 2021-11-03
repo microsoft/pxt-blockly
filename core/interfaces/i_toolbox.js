@@ -59,7 +59,7 @@ Blockly.IToolbox.prototype.getHeight;
 Blockly.IToolbox.prototype.getFlyout;
 
 /**
- * Gets the toolbox flyout.
+ * pxt-blockly: Sets the toolbox flyout.
  * @param {Blockly.IFlyout} flyout The toolbox flyout.
  * @return {void}.
  */
