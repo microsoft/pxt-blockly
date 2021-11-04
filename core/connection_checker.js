@@ -298,8 +298,8 @@ Blockly.ConnectionChecker.prototype.canConnectToPrevious_ = function(a, b) {
   var firstStatementConnection = sourceBlock.getFirstStatementConnection();
   // Is it a C-shaped (e.g. repeat) or E-shaped (e.g. if-else) block?
   var isComplexStatement = firstStatementConnection != null;
-  var isFirstStatementConnection = this == firstStatementConnection;
-  var isNextConnection = this == sourceBlock.nextConnection;
+  var isFirstStatementConnection = a == firstStatementConnection;
+  var isNextConnection = a == sourceBlock.nextConnection;
 
   // Can connect to the first statement input of a C-shaped or E-shaped
   // block, or to the next connection of any statement block, but not to
