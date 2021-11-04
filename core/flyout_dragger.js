@@ -49,6 +49,8 @@ Blockly.FlyoutDragger = function(flyout) {
    * @private
    */
   this.scrollbar_ = flyout.scrollbar_;
+  this.hasTwoScrolls = flyout.hasTwoScrolls;
+  this.scrollbarPair_ = flyout.scrollbarPair_;
 
   /**
    * Whether the flyout scrolls horizontally.  If false, the flyout scrolls
@@ -70,7 +72,6 @@ Blockly.FlyoutDragger.prototype.drag = function(currentDragDeltaXY) {
   // startScrollXY_ is assigned by the superclass.
   var newXY = Blockly.utils.Coordinate.sum(this.startScrollXY_,
       currentDragDeltaXY);
-
   // We can't call workspace.scroll because the flyout's workspace doesn't own
   // it's own scrollbars. This is because (as of 2.20190722.1) the
   // workspace's scrollbar property must be a scrollbar pair, rather than a
@@ -80,6 +81,10 @@ Blockly.FlyoutDragger.prototype.drag = function(currentDragDeltaXY) {
   if (this.horizontalLayout_) {
     this.scrollbar_.set(-newXY.x);
   } else {
-    this.scrollbar_.set(-newXY.y);
+    if (this.hasTwoScrolls) {
+      this.scrollbarPair_.set(-newXY.x, -newXY.y);
+    } else {
+      this.scrollbar_.set(-newXY.y);
+    }
   }
 };

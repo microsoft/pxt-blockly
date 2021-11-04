@@ -42,14 +42,16 @@ goog.require('Blockly.utils.dom');
 /**
  * Class for a pair of scrollbars.  Horizontal and vertical.
  * @param {!Blockly.Workspace} workspace Workspace to bind the scrollbars to.
+ * @param {!boolean} infinite If the scrollbar can scroll beyond its content
+ * @param {!string} opt_class Optional class name
  * @constructor
  */
-Blockly.ScrollbarPair = function(workspace) {
+Blockly.ScrollbarPair = function(workspace, infinite, opt_class) {
   this.workspace_ = workspace;
   this.hScroll = new Blockly.Scrollbar(
-      workspace, true, true, 'blocklyMainWorkspaceScrollbar');
+      workspace, true, true, opt_class);
   this.vScroll = new Blockly.Scrollbar(
-      workspace, false, true, 'blocklyMainWorkspaceScrollbar');
+      workspace, false, true, opt_class);
   this.corner_ = Blockly.utils.dom.createSvgElement(
       'rect',
       {
@@ -58,6 +60,7 @@ Blockly.ScrollbarPair = function(workspace) {
         'class': 'blocklyScrollbarBackground'
       },
       null);
+  this.infinite = infinite;
   Blockly.utils.dom.insertAfter(this.corner_, workspace.getBubbleCanvas());
 };
 
@@ -161,6 +164,10 @@ Blockly.ScrollbarPair.prototype.set = function(x, y) {
 
   var hHandlePosition = x * this.hScroll.ratio_;
   var vHandlePosition = y * this.vScroll.ratio_;
+  if (!this.infinite) {
+    var hHandlePosition = this.hScroll.constrainHandle_(hHandlePosition)
+    var vHandlePosition = this.vScroll.constrainHandle_(vHandlePosition)
+  }
 
   var hBarLength = this.hScroll.scrollViewSize_;
   var vBarLength = this.vScroll.scrollViewSize_;
