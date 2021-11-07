@@ -32,6 +32,7 @@ goog.require('Blockly.FlyoutCursor');
 goog.require('Blockly.Gesture');
 goog.require('Blockly.Marker');
 goog.require('Blockly.Scrollbar');
+goog.require('Blockly.ScrollbarPair')
 goog.require('Blockly.Tooltip');
 goog.require('Blockly.Touch');
 goog.require('Blockly.utils');
@@ -70,6 +71,13 @@ Blockly.Flyout = function(workspaceOptions) {
    * @protected
    */
   this.toolboxPosition_ = workspaceOptions.toolboxPosition;
+
+
+  /**
+   * Setting if we want to show two scrollbars
+   * @type {boolean}
+   */
+  this.hasTwoScrolls = false;
 
   /**
    * Opaque data that can be passed to Blockly.unbindEvent_.
@@ -220,6 +228,12 @@ Blockly.Flyout.prototype.svgGroup_ = null;
 Blockly.Flyout.prototype.scrollbar_ = null;
 
 /**
+ * Scrollbar for scrolling blocks.
+ * @type {Blockly.ScrollbarPair}
+ * @private
+ */
+ Blockly.Flyout.prototype.scrollbarPair_ = null;
+/**
  * The workspace this flyout puts blocks on
  * @type {Blockly.WorkspaceSvg}
  * @package pxt-blockly
@@ -265,9 +279,13 @@ Blockly.Flyout.prototype.init = function(targetWorkspace) {
   this.targetWorkspace_ = targetWorkspace;
   this.workspace_.targetWorkspace = targetWorkspace;
 
-  // Add scrollbar.
-  this.scrollbar_ = new Blockly.Scrollbar(this.workspace_,
+  if (this.hasTwoScrolls) {
+    this.scrollbarPair_ = new Blockly.ScrollbarPair(this.workspace_, 'blocklyFlyoutScrollbar');
+  } else {
+    // Add scrollbar.
+    this.scrollbar_ = new Blockly.Scrollbar(this.workspace_,
       this.horizontalLayout_, false, 'blocklyFlyoutScrollbar');
+  }
 
   this.hide();
 
@@ -306,9 +324,14 @@ Blockly.Flyout.prototype.dispose = function() {
     this.targetWorkspace_.removeChangeListener(this.filterWrapper_);
     this.filterWrapper_ = null;
   }
-  if (this.scrollbar_) {
-    this.scrollbar_.dispose();
-    this.scrollbar_ = null;
+  if (this.hasTwoScrolls) {
+    this.scrollbarPair_.dispose();
+    this.scrollbarPair_= null;
+  } else {
+    if (this.scrollbar_) {
+      this.scrollbar_.dispose();
+      this.scrollbar_ = null;
+    }
   }
   if (this.workspace_) {
     this.workspace_.getThemeManager().unsubscribe(this.svgBackground_);
@@ -396,10 +419,29 @@ Blockly.Flyout.prototype.updateDisplay_ = function() {
     show = this.isVisible();
   }
   this.svgGroup_.style.display = show ? 'block' : 'none';
-  // Update the scrollbar's visibility too since it should mimic the
-  // flyout's visibility.
-  this.scrollbar_.setContainerVisible(show);
+  if (this.hasTwoScrolls) {
+    this.scrollbarPair_.setContainerVisible(show)
+  } else {
+    // Update the scrollbar's visibility too since it should mimic the
+    // flyout's visibility.
+    this.scrollbar_.setContainerVisible(show);
+  }
 };
+
+/**
+ * Set the flyout to use two scrollbars
+ * @private
+ */
+Blockly.Flyout.prototype.setTwoScrolls = function() {
+  if (!this.hasTwoScrolls) {
+    if (this.scrollbar_) {
+      this.scrollbar_.dispose();
+      this.scrollbar_ = null;
+    }
+    this.hasTwoScrolls = true;
+    this.scrollbarPair_ = new Blockly.ScrollbarPair(this.workspace_, false, 'blocklyFlyoutScrollbar');
+  }
+}
 
 /**
  * Update the view based on coordinates calculated in position().
@@ -422,8 +464,30 @@ Blockly.Flyout.prototype.positionAt_ = function(width, height, x, y) {
     this.svgGroup_.setAttribute("transform", transform);
   }
 
-  // Update the scrollbar (if one exists).
-  if (this.scrollbar_) {
+
+  if (this.hasTwoScrolls) {
+    if (this.scrollbarPair_) {
+      if (this.scrollbarPair_.hScroll) {
+        this.scrollbarPair_.hScroll.setOrigin(x, y);
+        this.scrollbarPair_.hScroll.resize();
+        if (this.scrollbarPair_.hScroll.position) {
+          this.scrollbarPair_.hScroll.setPosition_(
+            this.scrollbarPair_.hScroll.position.x, this.scrollbarPair_.hScroll.position.y)
+        }
+      }
+      if (this.scrollbarPair_.vScroll) {
+        this.scrollbarPair_.vScroll.setOrigin(x, y);
+        this.scrollbarPair_.vScroll.resize();
+        if (this.scrollbarPair_.vScroll.position) {
+          this.scrollbarPair_.vScroll.setPosition_(
+            this.scrollbarPair_.vScroll.position.x, this.scrollbarPair_.vScroll.position.y)
+        }
+
+      }
+
+    }
+  } else if (this.scrollbar_) {
+    // Update the scrollbar (if one exists).
     // Set the scrollbars origin to be the top left of the flyout.
     this.scrollbar_.setOrigin(x, y);
     this.scrollbar_.resize();
@@ -826,7 +890,12 @@ Blockly.Flyout.prototype.reflow = function() {
  * @package
  */
 Blockly.Flyout.prototype.isScrollable = function() {
-  return this.scrollbar_ ? this.scrollbar_.isVisible() : false;
+  if (this.hasTwoScrolls) {
+    return this.scrollbarPair_ ? this.scrollbarPair_.hScroll.isVisible() || this.scrollbarPair_.vScroll.isVisible()
+                               : false;
+  } else {
+    return this.scrollbar_ ? this.scrollbar_.isVisible() : false;
+  }
 };
 
 /**
