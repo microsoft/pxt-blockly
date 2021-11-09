@@ -185,7 +185,9 @@ Blockly.Toolbox.prototype.init = function() {
     oneBasedIndex: workspace.options.oneBasedIndex,
     horizontalLayout: workspace.horizontalLayout,
     toolboxPosition: workspace.options.toolboxPosition,
-    renderer: workspace.options.renderer
+    renderer: workspace.options.renderer,
+    // pxt-blockly: pass the newFunctions option
+    newFunctions: workspace.options.newFunctions
   });
   if (workspace.horizontalLayout) {
     if (!Blockly.HorizontalFlyout) {
