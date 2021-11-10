@@ -1111,7 +1111,8 @@ suite('Events', function() {
       this.clock.runAll();
 
       // Expect one call to genUid: for the event group's id
-      sinon.assert.calledOnce(genUidStub);
+      // pxt-blockly: Additional call for variable ID, which we always generate
+      sinon.assert.calledTwice(genUidStub);
 
       // When block is created using domToWorkspace, 5 events are fired:
       // 1. varCreate (events disabled)
@@ -1128,7 +1129,8 @@ suite('Events', function() {
 
       assertNthCallEventArgEquals(
           this.changeListenerSpy, 0, Blockly.Events.VarCreate,
-          {group: TEST_GROUP_ID, varId: TEST_VAR_ID, varName: TEST_VAR_NAME},
+          // pxt-blockly: We always generate the varId
+          {group: TEST_GROUP_ID, /*varId: TEST_VAR_ID,*/ varName: TEST_VAR_NAME},
           this.workspace.id, undefined);
       assertNthCallEventArgEquals(
           this.changeListenerSpy, 1, Blockly.Events.Create,
@@ -1140,7 +1142,9 @@ suite('Events', function() {
           {group: ''}, this.workspace.id, undefined);
 
       // Expect the workspace to have a variable with ID 'test_var_id'.
-      chai.assert.isNotNull(this.workspace.getVariableById(TEST_VAR_ID));
+      // pxt-blockly: Get variable by name instead of ID
+      chai.assert.isNotNull(this.workspace.getVariable(TEST_VAR_NAME));
+      // chai.assert.isNotNull(this.workspace.getVariableById(TEST_VAR_ID));
     });
   });
   suite('Disable orphans', function() {

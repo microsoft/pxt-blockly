@@ -153,7 +153,8 @@ suite('Variable Fields', function() {
       var dropdownOptions = Blockly.FieldVariable.dropdownCreate.call(
           fieldVariable);
       // Expect variable options, a rename option, and a delete option.
-      chai.assert.lengthOf(dropdownOptions, expectedVarOptions.length + 2);
+      // pxt-blockly: Additional new variable + separator (+ rename + delete options)
+      chai.assert.lengthOf(dropdownOptions, expectedVarOptions.length + 4);
       for (let i = 0, option; (option = expectedVarOptions[i]); i++) {
         chai.assert.deepEqual(dropdownOptions[i], option);
       }

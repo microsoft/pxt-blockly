@@ -17,11 +17,11 @@ suite('Context Menu Items', function() {
     Blockly.ContextMenuItems.registerDefaultOptions();
     this.registry = Blockly.ContextMenuRegistry.registry;
   });
-  
+
   teardown(function() {
     sharedTestTeardown.call(this);
   });
-  
+
   suite('Workspace Items', function() {
     setup(function() {
       this.scope = {workspace: this.workspace};
@@ -135,13 +135,14 @@ suite('Context Menu Items', function() {
         this.collapseOption = this.registry.getItem('collapseWorkspace');
       });
 
-      test('Enabled when uncollapsed blocks', function() {
-        this.workspace.newBlock('text');
-        var block2 = this.workspace.newBlock('text');
-        block2.setCollapsed(true);
-        chai.assert.equal(this.collapseOption.preconditionFn(this.scope), 'enabled',
-            'Should be enabled when any blocks are expanded');
-      });
+      // pxt-blockly: Only enabeld when container blocks are collapsed
+      // test('Enabled when uncollapsed blocks', function() {
+      //   this.workspace.newBlock('text');
+      //   var block2 = this.workspace.newBlock('text');
+      //   block2.setCollapsed(true);
+      //   chai.assert.equal(this.collapseOption.preconditionFn(this.scope), 'enabled',
+      //       'Should be enabled when any blocks are expanded');
+      // });
 
       test('Disabled when all blocks collapsed', function() {
         this.workspace.newBlock('text').setCollapsed(true);

@@ -3586,8 +3586,10 @@ declare module Blockly {
             /**
              * Changes the connection's shadow block.
              * @param {?Element} shadow DOM representation of a block or null.
+             * @param {boolean} skipDispose pxt-blocky: Do not automatically
+             *    dispose the shadow block
              */
-            setShadowDom(shadow: Element): void;
+            setShadowDom(shadow: Element, skipDispose: boolean): void;
     
             /**
              * Returns the xml representation of the connection's shadow block.
@@ -7218,7 +7220,7 @@ declare module Blockly {
              * @extends {Blockly.Field}
              * @constructor
              */
-            constructor(opt_value?: string, opt_validator?: Function, opt_restrictor?: RegExp, opt_config?: Object);
+            constructor(opt_value?: string, opt_validator?: Function, opt_config?: Object);
     
             /**
              * Allow browser to spellcheck this field.
@@ -13906,12 +13908,12 @@ declare module Blockly {
              * @param {string} content The content of this workspace comment.
              * @param {number} height Height of the comment.
              * @param {number} width Width of the comment.
-             * @param {boolean} minimized Whether this comment is in the minimized state
              * @param {string=} opt_id Optional ID.  Use this ID if provided, otherwise
              *     create a new ID.
+             * @param {boolean=} opt_minimized pxt-blockly: Whether this comment is in the minimized state
              * @constructor
              */
-            constructor(workspace: Blockly.Workspace, content: string, height: number, width: number, minimized: boolean, opt_id?: string);
+            constructor(workspace: Blockly.Workspace, content: string, height: number, width: number, opt_id?: string, opt_minimized?: boolean);
     
             /** @type {string} */
             id: string;
@@ -18249,7 +18251,7 @@ declare module Blockly {
         getFlyout(): Blockly.IFlyout;
     
         /**
-          * Gets the toolbox flyout.
+          * pxt-blockly: Sets the toolbox flyout.
           * @param {Blockly.IFlyout} flyout The toolbox flyout.
           * @return {void}.
           */

@@ -86,8 +86,9 @@ suite('Dropdown Fields', function() {
    */
   var invalidValueSetValueTestCases = [
     {title: 'Null', value: null},
-    {title: 'Undefined', value: undefined},
-    {title: 'Invalid ID', value: 'bad'},
+    // pxt-blockly: Allow unavailable items in dropdown
+    // {title: 'Undefined', value: undefined},
+    // {title: 'Invalid ID', value: 'bad'},
   ];
   /**
    * Configuration for field tests with valid values.

@@ -144,36 +144,37 @@ suite('Number Fields', function() {
           });
         };
       };
-      suite('Min', function() {
-        var testCases = [
-          {title: '-10', json: {min: -10}, values: [-20, 0, 20],
-            expectedValues: [-10, 0, 20]},
-          {title: '0', json: {min: 0}, values: [-20, 0, 20],
-            expectedValues: [0, 0, 20]},
-          {title: '+10', json: {min: 10}, values: [-20, 0, 20],
-            expectedValues: [10, 10, 20]},
-        ];
-        testHelpers.runTestCases(testCases, setValueBoundsTestFn);
-        test('Null', function() {
-          var field = Blockly.FieldNumber.fromJson({min: null});
-          chai.assert.equal(field.getMin(), -Infinity);
-        });
-      });
-      suite('Max', function() {
-        var testCases = [
-          {title: '-10', json: {max: -10}, values: [-20, 0, 20],
-            expectedValues: [-20, -10, -10]},
-          {title: '0', json: {max: 0}, values: [-20, 0, 20],
-            expectedValues: [-20, 0, 0]},
-          {title: '+10', json: {max: 10}, values: [-20, 0, 20],
-            expectedValues: [-20, 0, 10]},
-        ];
-        testHelpers.runTestCases(testCases, setValueBoundsTestFn);
-        test('Null', function() {
-          var field = Blockly.FieldNumber.fromJson({max: null});
-          chai.assert.equal(field.getMax(), Infinity);
-        });
-      });
+      // pxt-blockly: We allow out-of-bounds values in fields
+      // suite('Min', function() {
+      //   var testCases = [
+      //     {title: '-10', json: {min: -10}, values: [-20, 0, 20],
+      //       expectedValues: [-10, 0, 20]},
+      //     {title: '0', json: {min: 0}, values: [-20, 0, 20],
+      //       expectedValues: [0, 0, 20]},
+      //     {title: '+10', json: {min: 10}, values: [-20, 0, 20],
+      //       expectedValues: [10, 10, 20]},
+      //   ];
+      //   testHelpers.runTestCases(testCases, setValueBoundsTestFn);
+      //   test('Null', function() {
+      //     var field = Blockly.FieldNumber.fromJson({min: null});
+      //     chai.assert.equal(field.getMin(), -Infinity);
+      //   });
+      // });
+      // suite('Max', function() {
+      //   var testCases = [
+      //     {title: '-10', json: {max: -10}, values: [-20, 0, 20],
+      //       expectedValues: [-20, -10, -10]},
+      //     {title: '0', json: {max: 0}, values: [-20, 0, 20],
+      //       expectedValues: [-20, 0, 0]},
+      //     {title: '+10', json: {max: 10}, values: [-20, 0, 20],
+      //       expectedValues: [-20, 0, 10]},
+      //   ];
+      //   testHelpers.runTestCases(testCases, setValueBoundsTestFn);
+      //   test('Null', function() {
+      //     var field = Blockly.FieldNumber.fromJson({max: null});
+      //     chai.assert.equal(field.getMax(), Infinity);
+      //   });
+      // });
     });
   });
   suite('Validators', function() {

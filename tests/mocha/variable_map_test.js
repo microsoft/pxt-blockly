@@ -107,14 +107,16 @@ suite('Variable Map', function() {
         assertVariableValues(this.variableMap, 'name1', 'type1', 'id1');
       });
 
-      test('Mismatched id', function() {
-        this.variableMap.createVariable('name1', 'type1', 'id1');
-        var variableMap = this.variableMap;
-        chai.assert.throws(function() {
-          variableMap.createVariable('name1', 'type1', 'id2');
-        }, /"name1".*in use/);
-        assertVariableValues(this.variableMap, 'name1', 'type1', 'id1');
-      });
+      // pxt-blockly: Suppress this error, we require unique variable names
+      // and don't rely on the ID
+      // test('Mismatched id', function() {
+      //   this.variableMap.createVariable('name1', 'type1', 'id1');
+      //   var variableMap = this.variableMap;
+      //   chai.assert.throws(function() {
+      //     variableMap.createVariable('name1', 'type1', 'id2');
+      //   }, /"name1".*in use/);
+      //   assertVariableValues(this.variableMap, 'name1', 'type1', 'id1');
+      // });
 
       test('Mismatched type', function() {
         this.variableMap.createVariable('name1', 'type1', 'id1');

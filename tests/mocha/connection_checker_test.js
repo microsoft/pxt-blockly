@@ -167,18 +167,19 @@ suite('Connection checker', function() {
             next,
             Blockly.Connection.CAN_CONNECT);
       });
-      test('Next Shadow', function() {
-        var prevBlock = { isShadow: function() { return false; }};
-        var nextBlock = { isShadow: function() { return true; }};
-        var prev = new Blockly.Connection(prevBlock, Blockly.PREVIOUS_STATEMENT);
-        var next = new Blockly.Connection(nextBlock, Blockly.NEXT_STATEMENT);
+      // pxt-blockly: Allow shadow parent connections
+      // test('Next Shadow', function() {
+      //   var prevBlock = { isShadow: function() { return false; }};
+      //   var nextBlock = { isShadow: function() { return true; }};
+      //   var prev = new Blockly.Connection(prevBlock, Blockly.PREVIOUS_STATEMENT);
+      //   var next = new Blockly.Connection(nextBlock, Blockly.NEXT_STATEMENT);
 
-        assertReasonHelper(
-            this.checker,
-            prev,
-            next,
-            Blockly.Connection.REASON_SHADOW_PARENT);
-      });
+      //   assertReasonHelper(
+      //       this.checker,
+      //       prev,
+      //       next,
+      //       Blockly.Connection.REASON_SHADOW_PARENT);
+      // });
       test('Prev and Next Shadow', function() {
         var prevBlock = { isShadow: function() { return true; }};
         var nextBlock = { isShadow: function() { return true; }};
@@ -203,18 +204,19 @@ suite('Connection checker', function() {
             inCon,
             Blockly.Connection.CAN_CONNECT);
       });
-      test('Input Shadow', function() {
-        var outBlock = { isShadow: function() { return false; }};
-        var inBlock = { isShadow: function() { return true; }};
-        var outCon = new Blockly.Connection(outBlock, Blockly.OUTPUT_VALUE);
-        var inCon = new Blockly.Connection(inBlock, Blockly.INPUT_VALUE);
+      // pxt-blockly: Allow shadow parent connections
+      // test('Input Shadow', function() {
+      //   var outBlock = { isShadow: function() { return false; }};
+      //   var inBlock = { isShadow: function() { return true; }};
+      //   var outCon = new Blockly.Connection(outBlock, Blockly.OUTPUT_VALUE);
+      //   var inCon = new Blockly.Connection(inBlock, Blockly.INPUT_VALUE);
 
-        assertReasonHelper(
-            this.checker,
-            outCon,
-            inCon,
-            Blockly.Connection.REASON_SHADOW_PARENT);
-      });
+      //   assertReasonHelper(
+      //       this.checker,
+      //       outCon,
+      //       inCon,
+      //       Blockly.Connection.REASON_SHADOW_PARENT);
+      // });
       test('Output and Input Shadow', function() {
         var outBlock = { isShadow: function() { return true; }};
         var inBlock = { isShadow: function() { return true; }};

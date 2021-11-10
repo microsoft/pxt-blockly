@@ -51,8 +51,7 @@ goog.requireType('Blockly.WorkspaceSvg');
  * @extends {Blockly.Field}
  * @constructor
  */
-Blockly.FieldTextInput = function(opt_value, opt_validator, opt_restrictor,
-    opt_config) {
+Blockly.FieldTextInput = function(opt_value, opt_validator, opt_config) {
   /**
    * Allow browser to spellcheck this field.
    * @type {boolean}
@@ -632,35 +631,6 @@ Blockly.FieldTextInput.GECKO_KEYCODE_WHITELIST = [
  * @protected pxt-blockly
  */
 Blockly.FieldTextInput.prototype.onHtmlInputChange_ = function(e) {
-  // Check if the key matches the restrictor.
-  if (e.type === 'keypress' && this.restrictor_) {
-    var keyCode;
-    var isWhitelisted = false;
-    if (Blockly.utils.userAgent.GECKO) {
-      // e.keyCode is not available in Gecko.
-      keyCode = e.charCode;
-      // Gecko reports control characters (e.g., left, right, copy, paste)
-      // in the key event - whitelist these from being restricted.
-      // < 32 and 127 (delete) are control characters.
-      // See: http://www.theasciicode.com.ar/ascii-control-characters/delete-ascii-code-127.html
-      if (keyCode < 32 || keyCode == 127) {
-        isWhitelisted = true;
-      } else if (e.metaKey || e.ctrlKey) {
-        // For combos (ctrl-v, ctrl-c, etc.), Gecko reports the ASCII letter
-        // and the metaKey/ctrlKey flags.
-        isWhitelisted = Blockly.FieldTextInput.GECKO_KEYCODE_WHITELIST.indexOf(keyCode) > -1;
-      }
-    } else {
-      keyCode = e.keyCode;
-    }
-    var char = String.fromCharCode(keyCode);
-    if (!isWhitelisted && !this.restrictor_.test(char) && e.preventDefault) {
-      // Failed to pass restrictor.
-      e.preventDefault();
-      return;
-    }
-  }
-
   // Update source block.
   var text = this.htmlInput_.value;
   if (text !== this.htmlInput_.oldValue_) {

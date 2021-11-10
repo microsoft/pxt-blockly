@@ -467,7 +467,13 @@ Blockly.Field.prototype.toXml = function(fieldElement) {
 Blockly.Field.prototype.dispose = function() {
   Blockly.DropDownDiv.hideIfOwner(this);
   Blockly.WidgetDiv.hideIfOwner(this);
-  Blockly.Tooltip.unbindMouseEvents(this.getClickTarget_());
+
+  // pxt-blockly: If the block has only one field, the mouse event was bound
+  // to the parent block SVG and has already been unbound in the block SVG
+  // dipose call.
+  if (this.getTotalFields_() > 1) {
+    Blockly.Tooltip.unbindMouseEvents(this.getClickTarget_());
+  }
 
   if (this.mouseDownWrapper_) {
     Blockly.browserEvents.unbind(this.mouseDownWrapper_);
@@ -1067,10 +1073,14 @@ Blockly.Field.prototype.getClickTarget_ = function() {
   return this.clickTarget_;
 };
 
-Blockly.Field.prototype.getTotalFields_ = function() {
+Blockly.Field.prototype.getTotalFields_ = function(excludeText = false) {
   var nFields = 0;
   for (var i = 0, input; input = this.sourceBlock_.inputList[i]; i++) {
-    nFields += input.fieldRow.length;
+    for (var j = 0, field; field = input.fieldRow[j]; j++) {
+      if (!(field instanceof Blockly.FieldLabel) || !excludeText) {
+        nFields ++;
+      }
+    }
   }
   return nFields;
 };

@@ -52,13 +52,13 @@ run_test_command () {
 # run_test_command "eslint" "eslint ."
 
 # Run the closure compiler.
-run_test_command "compile" "npm run build"
+run_test_command "compile" "npm run build:core"
 
 # Run the closure compiler ensuring there are no compiler warnings / errors.
 # run_test_command "compile:warnings" "npm run build:debug"
 
 # Generate TypeScript typings and ensure there are no errors.
-# run_test_command "typings" "tests/scripts/compile_typings.sh"
+run_test_command "typings" "tests/scripts/compile_typings.sh"
 
 # Check the sizes of built files for unexpected growth.
 # run_test_command "metadata" "tests/scripts/check_metadata.sh"
@@ -67,10 +67,10 @@ run_test_command "compile" "npm run build"
 run_test_command "mocha" "node tests/mocha/run_mocha_tests_in_browser.js"
 
 # Run generator tests inside a browser and check the results.
-run_test_command "generators" "tests/scripts/run_generators.sh"
+# run_test_command "generators" "tests/scripts/run_generators.sh"
 
 # Run Node tests.
-run_test_command "node" "./node_modules/.bin/mocha tests/node --config tests/node/.mocharc.js"
+# run_test_command "node" "./node_modules/.bin/mocha tests/node --config tests/node/.mocharc.js"
 
 # # Attempt advanced compilation of a Blockly app.
 # run_test_command "advanced_compile" "npm run test:compile:advanced"

@@ -194,15 +194,10 @@ Blockly.Xml.blockToDom = function(block, opt_noId) {
 
     var commentElement = Blockly.utils.xml.createElement('comment');
     commentElement.appendChild(Blockly.utils.xml.createTextNode(commentText));
-    if (typeof block.comment == 'object') {
-      commentElement.setAttribute('pinned', pinned);
-      commentElement.setAttribute('h', size.height);
-      commentElement.setAttribute('w', size.width);
-      if (position) {
-        commentElement.setAttribute('relx', position.x);
-        commentElement.setAttribute('rely', position.y);
-      }
-    }
+    commentElement.setAttribute('pinned', pinned);
+    commentElement.setAttribute('h', size.height);
+    commentElement.setAttribute('w', size.width);
+
     element.appendChild(commentElement);
   }
 

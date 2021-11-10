@@ -386,7 +386,8 @@ suite('Blocks', function() {
   });
   suite('Connection Tracking', function() {
     setup(function() {
-      this.workspace = Blockly.inject('blocklyDiv');
+      // pxt-blockly: Use pxt renderer
+      this.workspace = Blockly.inject('blocklyDiv', { renderer: 'pxt' });
 
       this.getInputs = function() {
         return this.workspace
@@ -1035,7 +1036,9 @@ suite('Blocks', function() {
         setup(function() {
           this.workspace = Blockly.inject('blocklyDiv', {
             comments: true,
-            scrollbars: true
+            scrollbars: true,
+            // pxt-blockly: Use pxt renderer
+            renderer: 'pxt'
           });
           this.block = Blockly.Xml.domToBlock(Blockly.Xml.textToDom(
               '<block type="empty_block"/>'
@@ -1089,8 +1092,8 @@ suite('Blocks', function() {
           this.block.setCommentText('test2');
           chai.assert.equal(this.block.getCommentText(), 'test2');
           assertCommentEvent(this.eventsFireSpy, 'test1', 'test2');
-          chai.assert.equal(icon.paragraphElement_.firstChild.textContent,
-              'test2');
+          // pxt-blockly: Non-editable comments still use textarea_
+          chai.assert.equal(icon.textarea_.value, 'test2');
         });
         test('Get Text While Editing', function() {
           this.block.setCommentText('test1');
@@ -1163,7 +1166,8 @@ suite('Blocks', function() {
     suite('Bubbles and Collapsing', function() {
       setup(function() {
         workspaceTeardown.call(this, this.workspace);
-        this.workspace = Blockly.inject('blocklyDiv');
+        // pxt-blockly: Use pxt renderer
+        this.workspace = Blockly.inject('blocklyDiv', { renderer: 'pxt' });
       });
       teardown(function() {
         workspaceTeardown.call(this, this.workspace);
@@ -1268,7 +1272,8 @@ suite('Blocks', function() {
     setup(function() {
       Blockly.Events.disable();
       // We need a visible workspace.
-      this.workspace = Blockly.inject('blocklyDiv', {});
+      // pxt-blockly: Use pxt renderer
+      this.workspace = Blockly.inject('blocklyDiv', { renderer: 'pxt' });
       Blockly.defineBlocksWithJsonArray([
         {
           "type": "variable_block",
@@ -1714,7 +1719,8 @@ suite('Blocks', function() {
     });
     suite('Rendered', function() {
       setup(function() {
-        this.workspace = Blockly.inject('blocklyDiv', {});
+        // pxt-blockly: Use pxt renderer
+        this.workspace = Blockly.inject('blocklyDiv', { renderer: 'pxt' });
         this.block = Blockly.Xml.domToBlock(Blockly.Xml.textToDom(
             '<block type="empty_block"/>'
         ), this.workspace);
@@ -1779,7 +1785,8 @@ suite('Blocks', function() {
             '<block type="controls_if"></block>' +
           '</statement>' +
         '</block>',
-        toString: 'repeat 10 times do if ? do ?'
+        // pxt-blockly: If block has "+" icon (*)
+        toString: 'repeat 10 times do if ? do ? *'
       },
       {
         name: 'nested Boolean output blocks',
@@ -1795,7 +1802,8 @@ suite('Blocks', function() {
             '</block>' +
           '</value>' +
         '</block>',
-        toString: 'if ((? and ?) = ?) do ?'
+        // pxt-blockly: If block has "+" icon (*)
+        toString: 'if ((? and ?) = ?) do ? *'
       },
       {
         name: 'output block',
@@ -1854,14 +1862,16 @@ suite('Blocks', function() {
             '</block>' +
           '</value>' +
         '</block>',
-        toString: 'create text with “ Hello ” “ World ”'
+        // pxt-blockly: If block has "+" icon (*), no quotes
+        toString: 'create text with Hello World * *'
       },
       {
         name: 'parentheses in string literal',
         xml: '<block type="text">' +
           '<field name="TEXT">foo ( bar ) baz</field>' +
         '</block>',
-        toString: '“ foo ( bar ) baz ”'
+        // pxt-blockly: If block has "+" icon (*), no quotes
+        toString: 'foo ( bar ) baz'
       }
     ];
     // Create mocha test cases for each toString test.

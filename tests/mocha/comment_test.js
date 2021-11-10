@@ -38,10 +38,15 @@ suite('Comments', function() {
       chai.assert.equal(comment.textarea_.value, 'test text');
     }
     function assertNotEditable(comment) {
-      chai.assert.isNotOk(comment.textarea_);
-      chai.assert.isOk(comment.paragraphElement_);
-      chai.assert.equal(comment.paragraphElement_.firstChild.textContent,
-          'test text');
+      // pxt-blockly: Non editable comments also use textarea_
+      chai.assert.isNotOk(comment.paragraphElement_);
+      chai.assert.isOk(comment.textarea_);
+      chai.assert.equal(comment.textarea_.getAttribute("readonly"), "true");
+      chai.assert.equal(comment.textarea_.value, 'test text');
+      // chai.assert.isNotOk(comment.textarea_);
+      // chai.assert.isOk(comment.paragraphElement_);
+      // chai.assert.equal(comment.paragraphElement_.firstChild.textContent,
+      //     'test text');
     }
     test('Editable', function() {
       this.comment.setVisible(true);

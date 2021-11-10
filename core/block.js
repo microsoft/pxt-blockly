@@ -859,7 +859,7 @@ Blockly.Block.prototype.isMovable = function() {
  */
 Blockly.Block.prototype.isMovablePersisted = function() {
   return this.movable_ && !this.isShadow_ &&
-    !(this.workspace && this.workspace.options.readOnly);
+      !(this.workspace && this.workspace.options.readOnly);
 };
 
 /**

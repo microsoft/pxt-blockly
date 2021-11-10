@@ -974,20 +974,21 @@ suite('Connection', function() {
         this.assertBlockCount(3);
       });
 
-      test('Statement', function() {
-        var oldParent = this.workspace.newBlock('statement_block');
-        var newParent = this.workspace.newBlock('statement_block');
-        var child = this.workspace.newBlock('stack_block');
+      // pxt-blockly: We use Scratch connection logic
+      // test('Statement', function() {
+      //   var oldParent = this.workspace.newBlock('statement_block');
+      //   var newParent = this.workspace.newBlock('statement_block');
+      //   var child = this.workspace.newBlock('stack_block');
 
-        oldParent.getInput('STATEMENT').connection
-            .connect(child.previousConnection);
-        newParent.getInput('STATEMENT').connection
-            .connect(child.previousConnection);
+      //   oldParent.getInput('STATEMENT').connection
+      //       .connect(child.previousConnection);
+      //   newParent.getInput('STATEMENT').connection
+      //       .connect(child.previousConnection);
 
-        chai.assert.isFalse(
-            oldParent.getInput('STATEMENT').connection.isConnected());
-        this.assertBlockCount(3);
-      });
+      //   chai.assert.isFalse(
+      //       oldParent.getInput('STATEMENT').connection.isConnected());
+      //   this.assertBlockCount(3);
+      // });
 
       test('Next', function() {
         var oldParent = this.workspace.newBlock('stack_block');

@@ -32,12 +32,12 @@ goog.require('Blockly.utils.xml');
  * @param {string} content The content of this workspace comment.
  * @param {number} height Height of the comment.
  * @param {number} width Width of the comment.
- * @param {boolean} minimized Whether this comment is in the minimized state
  * @param {string=} opt_id Optional ID.  Use this ID if provided, otherwise
  *     create a new ID.
+ * @param {boolean=} opt_minimized pxt-blockly: Whether this comment is in the minimized state
  * @constructor
  */
-Blockly.WorkspaceComment = function(workspace, content, height, width, minimized, opt_id) {
+Blockly.WorkspaceComment = function(workspace, content, height, width, opt_id, opt_minimized) {
   /** @type {string} */
   this.id = (opt_id && !workspace.getCommentById(opt_id)) ?
       opt_id : Blockly.utils.genUid();
@@ -71,7 +71,7 @@ Blockly.WorkspaceComment = function(workspace, content, height, width, minimized
    * @type {boolean}
    * @private
    */
-  this.isMinimized_ = minimized;
+  this.isMinimized_ = opt_minimized;
 
   /**
    * @type {!Blockly.Workspace}
@@ -405,7 +405,7 @@ Blockly.WorkspaceComment.fromXml = function(xmlComment, workspace) {
   var info = Blockly.WorkspaceComment.parseAttributes(xmlComment);
 
   var comment = new Blockly.WorkspaceComment(
-      workspace, info.content, info.h, info.w, info.minimized, info.id);
+      workspace, info.content, info.h, info.w, info.id, info.minimized);
   comment.data = xmlComment.getAttribute('data'); // pxt-blockly
 
   var commentX = parseInt(xmlComment.getAttribute('x'), 10);
