@@ -88,3 +88,6 @@ Blockly.Events.EndBlockDrag.prototype.fromJson = function(json) {
   this.blockId = json['blockId'];
   this.allNestedIds = json['allNestedIds'];
 };
+
+Blockly.registry.register(Blockly.registry.Type.EVENT,
+  Blockly.Events.END_DRAG, Blockly.Events.EndBlockDrag);

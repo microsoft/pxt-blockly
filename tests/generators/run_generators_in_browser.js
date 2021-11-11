@@ -1,18 +1,7 @@
 /**
  * @license
  * Copyright 2018 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 /**
@@ -43,21 +32,26 @@ async function runLangGeneratorInBrowser(browser, filename, codegenFn) {
 }
 
 /**
- * Runs the generator tests in Firefox. It uses webdriverio to
- * launch Firefox and load index.html. Outputs a summary of the test results
+ * Runs the generator tests in Chrome. It uses webdriverio to
+ * launch Chrome and load index.html. Outputs a summary of the test results
  * to the console and outputs files for later validation.
  * @return the Thenable managing the processing of the browser tests.
  */
 async function runGeneratorsInBrowser() {
   var options = {
-      capabilities: {
-          browserName: 'firefox'
-      }
+    capabilities: {
+      browserName: 'chrome',
+    },
+    services: ['selenium-standalone']
   };
-  // Run in headless mode on Travis.
-  if (process.env.TRAVIS_CI) {
-    options.capabilities['moz:firefoxOptions'] = {
-      args: ['-headless']
+  // Run in headless mode on Github Actions.
+  if (process.env.CI) {
+    options.capabilities['goog:chromeOptions'] = {
+      args: ['--headless', '--no-sandbox', '--disable-dev-shm-usage', '--allow-file-access-from-files']
+    };
+  } else {
+    options.capabilities['goog:chromeOptions'] = {
+      args: ['--allow-file-access-from-files']
     };
   }
 

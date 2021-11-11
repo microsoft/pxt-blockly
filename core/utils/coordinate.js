@@ -1,18 +1,7 @@
 /**
  * @license
  * Copyright 2019 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 /**
@@ -53,8 +42,8 @@ Blockly.utils.Coordinate = function(x, y) {
 
 /**
  * Compares coordinates for equality.
- * @param {Blockly.utils.Coordinate} a A Coordinate.
- * @param {Blockly.utils.Coordinate} b A Coordinate.
+ * @param {?Blockly.utils.Coordinate} a A Coordinate.
+ * @param {?Blockly.utils.Coordinate} b A Coordinate.
  * @return {boolean} True iff the coordinates are equal, or if both are null.
  */
 Blockly.utils.Coordinate.equals = function(a, b) {
@@ -109,6 +98,14 @@ Blockly.utils.Coordinate.difference = function(a, b) {
  */
 Blockly.utils.Coordinate.sum = function(a, b) {
   return new Blockly.utils.Coordinate(a.x + b.x, a.y + b.y);
+};
+
+/**
+ * Creates a new copy of this coordinate.
+ * @return {!Blockly.utils.Coordinate} A copy of this coordinate.
+ */
+Blockly.utils.Coordinate.prototype.clone = function() {
+  return new Blockly.utils.Coordinate(this.x, this.y);
 };
 
 /**

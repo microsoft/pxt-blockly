@@ -1,18 +1,7 @@
 /**
  * @license
  * Copyright 2012 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 /**
@@ -29,7 +18,6 @@ goog.require('Blockly.fieldRegistry');
 goog.require('Blockly.utils');
 goog.require('Blockly.utils.dom');
 goog.require('Blockly.utils.object');
-goog.require('Blockly.utils.Size');
 
 
 /**
@@ -51,9 +39,6 @@ Blockly.FieldLabel = function(opt_value, opt_class, opt_config) {
    */
   this.class_ = null;
 
-  if (opt_value == null) {
-    opt_value = '';
-  }
   Blockly.FieldLabel.superClass_.constructor.call(
       this, opt_value, null, opt_config);
 
@@ -62,6 +47,13 @@ Blockly.FieldLabel = function(opt_value, opt_class, opt_config) {
   }
 };
 Blockly.utils.object.inherits(Blockly.FieldLabel, Blockly.Field);
+
+/**
+ * The default value for this field.
+ * @type {*}
+ * @protected
+ */
+Blockly.FieldLabel.prototype.DEFAULT_VALUE = '';
 
 /**
  * Construct a FieldLabel from a JSON arg object,
@@ -89,6 +81,9 @@ Blockly.FieldLabel.prototype.EDITABLE = false;
  * @protected
  */
 Blockly.FieldLabel.prototype.bindEvents_ = function() {
+  var clickTarget = this.getClickTarget_()
+  clickTarget.mouseOverWrapper_ = [];
+  clickTarget.mouseOutWrapper_ = [];
   return;
 };
 
@@ -126,8 +121,8 @@ Blockly.FieldLabel.prototype.doClassValidation_ = function(opt_newValue) {
 };
 
 /**
- * Set the css class applied to the field's textElement_.
- * @param {?string} cssClass The new css class name, or null to remove.
+ * Set the CSS class applied to the field's textElement_.
+ * @param {?string} cssClass The new CSS class name, or null to remove.
  */
 Blockly.FieldLabel.prototype.setClass = function(cssClass) {
   if (this.textElement_) {

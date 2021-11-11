@@ -1,18 +1,7 @@
 /**
  * @license
  * Copyright 2019 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 /**
@@ -23,12 +12,13 @@
 
 goog.provide('Blockly.zelos.Drawer');
 
-goog.require('Blockly.blockRendering.ConstantProvider');
 goog.require('Blockly.blockRendering.Drawer');
-goog.require('Blockly.blockRendering.Types');
 goog.require('Blockly.utils.object');
+goog.require('Blockly.utils.svgPaths');
 goog.require('Blockly.zelos.RenderInfo');
 
+goog.requireType('Blockly.blockRendering.Row');
+goog.requireType('Blockly.BlockSvg');
 goog.requireType('Blockly.zelos.PathObject');
 
 
@@ -80,13 +70,27 @@ Blockly.zelos.Drawer.prototype.draw = function() {
  */
 Blockly.zelos.Drawer.prototype.drawOutline_ = function() {
   if (this.info_.outputConnection &&
-      this.info_.outputConnection.isDynamicShape) {
+      this.info_.outputConnection.isDynamicShape &&
+      !this.info_.hasStatementInput &&
+      !this.info_.bottomRow.hasNextConnection) {
     this.drawFlatTop_();
     this.drawRightDynamicConnection_();
     this.drawFlatBottom_();
     this.drawLeftDynamicConnection_();
   } else {
     Blockly.zelos.Drawer.superClass_.drawOutline_.call(this);
+  }
+};
+
+/**
+ * @override
+ */
+Blockly.zelos.Drawer.prototype.drawLeft_ = function() {
+  if (this.info_.outputConnection &&
+      this.info_.outputConnection.isDynamicShape) {
+    this.drawLeftDynamicConnection_();
+  } else {
+    Blockly.zelos.Drawer.superClass_.drawLeft_.call(this);
   }
 };
 

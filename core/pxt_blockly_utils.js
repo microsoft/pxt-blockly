@@ -65,6 +65,19 @@ Blockly.pxtBlocklyUtils.isShadowArgumentReporter = function(block) {
         Blockly.pxtBlocklyUtils._duplicateOnDragWhitelist.indexOf(block.type) !== -1));
 };
 
+/**
+ * Whether a block is a function argument reporter.
+ * @param {!Blockly.BlockSvg} block The block that should be used to make this
+ *     decision.
+ * @return {boolean} True if the block is a function argument reporter.
+ */
+ Blockly.pxtBlocklyUtils.isFunctionArgumentReporter = function(block) {
+  return block.type == 'argument_reporter_boolean' ||
+    block.type == 'argument_reporter_number' ||
+    block.type == 'argument_reporter_string' ||
+    block.type == 'argument_reporter_array' ||
+    block.type == 'argument_reporter_custom';
+};
 
 /**
  * Sets a whitelist of blocks whose shadow blocks duplicate on drag (in addition

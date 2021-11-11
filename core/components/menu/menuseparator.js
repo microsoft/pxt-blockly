@@ -24,7 +24,6 @@
 
 goog.provide('Blockly.MenuSeparator');
 
-goog.require('Blockly.Component');
 goog.require('Blockly.utils.aria');
 goog.require('Blockly.utils.object');
 
@@ -33,36 +32,98 @@ goog.require('Blockly.utils.object');
  * Class representing an item in a menu.
  *
  * @constructor
- * @extends {Blockly.Component}
  */
 Blockly.MenuSeparator = function() {
-  Blockly.Component.call(this);
-};
-Blockly.utils.object.inherits(Blockly.MenuSeparator, Blockly.Component);
+  /**
+   * The DOM element for the menu separator.
+   * @type {?Element}
+   * @private
+   */
+  this.element_ = null;
 
+  /**
+   * Whether the menu separator is rendered right-to-left.
+   * @type {boolean}
+   * @private
+   */
+  this.rightToLeft_ = false;
+
+  /**
+   * Colour of the menu separator
+   * @type {boolean}
+   * @private
+   */
+  this.colour_ = "#ddd";
+};
 
 /**
- * Creates the menuitem's DOM.
+ * Dispose of this menu separator.
+ */
+ Blockly.MenuSeparator.prototype.dispose = function() {
+  this.element_ = null;
+};
+
+/**
+ * Gets the menu separator's element.
+ * @return {?Element} The DOM element.
+ * @package
+ */
+ Blockly.MenuSeparator.prototype.getElement = function() {
+  return this.element_;
+}
+
+/**
+ * Gets the unique ID for this menu separator.
+ * @return {string} Unique component ID.
+ * @package
+ */
+ Blockly.MenuSeparator.prototype.getId = function() {
+  return this.element_.id;
+};
+
+/**
+ * Set menu separator's rendering direction.
+ * @param {boolean} rtl True if RTL, false if LTR.
+ * @package
+ */
+ Blockly.MenuSeparator.prototype.setRightToLeft = function(rtl) {
+  this.rightToLeft_ = rtl;
+};
+
+/**
+ * Set menu separator's colour
+ * @param {boolean} colour Hex colour
+ * @package
+ */
+ Blockly.MenuSeparator.prototype.setColour = function(colour) {
+  this.colour_ = colour;
+};
+
+/**
+ * Creates the menu separator's DOM.
  * @override
  */
 Blockly.MenuSeparator.prototype.createDom = function() {
   var element = document.createElement('div');
-  element.id = this.getId();
-  this.setElementInternal(element);
+  element.id = Blockly.utils.IdGenerator.getNextUniqueId();
+  this.element_ = element;
 
   // Set class and style
   element.className = 'goog-menuseparator ' +
-  (this.isRightToLeft() ? 'goog-menuseparator-rtl ' : '');
+  (this.rightToLeft_ ? 'goog-menuseparator-rtl ' : '');
+  element.style.borderColor = this.colour_;
 
   // Initialize ARIA role and state.
   Blockly.utils.aria.setRole(element, Blockly.utils.aria.Role.SEPARATOR);
   Blockly.utils.aria.setState(element, Blockly.utils.aria.State.DISABLED, true);
+
+  return element;
 };
 
 
 /**
- * Returns true if the menu item is enabled, false otherwise.
- * @return {boolean} Whether the menu item is enabled.
+ * Returns true if the menu separator is enabled, false otherwise.
+ * @return {boolean} Whether the menu separator is enabled.
  * @package
  */
 Blockly.MenuSeparator.prototype.isEnabled = function() {

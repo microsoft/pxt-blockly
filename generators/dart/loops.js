@@ -1,21 +1,7 @@
 /**
  * @license
- * Visual Blocks Language
- *
- * Copyright 2014 Google Inc.
- * https://developers.google.com/blockly/
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Copyright 2014 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 /**
@@ -42,12 +28,12 @@ Blockly.Dart['controls_repeat_ext'] = function(block) {
   var branch = Blockly.Dart.statementToCode(block, 'DO');
   branch = Blockly.Dart.addLoopTrap(branch, block);
   var code = '';
-  var loopVar = Blockly.Dart.variableDB_.getDistinctName(
-      'count', Blockly.Variables.NAME_TYPE);
+  var loopVar = Blockly.Dart.nameDB_.getDistinctName(
+      'count', Blockly.VARIABLE_CATEGORY_NAME);
   var endVar = repeats;
   if (!repeats.match(/^\w+$/) && !Blockly.isNumber(repeats)) {
-    var endVar = Blockly.Dart.variableDB_.getDistinctName(
-        'repeat_end', Blockly.Variables.NAME_TYPE);
+    endVar = Blockly.Dart.nameDB_.getDistinctName(
+        'repeat_end', Blockly.VARIABLE_CATEGORY_NAME);
     code += 'var ' + endVar + ' = ' + repeats + ';\n';
   }
   code += 'for (int ' + loopVar + ' = 0; ' +
@@ -75,8 +61,8 @@ Blockly.Dart['controls_whileUntil'] = function(block) {
 
 Blockly.Dart['controls_for'] = function(block) {
   // For loop.
-  var variable0 = Blockly.Dart.variableDB_.getName(
-      block.getField('VAR').getText(), Blockly.Variables.NAME_TYPE);
+  var variable0 = Blockly.Dart.nameDB_.getName(
+      block.getFieldValue('VAR'), Blockly.VARIABLE_CATEGORY_NAME);
   var argument0 = Blockly.Dart.valueToCode(block, 'FROM',
       Blockly.Dart.ORDER_ASSIGNMENT) || '0';
   var argument1 = Blockly.Dart.valueToCode(block, 'TO',
@@ -105,20 +91,20 @@ Blockly.Dart['controls_for'] = function(block) {
     // Cache non-trivial values to variables to prevent repeated look-ups.
     var startVar = argument0;
     if (!argument0.match(/^\w+$/) && !Blockly.isNumber(argument0)) {
-      var startVar = Blockly.Dart.variableDB_.getDistinctName(
-          variable0 + '_start', Blockly.Variables.NAME_TYPE);
+      startVar = Blockly.Dart.nameDB_.getDistinctName(
+          variable0 + '_start', Blockly.VARIABLE_CATEGORY_NAME);
       code += 'var ' + startVar + ' = ' + argument0 + ';\n';
     }
     var endVar = argument1;
     if (!argument1.match(/^\w+$/) && !Blockly.isNumber(argument1)) {
-      var endVar = Blockly.Dart.variableDB_.getDistinctName(
-          variable0 + '_end', Blockly.Variables.NAME_TYPE);
+      endVar = Blockly.Dart.nameDB_.getDistinctName(
+          variable0 + '_end', Blockly.VARIABLE_CATEGORY_NAME);
       code += 'var ' + endVar + ' = ' + argument1 + ';\n';
     }
     // Determine loop direction at start, in case one of the bounds
     // changes during loop execution.
-    var incVar = Blockly.Dart.variableDB_.getDistinctName(
-        variable0 + '_inc', Blockly.Variables.NAME_TYPE);
+    var incVar = Blockly.Dart.nameDB_.getDistinctName(
+        variable0 + '_inc', Blockly.VARIABLE_CATEGORY_NAME);
     code += 'num ' + incVar + ' = ';
     if (Blockly.isNumber(increment)) {
       code += Math.abs(increment) + ';\n';
@@ -140,8 +126,8 @@ Blockly.Dart['controls_for'] = function(block) {
 
 Blockly.Dart['controls_forEach'] = function(block) {
   // For each loop.
-  var variable0 = Blockly.Dart.variableDB_.getName(
-      block.getField('VAR').getText(), Blockly.Variables.NAME_TYPE);
+  var variable0 = Blockly.Dart.nameDB_.getName(
+      block.getFieldValue('VAR'), Blockly.VARIABLE_CATEGORY_NAME);
   var argument0 = Blockly.Dart.valueToCode(block, 'LIST',
       Blockly.Dart.ORDER_ASSIGNMENT) || '[]';
   var branch = Blockly.Dart.statementToCode(block, 'DO');

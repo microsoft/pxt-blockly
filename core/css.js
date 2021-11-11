@@ -1,21 +1,7 @@
 /**
- * This file has been modified by Microsoft on Apr/2017.
- */
-/**
  * @license
  * Copyright 2013 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 /**
@@ -32,8 +18,6 @@ goog.provide('Blockly.Css');
 
 goog.require('Blockly.Colours');
 
-goog.require('Blockly.utils.userAgent');
-
 /**
  * Has CSS already been injected?
  * @type {boolean}
@@ -45,7 +29,7 @@ Blockly.Css.injected_ = false;
  * Add some CSS to the blob that will be injected later.  Allows optional
  * components such as fields and the toolbox to store separate CSS.
  * The provided array of CSS will be destroyed by this function.
- * @param {!Array.<string>} cssArray Array of CSS strings.
+ * @param {!Array<string>} cssArray Array of CSS strings.
  */
 Blockly.Css.register = function(cssArray) {
   if (Blockly.Css.injected_) {
@@ -101,17 +85,6 @@ Blockly.Css.inject = function(hasCss, pathToMedia) {
 };
 
 /**
- * Set the cursor to be displayed when over something draggable.
- * See See https://github.com/google/blockly/issues/981 for context.
- * @param {*} _cursor Enum.
- * @deprecated April 2017.
- */
-Blockly.Css.setCursor = function(_cursor) {
-  console.warn('Deprecated call to Blockly.Css.setCursor. ' +
-      'See https://github.com/google/blockly/issues/981 for context');
-};
-
-/**
  * Array making up the CSS content for Blockly.
  */
 Blockly.Css.CONTENT = [
@@ -135,13 +108,13 @@ Blockly.Css.CONTENT = [
   '.blocklyWidgetDiv {',
     'display: none;',
     'position: absolute;',
-    'z-index: 99999;', /* big value for bootstrap3 compatibility */
+    'z-index: 99999;',  /* big value for bootstrap3 compatibility */
   '}',
 
   '.injectionDiv {',
     'height: 100%;',
     'position: relative;',
-    'overflow: hidden;', /* So blocks in drag surface disappear at edges */
+    'overflow: hidden;',  /* So blocks in drag surface disappear at edges */
     'touch-action: none;',
   '}',
 
@@ -195,9 +168,10 @@ Blockly.Css.CONTENT = [
     'right: 0;',
     'bottom: 0;',
     'overflow: visible !important;',
-    'z-index: 50;', /* Display above the toolbox */
+    'z-index: 50;',  /* Display below toolbox, but above everything else. */
   '}',
 
+  // pxt-blockly: Transition when centering block
   '.blocklyBlockCanvas.blocklyTransitioning {',
     'transition: all 0.5s ease-in-out;',
   '}',
@@ -213,12 +187,11 @@ Blockly.Css.CONTENT = [
     'box-shadow: 4px 4px 20px 1px rgba(0,0,0,.15);',
     'color: #000;',
     'display: none;',
-    'font-family: "Helvetica Neue", "Segoe UI", Helvetica, sans-serif;',
-    'font-size: 9pt;',
+    'font: 9pt sans-serif;',
     'opacity: .9;',
     'padding: 2px;',
     'position: absolute;',
-    'z-index: 100000;', /* big value for bootstrap3 compatibility */
+    'z-index: 100000;',  /* big value for bootstrap3 compatibility */
   '}',
 
   '.blocklyDropDownDiv {',
@@ -233,17 +206,18 @@ Blockly.Css.CONTENT = [
     'border-radius: 2px;',
     'box-shadow: 0px 0px 8px 1px ' + Blockly.Colours.dropDownShadow + ';',
     'padding: 4px;',
-    'box-shadow: 0px 0px 3px 1px rgba(0,0,0,.3);',
+    'box-shadow: 0 0 3px 1px rgba(0,0,0,.3);',
   '}',
 
-  '.blocklyDropDownDiv.focused {',
-    'box-shadow: 0px 0px 6px 1px rgba(0,0,0,.3);',
+  '.blocklyDropDownDiv.blocklyFocused {',
+    'box-shadow: 0 0 6px 1px rgba(0,0,0,.3);',
   '}',
 
   '.blocklyDropDownContent {',
-    'max-height: 300px;', // @todo: spec for maximum height.
+    'max-height: 300px;',  // @todo: spec for maximum height.
     'overflow: auto;',
     'overflow-x: hidden;',
+    'position: relative;',
   '}',
 
   '.blocklyDropDownArrow {',
@@ -456,7 +430,7 @@ Blockly.Css.CONTENT = [
   '.blocklyInsertionMarker>.blocklyPathLight,',
   '.blocklyInsertionMarker>.blocklyPathDark {',
     'fill-opacity: .2;',
-    'stroke: none',
+    'stroke: none;',
   '}',
 
   '.blocklyReplaceable .blocklyPath {',
@@ -498,32 +472,21 @@ Blockly.Css.CONTENT = [
     'fill: #fff !important;',
   '}',
 
-  '.blocklyBubbleText {',
-    'fill: #fff;',
-  '}',
-
-  '.blocklyBubbleCanvas {',
-    'user-select: none;',
-    '-moz-user-select: none;',
-    '-ms-user-select: none;',
-    '-webkit-user-select: none;',
-  '}',
-
   '.blocklyFlyout {',
     'position: absolute;',
     'z-index: 20;',
   '}',
 
-  '.blocklyFlyout {',
-    'position: absolute;',
-    'z-index: 20;',
+  '.blocklyText text {',
+    'cursor: default;',
   '}',
 
   /*
     Don't allow users to select text.  It gets annoying when trying to
     drag a block and selected text moves instead.
   */
-  '.blocklySvg text, .blocklyBlockDragSurface text, .blocklyFlyout text, .blocklyToolboxDiv text {',
+  '.blocklySvg text,',
+  '.blocklyBlockDragSurface text {',
     'user-select: none;',
     '-ms-user-select: none;',
     '-webkit-user-select: none;',
@@ -621,7 +584,8 @@ Blockly.Css.CONTENT = [
     'z-index: 30;',
   '}',
 
-  '.blocklyScrollbarHorizontal, .blocklyScrollbarVertical {',
+  '.blocklyScrollbarHorizontal,',
+  '.blocklyScrollbarVertical {',
     'position: absolute;',
     'outline: none;',
     'touch-action: none;',
@@ -659,39 +623,10 @@ Blockly.Css.CONTENT = [
     'background: #faa;',
   '}',
 
-  '.blocklyContextMenu {',
-    'border-radius: 4px;',
-    'max-height: 100%;',
-  '}',
-
-  '.blocklyDropdownMenu {',
-    'border-radius: 2px;',
-    'padding: 0 !important;',
-  '}',
-
-  // TODO move numpad
-  '.blocklyDropDownNumPad {',
-    'background-color: $colour_numPadBackground;',
-  '}',
-
-  '.blocklyWidgetDiv .blocklyDropdownMenu .goog-menuitem,',
-  '.blocklyDropDownDiv .blocklyDropdownMenu .goog-menuitem {',
-    /* 28px on the left for icon or checkbox. */
-    'padding-left: 28px;',
-  '}',
-
-  /* BiDi override for the resting state. */
-  /* #noflip */
-  '.blocklyWidgetDiv .blocklyDropdownMenu .goog-menuitem.goog-menuitem-rtl,',
-  '.blocklyDropDownDiv .blocklyDropdownMenu .goog-menuitem.goog-menuitem-rtl {',
-     /* Flip left/right padding for BiDi. */
-    'padding-left: 5px;',
-    'padding-right: 28px;',
-  '}',
-
   '.blocklyVerticalMarker {',
     'stroke-width: 3px;',
     'fill: rgba(255,255,255,.5);',
+    'pointer-events: none;',
   '}',
 
   '.blocklyWidgetDiv .goog-option-selected .goog-menuitem-checkbox,',
@@ -903,6 +838,116 @@ Blockly.Css.CONTENT = [
     'pointer-events: none;',
   '}',
 
+  '.blocklyContextMenu {',
+    'border-radius: 4px;',
+    'max-height: 100%;',
+  '}',
+
+  '.blocklyDropdownMenu {',
+    'border-radius: 2px;',
+    'padding: 0 !important;',
+  '}',
+
+  // TODO shakao move numpad
+  '.blocklyDropDownNumPad {',
+    'background-color: $colour_numPadBackground;',
+  '}',
+
+  '.blocklyWidgetDiv .blocklyDropdownMenu .goog-menuitem,', // pxt-blockly
+  '.blocklyDropDownDiv .blocklyDropdownMenu .goog-menuitem,', // pxt-blockly
+  '.blocklyDropdownMenu .blocklyMenuItem {',
+    /* 28px on the left for icon or checkbox. */
+    'padding-left: 28px;',
+  '}',
+
+  /* BiDi override for the resting state. */
+  '.blocklyDropdownMenu .blocklyMenuItemRtl {',
+     /* Flip left/right padding for BiDi. */
+    'padding-left: 5px;',
+    'padding-right: 28px;',
+  '}',
+
+  '.blocklyWidgetDiv .blocklyMenu {',
+    'background: #fff;',
+    'border: 1px solid transparent;',
+    'box-shadow: 0 0 3px 1px rgba(0,0,0,.3);',
+    'font: normal 13px Arial, sans-serif;',
+    'margin: 0;',
+    'outline: none;',
+    'padding: 4px 0;',
+    'position: absolute;',
+    'overflow-y: auto;',
+    'overflow-x: hidden;',
+    'max-height: 100%;',
+    'z-index: 20000;',  /* Arbitrary, but some apps depend on it... */
+  '}',
+
+  '.blocklyDropDownDiv .goog-menu {',
+    'cursor: default;',
+    'font: normal 13px "Helvetica Neue", Helvetica, sans-serif;',
+    'outline: none;',
+    'z-index: 20000;',  /* Arbitrary, but some apps depend on it... */
+    'box-shadow: 0px 0px 3px 1px rgba(0,0,0,.3);',
+  '}',
+
+  '.blocklyWidgetDiv .goog-menu.focused,',
+  '.blocklyWidgetDiv .blocklyMenu.blocklyFocused {',
+    'box-shadow: 0 0 6px 1px rgba(0,0,0,.3);',
+  '}',
+
+  '.blocklyDropDownDiv .blocklyMenu {',
+    'background: inherit;',  /* Compatibility with gapi, reset from goog-menu */
+    'border: inherit;',  /* Compatibility with gapi, reset from goog-menu */
+    'font: normal 13px "Helvetica Neue", Helvetica, sans-serif;',
+    'outline: none;',
+    'position: relative;',  /* Compatibility with gapi, reset from goog-menu */
+    'z-index: 20000;',  /* Arbitrary, but some apps depend on it... */
+  '}',
+
+  /* State: resting. */
+  '.blocklyMenuItem {',
+    'border: none;',
+    'color: #000;',
+    'cursor: pointer;',
+    'list-style: none;',
+    'margin: 0;',
+    /* 7em on the right for shortcut. */
+    'min-width: 7em;',
+    'padding: 6px 15px;',
+    'white-space: nowrap;',
+  '}',
+
+  /* State: disabled. */
+  '.blocklyMenuItemDisabled {',
+    'color: #ccc;',
+    'cursor: inherit;',
+  '}',
+
+  /* State: hover. */
+  '.blocklyMenuItemHighlight {',
+    'background-color: rgba(0,0,0,.1);',
+  '}',
+
+  /* State: selected/checked. */
+  '.blocklyMenuItemCheckbox {',
+    'height: 16px;',
+    'position: absolute;',
+    'width: 16px;',
+  '}',
+
+
+  '.blocklyMenuItemSelected .blocklyMenuItemCheckbox {',
+    'background: url(<<<PATH>>>/sprites.png) no-repeat -48px -16px;',
+    'float: left;',
+    'margin-left: -24px;',
+    'position: static;',  /* Scroll with the menu. */
+  '}',
+
+  '.blocklyMenuItemRtl .blocklyMenuItemCheckbox {',
+    'float: right;',
+    'margin-right: -24px;',
+  '}',
+
   /* pxtblockly: Field slider. */
   '.blocklyDropDownDiv .goog-slider-horizontal {',
     'margin: 8px;',
@@ -979,5 +1024,5 @@ Blockly.Css.CONTENT = [
     'fill: #a31515 !important;',
   '}',
 
-  ''
+  /* eslint-enable indent */
 ];

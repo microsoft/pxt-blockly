@@ -1,18 +1,7 @@
 /**
  * @license
  * Copyright 2011 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 /**
@@ -23,16 +12,27 @@
 
 goog.provide('Blockly.Comment');
 
+goog.require('Blockly.browserEvents');
 goog.require('Blockly.Bubble');
 goog.require('Blockly.Css');
 goog.require('Blockly.Events');
+/** @suppress {extraRequire} */
 goog.require('Blockly.Events.BlockChange');
-goog.require('Blockly.Events.Ui');
+/** @suppress {extraRequire} */
+goog.require('Blockly.Events.BubbleOpen');
 goog.require('Blockly.Icon');
 goog.require('Blockly.utils.dom');
 goog.require('Blockly.utils.object');
+goog.require('Blockly.utils.Svg');
 goog.require('Blockly.utils.userAgent');
+/** @suppress {extraRequire} */
 goog.require('Blockly.Warning');
+
+goog.requireType('Blockly.Block');
+goog.requireType('Blockly.BlockSvg');
+goog.requireType('Blockly.utils.Coordinate');
+goog.requireType('Blockly.utils.Size');
+goog.requireType('Blockly.WorkspaceSvg');
 
 
 /**
@@ -64,28 +64,28 @@ Blockly.Comment = function(block) {
 
   /**
    * Mouse up event data.
-   * @type {?Blockly.EventData}
+   * @type {?Blockly.browserEvents.Data}
    * @private
    */
   this.onMouseUpWrapper_ = null;
 
   /**
    * Wheel event data.
-   * @type {?Blockly.EventData}
+   * @type {?Blockly.browserEvents.Data}
    * @private
    */
   this.onWheelWrapper_ = null;
 
   /**
    * Change event data.
-   * @type {?Blockly.EventData}
+   * @type {?Blockly.browserEvents.Data}
    * @private
    */
   this.onChangeWrapper_ = null;
 
   /**
    * Input event data.
-   * @type {?Blockly.EventData}
+   * @type {?Blockly.browserEvents.Data}
    * @private
    */
   this.onInputWrapper_ = null;
@@ -98,17 +98,20 @@ Blockly.utils.object.inherits(Blockly.Comment, Blockly.Icon);
  * Draw the comment icon.
  * PXT Blockly: draw comment icon shape
  * @param {!Element} group The icon group.
- * @private
+ * @protected
  */
 Blockly.Comment.prototype.drawIcon_ = function(group) {
   // Circle.
-  // Blockly.utils.dom.createSvgElement('circle',
-  //    {'class': 'blocklyIconShape', 'r': '8', 'cx': '8', 'cy': '8'},
-  //    group);
+  // pxt-blockly: Not used
+  // Blockly.utils.dom.createSvgElement(
+  //     Blockly.utils.Svg.CIRCLE,
+  //     {'class': 'blocklyIconShape', 'r': '8', 'cx': '8', 'cy': '8'},
+  //     group);
   // Can't use a real '?' text character since different browsers and operating
   // systems render it differently.
   // Body of question mark.
-  Blockly.utils.dom.createSvgElement('path',
+  Blockly.utils.dom.createSvgElement(
+      Blockly.utils.Svg.PATH,
       {
         'class': 'blocklyIconShape',
         'd': 'm 2,2 0,9.2211 3.0026599,0 1.6008929,1.5989 1.8138195,-1.5989 6.6046683,0 0,-9.2211 -13.0220406,0 z',
@@ -126,7 +129,8 @@ Blockly.Comment.prototype.drawIcon_ = function(group) {
       },
       group);
   // Dot of question mark.
-  Blockly.utils.dom.createSvgElement('rect',
+  Blockly.utils.dom.createSvgElement(
+      Blockly.utils.Svg.RECT,
       {
         'class': 'blocklyIconSymbol',
         'x': '4',
@@ -202,8 +206,9 @@ Blockly.Comment.prototype.createTextEditor_ = function() {
    * For non-editable mode see Warning.textToDom_.
    */
 
-  this.foreignObject_ = Blockly.utils.dom.createSvgElement('foreignObject',
-      {'x': Blockly.Bubble.BORDER_WIDTH, 
+  this.foreignObject_ = Blockly.utils.dom.createSvgElement(
+      Blockly.utils.Svg.FOREIGNOBJECT,
+      {'x': Blockly.Bubble.BORDER_WIDTH,
        'y': Blockly.Bubble.BORDER_WIDTH + Blockly.WorkspaceCommentSvg.TOP_BAR_HEIGHT}, // pxt-blockly: add space for top bar height
       null);
 
@@ -228,22 +233,25 @@ Blockly.Comment.prototype.createTextEditor_ = function() {
   // Ideally this would be hooked to the focus event for the comment.
   // However doing so in Firefox swallows the cursor for unknown reasons.
   // So this is hooked to mouseup instead.  No big deal.
+  // pxt-blockly: For non-editable comments
   if (this.block_.isEditable()) {
-    this.onMouseUpWrapper_ = Blockly.bindEventWithChecks_(
+    this.onMouseUpWrapper_ = Blockly.browserEvents.conditionalBind(
         textarea, 'mouseup', this, this.startEdit_, true, true);
     // Don't zoom with mousewheel.
-    this.onWheelWrapper_ = Blockly.bindEventWithChecks_(
+    this.onWheelWrapper_ = Blockly.browserEvents.conditionalBind(
         textarea, 'wheel', this, function(e) {
           e.stopPropagation();
         });
-    this.onChangeWrapper_ = Blockly.bindEventWithChecks_(
+    this.onChangeWrapper_ = Blockly.browserEvents.conditionalBind(
         textarea, 'change', this, function(_e) {
           if (this.cachedText_ != this.model_.text) {
-            Blockly.Events.fire(new Blockly.Events.BlockChange(
-                this.block_, 'comment', null, this.cachedText_, this.model_.text));
+            Blockly.Events.fire(
+                new (Blockly.Events.get(Blockly.Events.BLOCK_CHANGE))(
+                    this.block_, 'comment', null, this.cachedText_,
+                    this.model_.text));
           }
         });
-    this.onInputWrapper_ = Blockly.bindEventWithChecks_(
+    this.onInputWrapper_ = Blockly.browserEvents.conditionalBind(
         textarea, 'input', this, function(_e) {
           this.model_.text = textarea.value;
         });
@@ -396,8 +404,8 @@ Blockly.Comment.prototype.setVisible = function(visible) {
   if (visible == this.isVisible()) {
     return;
   }
-  Blockly.Events.fire(
-      new Blockly.Events.Ui(this.block_, 'commentOpen', !visible, visible));
+  Blockly.Events.fire(new (Blockly.Events.get(Blockly.Events.BUBBLE_OPEN))(
+      this.block_, visible, 'comment'));
   this.model_.pinned = visible;
   if (visible) {
     this.createBubble_();
@@ -441,8 +449,8 @@ Blockly.Comment.prototype.getRelativePosition = function() {
  * @private
  */
 Blockly.Comment.prototype.createBubble_ = function() {
+  // pxt-blockly: Same UI for non-editable comments
   if (Blockly.utils.userAgent.IE) {
-    // Steal the code from warnings to make an uneditable text bubble.
     // MSIE does not support foreignobject; textareas are impossible.
     // https://docs.microsoft.com/en-us/openspecs/ie_standards/ms-svg/56e6e04c-7c8c-44dd-8100-bd745ee42034
     // Always treat comments in IE as uneditable.
@@ -476,7 +484,11 @@ Blockly.Comment.prototype.createEditableBubble_ = function() {
  */
 Blockly.Comment.prototype.createNonEditableBubble_ = function() {
   // TODO (#2917): It would be great if the comment could support line breaks.
-  Blockly.Warning.prototype.createBubble.call(this);
+  this.paragraphElement_ = Blockly.Bubble.textToDom(this.block_.getCommentText());
+  this.bubble_ = Blockly.Bubble.createNonEditableBubble(
+      this.paragraphElement_, /** @type {!Blockly.BlockSvg} */ (this.block_),
+      /** @type {!Blockly.utils.Coordinate} */ (this.iconXY_));
+  this.applyColour();
 };
 
 /**
@@ -485,31 +497,27 @@ Blockly.Comment.prototype.createNonEditableBubble_ = function() {
  * @suppress {checkTypes} Suppress `this` type mismatch.
  */
 Blockly.Comment.prototype.disposeBubble_ = function() {
-  if (this.paragraphElement_) {
-    // We're using the warning UI so we have to let it dispose.
-    Blockly.Warning.prototype.disposeBubble.call(this);
-    return;
-  }
   if (this.onMouseUpWrapper_) {
-    Blockly.unbindEvent_(this.onMouseUpWrapper_);
+    Blockly.browserEvents.unbind(this.onMouseUpWrapper_);
     this.onMouseUpWrapper_ = null;
   }
   if (this.onWheelWrapper_) {
-    Blockly.unbindEvent_(this.onWheelWrapper_);
+    Blockly.browserEvents.unbind(this.onWheelWrapper_);
     this.onWheelWrapper_ = null;
   }
   if (this.onChangeWrapper_) {
-    Blockly.unbindEvent_(this.onChangeWrapper_);
+    Blockly.browserEvents.unbind(this.onChangeWrapper_);
     this.onChangeWrapper_ = null;
   }
   if (this.onInputWrapper_) {
-    Blockly.unbindEvent_(this.onInputWrapper_);
+    Blockly.browserEvents.unbind(this.onInputWrapper_);
     this.onInputWrapper_ = null;
   }
   this.bubble_.dispose();
   this.bubble_ = null;
   this.textarea_ = null;
   this.foreignObject_ = null;
+  this.paragraphElement_ = null;
 };
 
 /**
@@ -553,31 +561,6 @@ Blockly.Comment.prototype.setBubbleSize = function(width, height) {
 };
 
 /**
- * Returns this comment's text.
- * @return {string} Comment text.
- * @deprecated August 2019 Use block.getCommentText() instead.
- */
-Blockly.Comment.prototype.getText = function() {
-  return this.model_.text || '';
-};
-
-/**
- * Set this comment's text.
- *
- * If you want to receive a comment change event, then this should not be called
- * directly. Instead call block.setCommentText();
- * @param {string} text Comment text.
- * @deprecated August 2019 Use block.setCommentText() instead.
- */
-Blockly.Comment.prototype.setText = function(text) {
-  if (this.model_.text == text) {
-    return;
-  }
-  this.model_.text = text;
-  this.updateText();
-};
-
-/**
  * Update the comment's view to match the model.
  * @package
  */
@@ -615,10 +598,11 @@ Blockly.Css.register([
     'padding: 3px;',
     'resize: none;',
     'display: block;',
+    // pxt-blockly: Comment styles
     'color: $colour_text;',
     'overflow: hidden;',
     'font-size: 12pt;',
     'line-height: 22px;',
-  '}',
+  '}'
   /* eslint-enable indent */
 ]);

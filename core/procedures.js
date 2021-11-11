@@ -1,18 +1,7 @@
 /**
  * @license
  * Copyright 2012 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 /**
@@ -28,8 +17,10 @@
 goog.provide('Blockly.Procedures');
 
 goog.require('Blockly.Blocks');
+/** @suppress {extraRequire} */
 goog.require('Blockly.constants');
 goog.require('Blockly.Events');
+/** @suppress {extraRequire} */
 goog.require('Blockly.Events.BlockChange');
 goog.require('Blockly.Field');
 goog.require('Blockly.Msg');
@@ -37,6 +28,10 @@ goog.require('Blockly.Names');
 goog.require('Blockly.utils.xml');
 goog.require('Blockly.Workspace');
 goog.require('Blockly.Xml');
+
+goog.requireType('Blockly.Block');
+goog.requireType('Blockly.Events.Abstract');
+goog.requireType('Blockly.WorkspaceSvg');
 
 
 /**
@@ -65,29 +60,19 @@ Blockly.Procedures.ProcedureBlock;
 /**
  * Find all user-created procedure definitions in a workspace.
  * @param {!Blockly.Workspace} root Root workspace.
- * @return {!Array.<!Array.<!Array>>} Pair of arrays, the
+ * @return {!Array<!Array<!Array>>} Pair of arrays, the
  *     first contains procedures without return variables, the second with.
  *     Each procedure is defined by a three-element list of name, parameter
  *     list, and return value boolean.
  */
 Blockly.Procedures.allProcedures = function(root) {
-  var blocks = root.getAllBlocks(false);
-  var proceduresReturn = [];
-  var proceduresNoReturn = [];
-  for (var i = 0; i < blocks.length; i++) {
-    if (blocks[i].getProcedureDef) {
-      var procedureBlock = /** @type {!Blockly.Procedures.ProcedureBlock} */ (
-        blocks[i]);
-      var tuple = procedureBlock.getProcedureDef();
-      if (tuple) {
-        if (tuple[2]) {
-          proceduresReturn.push(tuple);
-        } else {
-          proceduresNoReturn.push(tuple);
-        }
-      }
-    }
-  }
+  var proceduresNoReturn = root.getBlocksByType('procedures_defnoreturn', false)
+      .map(function(block) {
+        return /** @type {!Blockly.Procedures.ProcedureBlock} */ (block).getProcedureDef();
+      });
+  var proceduresReturn = root.getBlocksByType('procedures_defreturn', false).map(function(block) {
+    return /** @type {!Blockly.Procedures.ProcedureBlock} */ (block).getProcedureDef();
+  });
   proceduresNoReturn.sort(Blockly.Procedures.procTupleComparator_);
   proceduresReturn.sort(Blockly.Procedures.procTupleComparator_);
   return [proceduresNoReturn, proceduresReturn];
@@ -102,7 +87,7 @@ Blockly.Procedures.allProcedures = function(root) {
  * @private
  */
 Blockly.Procedures.procTupleComparator_ = function(ta, tb) {
-  return ta[0].toLowerCase().localeCompare(tb[0].toLowerCase());
+  return ta[0].localeCompare(tb[0], undefined, {sensitivity: 'base'});
 };
 
 /**
@@ -210,7 +195,7 @@ Blockly.Procedures.rename = function(name) {
 /**
  * Construct the blocks required by the flyout for the procedure category.
  * @param {!Blockly.Workspace} workspace The workspace containing procedures.
- * @return {!Array.<!Element>} Array of XML block elements.
+ * @return {!Array<!Element>} Array of XML block elements.
  */
 Blockly.Procedures.flyoutCategory = function(workspace) {
   var xmlList = [];
@@ -321,8 +306,8 @@ Blockly.Procedures.updateMutatorFlyout_ = function(workspace) {
  * @package
  */
 Blockly.Procedures.mutatorOpenListener = function(e) {
-  if (e.type != Blockly.Events.UI || e.element != 'mutatorOpen' ||
-      !e.newValue) {
+  if (!(e.type == Blockly.Events.BUBBLE_OPEN && e.bubbleType === 'mutator' &&
+      e.isOpen)) {
     return;
   }
   var workspaceId = /** @type {string} */ (e.workspaceId);
@@ -359,7 +344,7 @@ Blockly.Procedures.mutatorChangeListener_ = function(e) {
  * Find all the callers of a named procedure.
  * @param {string} name Name of procedure.
  * @param {!Blockly.Workspace} workspace The workspace to find callers in.
- * @return {!Array.<!Blockly.Block>} Array of caller blocks.
+ * @return {!Array<!Blockly.Block>} Array of caller blocks.
  */
 Blockly.Procedures.getCallers = function(name, workspace) {
   var callers = [];
@@ -402,7 +387,7 @@ Blockly.Procedures.mutateCallers = function(defBlock) {
       // undo action since it is deterministically tied to the procedure's
       // definition mutation.
       Blockly.Events.recordUndo = false;
-      Blockly.Events.fire(new Blockly.Events.BlockChange(
+      Blockly.Events.fire(new (Blockly.Events.get(Blockly.Events.BLOCK_CHANGE))(
           caller, 'mutation', null, oldMutation, newMutation));
       Blockly.Events.recordUndo = oldRecordUndo;
     }
@@ -413,18 +398,20 @@ Blockly.Procedures.mutateCallers = function(defBlock) {
  * Find the definition block for the named procedure.
  * @param {string} name Name of procedure.
  * @param {!Blockly.Workspace} workspace The workspace to search.
- * @return {Blockly.Block} The procedure definition block, or null not found.
+ * @return {?Blockly.Block} The procedure definition block, or null not found.
  */
 Blockly.Procedures.getDefinition = function(name, workspace) {
-  // Assume that a procedure definition is a top block.
-  var blocks = workspace.getTopBlocks(false);
+  // Do not assume procedure is a top block. Some languages allow nested
+  // procedures. Also do not assume it is one of the built-in blocks. Only
+  // rely on getProcedureDef.
+  var blocks = workspace.getAllBlocks(false);
   for (var i = 0; i < blocks.length; i++) {
     if (blocks[i].getProcedureDef) {
       var procedureBlock = /** @type {!Blockly.Procedures.ProcedureBlock} */ (
         blocks[i]);
       var tuple = procedureBlock.getProcedureDef();
       if (tuple && Blockly.Names.equals(tuple[0], name)) {
-        return blocks[i];
+        return blocks[i];  // Can't use procedureBlock var due to type check.
       }
     }
   }

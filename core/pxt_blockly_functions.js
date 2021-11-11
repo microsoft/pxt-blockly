@@ -51,6 +51,7 @@ goog.require('Blockly.constants');
 goog.require('Blockly.Events.BlockChange');
 goog.require('Blockly.Field');
 goog.require('Blockly.Names');
+goog.require('Blockly.pxtBlocklyUtils');
 goog.require('Blockly.Workspace');
 
 /**
@@ -655,7 +656,7 @@ Blockly.Functions.mutateCallersAndDefinition = function(name, ws, mutation) {
           // Then, go through all descendants of the function definition and
           // look for argument reporters to update.
           definitionBlock.getDescendants().forEach(function(d) {
-            if (!Blockly.Functions.isFunctionArgumentReporter(d)) {
+            if (!Blockly.pxtBlocklyUtils.isFunctionArgumentReporter(d)) {
               return;
             }
 
@@ -689,20 +690,6 @@ Blockly.Functions.mutateCallersAndDefinition = function(name, ws, mutation) {
 };
 
 /**
- * Whether a block is a function argument reporter.
- * @param {!Blockly.BlockSvg} block The block that should be used to make this
- *     decision.
- * @return {boolean} True if the block is a function argument reporter.
- */
-Blockly.Functions.isFunctionArgumentReporter = function(block) {
-  return block.type == 'argument_reporter_boolean' ||
-    block.type == 'argument_reporter_number' ||
-    block.type == 'argument_reporter_string' ||
-    block.type == 'argument_reporter_array' ||
-    block.type == 'argument_reporter_custom';
-};
-
-/**
  * Create a flyout, creates the DOM elements for the flyout, and initializes the flyout.
  * @param {!Blockly.Workspace} workspace The target and parent workspace for this flyout. The workspace's options will
  *     be used to create the flyout's inner workspace.
@@ -710,18 +697,25 @@ Blockly.Functions.isFunctionArgumentReporter = function(block) {
  * @return {!Blockly.Flyout} The newly created flyout.
  */
 Blockly.Functions.createFlyout = function (workspace, siblingNode) {
-  let flyoutWorkspaceOptions = {
-    disabledPatternId: workspace.options.disabledPatternId,
-    parentWorkspace: workspace,
-    RTL: workspace.RTL,
-    oneBasedIndex: workspace.options.oneBasedIndex,
-    horizontalLayout: workspace.horizontalLayout,
-    toolboxPosition: workspace.options.toolboxPosition,
-    zoomOptions: workspace.options.zoomOptions,
-    renderer: workspace.options.renderer,
-    // pxt-blockly: pass the newFunctions option
-    newFunctions: workspace.options.newFunctions,
-  };
+  let flyoutWorkspaceOptions = new Blockly.Options(
+    /** @type {!Blockly.BlocklyOptions} */
+    ({
+      'scrollbars': true,
+      'disabledPatternId': workspace.options.disabledPatternId,
+      'parentWorkspace': workspace,
+      'rtl': workspace.RTL,
+      'oneBasedIndex': workspace.options.oneBasedIndex,
+      'horizontalLayout': workspace.horizontalLayout,
+      'toolboxPosition': workspace.options.toolboxPosition,
+      'zoomOptions': workspace.options.zoomOptions,
+      'renderer': workspace.options.renderer,
+      'rendererOverrides': workspace.options.rendererOverrides,
+      // pxt-blockly: pass the newFunctions option
+      'newFunctions': workspace.options.newFunctions,
+      'move': {
+        'scrollbars': true,
+      }
+    }));
   let newFlyout;
   if (flyoutWorkspaceOptions.horizontalLayout) {
     newFlyout = new Blockly.HorizontalFlyout(flyoutWorkspaceOptions);

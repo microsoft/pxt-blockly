@@ -1,18 +1,7 @@
 /**
  * @license
  * Copyright 2012 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 /**
@@ -23,13 +12,12 @@
 
 goog.provide('Blockly.FieldCheckbox');
 
-goog.require('Blockly.Events');
+/** @suppress {extraRequire} */
 goog.require('Blockly.Events.BlockChange');
 goog.require('Blockly.Field');
 goog.require('Blockly.fieldRegistry');
 goog.require('Blockly.utils.dom');
 goog.require('Blockly.utils.object');
-goog.require('Blockly.utils.Size');
 
 
 /**
@@ -55,14 +43,18 @@ Blockly.FieldCheckbox = function(opt_value, opt_validator, opt_config) {
    */
   this.checkChar_ = null;
 
-  if (opt_value == null) {
-    opt_value = 'FALSE';
-  }
   Blockly.FieldCheckbox.superClass_.constructor.call(
       this, opt_value, opt_validator, opt_config);
   this.addArgType('checkbox');
 };
 Blockly.utils.object.inherits(Blockly.FieldCheckbox, Blockly.Field);
+
+/**
+ * The default value for this field.
+ * @type {*}
+ * @protected
+ */
+Blockly.FieldCheckbox.prototype.DEFAULT_VALUE = false;
 
 /**
  * Construct a FieldCheckbox from a JSON arg object.
@@ -95,18 +87,10 @@ Blockly.FieldCheckbox.prototype.SERIALIZABLE = true;
 Blockly.FieldCheckbox.prototype.CURSOR = 'default';
 
 /**
- * Used to tell if the field needs to be rendered the next time the block is
- * rendered. Checkbox fields are statically sized, and only need to be
- * rendered at initialization.
- * @type {boolean}
- * @protected
- */
-Blockly.FieldCheckbox.prototype.isDirty_ = false;
-
-/**
  * Configure the field based on the given map of options.
  * @param {!Object} config A map of options to configure the field based on.
- * @private
+ * @protected
+ * @override
  */
 Blockly.FieldCheckbox.prototype.configure_ = function(config) {
   Blockly.FieldCheckbox.superClass_.configure_.call(this, config);
@@ -120,17 +104,28 @@ Blockly.FieldCheckbox.prototype.configure_ = function(config) {
  * @package
  */
 Blockly.FieldCheckbox.prototype.initView = function() {
-  this.size_.width = this.constants_.FIELD_CHECKBOX_DEFAULT_WIDTH;
   Blockly.FieldCheckbox.superClass_.initView.call(this);
 
-  this.textElement_.setAttribute('x', this.constants_.FIELD_CHECKBOX_X_OFFSET);
-  this.textElement_.setAttribute('y', this.constants_.FIELD_CHECKBOX_Y_OFFSET);
-  this.textElement_.removeAttribute('dominant-baseline');
-  Blockly.utils.dom.addClass(this.textElement_, 'blocklyCheckbox');
-
-  this.textContent_.nodeValue =
-      this.checkChar_ || Blockly.FieldCheckbox.CHECK_CHAR;
+  Blockly.utils.dom.addClass(
+      /** @type {!SVGTextElement} **/ (this.textElement_), 'blocklyCheckbox');
   this.textElement_.style.display = this.value_ ? 'block' : 'none';
+};
+
+/**
+ * @override
+ */
+Blockly.FieldCheckbox.prototype.render_ = function() {
+  if (this.textContent_) {
+    this.textContent_.nodeValue = this.getDisplayText_();
+  }
+  this.updateSize_(this.getConstants().FIELD_CHECKBOX_X_OFFSET);
+};
+
+/**
+ * @override
+ */
+Blockly.FieldCheckbox.prototype.getDisplayText_ = function() {
+  return this.checkChar_ || Blockly.FieldCheckbox.CHECK_CHAR;
 };
 
 /**
@@ -140,9 +135,7 @@ Blockly.FieldCheckbox.prototype.initView = function() {
  */
 Blockly.FieldCheckbox.prototype.setCheckCharacter = function(character) {
   this.checkChar_ = character;
-  if (this.textContent_) {
-    this.textContent_.nodeValue = character || Blockly.FieldCheckbox.CHECK_CHAR;
-  }
+  this.forceRerender();
 };
 
 /**

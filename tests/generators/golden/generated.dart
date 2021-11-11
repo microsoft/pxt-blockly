@@ -732,16 +732,16 @@ void test_get_text_complex() {
   unittest_assertequals((true ? get_Blockly() : null)[0], 'B', 'get first order complex');
   check_number_of_calls('get first order complex');
   number_of_calls = 0;
-  unittest_assertequals(text_get_from_end((get_Blockly()), 1), 'y', 'get last complex');
+  unittest_assertequals(text_get_from_end(get_Blockly(), 1), 'y', 'get last complex');
   check_number_of_calls('get last complex');
   number_of_calls = 0;
-  unittest_assertequals(text_get_from_end((true ? get_Blockly() : null), 1), 'y', 'get last order complex');
+  unittest_assertequals(text_get_from_end(true ? get_Blockly() : null, 1), 'y', 'get last order complex');
   check_number_of_calls('get last order complex');
   number_of_calls = 0;
-  unittest_assertequals(text.indexOf(text_random_letter((get_Blockly()))) + 1 > 0, true, 'get random complex');
+  unittest_assertequals(text.indexOf(text_random_letter(get_Blockly())) + 1 > 0, true, 'get random complex');
   check_number_of_calls('get random complex');
   number_of_calls = 0;
-  unittest_assertequals(text.indexOf(text_random_letter((true ? get_Blockly() : null))) + 1 > 0, true, 'get random order complex');
+  unittest_assertequals(text.indexOf(text_random_letter(true ? get_Blockly() : null)) + 1 > 0, true, 'get random order complex');
   check_number_of_calls('get random order complex');
   number_of_calls = 0;
   unittest_assertequals((get_Blockly())[2], 'o', 'get # complex');
@@ -750,11 +750,11 @@ void test_get_text_complex() {
   unittest_assertequals((true ? get_Blockly() : null)[((true ? 3 : null) - 1)], 'o', 'get # order complex');
   check_number_of_calls('get # order complex');
   number_of_calls = 0;
-  unittest_assertequals(text_get_from_end((get_Blockly()), 3), 'k', 'get #-end complex');
+  unittest_assertequals(text_get_from_end(get_Blockly(), 3), 'k', 'get #-end complex');
   check_number_of_calls('get #-end complex');
   number_of_calls = 0;
   // The order for index for #-end is addition because this will catch errors in generators where most perform the operation ... - index.
-  unittest_assertequals(text_get_from_end((true ? get_Blockly() : null), 0 + 3), 'k', 'get #-end order complex');
+  unittest_assertequals(text_get_from_end(true ? get_Blockly() : null, 0 + 3), 'k', 'get #-end order complex');
   check_number_of_calls('get #-end order complex');
 }
 
@@ -813,41 +813,41 @@ void test_substring_complex() {
   check_number_of_calls('substring # complex order');
   number_of_calls = 0;
   // The order for index for #-end is addition because this will catch errors in generators where most perform the operation ... - index.
-  unittest_assertequals(text_get_substring((get_numbers()), 'FROM_END', 2, 'FROM_END', 1), '78', 'substring #-end complex');
+  unittest_assertequals(text_get_substring(get_numbers(), 'FROM_END', 2, 'FROM_END', 1), '78', 'substring #-end complex');
   check_number_of_calls('substring #-end complex');
   number_of_calls = 0;
-  unittest_assertequals(text_get_substring((true ? get_numbers() : null), 'FROM_END', ((0 + 3) - 1), 'FROM_END', ((0 + 2) - 1)), '78', 'substring #-end order order');
+  unittest_assertequals(text_get_substring(true ? get_numbers() : null, 'FROM_END', ((0 + 3) - 1), 'FROM_END', ((0 + 2) - 1)), '78', 'substring #-end order order');
   check_number_of_calls('substring #-end order order');
   number_of_calls = 0;
-  unittest_assertequals((get_numbers()), text, 'substring first-last');
+  unittest_assertequals(get_numbers(), text, 'substring first-last');
   check_number_of_calls('substring first-last');
   number_of_calls = 0;
-  unittest_assertequals(text_get_substring((get_numbers()), 'FROM_START', 1, 'FROM_END', 1), '2345678', 'substring # #-end complex');
+  unittest_assertequals(text_get_substring(get_numbers(), 'FROM_START', 1, 'FROM_END', 1), '2345678', 'substring # #-end complex');
   check_number_of_calls('substring # #-end complex');
   number_of_calls = 0;
-  unittest_assertequals(text_get_substring((get_numbers()), 'FROM_END', 6, 'FROM_START', 3), '34', 'substring #-end # complex');
+  unittest_assertequals(text_get_substring(get_numbers(), 'FROM_END', 6, 'FROM_START', 3), '34', 'substring #-end # complex');
   check_number_of_calls('substring #-end # complex');
   number_of_calls = 0;
   unittest_assertequals((get_numbers()).substring(0, 4), '1234', 'substring first # complex');
   check_number_of_calls('substring first # complex');
   number_of_calls = 0;
-  unittest_assertequals(text_get_substring((get_numbers()), 'FIRST', 0, 'FROM_END', 1), '12345678', 'substring first #-end complex');
+  unittest_assertequals(text_get_substring(get_numbers(), 'FIRST', 0, 'FROM_END', 1), '12345678', 'substring first #-end complex');
   check_number_of_calls('substring first #-end complex');
   number_of_calls = 0;
-  unittest_assertequals(text_get_substring((get_numbers()), 'FROM_START', 6, 'LAST', 0), '789', 'substring # last complex');
+  unittest_assertequals(text_get_substring(get_numbers(), 'FROM_START', 6, 'LAST', 0), '789', 'substring # last complex');
   check_number_of_calls('substring # last complex');
   number_of_calls = 0;
-  unittest_assertequals(text_get_substring((get_numbers()), 'FROM_END', 2, 'LAST', 0), '789', 'substring #-end last complex');
+  unittest_assertequals(text_get_substring(get_numbers(), 'FROM_END', 2, 'LAST', 0), '789', 'substring #-end last complex');
   check_number_of_calls('substring #-end last complex');
   number_of_calls = 0;
-  unittest_assertequals(text_get_substring((get_numbers()), 'FROM_START', 0, 'FROM_END', 0), '123456789', 'substring all with # #-end complex');
+  unittest_assertequals(text_get_substring(get_numbers(), 'FROM_START', 0, 'FROM_END', 0), '123456789', 'substring all with # #-end complex');
   check_number_of_calls('substring all with # #-end complex');
   number_of_calls = 0;
-  unittest_assertequals(text_get_substring((get_numbers()), 'FROM_END', 8, 'FROM_START', 8), '123456789', 'substring all with #-end # complex');
+  unittest_assertequals(text_get_substring(get_numbers(), 'FROM_END', 8, 'FROM_START', 8), '123456789', 'substring all with #-end # complex');
   check_number_of_calls('substring all with #-end # complex');
   number_of_calls = 0;
   // Checks that the whole string is properly retrieved even if the value for start and end is not a simple number. This is especially important in generators where substring uses [x:length - y] for # #-end.
-  unittest_assertequals(text_get_substring((get_numbers()), 'FROM_START', ((0 + 1) - 1), 'FROM_END', ((0 + 1) - 1)), '123456789', 'substring all with # #-end math complex');
+  unittest_assertequals(text_get_substring(get_numbers(), 'FROM_START', ((0 + 1) - 1), 'FROM_END', ((0 + 1) - 1)), '123456789', 'substring all with # #-end math complex');
   check_number_of_calls('substring all with # #-end math complex');
 }
 
@@ -935,6 +935,20 @@ void test_replace() {
   unittest_assertequals('aaaaa'.replaceAll('aaaaa', ''), '', 'empty replacement 2');
   unittest_assertequals('aaaaa'.replaceAll('a', ''), '', 'empty replacement 3');
   unittest_assertequals(''.replaceAll('a', 'chicken'), '', 'empty source');
+}
+
+/// Tests the "multiline" block.
+void test_multiline() {
+  unittest_assertequals('', '', 'no text');
+  unittest_assertequals('Google', 'Google', 'simple');
+  unittest_assertequals('paragraph' + '\n' +
+  'with newlines' + '\n' +
+  'yup', 'paragraph' + '\n' +
+  'with newlines' + '\n' +
+  'yup', 'no compile error with newlines');
+  unittest_assertequals(text_count('bark bark' + '\n' +
+  'bark bark bark' + '\n' +
+  'bark bark bark bark', 'bark'), 9, 'count with newlines');
 }
 
 /// Checks that the number of calls is one in order
@@ -1027,15 +1041,27 @@ void test_get_lists_simple() {
   unittest_assertequals(list[list.length - (0 + 3)], 'Kirk', 'get #-end order simple');
 }
 
+dynamic lists_get_from_end(List my_list, num x) {
+  x = my_list.length - x;
+  return my_list[x];
+}
+
+/// Tests the "get" block with create list call.
+void test_get_lists_create_list() {
+  unittest_assertequals(['Kirk', 'Spock', 'McCoy'].first, 'Kirk', 'get first create list');
+  unittest_assertequals(['Kirk', 'Spock', 'McCoy'].last, 'McCoy', 'get last simple');
+  unittest_assertequals(['Kirk', 'Spock', 'McCoy'].indexOf(lists_get_random_item(['Kirk', 'Spock', 'McCoy'])) + 1 > 0, true, 'get random simple');
+  unittest_assertequals(['Kirk', 'Spock', 'McCoy'][1], 'Spock', 'get # simple');
+  unittest_assertequals(['Kirk', 'Spock', 'McCoy'][((true ? 2 : null) - 1)], 'Spock', 'get # order simple');
+  unittest_assertequals(lists_get_from_end(['Kirk', 'Spock', 'McCoy'], 3), 'Kirk', 'get #-end simple');
+  // The order for index for #-end is addition because this will catch errors in generators where most perform the operation ... - index.
+  unittest_assertequals(lists_get_from_end(['Kirk', 'Spock', 'McCoy'], 0 + 3), 'Kirk', 'get #-end order simple');
+}
+
 /// Creates a list for use with the get test.
 dynamic get_star_wars() {
   number_of_calls = (number_of_calls is num ? number_of_calls : 0) + 1;
   return ['Kirk', 'Spock', 'McCoy'];
-}
-
-dynamic lists_get_from_end(List my_list, num x) {
-  x = my_list.length - x;
-  return my_list[x];
 }
 
 /// Tests the "get" block with a function call.
@@ -1612,6 +1638,7 @@ main() {
   test_count_text();
   test_text_reverse();
   test_replace();
+  test_multiline();
   print(unittest_report());
   unittestResults = null;
 
@@ -1623,6 +1650,7 @@ main() {
   test_find_lists_simple();
   test_find_lists_complex();
   test_get_lists_simple();
+  test_get_lists_create_list();
   test_get_lists_complex();
   test_getRemove();
   test_remove();

@@ -1,18 +1,7 @@
 /**
  * @license
  * Copyright 2019 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 /**
@@ -26,6 +15,8 @@ goog.provide('Blockly.MarkerManager');
 goog.require('Blockly.Cursor');
 goog.require('Blockly.Marker');
 
+goog.requireType('Blockly.WorkspaceSvg');
+
 
 /**
  * Class to manage the multiple markers and the cursor on a workspace.
@@ -36,14 +27,14 @@ goog.require('Blockly.Marker');
 Blockly.MarkerManager = function(workspace){
   /**
    * The cursor.
-   * @type {Blockly.Cursor}
+   * @type {?Blockly.Cursor}
    * @private
    */
   this.cursor_ = null;
 
   /**
-   * The cursor's svg element.
-   * @type {SVGElement}
+   * The cursor's SVG element.
+   * @type {?SVGElement}
    * @private
    */
   this.cursorSvg_ = null;
@@ -53,7 +44,7 @@ Blockly.MarkerManager = function(workspace){
    * @type {!Object<string, !Blockly.Marker>}
    * @private
    */
-  this.markers_ = {};
+  this.markers_ = Object.create(null);
 
   /**
    * The workspace this marker manager is associated with.
@@ -62,6 +53,13 @@ Blockly.MarkerManager = function(workspace){
    */
   this.workspace_ = workspace;
 };
+
+/**
+ * The name of the local marker.
+ * @type {string}
+ * @const
+ */
+Blockly.MarkerManager.LOCAL_MARKER = 'local_marker_1';
 
 /**
  * Register the marker by adding it to the map of markers.
@@ -80,7 +78,7 @@ Blockly.MarkerManager.prototype.registerMarker = function(id, marker) {
 
 /**
  * Unregister the marker by removing it from the map of markers.
- * @param {string} id The id of the marker to unregister.
+ * @param {string} id The ID of the marker to unregister.
  */
 Blockly.MarkerManager.prototype.unregisterMarker = function(id) {
   var marker = this.markers_[id];
@@ -88,27 +86,27 @@ Blockly.MarkerManager.prototype.unregisterMarker = function(id) {
     marker.dispose();
     delete this.markers_[id];
   } else {
-    throw Error('Marker with id ' + id + ' does not exist. Can only unregister' +
-        'markers that exist.');
+    throw Error('Marker with ID ' + id + ' does not exist. ' +
+        'Can only unregister markers that exist.');
   }
 };
 
 /**
  * Get the cursor for the workspace.
- * @return {Blockly.Cursor} The cursor for this workspace.
+ * @return {?Blockly.Cursor} The cursor for this workspace.
  */
 Blockly.MarkerManager.prototype.getCursor = function() {
   return this.cursor_;
 };
 
 /**
- * Get a single marker that corresponds to the given id.
+ * Get a single marker that corresponds to the given ID.
  * @param {string} id A unique identifier for the marker.
- * @return {Blockly.Marker} The marker that corresponds to the given id, or null
- *     if none exists.
+ * @return {?Blockly.Marker} The marker that corresponds to the given ID,
+ *     or null if none exists.
  */
 Blockly.MarkerManager.prototype.getMarker = function(id) {
-  return this.markers_[id];
+  return this.markers_[id] || null;
 };
 
 /**
@@ -129,9 +127,9 @@ Blockly.MarkerManager.prototype.setCursor = function(cursor) {
 };
 
 /**
- * Add the cursor svg to this workspace svg group.
- * @param {SVGElement} cursorSvg The svg root of the cursor to be added to the
- *     workspace svg group.
+ * Add the cursor SVG to this workspace SVG group.
+ * @param {?SVGElement} cursorSvg The SVG root of the cursor to be added to the
+ *     workspace SVG group.
  * @package
  */
 Blockly.MarkerManager.prototype.setCursorSvg = function(cursorSvg) {
@@ -145,9 +143,9 @@ Blockly.MarkerManager.prototype.setCursorSvg = function(cursorSvg) {
 };
 
 /**
- * Add the marker svg to this workspaces svg group.
- * @param {SVGElement} markerSvg The svg root of the marker to be added to the
- *     workspace svg group.
+ * Add the marker SVG to this workspaces SVG group.
+ * @param {?SVGElement} markerSvg The SVG root of the marker to be added to the
+ *     workspace SVG group.
  * @package
  */
 Blockly.MarkerManager.prototype.setMarkerSvg = function(markerSvg) {
@@ -166,6 +164,16 @@ Blockly.MarkerManager.prototype.setMarkerSvg = function(markerSvg) {
 };
 
 /**
+ * Redraw the attached cursor SVG if needed.
+ * @package
+ */
+Blockly.MarkerManager.prototype.updateMarkers = function() {
+  if (this.workspace_.keyboardAccessibilityMode && this.cursorSvg_) {
+    this.workspace_.getCursor().draw();
+  }
+};
+
+/**
  * Dispose of the marker manager.
  * Go through and delete all markers associated with this marker manager.
  * @suppress {checkTypes}
@@ -177,6 +185,8 @@ Blockly.MarkerManager.prototype.dispose = function() {
     this.unregisterMarker(markerId);
   }
   this.markers_ = null;
-  this.cursor_.dispose();
-  this.cursor_ = null;
+  if (this.cursor_) {
+    this.cursor_.dispose();
+    this.cursor_ = null;
+  }
 };

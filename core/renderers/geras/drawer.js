@@ -1,18 +1,7 @@
 /**
  * @license
  * Copyright 2019 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 /**
@@ -23,13 +12,13 @@
 
 goog.provide('Blockly.geras.Drawer');
 
-goog.require('Blockly.blockRendering.ConstantProvider');
 goog.require('Blockly.blockRendering.Drawer');
 goog.require('Blockly.geras.Highlighter');
 goog.require('Blockly.geras.RenderInfo');
 goog.require('Blockly.utils.object');
 goog.require('Blockly.utils.svgPaths');
 
+goog.requireType('Blockly.BlockSvg');
 goog.requireType('Blockly.geras.PathObject');
 
 
@@ -131,7 +120,8 @@ Blockly.geras.Drawer.prototype.drawBottom_ = function() {
 /**
  * Add steps for the left side of the block, which may include an output
  * connection
- * @private
+ * @protected
+ * @override
  */
 Blockly.geras.Drawer.prototype.drawLeft_ = function() {
   this.highlighter_.drawLeft();
@@ -207,7 +197,7 @@ Blockly.geras.Drawer.prototype.positionNextConnection_ = function() {
 
   if (bottomRow.connection) {
     var connInfo = bottomRow.connection;
-    var x = connInfo.xPos; // Already contains info about startX
+    var x = connInfo.xPos;  // Already contains info about startX.
     var connX = (this.info_.RTL ? -x : x) +
         (this.constants_.DARK_PATH_OFFSET / 2);
     connInfo.connectionModel.setOffsetInBlock(

@@ -1,18 +1,7 @@
 /**
  * @license
  * Copyright 2019 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 /**
@@ -25,12 +14,23 @@ goog.provide('Blockly.zelos.Renderer');
 
 goog.require('Blockly.blockRendering');
 goog.require('Blockly.blockRendering.Renderer');
+goog.require('Blockly.connectionTypes');
+/** @suppress {extraRequire} */
+goog.require('Blockly.constants');
+goog.require('Blockly.InsertionMarkerManager');
 goog.require('Blockly.utils.object');
 goog.require('Blockly.zelos.ConstantProvider');
 goog.require('Blockly.zelos.Drawer');
+goog.require('Blockly.zelos.MarkerSvg');
 goog.require('Blockly.zelos.PathObject');
 goog.require('Blockly.zelos.RenderInfo');
-goog.require('Blockly.zelos.MarkerSvg');
+
+goog.requireType('Blockly.blockRendering.MarkerSvg');
+goog.requireType('Blockly.blockRendering.RenderInfo');
+goog.requireType('Blockly.BlockSvg');
+goog.requireType('Blockly.Marker');
+goog.requireType('Blockly.Theme');
+goog.requireType('Blockly.WorkspaceSvg');
 
 
 /**
@@ -113,15 +113,29 @@ Blockly.zelos.Renderer.prototype.makePathObject = function(root, style) {
  * @override
  */
 Blockly.zelos.Renderer.prototype.shouldHighlightConnection = function(conn) {
-  return conn.type != Blockly.INPUT_VALUE && conn.type !== Blockly.OUTPUT_VALUE;
+  return conn.type != Blockly.connectionTypes.INPUT_VALUE &&
+      conn.type !== Blockly.connectionTypes.OUTPUT_VALUE;
 };
 
 /**
  * @override
  */
-Blockly.zelos.Renderer.prototype.shouldInsertDraggedBlock = function(_block,
-    _conn) {
-  return false;
+Blockly.zelos.Renderer.prototype.getConnectionPreviewMethod = function(
+    closest, local, topBlock) {
+  if (local.type == Blockly.connectionTypes.OUTPUT_VALUE) {
+    if (!closest.isConnected()) {
+      return Blockly.InsertionMarkerManager.PREVIEW_TYPE.INPUT_OUTLINE;
+    }
+    // TODO: Returning this is a total hack, because we don't want to show
+    //   a replacement fade, we want to show an outline affect.
+    //   Sadly zelos does not support showing an outline around filled
+    //   inputs, so we have to pretend like the connected block is getting
+    //   replaced.
+    return Blockly.InsertionMarkerManager.PREVIEW_TYPE.REPLACEMENT_FADE;
+  }
+
+  return Blockly.zelos.Renderer.superClass_.getConnectionPreviewMethod(
+      closest, local, topBlock);
 };
 
 Blockly.blockRendering.register('zelos', Blockly.zelos.Renderer);

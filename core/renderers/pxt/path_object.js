@@ -112,7 +112,7 @@ Blockly.pxt.PathObject.prototype.updateHighlighted = function(enable) {
         /** @type {!SVGElement} */ (this.svgPath.cloneNode(true));
       this.svgPathHighlighted_.setAttribute('fill', 'none');
       this.svgPathHighlighted_.setAttribute('filter',
-          'url(#' + this.constants_.highlightedGlowFilterId + ')');
+          'url(#' + this.constants.highlightedGlowFilterId + ')');
       this.svgRoot.appendChild(this.svgPathHighlighted_);
     }
   } else {
@@ -137,7 +137,7 @@ Blockly.pxt.PathObject.prototype.updateHighlightedWarning = function(enable) {
         /** @type {!SVGElement} */ (this.svgPath.cloneNode(true));
       this.svgPathHighlightedWarning_.setAttribute('fill', 'none');
       this.svgPathHighlightedWarning_.setAttribute('filter',
-          'url(#' + this.constants_.warningGlowFilterId + ')');
+          'url(#' + this.constants.warningGlowFilterId + ')');
       this.svgRoot.appendChild(this.svgPathHighlightedWarning_);
     }
   } else {

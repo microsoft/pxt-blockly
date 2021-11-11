@@ -1,18 +1,20 @@
 {
 	"@metadata": {
 		"authors": [
+			"Ajeje Brazorf",
+			"Albe Albe 460",
+			"Albe Albe460",
 			"Beta16",
 			"Espertus",
-			"Nerimic",
+			"Federico Mugnaini",
 			"Gbonanome",
 			"Gianfranco",
-			"Federico Mugnaini",
-			"JackLantern",
-			"Selven",
-			"Samuele2002",
 			"Greis",
+			"JackLantern",
+			"Nerimic",
+			"Samuele2002",
 			"Sarah Bernabei",
-			"Albe Albe 460"
+			"Selven"
 		]
 	},
 	"VARIABLES_DEFAULT_NAME": "elemento",
@@ -47,8 +49,7 @@
 	"NEW_VARIABLE_TYPE_TITLE": "Tipo della nuova variabile:",
 	"NEW_VARIABLE_TITLE": "Nome della nuova variabile:",
 	"VARIABLE_ALREADY_EXISTS": "Una variabile denominata '%1' esiste già.",
-	"VARIABLE_ALREADY_EXISTS_FOR_ANOTHER_TYPE": "Una variabile nominata \"%1\" esiste già per un'altra variabile del tipo \"%2\".",
-	"PROCEDURE_ALREADY_EXISTS": "Una procedura denominata '%1' esiste già.",
+	"VARIABLE_ALREADY_EXISTS_FOR_ANOTHER_TYPE": "Una variabile nominata '%1' esiste già per un altro tipo: '%2'.",
 	"DELETE_VARIABLE_CONFIRMATION": "Cancella %1 usi della variabile '%2'?",
 	"CANNOT_DELETE_VARIABLE_PROCEDURE": "Non si può cancellare la variabile '%1' perché è parte della definizione della funzione '%2'",
 	"DELETE_VARIABLE": "Cancella la variabile '%1'",
@@ -355,5 +356,8 @@
 	"PROCEDURES_IFRETURN_HELPURL": "http://c2.com/cgi/wiki?GuardClause",
 	"PROCEDURES_IFRETURN_WARNING": "Attenzioneː Questo blocco può essere usato solo all'interno di una definizione di funzione.",
 	"WORKSPACE_COMMENT_DEFAULT_TEXT": "Scrivi qualcosa...",
-	"COLLAPSED_WARNINGS_WARNING": "I blocchi compressi contengono avvertimenti."
+	"WORKSPACE_ARIA_LABEL": "Area di lavoro di Blockly",
+	"COLLAPSED_WARNINGS_WARNING": "I blocchi compressi contengono avvertimenti.",
+	"DIALOG_OK": "OK",
+	"DIALOG_CANCEL": "Annulla"
 }

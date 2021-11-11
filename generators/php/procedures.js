@@ -1,18 +1,7 @@
 /**
  * @license
  * Copyright 2015 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 /**
@@ -25,31 +14,31 @@ goog.provide('Blockly.PHP.procedures');
 
 goog.require('Blockly.PHP');
 
+
 Blockly.PHP['procedures_defreturn'] = function(block) {
   // Define a procedure with a return value.
   // First, add a 'global' statement for every variable that is not shadowed by
   // a local parameter.
   var globals = [];
-  var varName;
   var workspace = block.workspace;
   var variables = Blockly.Variables.allUsedVarModels(workspace) || [];
   for (var i = 0, variable; variable = variables[i]; i++) {
-    varName = variable.name;
-    if (block.arguments_.indexOf(varName) == -1) {
-      globals.push(Blockly.PHP.variableDB_.getName(varName,
+    var varName = variable.name;
+    if (block.getVars().indexOf(varName) == -1) {
+      globals.push(Blockly.PHP.nameDB_.getName(varName,
           Blockly.VARIABLE_CATEGORY_NAME));
     }
   }
   // Add developer variables.
   var devVarList = Blockly.Variables.allDeveloperVariables(workspace);
   for (var i = 0; i < devVarList.length; i++) {
-    globals.push(Blockly.PHP.variableDB_.getName(devVarList[i],
+    globals.push(Blockly.PHP.nameDB_.getName(devVarList[i],
         Blockly.Names.DEVELOPER_VARIABLE_TYPE));
   }
   globals = globals.length ?
       Blockly.PHP.INDENT + 'global ' + globals.join(', ') + ';\n' : '';
 
-  var funcName = Blockly.PHP.variableDB_.getName(
+  var funcName = Blockly.PHP.nameDB_.getName(
       block.getFieldValue('NAME'), Blockly.PROCEDURE_CATEGORY_NAME);
   var xfix1 = '';
   if (Blockly.PHP.STATEMENT_PREFIX) {
@@ -79,8 +68,9 @@ Blockly.PHP['procedures_defreturn'] = function(block) {
     returnValue = Blockly.PHP.INDENT + 'return ' + returnValue + ';\n';
   }
   var args = [];
-  for (var i = 0; i < block.arguments_.length; i++) {
-    args[i] = Blockly.PHP.variableDB_.getName(block.arguments_[i],
+  var variables = block.getVars();
+  for (var i = 0; i < variables.length; i++) {
+    args[i] = Blockly.PHP.nameDB_.getName(variables[i],
         Blockly.VARIABLE_CATEGORY_NAME);
   }
   var code = 'function ' + funcName + '(' + args.join(', ') + ') {\n' +
@@ -98,12 +88,13 @@ Blockly.PHP['procedures_defnoreturn'] =
 
 Blockly.PHP['procedures_callreturn'] = function(block) {
   // Call a procedure with a return value.
-  var funcName = Blockly.PHP.variableDB_.getName(
+  var funcName = Blockly.PHP.nameDB_.getName(
       block.getFieldValue('NAME'), Blockly.PROCEDURE_CATEGORY_NAME);
   var args = [];
-  for (var i = 0; i < block.arguments_.length; i++) {
+  var variables = block.getVars();
+  for (var i = 0; i < variables.length; i++) {
     args[i] = Blockly.PHP.valueToCode(block, 'ARG' + i,
-        Blockly.PHP.ORDER_COMMA) || 'null';
+        Blockly.PHP.ORDER_NONE) || 'null';
   }
   var code = funcName + '(' + args.join(', ') + ')';
   return [code, Blockly.PHP.ORDER_FUNCTION_CALL];

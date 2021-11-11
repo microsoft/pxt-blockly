@@ -1,18 +1,7 @@
 /**
  * @license
  * Copyright 2016 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 /**
@@ -22,6 +11,9 @@
 'use strict';
 
 goog.provide('Blockly.constants');
+
+goog.require('Blockly.connectionTypes');
+
 
 /**
  * The multiplier for scroll wheel deltas using the line delta mode.
@@ -64,7 +56,7 @@ Blockly.CONNECTING_SNAP_RADIUS = 96;
 Blockly.CONNECTION_INDICATOR_RADIUS = 9;
 
 /**
- * How much to prefer staying connected to the current connection over moving to
+ * pxt-blockly: How much to prefer staying connected to the current connection over moving to
  * a new connection.  The current previewed connection is considered to be this
  * much closer to the matching connection on the block than it actually is.
  */
@@ -126,52 +118,14 @@ Blockly.SPRITE = {
 // Constants below this point are not intended to be changed.
 
 /**
- * ENUM for a right-facing value input.  E.g. 'set item to' or 'return'.
- * @const
+ * Enum for alignment of inputs.
+ * @enum {number}
  */
-Blockly.INPUT_VALUE = 1;
-
-/**
- * ENUM for a left-facing value output.  E.g. 'random fraction'.
- * @const
- */
-Blockly.OUTPUT_VALUE = 2;
-
-/**
- * ENUM for a down-facing block stack.  E.g. 'if-do' or 'else'.
- * @const
- */
-Blockly.NEXT_STATEMENT = 3;
-
-/**
- * ENUM for an up-facing block stack.  E.g. 'break out of loop'.
- * @const
- */
-Blockly.PREVIOUS_STATEMENT = 4;
-
-/**
- * ENUM for an dummy input.  Used to add field(s) with no input.
- * @const
- */
-Blockly.DUMMY_INPUT = 5;
-
-/**
- * ENUM for left alignment.
- * @const
- */
-Blockly.ALIGN_LEFT = -1;
-
-/**
- * ENUM for centre alignment.
- * @const
- */
-Blockly.ALIGN_CENTRE = 0;
-
-/**
- * ENUM for right alignment.
- * @const
- */
-Blockly.ALIGN_RIGHT = 1;
+Blockly.constants.ALIGN = {
+  LEFT: -1,
+  CENTRE: 0,
+  RIGHT: 1
+};
 
 /**
  * ENUM for no drag operation.
@@ -199,76 +153,39 @@ Blockly.DRAG_BEGIN = 1;
 Blockly.DRAG_FREE = 2;
 
 /**
- * Lookup table for determining the opposite type of a connection.
- * @const
- */
-Blockly.OPPOSITE_TYPE = [];
-Blockly.OPPOSITE_TYPE[Blockly.INPUT_VALUE] = Blockly.OUTPUT_VALUE;
-Blockly.OPPOSITE_TYPE[Blockly.OUTPUT_VALUE] = Blockly.INPUT_VALUE;
-Blockly.OPPOSITE_TYPE[Blockly.NEXT_STATEMENT] = Blockly.PREVIOUS_STATEMENT;
-Blockly.OPPOSITE_TYPE[Blockly.PREVIOUS_STATEMENT] = Blockly.NEXT_STATEMENT;
-
-/**
- * ENUM for toolbox and flyout at top of screen.
- * @const
- */
-Blockly.TOOLBOX_AT_TOP = 0;
-
-/**
- * ENUM for toolbox and flyout at bottom of screen.
- * @const
- */
-Blockly.TOOLBOX_AT_BOTTOM = 1;
-
-/**
- * ENUM for toolbox and flyout at left of screen.
- * @const
- */
-Blockly.TOOLBOX_AT_LEFT = 2;
-
-/**
- * ENUM for toolbox and flyout at right of screen.
- * @const
- */
-Blockly.TOOLBOX_AT_RIGHT = 3;
-
-/**
+ * pxt-blockly
  * ENUM for output shape: hexagonal (booleans/predicates).
  * @const
  */
 Blockly.OUTPUT_SHAPE_HEXAGONAL = 1;
 
 /**
+ * pxt-blockly
  * ENUM for output shape: rounded (numbers).
  * @const
  */
 Blockly.OUTPUT_SHAPE_ROUND = 2;
 
 /**
+ * pxt-blockly
  * ENUM for output shape: squared (any/all values; strings).
  * @const
  */
 Blockly.OUTPUT_SHAPE_SQUARE = 3;
 
 /**
- * ENUM representing that an event is not in any delete areas.
- * Null for backwards compatibility reasons.
+ * Lookup table for determining the opposite type of a connection.
  * @const
  */
-Blockly.DELETE_AREA_NONE = null;
-
-/**
- * ENUM representing that an event is in the delete area of the trash can.
- * @const
- */
-Blockly.DELETE_AREA_TRASH = 1;
-
-/**
- * ENUM representing that an event is in the delete area of the toolbox or
- * flyout.
- * @const
- */
-Blockly.DELETE_AREA_TOOLBOX = 2;
+Blockly.OPPOSITE_TYPE = [];
+Blockly.OPPOSITE_TYPE[Blockly.connectionTypes.INPUT_VALUE] =
+    Blockly.connectionTypes.OUTPUT_VALUE;
+Blockly.OPPOSITE_TYPE[Blockly.connectionTypes.OUTPUT_VALUE] =
+    Blockly.connectionTypes.INPUT_VALUE;
+Blockly.OPPOSITE_TYPE[Blockly.connectionTypes.NEXT_STATEMENT] =
+    Blockly.connectionTypes.PREVIOUS_STATEMENT;
+Blockly.OPPOSITE_TYPE[Blockly.connectionTypes.PREVIOUS_STATEMENT] =
+    Blockly.connectionTypes.NEXT_STATEMENT;
 
 /**
  * String for use in the "custom" attribute of a category in toolbox XML.
@@ -318,25 +235,41 @@ Blockly.RENAME_VARIABLE_ID = 'RENAME_VARIABLE_ID';
 Blockly.DELETE_VARIABLE_ID = 'DELETE_VARIABLE_ID';
 
 /**
+ * pxt-blockly
  * The type of all procedure definition blocks.
  * @const {string}
  */
 Blockly.FUNCTION_DEFINITION_BLOCK_TYPE = 'function_definition';
 
 /**
+ * pxt-blockly
  * The type of all procedure declaration blocks.
  * @const {string}
  */
 Blockly.FUNCTION_DECLARATION_BLOCK_TYPE = 'function_declaration';
 
 /**
+ * pxt-blockly
  * The type of all procedure call blocks.
  * @const {string}
  */
 Blockly.FUNCTION_CALL_BLOCK_TYPE = 'function_call';
 
 /**
+ * pxt-blockly
  * The type of all procedure call blocks with return values.
  * @const {string}
  */
 Blockly.FUNCTION_CALL_OUTPUT_BLOCK_TYPE = 'function_call_output';
+
+/**
+ * The language-neutral ID given to the collapsed input.
+ * @const {string}
+ */
+Blockly.constants.COLLAPSED_INPUT_NAME = '_TEMP_COLLAPSED_INPUT';
+
+/**
+ * The language-neutral ID given to the collapsed field.
+ * @const {string}
+ */
+Blockly.constants.COLLAPSED_FIELD_NAME = '_TEMP_COLLAPSED_FIELD';

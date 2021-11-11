@@ -1,18 +1,7 @@
 /**
  * @license
  * Copyright 2019 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 /**
@@ -23,6 +12,10 @@
  */
 'use strict';
 
+/**
+ * @name Blockly.utils.aria
+ * @namespace
+ */
 goog.provide('Blockly.utils.aria');
 
 
@@ -100,6 +93,9 @@ Blockly.utils.aria.State = {
   // Value: integer.
   COLCOUNT: 'colcount',
 
+  // ARIA state for a disabled item. Value: one of {true, false}.
+  DISABLED: 'disabled',
+
   // ARIA state for setting whether the element like a tree node is expanded.
   // Value: one of {true, false, undefined}.
   EXPANDED: 'expanded',
@@ -144,10 +140,7 @@ Blockly.utils.aria.State = {
   VALUEMAX: 'valuemax',
 
   // ARIA property for slider minimum value. Value: number.
-  VALUEMIN: 'valuemin',
-
-  // ARIA state for a disabled item. Value: one of {true, false}.
-  DISABLED: 'disabled' // pxt-blockly
+  VALUEMIN: 'valuemin'
 };
 
 /**
@@ -169,7 +162,7 @@ Blockly.utils.aria.setRole = function(element, roleName) {
  * @param {!Blockly.utils.aria.State} stateName State attribute being set.
  *     Automatically adds prefix 'aria-' to the state name if the attribute is
  *     not an extra attribute.
- * @param {string|boolean|number|!Array.<string>} value Value
+ * @param {string|boolean|number|!Array<string>} value Value
  * for the state attribute.
  */
 Blockly.utils.aria.setState = function(element, stateName, value) {

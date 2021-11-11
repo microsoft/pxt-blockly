@@ -1,18 +1,7 @@
 /**
  * @license
  * Copyright 2019 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 /**
@@ -23,15 +12,16 @@
 
 goog.provide('Blockly.blockRendering.Drawer');
 
-goog.require('Blockly.blockRendering.BottomRow');
-goog.require('Blockly.blockRendering.InputRow');
-goog.require('Blockly.blockRendering.Measurable');
 goog.require('Blockly.blockRendering.RenderInfo');
 goog.require('Blockly.blockRendering.Row');
-goog.require('Blockly.blockRendering.SpacerRow');
-goog.require('Blockly.blockRendering.TopRow');
 goog.require('Blockly.blockRendering.Types');
 goog.require('Blockly.utils.svgPaths');
+
+goog.requireType('Blockly.blockRendering.ConstantProvider');
+goog.requireType('Blockly.blockRendering.Field');
+goog.requireType('Blockly.blockRendering.Icon');
+goog.requireType('Blockly.blockRendering.InlineInput');
+goog.requireType('Blockly.BlockSvg');
 
 
 /**
@@ -251,7 +241,7 @@ Blockly.blockRendering.Drawer.prototype.drawRightSideRow_ = function(row) {
 
 /**
  * Add steps for the bottom edge of a block, possibly including a notch
- * for the next connection
+ * for the next connection.
  * @protected
  */
 Blockly.blockRendering.Drawer.prototype.drawBottom_ = function() {
@@ -473,7 +463,7 @@ Blockly.blockRendering.Drawer.prototype.positionNextConnection_ = function() {
 
   if (bottomRow.connection) {
     var connInfo = bottomRow.connection;
-    var x = connInfo.xPos; // Already contains info about startX
+    var x = connInfo.xPos;  // Already contains info about startX.
     var connX = (this.info_.RTL ? -x : x);
     connInfo.connectionModel.setOffsetInBlock(connX, bottomRow.baseline);
   }

@@ -1,14 +1,17 @@
 {
 	"@metadata": {
 		"authors": [
+			"Narazeni",
 			"Silovan"
 		]
 	},
 	"VARIABLES_DEFAULT_NAME": "ელემენტი",
+	"UNNAMED_KEY": "ჯოხოშ უმუშო",
 	"TODAY": "ამდღა",
 	"DUPLICATE_BLOCK": "კოპირაფა",
 	"ADD_COMMENT": "კომენტარიშ გეძინა",
 	"REMOVE_COMMENT": "კომენტარიშ გოუქვაფა",
+	"DUPLICATE_COMMENT": "კომენტარიშ დუბლირაფა",
 	"EXTERNAL_INPUTS": "გალეშე დინოხუნაფა",
 	"INLINE_INPUTS": "დინოხოლე დინოხუნაფა",
 	"DELETE_BLOCK": "ბლოკიშ ლასუა",
@@ -87,5 +90,6 @@
 	"MATH_IS_WHOLE": "ნთელი რე",
 	"MATH_IS_POSITIVE": "დადებითი რე",
 	"MATH_IS_NEGATIVE": "უარყოფითი რე",
-	"LISTS_ISEMPTY_TITLE": "%1 ცარიელი რე"
+	"LISTS_ISEMPTY_TITLE": "%1 ცარიელი რე",
+	"DIALOG_CANCEL": "გოუქვაფა"
 }

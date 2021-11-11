@@ -1,18 +1,7 @@
 /**
  * @license
  * Copyright 2017 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 /**
@@ -24,11 +13,13 @@
 
 goog.provide('Blockly.VariablesDynamic');
 
-goog.require('Blockly.Variables');
 goog.require('Blockly.Blocks');
 goog.require('Blockly.Msg');
 goog.require('Blockly.utils.xml');
 goog.require('Blockly.VariableModel');
+goog.require('Blockly.Variables');
+
+goog.requireType('Blockly.Workspace');
 
 
 Blockly.VariablesDynamic.onCreateVariableButtonClick_String = function(button) {
@@ -47,7 +38,7 @@ Blockly.VariablesDynamic.onCreateVariableButtonClick_Colour = function(button) {
  * Construct the elements (blocks and button) required by the flyout for the
  * variable category.
  * @param {!Blockly.Workspace} workspace The workspace containing variables.
- * @return {!Array.<!Element>} Array of XML elements.
+ * @return {!Array<!Element>} Array of XML elements.
  */
 Blockly.VariablesDynamic.flyoutCategory = function(workspace) {
   var xmlList = [];
@@ -80,7 +71,7 @@ Blockly.VariablesDynamic.flyoutCategory = function(workspace) {
 /**
  * Construct the blocks required by the flyout for the variable category.
  * @param {!Blockly.Workspace} workspace The workspace containing variables.
- * @return {!Array.<!Element>} Array of XML block elements.
+ * @return {!Array<!Element>} Array of XML block elements.
  */
 Blockly.VariablesDynamic.flyoutCategoryBlocks = function(workspace) {
   var variableModelList = workspace.getAllVariables();

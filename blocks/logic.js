@@ -1,18 +1,7 @@
 /**
  * @license
  * Copyright 2012 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 /**
@@ -636,7 +625,7 @@ Blockly.Constants.Logic.CONTROLS_IF_MUTATOR_MIXIN = {
     var valueConnections = [null];
     var statementConnections = [null];
     var elseStatementConnection = null;
-    while (clauseBlock) {
+    while (clauseBlock && !clauseBlock.isInsertionMarker()) {
       switch (clauseBlock.type) {
         case 'controls_if_elseif':
           this.elseifCount_++;
@@ -744,9 +733,9 @@ Blockly.Constants.Logic.CONTROLS_IF_MUTATOR_MIXIN = {
   },
   /**
    * Reconnects child blocks.
-   * @param {!Array.<?Blockly.RenderedConnection>} valueConnections List of
+   * @param {!Array<?Blockly.RenderedConnection>} valueConnections List of
    * value connections for 'if' input.
-   * @param {!Array.<?Blockly.RenderedConnection>} statementConnections List of
+   * @param {!Array<?Blockly.RenderedConnection>} statementConnections List of
    * statement connections for 'do' input.
    * @param {?Blockly.RenderedConnection} elseStatementConnection Statement
    * connection for else input.
@@ -811,7 +800,8 @@ Blockly.Constants.Logic.LOGIC_COMPARE_ONCHANGE_MIXIN = {
     var blockB = this.getInputTargetBlock('B');
     // Disconnect blocks that existed prior to this change if they don't match.
     if (blockA && blockB &&
-        !blockA.outputConnection.checkType(blockB.outputConnection)) {
+      !this.workspace.connectionChecker.doTypeChecks(
+          blockA.outputConnection, blockB.outputConnection)) {
       // Mismatch between two inputs.  Revert the block connections,
       // bumping away the newly connected block(s).
       Blockly.Events.setGroup(e.group);
@@ -878,7 +868,9 @@ Blockly.Constants.Logic.LOGIC_TERNARY_ONCHANGE_MIXIN = {
     if ((blockA || blockB) && parentConnection) {
       for (var i = 0; i < 2; i++) {
         var block = (i == 1) ? blockA : blockB;
-        if (block && !block.outputConnection.checkType(parentConnection)) {
+        if (block &&
+            !block.workspace.connectionChecker.doTypeChecks(
+                block.outputConnection, parentConnection)) {
           // Ensure that any disconnections are grouped with the causing event.
           Blockly.Events.setGroup(e.group);
           if (parentConnection === this.prevParentConnection_) {

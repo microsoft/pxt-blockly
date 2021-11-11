@@ -1,18 +1,7 @@
 /**
  * @license
  * Copyright 2017 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 /**
@@ -25,6 +14,7 @@
 goog.provide('Blockly.Grid');
 
 goog.require('Blockly.utils.dom');
+goog.require('Blockly.utils.Svg');
 goog.require('Blockly.utils.userAgent');
 
 
@@ -123,7 +113,7 @@ Blockly.Grid.prototype.getSpacing = function() {
 };
 
 /**
- * Get the id of the pattern element, which should be randomized to avoid
+ * Get the ID of the pattern element, which should be randomized to avoid
  * conflicts with other Blockly instances on the page.
  * @return {string} The pattern ID.
  * @package
@@ -191,7 +181,7 @@ Blockly.Grid.prototype.setLineAttributes_ = function(line, width,
  * Move the grid to a new x and y position, and make sure that change is
  * visible.
  * @param {number} x The new x position of the grid (in px).
- * @param {number} y The new y position ofthe grid (in px).
+ * @param {number} y The new y position of the grid (in px).
  * @package
  */
 Blockly.Grid.prototype.moveTo = function(x, y) {
@@ -220,16 +210,19 @@ Blockly.Grid.createDom = function(rnd, gridOptions, defs) {
       <rect stroke="#888" />
     </pattern>
   */
-  var gridPattern = Blockly.utils.dom.createSvgElement('pattern',
+  var gridPattern = Blockly.utils.dom.createSvgElement(
+      Blockly.utils.Svg.PATTERN,
       {
         'id': 'blocklyGridPattern' + rnd,
         'patternUnits': 'userSpaceOnUse'
       }, defs);
   if (gridOptions['length'] > 0 && gridOptions['spacing'] > 0) {
-    Blockly.utils.dom.createSvgElement('line',
+    Blockly.utils.dom.createSvgElement(
+        Blockly.utils.Svg.LINE,
         {'stroke': gridOptions['colour']}, gridPattern);
     if (gridOptions['length'] > 1) {
-      Blockly.utils.dom.createSvgElement('line',
+      Blockly.utils.dom.createSvgElement(
+          Blockly.utils.Svg.LINE,
           {'stroke': gridOptions['colour']}, gridPattern);
     }
     // x1, y1, x1, x2 properties will be set later in update.
@@ -251,7 +244,8 @@ Blockly.Grid.createDom = function(rnd, gridOptions, defs) {
     this.imageOptions_ = gridImageOptions;
   } else {
     // Edge 16 doesn't handle empty patterns
-    Blockly.utils.dom.createSvgElement('line', {}, gridPattern);
+    Blockly.utils.dom.createSvgElement(
+        Blockly.utils.Svg.LINE, {}, gridPattern);
   }
   return gridPattern;
 };

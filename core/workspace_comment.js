@@ -1,18 +1,7 @@
 /**
  * @license
  * Copyright 2017 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 /**
@@ -24,9 +13,13 @@
 goog.provide('Blockly.WorkspaceComment');
 
 goog.require('Blockly.Events');
+/** @suppress {extraRequire} */
 goog.require('Blockly.Events.CommentChange');
+/** @suppress {extraRequire} */
 goog.require('Blockly.Events.CommentCreate');
+/** @suppress {extraRequire} */
 goog.require('Blockly.Events.CommentDelete');
+/** @suppress {extraRequire} */
 goog.require('Blockly.Events.CommentMove');
 goog.require('Blockly.utils');
 goog.require('Blockly.utils.Coordinate');
@@ -39,12 +32,12 @@ goog.require('Blockly.utils.xml');
  * @param {string} content The content of this workspace comment.
  * @param {number} height Height of the comment.
  * @param {number} width Width of the comment.
- * @param {boolean} minimized Whether this comment is in the minimized state
  * @param {string=} opt_id Optional ID.  Use this ID if provided, otherwise
  *     create a new ID.
+ * @param {boolean=} opt_minimized pxt-blockly: Whether this comment is in the minimized state
  * @constructor
  */
-Blockly.WorkspaceComment = function(workspace, content, height, width, minimized, opt_id) {
+Blockly.WorkspaceComment = function(workspace, content, height, width, opt_id, opt_minimized) {
   /** @type {string} */
   this.id = (opt_id && !workspace.getCommentById(opt_id)) ?
       opt_id : Blockly.utils.genUid();
@@ -78,7 +71,7 @@ Blockly.WorkspaceComment = function(workspace, content, height, width, minimized
    * @type {boolean}
    * @private
    */
-  this.isMinimized_ = minimized;
+  this.isMinimized_ = opt_minimized;
 
   /**
    * @type {!Blockly.Workspace}
@@ -155,7 +148,8 @@ Blockly.WorkspaceComment.prototype.dispose = function() {
   }
 
   if (Blockly.Events.isEnabled()) {
-    Blockly.Events.fire(new Blockly.Events.CommentDelete(this));
+    Blockly.Events.fire(
+        new (Blockly.Events.get(Blockly.Events.COMMENT_DELETE))(this));
   }
 
   // Remove from the list of top comments and the comment database.
@@ -219,7 +213,7 @@ Blockly.WorkspaceComment.prototype.getXY = function() {
  * @package
  */
 Blockly.WorkspaceComment.prototype.moveBy = function(dx, dy) {
-  var event = new Blockly.Events.CommentMove(this);
+  var event = new (Blockly.Events.get(Blockly.Events.COMMENT_MOVE))(this);
   this.xy_.translate(dx, dy);
   event.recordNew();
   Blockly.Events.fire(event);
@@ -297,8 +291,8 @@ Blockly.WorkspaceComment.prototype.getContent = function() {
 Blockly.WorkspaceComment.prototype.setContent = function(content) {
   if (this.content_ != content) {
     content = content.trim(); // pxt-blockly
-    Blockly.Events.fire(
-      new Blockly.Events.CommentChange(this, {text: this.content_}, {text: content}));
+    Blockly.Events.fire(new (Blockly.Events.get(Blockly.Events.COMMENT_CHANGE))(
+        this, this.content_, content));
     this.content_ = content;
   }
 };
@@ -390,7 +384,8 @@ Blockly.WorkspaceComment.fireCreateEvent = function(comment) {
       Blockly.Events.setGroup(true);
     }
     try {
-      Blockly.Events.fire(new Blockly.Events.CommentCreate(comment));
+      Blockly.Events.fire(
+          new (Blockly.Events.get(Blockly.Events.COMMENT_CREATE))(comment));
     } finally {
       if (!existingGroup) {
         Blockly.Events.setGroup(false);
@@ -410,7 +405,7 @@ Blockly.WorkspaceComment.fromXml = function(xmlComment, workspace) {
   var info = Blockly.WorkspaceComment.parseAttributes(xmlComment);
 
   var comment = new Blockly.WorkspaceComment(
-      workspace, info.content, info.h, info.w, info.minimized, info.id);
+      workspace, info.content, info.h, info.w, info.id, info.minimized);
   comment.data = xmlComment.getAttribute('data'); // pxt-blockly
 
   var commentX = parseInt(xmlComment.getAttribute('x'), 10);

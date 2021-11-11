@@ -1,18 +1,7 @@
 /**
  * @license
  * Copyright 2012 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 /**
@@ -26,7 +15,6 @@
  */
 'use strict';
 
-goog.provide('Blockly.Blocks.lists');  // Deprecated
 goog.provide('Blockly.Constants.Lists');
 
 goog.require('Blockly');
@@ -207,7 +195,7 @@ Blockly.Blocks['lists_create_with'] = {
   //   var itemBlock = containerBlock.getInputTargetBlock('STACK');
   //   // Count number of inputs.
   //   var connections = [];
-  //   while (itemBlock) {
+  //   while (itemBlock && !itemBlock.isInsertionMarker()) {
   //     connections.push(itemBlock.valueConnection_);
   //     itemBlock = itemBlock.nextConnection &&
   //         itemBlock.nextConnection.targetBlock();
@@ -224,22 +212,6 @@ Blockly.Blocks['lists_create_with'] = {
   //   // Reconnect any child blocks.
   //   for (var i = 0; i < this.itemCount_; i++) {
   //     Blockly.Mutator.reconnect(connections[i], this, 'ADD' + i);
-  //   }
-  // },
-  /**
-   * Store pointers to any connected child blocks.
-   * @param {!Blockly.Block} containerBlock Root block in mutator.
-   * @this Blockly.Block
-   */
-  // saveConnections: function(containerBlock) {
-  //   var itemBlock = containerBlock.getInputTargetBlock('STACK');
-  //   var i = 0;
-  //   while (itemBlock) {
-  //     var input = this.getInput('ADD' + i);
-  //     itemBlock.valueConnection_ = input && input.connection.targetConnection;
-  //     i++;
-  //     itemBlock = itemBlock.nextConnection &&
-  //         itemBlock.nextConnection.targetBlock();
   //   }
   // },
   /**
@@ -413,6 +385,12 @@ Blockly.Blocks['lists_create_with'] = {
     for (i = 0; i < this.itemCount_; i++) {
       if (!this.getInput('ADD' + i)) {
         this.appendValueInput('ADD' + i);
+        // pxt-blockly: Unused
+        // var input = this.appendValueInput('ADD' + i)
+        //     .setAlign(Blockly.ALIGN_RIGHT);
+        // if (i == 0) {
+        //   input.appendField(Blockly.Msg['LISTS_CREATE_WITH_INPUT_WITH']);
+        // }
       }
     }
     // Remove deleted inputs.
@@ -597,7 +575,7 @@ Blockly.Blocks['lists_getIndex'] = {
   /**
    * Create XML to represent whether the block is a statement or a value.
    * Also represent whether there is an 'AT' input.
-   * @return {Element} XML storage element.
+   * @return {!Element} XML storage element.
    * @this {Blockly.Block}
    */
   mutationToDom: function() {
@@ -761,7 +739,7 @@ Blockly.Blocks['lists_setIndex'] = {
   },
   /**
    * Create XML to represent whether there is an 'AT' input.
-   * @return {Element} XML storage element.
+   * @return {!Element} XML storage element.
    * @this {Blockly.Block}
    */
   mutationToDom: function() {
@@ -860,7 +838,7 @@ Blockly.Blocks['lists_getSublist'] = {
   },
   /**
    * Create XML to represent whether there are 'AT' inputs.
-   * @return {Element} XML storage element.
+   * @return {!Element} XML storage element.
    * @this {Blockly.Block}
    */
   mutationToDom: function() {
