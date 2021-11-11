@@ -7905,6 +7905,12 @@ declare module Blockly {
             toolboxPosition_: number;
     
             /**
+             * Setting if we want to show two scrollbars
+             * @type {boolean}
+             */
+            hasTwoScrolls: boolean;
+    
+            /**
              * List of visible buttons.
              * @type {!Array<!Blockly.FlyoutButton>}
              * @protected

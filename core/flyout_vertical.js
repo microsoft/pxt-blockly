@@ -69,6 +69,12 @@ Blockly.VerticalFlyout.prototype.setMetrics_ = function(xyRatio) {
         -(scrollMetrics.top +
             (scrollMetrics.height - viewMetrics.height) * xyRatio.y);
   }
+  // pxt-blockly: Horizontal scroll option in flyout
+  if (typeof xyRatio.x == 'number') {
+    this.workspace_.scrollX =
+        -(scrollMetrics.left +
+            (scrollMetrics.width - viewMetrics.width) * xyRatio.x);
+  }
   this.workspace_.translate(this.workspace_.scrollX + absoluteMetrics.left,
       this.workspace_.scrollY + absoluteMetrics.top);
 };
@@ -192,6 +198,8 @@ Blockly.VerticalFlyout.prototype.setBackgroundPath_ = function(width, height) {
  */
 Blockly.VerticalFlyout.prototype.scrollToStart = function() {
   this.workspace_.scrollbar.setY(0);
+  // pxt-blockly: Horizontal scrollbar option
+  this.workspace_.scrollbar.setX(0);
 };
 
 /**
@@ -209,6 +217,13 @@ Blockly.VerticalFlyout.prototype.wheel_ = function(e) {
     var pos = (viewMetrics.top - scrollMetrics.top) + scrollDelta.y;
 
     this.workspace_.scrollbar.setY(pos);
+
+    // pxt-blockly: Horizontal scrollbar option
+    if (scrollDelta.x) { // TODO shakao: check if need 'hasTwoScrolls'
+      var hPos = (viewMetrics.left - scrollMetrics.left) + scrollDelta.x;
+      this.workspace_.scrollbar.setX(hPos);
+    }
+
     // When the flyout moves from a wheel event, hide WidgetDiv and DropDownDiv.
     Blockly.WidgetDiv.hide();
     Blockly.DropDownDiv.hideWithoutAnimation();

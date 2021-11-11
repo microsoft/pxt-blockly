@@ -98,6 +98,13 @@ Blockly.Flyout = function(workspaceOptions) {
    */
   this.toolboxPosition_ = workspaceOptions.toolboxPosition;
 
+
+  /**
+   * Setting if we want to show two scrollbars
+   * @type {boolean}
+   */
+  this.hasTwoScrolls = false;
+
   /**
    * Opaque data that can be passed to Blockly.unbindEvent_.
    * @type {!Array<!Array>}
@@ -302,8 +309,10 @@ Blockly.Flyout.prototype.init = function(targetWorkspace) {
   this.targetWorkspace = targetWorkspace;
   this.workspace_.targetWorkspace = targetWorkspace;
 
+  // pxt-blockly: Allow flyout that scrolls vertically and horizontally
   this.workspace_.scrollbar = new Blockly.ScrollbarPair(
-      this.workspace_, this.horizontalLayout, !this.horizontalLayout,
+      this.workspace_, this.horizontalLayout || this.hasTwoScrolls,
+      !this.horizontalLayout || this.hasTwoScrolls,
       'blocklyFlyoutScrollbar', this.SCROLLBAR_MARGIN);
 
   this.hide();
@@ -461,6 +470,16 @@ Blockly.Flyout.prototype.updateDisplay_ = function() {
   // flyout's visibility.
   this.workspace_.scrollbar.setContainerVisible(show);
 };
+
+/**
+ * Set the flyout to use two scrollbars
+ * @private
+ */
+Blockly.Flyout.prototype.setTwoScrolls = function() {
+  if (!this.hasTwoScrolls) {
+    this.hasTwoScrolls = true;
+  }
+}
 
 /**
  * Update the view based on coordinates calculated in position().
