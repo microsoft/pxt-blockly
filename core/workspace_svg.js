@@ -1207,12 +1207,14 @@ Blockly.WorkspaceSvg.prototype.getCanvas = function() {
  */
 Blockly.WorkspaceSvg.prototype.setCachedParentSvgSize = function(width, height) {
   var svg = this.getParentSvg();
-  if (width) {
+  // pxt-blockly: Allow width 0 for hiding the editor
+  if (!isNaN(width) && width !== null) {
     this.cachedParentSvgSize_.width = width;
     // This is set to support the public (but deprecated) Blockly.svgSize method.
     svg.cachedWidth_ = width;
   }
-  if (height) {
+  // pxt-blockly: Allow height 0 for hiding the editor
+  if (!isNaN(height) && height !== null) {
     this.cachedParentSvgSize_.height = height;
     // This is set to support the public (but deprecated) Blockly.svgSize method.
     svg.cachedHeight_ = height;
