@@ -9,11 +9,15 @@
  */
 
 var gulp = require('gulp');
+gulp.bump = require('gulp-bump');
 gulp.replace = require('gulp-replace');
 gulp.rename = require('gulp-rename');
 gulp.sourcemaps = require('gulp-sourcemaps');
 
 var fs = require('fs');
+var semver = require('semver');
+var execSync = require('child_process').execSync;
+
 var typings = require('./typings');
 var buildTasks = require('./build_tasks');
 
@@ -42,36 +46,26 @@ function pxtPublishTsTask() {
 const pxtTest = gulp.series([buildTasks.core, pxtPublishTask]);
 
 // Task for bumping patch version and tagging commit. Travis will upload to npm.
-const pxtBump = gulp.series([
+const pxtBump = gulp.series(
   // Sync to latest
-  function (done) {
-    gulp.git.checkout('develop');
-    gulp.git.pull('origin',' develop');
-    done();
-  },
+  // execSync('git checkout develop', { stdio: 'inherit' }),
+  // execSync('git pull origin develop', { stdio: 'inherit' }),
   // Build compressed files and typings
   buildTasks.core,
   typings.typings,
-  // Increment version, tag and push
   function (done) {
     var v = semver.inc(JSON.parse(fs.readFileSync('./package.json', 'utf8')).version, 'patch');
     gulp.src('./package.json')
       .pipe(gulp.bump({ "version": v }))
       .pipe(gulp.dest('./'));
 
-    gulp.src('.')
-      .pipe(gulp.git.add())
-      .pipe(gulp.git.commit(v))
-      .on('end', function () {
-        gulp.git.tag('v' + v, v, function (error) {
-          if (error) {
-            return done(error);
-          }
-          gulp.git.push('origin', '', { args: '--tags' }, done);
-        })
-      });
-  }]
-);
+    execSync('git add .', { stdio: 'inherit' });
+    execSync('git commit -m "' + v + '"', { stdio: 'inherit' });
+    execSync('git tag v' + v, { stdio: 'inherit' });
+    execSync('git push origin v' + v, { stdio: 'inherit' })
+    done();
+  }
+)
 
 module.exports = {
   pxttest: pxtTest,
