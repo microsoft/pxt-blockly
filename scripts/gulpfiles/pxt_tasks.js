@@ -62,7 +62,8 @@ const pxtBump = gulp.series(
     execSync('git add .', { stdio: 'inherit' });
     execSync('git commit -m "' + v + '"', { stdio: 'inherit' });
     execSync('git tag v' + v, { stdio: 'inherit' });
-    execSync('git push origin v' + v, { stdio: 'inherit' })
+    execSync('git push', { stdio: 'inherit' });
+    execSync('git push origin v' + v, { stdio: 'inherit' });
     done();
   }
 )

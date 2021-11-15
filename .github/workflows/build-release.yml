@@ -1,0 +1,48 @@
+# This workflow will do a clean install, start the selenium server, run
+# tests, and publish the package files to Npm.
+
+name: PXT Npm Publish
+
+on:
+  push:
+    tags:
+    - '*'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: '14.x'
+        registry-url: https://registry.npmjs.org/
+
+    - name: Npm Install
+      run: npm ci
+
+    - name: Configure Username
+      run: git config --global user.name "Microsoft MakeCode"
+
+    - name: Configure Email
+      run: git config --global user.email "kindscript@microsoft.com"
+
+    - name: Linux Test Setup
+      run: source ./tests/scripts/setup_linux_env.sh
+
+    - name: Build
+      run: npm run build:core
+
+    - name: Run
+      run: npm run test
+
+    - name: Npm Publish
+      run: npm publish --tag ${{ github.event.release.target_commitish }}
+
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_ACCESS_TOKEN }}
+        DISPLAY: :99.0
+        CI: true
