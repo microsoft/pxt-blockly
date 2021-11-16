@@ -49,8 +49,8 @@ const pxtTest = gulp.series([buildTasks.core, pxtPublishTask]);
 const pxtBump = gulp.series(
   // Sync to latest
   function(done) {
-    execSync('git checkout develop', { stdio: 'inherit' });
-    execSync('git pull origin develop', { stdio: 'inherit' });
+    // execSync('git checkout develop', { stdio: 'inherit' });
+    // execSync('git pull origin develop', { stdio: 'inherit' });
     done()
   },
   // Build compressed files and typings
