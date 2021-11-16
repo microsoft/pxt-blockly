@@ -24,12 +24,6 @@ jobs:
     - name: Npm Install
       run: npm ci
 
-    - name: Configure Username
-      run: git config --global user.name "Microsoft MakeCode"
-
-    - name: Configure Email
-      run: git config --global user.email "kindscript@microsoft.com"
-
     - name: Linux Test Setup
       run: source ./tests/scripts/setup_linux_env.sh
 
