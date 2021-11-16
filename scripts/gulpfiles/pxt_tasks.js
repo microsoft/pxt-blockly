@@ -57,14 +57,14 @@ const pxtBump = gulp.series(
     var v = semver.inc(JSON.parse(fs.readFileSync('./package.json', 'utf8')).version, 'patch');
     gulp.src('./package.json')
       .pipe(gulp.bump({ "version": v }))
-      .pipe(gulp.dest('./'));
-
-    execSync('git add .', { stdio: 'inherit' });
-    execSync('git commit -m "' + v + '"', { stdio: 'inherit' });
-    execSync('git tag v' + v, { stdio: 'inherit' });
-    execSync('git push', { stdio: 'inherit' });
-    execSync('git push origin v' + v, { stdio: 'inherit' });
-    done();
+      .pipe(gulp.dest('./'))
+      .on('end', function () {
+        execSync('git add .', { stdio: 'inherit' });
+        execSync('git commit -m "' + v + '"', { stdio: 'inherit' });
+        execSync('git tag v' + v, { stdio: 'inherit' });
+        execSync('git push origin v' + v, { stdio: 'inherit' });
+        done();
+      });
   }
 )
 

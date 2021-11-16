@@ -40,7 +40,7 @@ jobs:
       run: npm run test
 
     - name: Npm Publish
-      run: npm publish --tag ${{ github.event.release.target_commitish }}
+      run: npm publish
 
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_ACCESS_TOKEN }}
