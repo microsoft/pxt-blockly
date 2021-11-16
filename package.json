@@ -1,6 +1,6 @@
 {
   "name": "pxt-blockly",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "description": "Blockly fork for Microsoft MakeCode",
   "author": "Microsoft",
   "license": "MIT",
