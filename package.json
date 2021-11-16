@@ -36,7 +36,6 @@
     "lint": "eslint .",
     "package": "gulp package",
     "prepareDemos": "gulp prepareDemos",
-    "publish": "gulp publish",
     "publish:beta": "gulp publishBeta",
     "recompile": "gulp recompile",
     "release": "gulp gitCreateRC",

@@ -66,7 +66,7 @@ const pxtBump = gulp.series(
         execSync('git add blockly_compressed.js blocks_compressed.js typings/blockly.d.ts package.json', { stdio: 'inherit' });
         execSync('git commit -m "' + v + '"', { stdio: 'inherit' });
         execSync('git tag v' + v, { stdio: 'inherit' });
-        execSync('git push origin v' + v, { stdio: 'inherit' });
+        execSync('git push origin v' + v + ' && git push', { stdio: 'inherit' });
         done();
       });
   }
