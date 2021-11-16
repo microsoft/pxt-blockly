@@ -1,6 +1,6 @@
 {
   "name": "pxt-blockly",
-  "version": "4.0.2",
+  "version": "4.0.3",
   "description": "Blockly fork for Microsoft MakeCode",
   "author": "Microsoft",
   "license": "MIT",
@@ -36,7 +36,6 @@
     "lint": "eslint .",
     "package": "gulp package",
     "prepareDemos": "gulp prepareDemos",
-    "publish": "gulp publish",
     "publish:beta": "gulp publishBeta",
     "recompile": "gulp recompile",
     "release": "gulp gitCreateRC",
