@@ -59,7 +59,7 @@ const pxtBump = gulp.series(
       .pipe(gulp.bump({ "version": v }))
       .pipe(gulp.dest('./'))
       .on('end', function () {
-        execSync('git add .', { stdio: 'inherit' });
+        execSync('git add blockly_compressed.js blocks_compressed.js typings/blockly.d.ts package.json', { stdio: 'inherit' });
         execSync('git commit -m "' + v + '"', { stdio: 'inherit' });
         execSync('git tag v' + v, { stdio: 'inherit' });
         execSync('git push origin v' + v, { stdio: 'inherit' });
