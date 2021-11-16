@@ -48,11 +48,15 @@ const pxtTest = gulp.series([buildTasks.core, pxtPublishTask]);
 // Task for bumping patch version and tagging commit. Travis will upload to npm.
 const pxtBump = gulp.series(
   // Sync to latest
-  execSync('git checkout develop', { stdio: 'inherit' }),
-  execSync('git pull origin develop', { stdio: 'inherit' }),
+  function(done) {
+    execSync('git checkout develop', { stdio: 'inherit' });
+    execSync('git pull origin develop', { stdio: 'inherit' });
+    done()
+  },
   // Build compressed files and typings
   buildTasks.core,
   typings.typings,
+  // Increment version and push tagged commit
   function (done) {
     var v = semver.inc(JSON.parse(fs.readFileSync('./package.json', 'utf8')).version, 'patch');
     gulp.src('./package.json')

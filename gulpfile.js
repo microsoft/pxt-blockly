@@ -20,7 +20,6 @@ var appengineTasks = require('./scripts/gulpfiles/appengine_tasks');
 var releaseTasks = require('./scripts/gulpfiles/release_tasks');
 var cleanupTasks = require('./scripts/gulpfiles/cleanup_tasks');
 var pxtTasks = require('./scripts/gulpfiles/pxt_tasks');
-console.log("gulp file")
 
 module.exports = {
   deployDemos: appengineTasks.deployDemos,
