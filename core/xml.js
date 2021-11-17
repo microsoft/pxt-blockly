@@ -667,7 +667,9 @@ Blockly.Xml.childNodeTagMap;
 Blockly.Xml.mapSupportedXmlTags_ = function(xmlBlock) {
   var childNodeMap = {
     mutation: [], comment: [], data: [], field: [], input: [],
-    next: []
+    next: [],
+    // pxt-blockly
+    breakpoint: []
   };
   for (var i = 0, xmlChild; (xmlChild = xmlBlock.childNodes[i]); i++) {
     if (xmlChild.nodeType == Blockly.utils.dom.NodeType.TEXT_NODE) {
@@ -703,7 +705,7 @@ Blockly.Xml.mapSupportedXmlTags_ = function(xmlBlock) {
         childNodeMap.next.push(xmlChild);
         break;
       case 'breakpoint':
-        block.setBreakpoint(true);
+        childNodeMap.breakpoint.push(xmlChild);
         break;
       default:
         // Unknown tag; ignore.  Same principle as HTML parsers.
@@ -883,6 +885,19 @@ Blockly.Xml.applyNextTagNodes_ = function(xmlChildren, workspace, block) {
   }
 };
 
+/**
+ * pxt-blockly:
+ * Applies breakpoint tag child nodes to the given block.
+ * @param {!Array<!Element>} xmlChildren Child nodes.
+ * @param {!Blockly.Block} block The block to apply the child nodes on.
+ * @private
+ */
+Blockly.Xml.applyBreakpointTagNodes_ = function(xmlChildren, block) {
+  if (xmlChildren && xmlChildren.length > 0) {
+    block.setBreakpoint(true);
+  }
+};
+
 
 /**
  * Decode an XML block tag and create a block (and possibly sub blocks) on the
@@ -939,6 +954,8 @@ Blockly.Xml.domToBlockHeadless_ = function(xmlBlock, workspace,
   Blockly.Xml.applyInputTagNodes_(
       xmlChildNameMap.input, workspace, block, prototypeName);
   Blockly.Xml.applyNextTagNodes_(xmlChildNameMap.next, workspace, block);
+  // pxt-blockly
+  Blockly.Xml.applyBreakpointTagNodes_(xmlChildNameMap.breakpoint, block);
 
   if (shouldCallInitSvg) {
     // InitSvg needs to be called after variable fields are loaded.
