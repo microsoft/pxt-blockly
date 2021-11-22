@@ -198,10 +198,6 @@ Blockly.FieldSlider.prototype.addSlider_ = function(contentDiv) {
       goog.ui.Component.EventType.CHANGE,
       function(event) {
         var val = event.target.getValue() || 0;
-        if (thisField.sourceBlock_) {
-          // Call any validation function, and allow it to override.
-          val = thisField.callValidator(val);
-        }
         if (val !== null) {
           thisField.setValue(val);
           var htmlInput = thisField.htmlInput_;

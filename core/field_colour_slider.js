@@ -233,10 +233,6 @@ Blockly.FieldColourSlider.prototype.sliderCallbackFactory_ = function(channel) {
         break;
     }
     var colour = Blockly.utils.colour.hsvToHex(hsv[0], hsv[1], hsv[2]);
-    if (thisField.sourceBlock_) {
-      // Call any validation function, and allow it to override.
-      colour = thisField.callValidator(colour);
-    }
     if (colour !== null) {
       thisField.setValue(colour, true);
     }
