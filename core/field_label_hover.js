@@ -102,9 +102,9 @@ Blockly.FieldLabelHover.prototype.updateWidth = function() {
   // Unlike the base Field class, this doesn't add space to editable fields.
   this.size_.width = Blockly.utils.dom.getFastTextWidth(
       /** @type {!SVGTextElement} */ (this.textElement_),
-      this.constants_.FIELD_TEXT_FONTSIZE,
-      this.constants_.FIELD_TEXT_FONTWEIGHT,
-      this.constants_.FIELD_TEXT_FONTFAMILY);
+      this.getConstants().FIELD_TEXT_FONTSIZE,
+      this.getConstants().FIELD_TEXT_FONTWEIGHT,
+      this.getConstants().FIELD_TEXT_FONTFAMILY);
 };
 
 /**
