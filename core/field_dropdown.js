@@ -290,8 +290,7 @@ Blockly.FieldDropdown.prototype.createSVGArrow_ = function() {
   var placeImageInline = Blockly.utils.userAgent.IE || Blockly.utils.userAgent.IOS;
   var arrowElement = placeImageInline ? 'image' : 'use';
   var arrowHref = placeImageInline ? this.getConstants().FIELD_DROPDOWN_SVG_ARROW_DATAURI :
-    // TODO shakao clean up usage of this.constants_
-    ("#" + (this.constants_.dropdownArrowImageId || 'blocklyDropdownArrowSvg'));
+    ("#" + (this.getConstants().dropdownArrowImageId || 'blocklyDropdownArrowSvg'));
 
   this.svgArrow_ = Blockly.utils.dom.createSvgElement(
       arrowElement, {

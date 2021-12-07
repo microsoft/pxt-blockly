@@ -65,7 +65,7 @@ Blockly.FieldVerticalSeparator.prototype.EDITABLE = false;
  * @package
  */
 Blockly.FieldVerticalSeparator.prototype.initView = function() {
-  var lineHeight = this.constants_.ICON_SEPARATOR_HEIGHT;
+  var lineHeight = this.getConstants().ICON_SEPARATOR_HEIGHT;
   /** @type {SVGElement} */
   this.lineElement_ = Blockly.utils.dom.createSvgElement('line', {
     'stroke': this.sourceBlock_.style.colourSecondary,

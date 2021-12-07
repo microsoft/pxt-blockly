@@ -79,7 +79,7 @@ Blockly.FieldTextDropdown.DROPDOWN_SVG_DATAURI = 'data:image/svg+xml;base64,PHN2
  */
 Blockly.FieldTextDropdown.prototype.initView = function() {
   Blockly.FieldTextDropdown.superClass_.initView.call(this);
-  
+
   this.createSVGArrow_();
 };
 
@@ -91,7 +91,7 @@ Blockly.FieldTextDropdown.prototype.updateSize_ = function() {
   Blockly.FieldTextDropdown.superClass_.updateSize_.call(this);
   var arrowWidth = this.positionSVGArrow_(this.size_.width,
     this.size_.height / 2 -
-    this.constants_.FIELD_DROPDOWN_SVG_ARROW_SIZE / 2);
+    this.getConstants().FIELD_DROPDOWN_SVG_ARROW_SIZE / 2);
 
   this.size_.width += arrowWidth;
 };
@@ -143,8 +143,8 @@ Blockly.FieldTextDropdown.prototype.getOptions = Blockly.FieldDropdown.prototype
  */
 Blockly.FieldTextDropdown.prototype.createSVGArrow_ = function() {
   this.svgArrow_ = Blockly.utils.dom.createSvgElement('image', {
-    'height': this.constants_.FIELD_DROPDOWN_SVG_ARROW_SIZE + 'px',
-    'width': this.constants_.FIELD_DROPDOWN_SVG_ARROW_SIZE + 'px'
+    'height': this.getConstants().FIELD_DROPDOWN_SVG_ARROW_SIZE + 'px',
+    'width': this.getConstants().FIELD_DROPDOWN_SVG_ARROW_SIZE + 'px'
   }, this.fieldGroup_);
   this.svgArrow_.setAttributeNS(Blockly.utils.dom.XLINK_NS, 'xlink:href',
       Blockly.FieldTextDropdown.DROPDOWN_SVG_DATAURI);
@@ -160,7 +160,7 @@ Blockly.FieldTextDropdown.prototype.showDropdown_ = Blockly.FieldDropdown.protot
  * Create the dropdown editor.
  * @private
  */
-Blockly.FieldTextDropdown.prototype.dropdownCreate_ = 
+Blockly.FieldTextDropdown.prototype.dropdownCreate_ =
     Blockly.FieldDropdown.prototype.dropdownCreate_;
 
 /**
