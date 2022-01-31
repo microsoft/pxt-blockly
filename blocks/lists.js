@@ -273,9 +273,7 @@ Blockly.Blocks['lists_create_with'] = {
               var mutation = goog.dom.createDom('mutation');
               mutation.setAttribute('name', connectedBlock.getName());
               blockDom.appendChild(mutation);
-            }
-
-            if (connectedBlock.inputList) {
+            } else if (connectedBlock.inputList) {
               for (var i = 0; i < connectedBlock.inputList.length; i++) {
                 var input = connectedBlock.inputList[i];
                 var valueShadow = input.connection && input.connection.getShadowDom();
