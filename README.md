@@ -44,14 +44,14 @@ npm install .
 
 ## Testing local changes in PXT
 
-* `gulp publish --closure-library` from the ``develop`` branch to generate the blockly-compressed, blocks-compressed, and typings files, and copy them to pxt-blockly
+* `npm run pxt:test` to generate the blockly-compressed, blocks-compressed, and typings files, and copy them to pxt-blockly
 * run `gulp` in pxt to rebuild the pxt blockly files
 * run `pxt clean && pxt serve` in the **target** directory (eg pxt-arcade, or pxt-minecraft)
 
 This can be combined into one command (starting from the target directory):
 
 ```
-cd ../pxt && gulp && cd ../pxt-arcade && pxt clean && pxt serve --rebundle
+cd ../pxt-blockly && npm run pxt:test && cd ../pxt && gulp && cd ../pxt-arcade && pxt clean && pxt serve --rb
 ```
 
 **Make sure you've checked out the correct closure-library (see above)**
