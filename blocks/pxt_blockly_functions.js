@@ -627,8 +627,12 @@ Blockly.PXTBlockly.FunctionUtils.populateArgumentOnCaller_ = function(arg, conne
     // Reattach the old block and shadow DOM.
     connectionMap[input.name] = null;
     oldBlock.outputConnection.connect(input.connection);
-    var shadowDom = oldShadow || this.buildShadowDom_(arg.type);
-    input.connection.setShadowDom(shadowDom);
+    if (oldBlock.isShadow()) {
+      input.connection.setShadowDom(Blockly.Xml.blockToDom(oldBlock));
+    } else {
+      var shadowDom = oldShadow || this.buildShadowDom_(arg.type);
+      input.connection.setShadowDom(shadowDom);
+    }
   } else {
     this.attachShadow_(input, arg.type);
     if (oldBlock && oldBlock.isShadow_) oldBlock.setShadow(false);
