@@ -493,8 +493,14 @@ Blockly.PXTBlockly.FunctionUtils.buildShadowDom_ = function(argumentType) {
   var shadowType = shadowInfo[0];
   var fieldName = shadowInfo[1];
   var fieldValue = shadowInfo[2];
+  var isVarGet = shadowType === "variables_get";
   shadowDom.setAttribute('type', shadowType);
   var fieldDom = goog.dom.createDom('field', null, fieldValue);
+  if (isVarGet) {
+    fieldDom.setAttribute("id", fieldValue);
+    var varModel = this.workspace.getVariableById(fieldValue);
+    fieldDom.textContent = varModel ? varModel.name : "";
+  }
   fieldDom.setAttribute('name', fieldName);
   shadowDom.appendChild(fieldDom);
   return shadowDom;
