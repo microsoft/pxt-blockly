@@ -268,12 +268,18 @@ Blockly.Blocks['lists_create_with'] = {
         } else {
           // copy field as well if it's not the same type as the shadow
           var blockDom = createBlockDom('block', newFieldType);
-          if (connectedBlock && connectedBlock.inputList) {
-            for (var i = 0; i < connectedBlock.inputList.length; i++) {
-              var input = connectedBlock.inputList[i];
-              var valueShadow = input.connection && input.connection.getShadowDom();
-              var valueShadowType = valueShadow && valueShadow.getAttribute('type');
-              appendValueDom(blockDom, input.name, valueShadowType);
+          if (connectedBlock) {
+            if (newFieldType === Blockly.FUNCTION_CALL_OUTPUT_BLOCK_TYPE) {
+              var mutation = goog.dom.createDom('mutation');
+              mutation.setAttribute('name', connectedBlock.getName());
+              blockDom.appendChild(mutation);
+            } else if (connectedBlock.inputList) {
+              for (var i = 0; i < connectedBlock.inputList.length; i++) {
+                var input = connectedBlock.inputList[i];
+                var valueShadow = input.connection && input.connection.getShadowDom();
+                var valueShadowType = valueShadow && valueShadow.getAttribute('type');
+                appendValueDom(blockDom, input.name, valueShadowType);
+              }
             }
           }
           var fieldBlock = Blockly.Xml.domToBlock(blockDom, this.workspace);
