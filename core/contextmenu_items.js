@@ -525,7 +525,8 @@ Blockly.ContextMenuItems.registerHelp = function() {
 Blockly.ContextMenuItems.registerBlockOptions_ = function() {
   Blockly.ContextMenuItems.registerDuplicate();
   Blockly.ContextMenuItems.registerComment();
-  Blockly.ContextMenuItems.registerInline();
+  // pxt-blockly: Hide inline context menu option
+  // Blockly.ContextMenuItems.registerInline();
   Blockly.ContextMenuItems.registerCollapseExpandBlock();
   Blockly.ContextMenuItems.registerDisable();
   Blockly.ContextMenuItems.registerDelete();
