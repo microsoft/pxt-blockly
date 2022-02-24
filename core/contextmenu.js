@@ -33,7 +33,7 @@ goog.require('Blockly.utils.Rect');
 goog.require('Blockly.utils.userAgent');
 goog.require('Blockly.WidgetDiv');
 goog.require('Blockly.Xml');
-goog.require('goog.ui.MenuSeparator');
+goog.require('Blockly.MenuSeparator');
 
 goog.requireType('Blockly.Block');
 goog.requireType('Blockly.WorkspaceSvg');
@@ -90,9 +90,12 @@ Blockly.ContextMenu.populate_ = function(options, rtl) {
   var menu = new Blockly.Menu();
   menu.setRole(Blockly.utils.aria.Role.MENU);
   for (var i = 0, option; (option = options[i]); i++) {
-    var menuItem = option.separator ? new goog.ui.MenuSeparator() // TODO shakao remove goog
+    // pxt-blockly: support for MenuSeparator in context menus
+    var menuItem = option.separator ? new Blockly.MenuSeparator()
       : new Blockly.MenuItem(option.text);
     menuItem.setRightToLeft(rtl);
+    // pxt-blockly: support for MenuSeparator in context menus
+    if (option.separator) continue;
     menuItem.setRole(Blockly.utils.aria.Role.MENUITEM);
     menu.addChild(menuItem);
     menuItem.setEnabled(option.enabled);
