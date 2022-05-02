@@ -1050,7 +1050,8 @@ Blockly.Field.prototype.getTooltip = function() {
 Blockly.Field.prototype.getClickTarget_ = function() {
   if (this.clickTarget_) return this.clickTarget_;
 
-  if (!this.sourceBlock_) return null;
+  // pxt-blockly: make sure this is a blocksvg and not a regular block
+  if (!this.sourceBlock_ || !this.sourceBlock_.getSvgRoot) return null;
 
   var nFields = 0;
   var nConnections = 0;
