@@ -128,7 +128,7 @@ Blockly.FieldVariable.prototype.configure_ = function(config) {
  * @package
  */
 Blockly.FieldVariable.prototype.initModel = function() {
-  if (this.variable_) {
+  if (this.variable_ || this.sourceBlock_ && this.sourceBlock_.isInsertionMarker()) {
     return;  // Initialization already happened.
   }
   var variable = Blockly.Variables.getOrCreateVariablePackage(
