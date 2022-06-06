@@ -592,6 +592,14 @@ Blockly.Xml.domToBlock = function(xmlBlock, workspace) {
       // blocks have rendered.
       setTimeout(function() {
         if (!topBlock.disposed) {
+          // pxtblockly: when expandable blocks are initialized, hidden inputs are collapsed. Check
+          // to see if this block is attached to a collapsed input before enabling connection tracking
+          if (topBlock.outputConnection && topBlock.outputConnection.targetConnection && topBlock.outputConnection.targetConnection.sourceBlock_) {
+            const connectedTo = topBlock.outputConnection.targetConnection.sourceBlock_;
+            const connectedInput = connectedTo.inputList.find(input => input.connection === topBlock.outputConnection.targetConnection);
+
+            if (!connectedInput.isVisible()) return;
+          }
           topBlock.setConnectionTracking(true);
         }
       }, 1);
