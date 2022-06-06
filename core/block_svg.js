@@ -1586,6 +1586,7 @@ Blockly.BlockSvg.prototype.setConnectionTracking = function(track) {
   }
 
   for (var i = 0; i < this.inputList.length; i++) {
+    if (!this.inputList[i].isVisible()) continue;
     var conn = this.inputList[i].connection;
     if (conn) {
       conn.setTracking(track);
