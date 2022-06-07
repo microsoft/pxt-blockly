@@ -826,7 +826,8 @@ Blockly.Block.prototype.getDescendants = function(ordered, opt_ignoreShadows) {
  */
 Blockly.Block.prototype.isDeletable = function() {
   return this.deletable_ && !this.isShadow_ &&
-      !(this.workspace && this.workspace.options.readOnly);
+      !(this.workspace && this.workspace.options.readOnly) &&
+      !this.inDebugWorkspace();
 };
 
 /**
