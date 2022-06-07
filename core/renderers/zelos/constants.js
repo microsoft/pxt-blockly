@@ -652,7 +652,6 @@ Blockly.zelos.ConstantProvider.prototype.shapeFor = function(
     checks = connection.targetConnection.getCheck();
   }
   switch (connection.type) {
-    case Blockly.connectionTypes.INPUT_VALUE:
     case Blockly.connectionTypes.OUTPUT_VALUE:
       var outputShape = connection.getSourceBlock().getOutputShape();
       // If the block has an output shape set, use that instead.
@@ -663,6 +662,8 @@ Blockly.zelos.ConstantProvider.prototype.shapeFor = function(
           case this.SHAPES.SQUARE: return this.SQUARED;
         }
       }
+      // falls through
+    case Blockly.connectionTypes.INPUT_VALUE:
       // Includes doesn't work in IE.
       if (checks && checks.indexOf('Boolean') != -1) {
         return this.HEXAGONAL;
