@@ -238,8 +238,16 @@ Blockly.ConnectionChecker.prototype.doDragChecks = function(a, b, distance) {
       if (Blockly.pxtBlocklyUtils.isFunctionArgumentReporter(a.getSourceBlock())) {
         // Ensure the root block of this stack has an argument reporter
         // matching the name and the type of this reporter.
-        var rootBlock = b.getSourceBlock().getRootBlock();
-        if (rootBlock.isEnabled() && !Blockly.pxtBlocklyUtils.hasMatchingArgumentReporter(rootBlock, a.getSourceBlock())) {
+        var parent = b.getSourceBlock().getParent();
+        var foundMatchingParent = false;
+        while (parent) {
+          if (!parent.isEnabled() || Blockly.pxtBlocklyUtils.hasMatchingArgumentReporter(parent, a.getSourceBlock())) {
+            foundMatchingParent = true;
+            break;
+          }
+          parent = parent.getParent();
+        }
+        if (!foundMatchingParent) {
           return false;
         }
       }
