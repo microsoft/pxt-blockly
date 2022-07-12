@@ -307,7 +307,7 @@ Blockly.Toolbox.prototype.onClick_ = function(e) {
     var itemId = targetElement.getAttribute('id');
     if (itemId) {
       var item = this.getToolboxItemById(itemId);
-      if (item.isSelectable()) {
+      if (item && item.isSelectable()) {
         this.setSelectedItem(item);
         item.onClick(e);
       }
