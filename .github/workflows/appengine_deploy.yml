@@ -15,7 +15,7 @@ jobs:
     steps:
       # Checks-out the repository under $GITHUB_WORKSPACE.
       # When running manually this checks out the master branch.
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@0717577d45739eb3c851188b29f50ed6c0b2194e # v2
 
       - name: Prepare demo files
         # Install all dependencies, then copy all the files needed for demos.
@@ -24,7 +24,7 @@ jobs:
           npm run prepareDemos
 
       - name: Upload
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@82c141cc518b40d92cc801eee768e7aafc9c2fa2 # v2
         with:
           name: appengine_files
           path: _deploy/
@@ -36,13 +36,13 @@ jobs:
     needs: prepare
     steps:
       - name: Download prepared files
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@cbed621e49e4c01b044d60f6c80ea4ed6328b281 # v2
         with:
           name: appengine_files
           path: _deploy/
 
       - name: Deploy to App Engine
-        uses: google-github-actions/deploy-appengine@v0.2.0
+        uses: google-github-actions/deploy-appengine@73c9b744497731a865297e5fc4e9653b4fd6f14d # v0.2.0
         # For parameters see:
         # https://github.com/google-github-actions/deploy-appengine#inputs
         with:
